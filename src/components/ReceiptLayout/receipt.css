@@ -1,0 +1,30 @@
+.main-div {
+  font-family: times new roman, times;
+  font-size: 20px;
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  color: #000;
+}
+
+.u-row {
+  width: 100%;
+}
+.u-row .u-col {
+  vertical-align: top;
+}
+.u-row .u-col-17p73 {
+  width: 17% !important;
+}
+.u-row .u-col-21p13 {
+  width: 17% !important;
+}
+.u-row .u-col-78p87 {
+  width: 83% !important;
+}
+.u-row .u-col-82p27 {
+  width: 83% !important;
+}
+.u-row .u-col-100 {
+  width: 100% !important;
+}
