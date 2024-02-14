@@ -61,7 +61,7 @@ const CardGridList = ({ data }) => (
     <Card sx={styles.card}>
       <CardActionArea
         onClick={() => {
-          goToEvent(data.id);
+          goToEvent(data);
         }}
       >
         <div
@@ -95,7 +95,9 @@ const CardGridList = ({ data }) => (
           size="small"
           color="primary"
           onClick={() => {
-            goToEvent(data.id);
+            // eslint-disable-next-line no-console
+            console.log(data);
+            goToEvent(data);
           }}
         >
           <Typography color="primary">View</Typography>

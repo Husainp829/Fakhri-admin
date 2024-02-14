@@ -1,5 +1,5 @@
-export const apiUrl = "http://localhost:3012";
-// export const apiUrl = "https://api.anjumanefakhripoona.org";
+// export const apiUrl = "http://localhost:3012";
+export const apiUrl = "https://api.anjumanefakhripoona.org";
 
 export const permissionsList = [
   { id: "admins.view", name: "View Admin" },

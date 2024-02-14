@@ -11,9 +11,7 @@ export default () => {
       const created = await create("niyaaz", {
         data: {
           ...s,
-          // familyMembers: {
-          //   values: s.familyMembers,
-          // },
+          familyMembers: [],
         },
       });
 

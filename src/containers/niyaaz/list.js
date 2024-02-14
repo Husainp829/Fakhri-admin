@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
 import { calcTotalPayable, downLoadPasses } from "../../utils";
 import { EventContext } from "../../dataprovider/eventProvider";
+import { MARKAZ_LIST } from "../../constants";
 
 export default () => {
   const NiyaazFilters = [
@@ -30,10 +31,10 @@ export default () => {
       label="Markaz"
       source="markaz"
       key={1}
-      choices={[
-        { id: "ZM", name: "Zainy Masjid" },
-        { id: "BH", name: "Burhani Hall" },
-      ]}
+      choices={MARKAZ_LIST.map((m) => ({
+        id: m.value,
+        name: m.displayVal,
+      }))}
       sx={{ marginBottom: 0 }}
       alwaysOn
     />,
@@ -108,37 +109,39 @@ export default () => {
   };
 
   return (
-    <List
-      pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
-      filters={NiyaazFilters}
-      actions={<ListActions />}
-      exporter={exporter}
-    >
-      <Datagrid rowClick="show" bulkActionButtons={false}>
-        <EditButton />
-        <TextField source="formNo" />
-        <TextField source="markaz" />
-        <TextField source="HOFId" label="HOF ID" />
-        <TextField source="HOFName" label="HOF Name" />
-        <TextField source="HOFPhone" label="HOF Phone" />
-        <NumberField source="takhmeenAmount" />
-        <NumberField source="paidAmount" />
-        <FunctionField
-          label="Submitter"
-          source="submitter"
-          render={(record) => <span>{record?.admin?.name || record.submitter}</span>}
-        />
-        <FunctionField
-          label="Download"
-          source="formNo"
-          render={(record) => (
-            <Button onClick={() => downLoadPasses({ ...record, event: currentEvent })}>
-              <DownloadIcon />
-            </Button>
-          )}
-          key="name"
-        />
-      </Datagrid>
-    </List>
+    <>
+      <List
+        pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
+        filters={NiyaazFilters}
+        actions={<ListActions />}
+        exporter={exporter}
+      >
+        <Datagrid rowClick="show" bulkActionButtons={false}>
+          <EditButton />
+          <TextField source="formNo" />
+          <TextField source="markaz" />
+          <TextField source="HOFId" label="HOF ID" />
+          <TextField source="HOFName" label="HOF Name" />
+          <TextField source="HOFPhone" label="HOF Phone" />
+          <NumberField source="takhmeenAmount" />
+          <NumberField source="paidAmount" />
+          <FunctionField
+            label="Submitter"
+            source="submitter"
+            render={(record) => <span>{record?.admin?.name || record.submitter}</span>}
+          />
+          <FunctionField
+            label="Download"
+            source="formNo"
+            render={(record) => (
+              <Button onClick={() => downLoadPasses({ ...record, event: currentEvent })}>
+                <DownloadIcon />
+              </Button>
+            )}
+            key="name"
+          />
+        </Datagrid>
+      </List>
+    </>
   );
 };

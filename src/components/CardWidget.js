@@ -15,7 +15,7 @@ function CardGridWidget({ value, title, grid }) {
     <>
       <Grid item lg={grid || 3} xs={12}>
         <Card sx={styles.card}>
-          <Typography variant="h2" align="center" color="white" style={{ fontWeight: "bold" }}>
+          <Typography variant="h3" align="center" color="white" sx={{ fontWeight: "bold", mb: 3 }}>
             {value}
           </Typography>
           <Typography variant="body1" gutterBottom align="center" color="white">

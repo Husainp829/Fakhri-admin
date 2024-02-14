@@ -154,7 +154,7 @@ export default (props) => {
           {activeEvents.map((e) => (
             <MenuItem
               onClick={() => {
-                goToEvent(e.id);
+                goToEvent(e);
                 setCurrent(e.name);
               }}
               key={e.id}
