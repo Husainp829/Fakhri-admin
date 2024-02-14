@@ -30,19 +30,20 @@ const LoadedGridList = ({ niyaazCounts }) => {
                 {markaz}
               </Typography>
             </Grid>
-            <CardGridWidget value={stat.takhmeenAmount} title="Takhmeen Amount" />
+            <CardGridWidget value={stat.takhmeenAmount} showCurr title="Takhmeen Amount" />
             <CardGridWidget value={stat.chairs} title="Chairs" />
-            <CardGridWidget value={stat.iftaari} title="Iftaari" />
+            <CardGridWidget value={stat.iftaari} showCurr title="Iftaari" />
             <CardGridWidget value={stat.zabihat} title="Zabihat" />
             <CardGridWidget
-              value={calcTotalPayable(currentEvent, stat)}
+              value={`₹ ${calcTotalPayable(currentEvent, stat)}`}
               title="Total Payable"
               grid={4}
             />
-            <CardGridWidget value={stat.paidAmount} title="Total Paid" grid={4} />
+            <CardGridWidget value={stat.paidAmount} showCurr title="Total Paid" grid={4} />
             <CardGridWidget
               value={calcTotalPayable(currentEvent, stat) - parseInt(stat.paidAmount, 10)}
               title="Total Balance"
+              showCurr
               grid={4}
             />
           </Grid>
