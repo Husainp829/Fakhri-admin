@@ -40,14 +40,7 @@ export default () => {
             source="pending"
             label="Pending Balance"
             render={(record) => (
-              <h2>
-                ₹{" "}
-                {record.takhmeenAmount +
-                  record.chairs +
-                  record.iftaari +
-                  record.zabihat -
-                  record.paidAmount}
-              </h2>
+              <h2>₹ {calcTotalPayable(currentEvent, record) - record.paidAmount}</h2>
             )}
           />
         </SimpleShowLayout>

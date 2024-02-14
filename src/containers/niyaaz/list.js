@@ -123,7 +123,12 @@ export default () => {
           <TextField source="HOFId" label="HOF ID" />
           <TextField source="HOFName" label="HOF Name" />
           <TextField source="HOFPhone" label="HOF Phone" />
-          <NumberField source="takhmeenAmount" />
+          <FunctionField
+            label="Total Payable"
+            source="totalPayable"
+            render={(record) => calcTotalPayable(currentEvent, record)}
+            key="name"
+          />
           <NumberField source="paidAmount" />
           <FunctionField
             label="Submitter"

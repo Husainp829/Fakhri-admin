@@ -21,6 +21,7 @@ export default ({ niyaazId }) => {
   const { setValue } = useFormContext();
   const amount = useWatch({ name: "amount" });
   const totalPayable = useWatch({ name: "totalPayable" });
+  const paidAmount = useWatch({ name: "paidAmount" });
   const { currentEvent } = useContext(EventContext);
 
   useEffect(() => {
@@ -34,25 +35,32 @@ export default ({ niyaazId }) => {
             setValue("formNo", niyaazData.formNo);
             setValue("markaz", niyaazData.markaz);
             setValue("totalPayable", calcTotalPayable(currentEvent, niyaazData));
-            setValue("balancePending", calcTotalPayable(currentEvent, niyaazData));
+            setValue("paidAmount", niyaazData.paidAmount);
+            setValue(
+              "balancePending",
+              calcTotalPayable(currentEvent, niyaazData) - niyaazData.paidAmount
+            );
           }
         })
         .catch((err) => {
           notify(err.message);
         });
     };
-    if (niyaazId) {
+    if (niyaazId && currentEvent.name) {
       getNiyaaz();
     }
-  }, [niyaazId]);
+  }, [niyaazId, currentEvent]);
 
   useEffect(() => {
-    setValue("balancePending", (totalPayable || 0) - (amount || 0));
+    setValue("balancePending", (totalPayable || 0) - (amount || paidAmount));
   }, [amount]);
 
   const validateAmount = [
     required(),
-    maxValue(totalPayable, "Amount cannot be greater than takhmeen"),
+    maxValue(
+      totalPayable - paidAmount,
+      `Amount cannot be greater than ${totalPayable - paidAmount}`
+    ),
     minValue(0, "Min value is 1"),
   ];
 
