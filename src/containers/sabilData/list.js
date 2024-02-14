@@ -128,19 +128,6 @@ const RegistrationFilters = [
     ]}
     sx={{ marginBottom: 0 }}
   />,
-  // <SelectInput
-  //   label="Delegate Type"
-  //   source="delegateType"
-  //   sx={{ marginBottom: 0 }}
-  //   alwaysOn
-  //   key={1}
-  //   choices={[
-  //     { id: "DELEGATE", name: "DELEGATE" },
-  //     { id: "SPONSOR", name: "SPONSOR" },
-  //     { id: "ORGANISER", name: "ORGANISER" },
-  //     { id: "MEDIA", name: "MEDIA" },
-  //   ]}
-  // />,
 ];
 
 export default function OrderList(props) {

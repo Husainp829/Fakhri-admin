@@ -1,36 +1,53 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+import React, { useContext } from "react";
 import Grid from "@mui/material/Grid";
-import { groupBy } from "../../utils";
+import Typography from "@mui/material/Typography";
+import { calcTotalPayable, groupBy } from "../../utils";
 import CardGridWidget from "../../components/CardWidget";
-import CardGridChart from "../../components/ChartWidget";
 import LoadingGridList from "../../components/LoadingWidget";
+import { EventContext } from "../../dataprovider/eventProvider";
 
 const styles = {
   grid: {
     marginTop: 2,
+    marginBottom: 5,
   },
 };
 
-const LoadedGridList = ({ udf, registrations, speakers, statusList }) => {
-  const registrationsMap = groupBy("status")(registrations);
+const LoadedGridList = ({ niyaazCounts }) => {
+  const niyaazMap = groupBy("markaz")(niyaazCounts);
+  const { currentEvent } = useContext(EventContext);
+
   return (
     <>
-      <Grid container spacing={1} alignItems="center" sx={styles.grid}>
-        {statusList.map((r, i) => {
-          let obj = {};
-          if (r.pass) {
-            obj = registrationsMap[r.pass]?.[0] || [{}];
-            return <CardGridWidget value={obj?.count || 0} key={i} title={r.pass || ""} />;
-          }
-          obj = registrationsMap[r.id]?.[0] || {};
-          return <CardGridWidget value={obj?.count || 0} key={i} title={r.id || ""} />;
-        })}
-
-        <CardGridWidget value={speakers} title="SPEAKERS" />
-        {udf?.map((u) => (
-          <CardGridChart key={u.name} {...u} />
-        ))}
-      </Grid>
+      {Object.keys(niyaazMap).map((markaz) => {
+        const stat = niyaazMap[markaz][0] || {};
+        return (
+          <Grid container spacing={1} alignItems="center" sx={styles.grid} key={markaz}>
+            <Grid item xs={12}>
+              <Typography variant="h4" sx={{ mb: 3 }}>
+                {markaz}
+              </Typography>
+            </Grid>
+            <CardGridWidget value={stat.takhmeenAmount} title="Takhmeen Amount" />
+            <CardGridWidget value={stat.chairs} title="Chairs" />
+            <CardGridWidget value={stat.iftaari} title="Iftaari" />
+            <CardGridWidget value={stat.zabihat} title="Zabihat" />
+            <CardGridWidget
+              value={calcTotalPayable(currentEvent, stat)}
+              title="Total Payable"
+              grid={4}
+            />
+            <CardGridWidget value={stat.paidAmount} title="Total Paid" grid={4} />
+            <CardGridWidget
+              value={calcTotalPayable(currentEvent, stat) - parseInt(stat.paidAmount, 10)}
+              title="Total Balance"
+              grid={4}
+            />
+          </Grid>
+        );
+      })}
     </>
   );
 };

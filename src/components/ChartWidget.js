@@ -31,7 +31,7 @@ function CardGridChart({ values, label }) {
     <>
       <Grid item lg={6} xs={12}>
         <Card sx={styles.card}>
-          <Chart chartType="PieChart" data={data} options={options} width="100%" height="360px" />
+          <Chart chartType="Bar" data={data} options={options} width="100%" height="360px" />
           <Typography variant="body1" gutterBottom align="center" color="white">
             {label}
           </Typography>

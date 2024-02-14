@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from "react";
-import { Create, useNotify, SimpleForm } from "react-admin";
+import { Edit, useNotify, SimpleForm } from "react-admin";
 import NiyaazForm from "./niyaazForm";
 
 export default (props) => {
@@ -9,10 +9,10 @@ export default (props) => {
     notify(`Could not edit post: ${error.message}`);
   };
   return (
-    <Create {...props} onFailure={onFailure}>
+    <Edit {...props} onFailure={onFailure}>
       <SimpleForm warnWhenUnsavedChanges>
         <NiyaazForm />
       </SimpleForm>
-    </Create>
+    </Edit>
   );
 };

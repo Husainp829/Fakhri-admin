@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import {
@@ -5,10 +6,12 @@ import {
   Show,
   TabbedShowLayout,
   TopToolbar,
+  useRecordContext,
   useRedirect,
   useShowContext,
 } from "react-admin";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import PrintIcon from "@mui/icons-material/Print";
 import EditNoteIcon from "@mui/icons-material/ModeEdit";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -16,6 +19,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
+import { downLoadPasses } from "../../../utils";
 const NiyaazActions = () => {
   const redirect = useRedirect();
   const {
@@ -37,11 +41,23 @@ const NiyaazActions = () => {
         color="success"
         variant="contained"
         onClick={() => {
-          redirect(`/receipts/create?niyaazId=${record?.id}&formNo=${record.formNo}`);
+          redirect(`/receipts/create?niyaazId=${record?.id}`);
         }}
+        sx={{ py: 1, my: 1 }}
       >
         <ReceiptLongIcon sx={{ mr: 1 }} />
         Add Receipt
+      </Button>
+      <Button
+        color="info"
+        variant="contained"
+        onClick={() => {
+          downLoadPasses(record);
+        }}
+        sx={{ py: 1, my: 1 }}
+      >
+        <PrintIcon sx={{ mr: 1 }} />
+        Print Passes
       </Button>
       <Button
         id="basic-button"
@@ -49,6 +65,7 @@ const NiyaazActions = () => {
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
+        sx={{ py: 1, my: 1 }}
       >
         <EditNoteIcon sx={{ mr: 1 }} />
         Actions
@@ -73,8 +90,13 @@ const NiyaazActions = () => {
     </TopToolbar>
   );
 };
+
+const Showtitle = () => {
+  const record = useRecordContext();
+  return <span>{record ? `Form No. ${record.formNo}` : ""}</span>;
+};
 export default ({ props }) => (
-  <Show actions={<NiyaazActions {...props} />}>
+  <Show actions={<NiyaazActions {...props} />} title={<Showtitle />}>
     <TabbedShowLayout>
       <TabbedShowLayout.Tab label="Information">
         <BasicInfo />

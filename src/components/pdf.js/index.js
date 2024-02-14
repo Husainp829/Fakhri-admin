@@ -91,7 +91,7 @@ const getTextColorByMarkaz = (markaz) => {
 };
 
 // Create Document Component
-const Passes = ({ familyMembers = [], formNo, markaz }) => (
+const Passes = ({ familyMembers = [], formNo, markaz, event }) => (
   <Document width="100%">
     <Page size="A4" style={styles.page}>
       {familyMembers.map((fm, i) => (
@@ -118,7 +118,7 @@ const Passes = ({ familyMembers = [], formNo, markaz }) => (
                   ...styles.headTextCommon,
                   color: getTextColorByMarkaz(markaz),
                 }}
-              >{`${MARKAZ_LIST.find((m) => m.value === markaz)?.displayVal} Shehrulla1444`}</Text>
+              >{`${MARKAZ_LIST.find((m) => m.value === markaz)?.displayVal} ${event.slug}`}</Text>
             </View>
           </View>
           <View

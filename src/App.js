@@ -35,6 +35,7 @@ import eventDashboard from "./containers/eventDashboard";
 import lagatTypes from "./containers/lagatTypes";
 import { getEventId } from "./utils";
 import EventProvider from "./dataprovider/eventProvider";
+import Receipt from "./containers/receipt/receiptPrint";
 
 const messages = {
   en: englishMessages,
@@ -74,6 +75,9 @@ const MainApp = () => {
 
         <CustomRoutes noLayout>
           <Route path="/sabil-receipt" element={<SabilReceipt />} />
+        </CustomRoutes>
+        <CustomRoutes noLayout>
+          <Route path="/niyaaz-receipt" element={<Receipt />} />
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/fmb-receipt" element={<FmbReceipt />} />

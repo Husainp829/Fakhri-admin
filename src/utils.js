@@ -1,16 +1,31 @@
 import React from "react";
 import dayjs from "dayjs";
 import ReactPDF from "@react-pdf/renderer";
-import { Passes, ReceiptsPDF } from "./components/pdf.js";
+import { Passes } from "./components/pdf.js";
 export const getEventId = () => {
   const { href } = window.location;
   const u = new URL(href);
   return u.pathname.substring(1).replace(/\/$/, "");
 };
-export const goToEvent = (id) => {
+export const goToEvent = (event) => {
   const { href } = window.location;
   const url = new URL(href);
-  window.location = `${url.origin}/${id}/#/`;
+  window.location = `${url.origin}/${event.id}/#/`;
+  localStorage.setItem(
+    "currEvent",
+    JSON.stringify({
+      name: event.name,
+      hijriYear: event.hijriYear,
+      slug: event.slug,
+      zabihat: event.zabihat,
+      chairs: event.chairs,
+    })
+  );
+};
+
+export const getCurrentEvent = () => {
+  const jsonString = localStorage.getItem("currEvent");
+  return JSON.parse(jsonString || "{}");
 };
 export const goToDashboard = () => {
   const { href } = window.location;
@@ -69,21 +84,16 @@ export const downLoadPasses = async (row) => {
       HOFITS={row.HOFId}
       formNo={row.formNo}
       markaz={row.markaz}
+      event={row.event}
     />
   ).toBlob();
   downloadPDF(blob, `${row.formNo}`);
 };
 
-export const downloadReceipts = async (row) => {
-  const blob = await ReactPDF.pdf(
-    <ReceiptsPDF
-      receipt={row}
-      HOFITS={row.HOFId}
-      HOFName={row.HOFName}
-      formNo={row.formNo}
-      markaz={row.markaz}
-      total={row.total}
-    />
-  ).toBlob();
-  downloadPDF(blob, `${row.receiptNo}`);
+export const calcTotalPayable = (currentEvent, data = {}) => {
+  const takhmeenAmount = parseInt(data.takhmeenAmount, 10);
+  const iftaari = parseInt(data.iftaari, 10);
+  const chairs = currentEvent.chairs * parseInt(data.chairs, 10);
+  const zabihat = currentEvent.zabihat * parseInt(data.zabihat, 10);
+  return takhmeenAmount + chairs + zabihat + iftaari;
 };

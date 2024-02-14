@@ -1,0 +1,94 @@
+import React, { useContext, useEffect } from "react";
+import {
+  TextInput,
+  NumberInput,
+  DateInput,
+  RadioButtonGroupInput,
+  useNotify,
+  minValue,
+  maxValue,
+  required,
+} from "react-admin";
+import Grid from "@mui/material/Grid";
+import { useWatch, useFormContext } from "react-hook-form";
+import { callApi } from "../../../dataprovider/miscApis";
+import { EventContext } from "../../../dataprovider/eventProvider";
+import { calcTotalPayable } from "../../../utils";
+
+export default ({ niyaazId }) => {
+  const notify = useNotify();
+
+  const { setValue } = useFormContext();
+  const amount = useWatch({ name: "amount" });
+  const totalPayable = useWatch({ name: "totalPayable" });
+  const { currentEvent } = useContext(EventContext);
+
+  useEffect(() => {
+    const getNiyaaz = () => {
+      callApi(`niyaaz/${niyaazId}`, {}, "GET")
+        .then(({ data }) => {
+          if (data.count > 0) {
+            const niyaazData = data?.rows[0] || {};
+            setValue("HOFId", niyaazData.HOFId);
+            setValue("HOFName", niyaazData.HOFName);
+            setValue("formNo", niyaazData.formNo);
+            setValue("markaz", niyaazData.markaz);
+            setValue("totalPayable", calcTotalPayable(currentEvent, niyaazData));
+            setValue("balancePending", calcTotalPayable(currentEvent, niyaazData));
+          }
+        })
+        .catch((err) => {
+          notify(err.message);
+        });
+    };
+    if (niyaazId) {
+      getNiyaaz();
+    }
+  }, [niyaazId]);
+
+  useEffect(() => {
+    setValue("balancePending", (totalPayable || 0) - (amount || 0));
+  }, [amount]);
+
+  const validateAmount = [
+    required(),
+    maxValue(totalPayable, "Amount cannot be greater than takhmeen"),
+    minValue(0, "Min value is 1"),
+  ];
+
+  return (
+    <>
+      <Grid container spacing={1}>
+        <Grid item lg={4} xs={6}>
+          <TextInput source="HOFId" label="HOF ITS" fullWidth disabled />
+        </Grid>
+        <Grid item lg={4} xs={6}>
+          <TextInput source="formNo" label="Form No." fullWidth disabled />
+        </Grid>
+        <Grid item lg={4} xs={6}>
+          <TextInput source="markaz" fullWidth disabled />
+        </Grid>
+        <Grid item lg={6} xs={6}>
+          <TextInput source="HOFName" label="Name" fullWidth disabled />
+          <NumberInput source="totalPayable" fullWidth disabled />
+          <NumberInput source="amount" fullWidth validate={validateAmount} />
+        </Grid>
+        <Grid item lg={6} xs={6}>
+          <DateInput source="date" fullWidth defaultValue={new Date()} disabled />
+          <NumberInput source="balancePending" fullWidth disabled />
+        </Grid>
+      </Grid>
+      <RadioButtonGroupInput
+        sx={{ mt: 0 }}
+        source="mode"
+        choices={[
+          { id: "CASH", name: "CASH" },
+          { id: "ONLINE", name: "ONLINE" },
+          { id: "CHEQUE", name: "CHEQUE" },
+        ]}
+        fullWidth
+      />
+      <TextInput source="details" fullWidth multiline />
+    </>
+  );
+};

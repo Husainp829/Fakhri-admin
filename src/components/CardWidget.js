@@ -13,7 +13,7 @@ const styles = {
 function CardGridWidget({ value, title, grid }) {
   return (
     <>
-      <Grid item lg={grid || 4} xs={12}>
+      <Grid item lg={grid || 3} xs={12}>
         <Card sx={styles.card}>
           <Typography variant="h2" align="center" color="white" style={{ fontWeight: "bold" }}>
             {value}

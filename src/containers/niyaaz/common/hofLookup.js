@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState } from "react";
-import { Button, NumberInput, useDataProvider } from "react-admin";
+import { Button, NumberInput, useDataProvider, useNotify } from "react-admin";
 import CircularProgress from "@mui/material/CircularProgress";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -18,6 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
+import { callApi } from "../../../dataprovider/miscApis";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -35,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 function HofLookup() {
   const classes = useStyles();
+  const notify = useNotify();
   const { setValue } = useFormContext();
   const [showDialog, setShowDialog] = useState(false);
   const dataProvider = useDataProvider();
@@ -92,6 +94,18 @@ function HofLookup() {
       its: fam.ITS_ID,
     }));
     setValue("familyMembers", family);
+    const params = {
+      HOFId: data.ITS_ID,
+      includeEventData: true
+    };
+    const u = new URLSearchParams(params).toString();
+    callApi(`niyaaz?${u}`, undefined, "GET")
+      .then(({ data: previousHistory }) => {
+        setValue("previousHistory", previousHistory);
+      })
+      .catch((err) => {
+        notify(err.message);
+      });
 
     handleCloseClick();
   };
