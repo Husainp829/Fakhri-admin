@@ -7,13 +7,13 @@ const ReceiptFooter = () => (
     <div
       className="u-col u-col-100"
       style={{
-        padding: "50px 10px 10px",
+        padding: "10px 10px 10px",
         borderTop: "5px solid #ccc",
         boxSizing: "border-box",
       }}
     >
       <div>
-        (وصول کرنار نی صحیح) عبد سیدنا <sup>طع</sup>
+          This is a computer generated receipt and does not require a signature
       </div>
     </div>
   </>

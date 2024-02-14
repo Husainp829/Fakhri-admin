@@ -19,13 +19,11 @@ const ReceiptHeader = () => (
         style={{ textAlign: "left", wordWrap: "break-word", padding: "10px 0" }}
       >
         <h1 style={{ margin: "0", fontSize: "22px", lineHeight: "22px", fontWeight: "700" }}>
-          DAWOODI BOHRA JAMAAT TRUST
+          NIYAAZ TANZEEM
           <br />
           FAKHRI MOHALLA POONA
         </h1>
-        <h2 style={{ margin: "0", fontSize: "20px", fontWeight: "400" }}>
-          Trust Reg No: E/7038 (POONA)
-        </h2>
+        <h2 style={{ margin: "0", fontSize: "20px", fontWeight: "400" }}></h2>
         <div>Managed&nbsp; By: Anjuman-E-Fakhri</div>
       </div>
     </div>

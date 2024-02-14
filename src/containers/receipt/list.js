@@ -74,7 +74,6 @@ export default () => {
         <NumberField source="amount" />
         <TextField source="mode" />
         <TextField source="markaz" />
-        <NumberField source="total" />
         <FunctionField
           label="Download"
           source="formNo"
