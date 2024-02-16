@@ -11,8 +11,6 @@ import { EventContext } from "../../dataprovider/eventProvider";
 const EventList = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const { events, eventsLoading } = useContext(EventContext);
-  // eslint-disable-next-line no-console
-  console.log(EventContext);
 
   const [value, setValue] = React.useState(0);
 

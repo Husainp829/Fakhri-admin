@@ -95,8 +95,6 @@ const CardGridList = ({ data }) => (
           size="small"
           color="primary"
           onClick={() => {
-            // eslint-disable-next-line no-console
-            console.log(data);
             goToEvent(data);
           }}
         >

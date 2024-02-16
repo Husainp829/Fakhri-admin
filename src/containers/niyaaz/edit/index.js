@@ -1,7 +1,13 @@
 /* eslint-disable no-console */
 import React from "react";
-import { Edit, useNotify, SimpleForm, useRecordContext } from "react-admin";
+import { Edit, useNotify, SimpleForm, useRecordContext, Toolbar, SaveButton } from "react-admin";
 import NiyaazForm from "./niyaazForm";
+
+const EditToolbar = () => (
+  <Toolbar>
+    <SaveButton />
+  </Toolbar>
+);
 
 export default (props) => {
   const notify = useNotify();
@@ -12,9 +18,10 @@ export default (props) => {
     const record = useRecordContext();
     return <span>{record ? `Form No. ${record.formNo}` : ""}</span>;
   };
+
   return (
     <Edit {...props} onFailure={onFailure} title={<Showtitle />}>
-      <SimpleForm warnWhenUnsavedChanges>
+      <SimpleForm warnWhenUnsavedChanges toolbar={<EditToolbar />}>
         <NiyaazForm />
       </SimpleForm>
     </Edit>

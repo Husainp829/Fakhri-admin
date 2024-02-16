@@ -6,6 +6,7 @@ import {
   Show,
   TabbedShowLayout,
   TopToolbar,
+  usePermissions,
   useRecordContext,
   useRedirect,
   useShowContext,
@@ -35,19 +36,24 @@ const NiyaazActions = () => {
     setAnchorEl(null);
   };
 
+  const { permissions } = usePermissions();
+
   return (
     <TopToolbar>
-      <Button
-        color="success"
-        variant="contained"
-        onClick={() => {
-          redirect(`/receipts/create?niyaazId=${record?.id}`);
-        }}
-        sx={{ py: 1, my: 1 }}
-      >
-        <ReceiptLongIcon sx={{ mr: 1 }} />
-        Add Receipt
-      </Button>
+      {permissions?.receipt?.create && (
+        <Button
+          color="success"
+          variant="contained"
+          onClick={() => {
+            redirect(`/receipts/create?niyaazId=${record?.id}`);
+          }}
+          sx={{ py: 1, my: 1 }}
+        >
+          <ReceiptLongIcon sx={{ mr: 1 }} />
+          Add Receipt
+        </Button>
+      )}
+
       <Button
         color="info"
         variant="contained"
@@ -59,34 +65,38 @@ const NiyaazActions = () => {
         <PrintIcon sx={{ mr: 1 }} />
         Print Passes
       </Button>
-      <Button
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-        sx={{ py: 1, my: 1 }}
-      >
-        <EditNoteIcon sx={{ mr: 1 }} />
-        Actions
-      </Button>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            redirect(`/niyaaz/${record?.id}`);
-          }}
-        >
-          Edit Niyaaz
-        </MenuItem>
-      </Menu>
+      {permissions?.niyaaz?.edit && (
+        <>
+          <Button
+            id="basic-button"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+            sx={{ py: 1, my: 1 }}
+          >
+            <EditNoteIcon sx={{ mr: 1 }} />
+            Actions
+          </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                redirect(`/niyaaz/${record?.id}`);
+              }}
+            >
+              Edit Niyaaz
+            </MenuItem>
+          </Menu>
+        </>
+      )}
     </TopToolbar>
   );
 };

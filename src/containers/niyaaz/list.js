@@ -16,6 +16,7 @@ import {
   TextInput,
   TopToolbar,
   downloadCSV,
+  usePermissions,
 } from "react-admin";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
@@ -36,13 +37,14 @@ export default () => {
       alwaysOn
     />,
   ];
+  const { permissions } = usePermissions();
 
   const ListActions = () => (
     <TopToolbar sx={{ justifyContent: "start" }}>
       <FilterButton />
       <SelectColumnsButton />
-      <CreateButton />
-      <ExportButton />
+      {permissions?.niyaaz?.create && <CreateButton />}
+      {permissions?.niyaaz?.export && <ExportButton />}
     </TopToolbar>
   );
 

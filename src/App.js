@@ -19,20 +19,11 @@ import LabelPrint from "./containers/labelPrint";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
 import receipt from "./containers/receipt";
-import sabilData from "./containers/sabilData";
-import sabilReceipt from "./containers/sabilReceipt";
-import sabilTakhmeen from "./containers/sabilTakhmeen";
 import SabilReceipt from "./containers/sabilReceipt/sabilReceiptPrint";
-import fmbData from "./containers/fmbData";
-import fmbTakhmeen from "./containers/fmbTakhmeen";
-import fmbReceipt from "./containers/fmbReceipt";
 import FmbReceipt from "./containers/fmbReceipt/fmbReceiptPrint";
-import mohallas from "./containers/mohallas";
-import sabilChangeRequest from "./containers/sabilChangeRequest";
 import event from "./containers/event";
 import dashboard from "./containers/dashboard";
 import eventDashboard from "./containers/eventDashboard";
-import lagatTypes from "./containers/lagatTypes";
 import { getEventId } from "./utils";
 import EventProvider from "./dataprovider/eventProvider";
 import Receipt from "./containers/receipt/receiptPrint";
@@ -58,20 +49,19 @@ const MainApp = () => {
         theme={appTheme}
         loginPage={MyLoginPage}
       >
-        {(permissions) => <>{permissions?.admins?.view && <Resource {...admin} />}</>}
+        {(permissions) => (
+          <>
+            {permissions?.admins?.view && <Resource {...admin} />}
+            {permissions?.view?.its && <Resource {...itsdata} />}
+            {eventId && (
+              <>
+                {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
+                {permissions?.receipt?.view && <Resource {...receipt} />}
+              </>
+            )}
+          </>
+        )}
         <Resource {...event} />
-        {eventId && [<Resource {...niyaaz} />, <Resource {...receipt} />]}
-        <Resource {...itsdata} />
-        <Resource {...sabilData} />
-        <Resource {...sabilTakhmeen} />
-        <Resource {...sabilReceipt} />
-        <Resource {...sabilChangeRequest} />
-        <Resource {...fmbData} />
-        <Resource {...fmbTakhmeen} />
-        <Resource {...fmbReceipt} />
-        <Resource {...mohallas} />
-        <Resource {...lagatTypes} />
-        <Resource {...admin} />
 
         <CustomRoutes noLayout>
           <Route path="/sabil-receipt" element={<SabilReceipt />} />
