@@ -13,7 +13,10 @@ const ReceiptFooter = () => (
       }}
     >
       <div>
-          This is a computer generated receipt and does not require a signature
+        <span style={{ fontSize: "16px" }}>
+          <li>Voluntary Contribution.</li>
+          <li>This is a computer generated receipt and does not require a signature.</li>
+        </span>
       </div>
     </div>
   </>

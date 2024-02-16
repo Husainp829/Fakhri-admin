@@ -87,6 +87,7 @@ export default () => {
       hasCreate={false}
       exporter={permissions?.receipt?.export && exporter}
       pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
+      sort={{ field: "date", order: "DESC" }}
       filters={ReceiptFilters}
     >
       <Datagrid rowClick="edit" bulkActionButtons={false}>
