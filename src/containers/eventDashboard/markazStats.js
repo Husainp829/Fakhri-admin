@@ -37,9 +37,7 @@ const MarkazStats = ({ niyaazCounts }) => {
           <TableBody>
             {niyaazCounts.map((row) => (
               <TableRow key={row.name} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                <TableCell>
-                  {MARKAZ_LIST.find((r) => r.value === row.markaz)?.displayVal || ""}
-                </TableCell>
+                <TableCell>{MARKAZ_LIST[row.markaz] || ""}</TableCell>
                 <TableCell align="right">{row.count}</TableCell>
                 <TableCell align="right">{row.gentsCount}</TableCell>
                 <TableCell align="right">{row.ladiesCount}</TableCell>

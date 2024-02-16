@@ -9,20 +9,11 @@ export const permissionsList = [
   { id: "view.its.data", name: "View ITS Data" },
 ];
 
-export const MARKAZ_LIST = [
-  {
-    displayVal: "Zainy Masjid Sehen",
-    value: "ZM",
-  },
-  {
-    displayVal: "Burhani Hall",
-    value: "BH",
-  },
-  {
-    displayVal: "Jamali Markaz",
-    value: "JM",
-  },
-];
+export const MARKAZ_LIST = {
+  ZM: "Zainy Masjid Sehen",
+  BH: "Burhani Hall",
+  JM: "Jamali Markaz",
+};
 
 export const ZABIHAT_UNIT = 4500;
 export const CHAIRS_UNIT = 500;

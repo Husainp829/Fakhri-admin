@@ -31,10 +31,7 @@ export default () => {
       label="Markaz"
       source="markaz"
       key={1}
-      choices={MARKAZ_LIST.map((m) => ({
-        id: m.value,
-        name: m.displayVal,
-      }))}
+      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
       sx={{ marginBottom: 0 }}
       alwaysOn
     />,
