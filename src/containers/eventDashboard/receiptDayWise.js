@@ -21,7 +21,7 @@ const ReceiptDayWise = ({ receiptReport }) => {
       {Object.keys(receiptMap).map((markaz, i) => (
         <Grid item lg={6} xs={12} sx={{ px: 1 }} key={i}>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            {MARKAZ_LIST.find((m) => m.value === markaz)?.displayVal || ""}
+            {MARKAZ_LIST[markaz] || ""}
           </Typography>
           <TableContainer component={Paper} key={i} sx={{ mb: 5 }}>
             <Table sx={{ minWidth: 100 }} aria-label="simple table">

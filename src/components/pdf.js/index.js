@@ -118,7 +118,7 @@ const Passes = ({ familyMembers = [], formNo, markaz, event }) => (
                   ...styles.headTextCommon,
                   color: getTextColorByMarkaz(markaz),
                 }}
-              >{`${MARKAZ_LIST.find((m) => m.value === markaz)?.displayVal} ${event.slug}`}</Text>
+              >{`${MARKAZ_LIST[markaz]} ${event.slug}`}</Text>
             </View>
           </View>
           <View

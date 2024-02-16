@@ -3,6 +3,7 @@ import { ToWords } from "to-words";
 import { useGetOne } from "react-admin";
 import ReceiptPrint from "../../components/ReceiptLayout";
 import { formatDate, getCurrentEvent } from "../../utils";
+import { MARKAZ_LIST } from "../../constants";
 
 const Receipt = () => {
   const { href } = window.location;
@@ -20,13 +21,16 @@ const Receipt = () => {
 
   const LabelValue = ({ label, value, noBorder }) => (
     <div style={{ borderBottom: !noBorder && "1px solid #ccc" }}>
-      <div style={{ textAlign: "right", padding: "10px" }}>{label}</div>
-      <div style={{ fontSize: "13px", textAlign: "right", padding: "10px" }}>{value}</div>
+      <div style={{ textAlign: "right", padding: "10px", fontSize: "13px" }}>{label}</div>
+      <div style={{ fontSize: "15px", textAlign: "right", padding: "10px" }}>{value}</div>
     </div>
   );
 
   return (
-    <ReceiptPrint>
+    <ReceiptPrint
+      title={`ANJUMAN-E-FAKHRI (${(MARKAZ_LIST[data.markaz] || "").toUpperCase()})`}
+      subTitle="NIYAAZ TANZEEM"
+    >
       <div style={{ display: "flex", width: "100%" }}>
         <div
           className="u-col u-col-82p27"
@@ -43,15 +47,13 @@ const Receipt = () => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: "3", paddingRight: "10px", borderBottom: "1px solid #cfcfcf" }}>
-                {toWords.convert(receiptData.amount)} Only
+                {toWords.convert(receiptData.amount)} Only /-
               </div>
               <div style={{ flex: "0.5", paddingRight: "10px", textAlign: "center" }}>انكه</div>
               <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>
-                {receiptData.amount}
+                ₹ {Intl.NumberFormat("en-IN").format(receiptData.amount || 0)}
               </div>
-              <div style={{ flex: "2", paddingLeft: "10px", textAlign: "right" }}>
-                اٰپ طرف سي روپية
-              </div>
+              <div style={{ flex: "2", paddingLeft: "10px", textAlign: "right" }}>اٰپ طرف سي</div>
             </div>
           </div>
 
