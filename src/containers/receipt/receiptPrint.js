@@ -21,8 +21,8 @@ const Receipt = () => {
 
   const LabelValue = ({ label, value, noBorder }) => (
     <div style={{ borderBottom: !noBorder && "1px solid #ccc" }}>
-      <div style={{ textAlign: "right", padding: "10px", fontSize: "13px" }}>{label}</div>
-      <div style={{ fontSize: "15px", textAlign: "right", padding: "10px" }}>{value}</div>
+      <div style={{ textAlign: "right", padding: "5px", fontSize: "13px" }}>{label}</div>
+      <div style={{ fontSize: "15px", textAlign: "right", padding: "5px" }}>{value}</div>
     </div>
   );
 
@@ -82,6 +82,7 @@ const Receipt = () => {
           }}
         >
           <LabelValue label="تاريخ" value={formatDate(receiptData.createdAt)} />
+          <LabelValue label="Payment Mode" value={receiptData.mode} />
           <LabelValue label="Form No" value={receiptData.formNo} />
           <LabelValue label="رسيد نمبر" value={receiptData.receiptNo} />
           <LabelValue label="HOF ITS" value={receiptData.HOFId} noBorder />

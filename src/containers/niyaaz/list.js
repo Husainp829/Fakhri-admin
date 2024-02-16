@@ -28,6 +28,7 @@ import { MARKAZ_LIST } from "../../constants";
 export default () => {
   const NiyaazFilters = [
     <TextInput label="Search By HOF ITS" source="search" alwaysOn key={0} sx={{ minWidth: 300 }} />,
+    <TextInput label="Search By Form No" source="formNo" key={0} sx={{ minWidth: 300 }} />,
     <SelectInput
       label="Markaz"
       source="markaz"
@@ -113,6 +114,7 @@ export default () => {
         pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
         filters={NiyaazFilters}
         actions={<ListActions />}
+        sort={{ field: "updatedAt", order: "DESC" }}
         exporter={exporter}
       >
         <Datagrid rowClick="show" bulkActionButtons={false}>
@@ -136,7 +138,7 @@ export default () => {
           />
           <FunctionField
             label="Download"
-            source="formNo"
+            source="updatedAt"
             render={(record) => (
               <Button onClick={() => downLoadPasses({ ...record, event: currentEvent })}>
                 <DownloadIcon />
