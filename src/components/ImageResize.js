@@ -39,7 +39,6 @@ const ImageResize = () => {
     if (imageRef && crop.width && crop.height) {
       const cropped = await getCroppedImg(imageRef, crop, "newFile.jpeg");
 
-      console.log(cropped);
       setCroppedImageUrl(cropped);
     }
   };

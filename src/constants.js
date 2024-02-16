@@ -3,10 +3,17 @@ export const apiUrl = "https://api.anjumanefakhripoona.org";
 
 export const permissionsList = [
   { id: "admins.view", name: "View Admin" },
-  { id: "admins.create", name: "Create Admin" },
-  { id: "admins.edit", name: "Edit Admin" },
-  { id: "admins.delete", name: "Delete Admin" },
   { id: "view.its.data", name: "View ITS Data" },
+  { id: "niyaaz.view", name: "View Niyaaz" },
+  { id: "niyaaz.create", name: "Create Niyaaz" },
+  { id: "niyaaz.edit", name: "Edit Niyaaz" },
+  { id: "niyaaz.export", name: "Export Niyaaz" },
+  { id: "receipt.view", name: "View receipt" },
+  { id: "receipt.create", name: "Create receipt" },
+  { id: "receipt.edit", name: "Edit receipt" },
+  { id: "receipt.export", name: "Export receipt" },
+  { id: "dashboard.markaz", name: "Markaz Stats" },
+  { id: "dashboard.daywiseReceipt", name: "Day Wise Receipt" },
 ];
 
 export const MARKAZ_LIST = {

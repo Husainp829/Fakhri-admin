@@ -62,7 +62,6 @@ export default function FullScreenDialog() {
       setLoading(true);
       const bs64 = await getBase64(file);
       const imageUrl = await uploadBase64Media(bs64);
-      console.log(imageUrl);
       setLoading(false);
     } catch (err) {
       notify(err);
