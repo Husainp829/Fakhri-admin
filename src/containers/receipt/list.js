@@ -8,12 +8,18 @@ import {
   FunctionField,
   Button,
   downloadCSV,
+  usePermissions,
+  Pagination,
+  SelectInput,
+  TextInput,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
+import { MARKAZ_LIST } from "../../constants";
 
 export default () => {
+  const { permissions } = usePermissions();
   const exporter = (receipts) => {
     const receiptsForExport = receipts.map((receipt) => {
       const {
@@ -63,8 +69,26 @@ export default () => {
       }
     );
   };
+
+  const ReceiptFilters = [
+    <TextInput label="Search By HOF ITS" source="HOFId" alwaysOn key={0} sx={{ minWidth: 300 }} />,
+    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
+    <SelectInput
+      label="Markaz"
+      source="markaz"
+      key={1}
+      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
+      sx={{ marginBottom: 0 }}
+    />,
+  ];
+
   return (
-    <List hasCreate={false} exporter={exporter}>
+    <List
+      hasCreate={false}
+      exporter={permissions?.receipt?.export && exporter}
+      pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
+      filters={ReceiptFilters}
+    >
       <Datagrid rowClick="edit" bulkActionButtons={false}>
         <TextField source="receiptNo" />
         <TextField source="formNo" />
