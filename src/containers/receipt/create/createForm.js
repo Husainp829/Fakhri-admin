@@ -52,7 +52,13 @@ export default ({ niyaazId }) => {
   }, [niyaazId, currentEvent]);
 
   useEffect(() => {
-    setValue("balancePending", (totalPayable || 0) - (amount || paidAmount));
+    let balance = totalPayable - paidAmount;
+    if (amount > balance) {
+      balance = 0;
+    } else {
+      balance -= amount;
+    }
+    setValue("balancePending", balance);
   }, [amount]);
 
   const validateAmount = [

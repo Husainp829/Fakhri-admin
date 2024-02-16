@@ -65,6 +65,20 @@ export const groupBy = (key) => (array) =>
     return objectsByKeyValue;
   }, {});
 
+export const receiptGroupBy = (array) =>
+  array.reduce((acc, curr) => {
+    const curMarkaz = acc[curr.markaz] || {};
+    const curDay = curMarkaz[curr.day] || {};
+    acc[curr.markaz] = {
+      ...curMarkaz,
+      [curr.day]: {
+        ...curDay,
+        [curr.mode]: curr.total_amount,
+      },
+    };
+    return acc;
+  }, {});
+
 const downloadPDF = (blob) => {
   const url = window.URL.createObjectURL(blob);
   const aTag = document.createElement("a");
