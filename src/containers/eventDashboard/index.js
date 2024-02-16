@@ -34,9 +34,9 @@ const EventList = () => {
   return (
     <>
       <Title title="DASHBOARD" />
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2, p: 2 }}>
         <Button
-          label="Back"
+          label="Select Event"
           onClick={() => {
             goToDashboard();
           }}
