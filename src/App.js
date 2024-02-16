@@ -58,7 +58,7 @@ const MainApp = () => {
         theme={appTheme}
         loginPage={MyLoginPage}
       >
-        {/* {(permissions) => <>{permissions?.admins?.view && <Resource {...admin} />}</>} */}
+        {(permissions) => <>{permissions?.admins?.view && <Resource {...admin} />}</>}
         <Resource {...event} />
         {eventId && [<Resource {...niyaaz} />, <Resource {...receipt} />]}
         <Resource {...itsdata} />

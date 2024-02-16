@@ -11,6 +11,7 @@ const EventList = () => {
   const notify = useNotify();
 
   const [niyaazCounts, setNiyaazCounts] = useState([]);
+  const [receiptReport, setReceiptReport] = useState([]);
   const [loading, setLoading] = useState(false);
   const eventId = getEventId();
 
@@ -19,6 +20,7 @@ const EventList = () => {
     await callApi("stats", {}, "GET", { eventId })
       .then(({ data }) => {
         setNiyaazCounts(data.niyaazCounts);
+        setReceiptReport(data.dayWiseReceiptReport);
       })
       .catch(() => {
         notify("Error loading data", { type: "warning" });
@@ -42,7 +44,12 @@ const EventList = () => {
           <ArrowBack />
         </Button>
         <Box width={isSmall ? "auto" : "calc(100% - 1em)"}>
-          <GridList niyaazCounts={niyaazCounts} isSmall={isSmall} isLoading={loading} />
+          <GridList
+            niyaazCounts={niyaazCounts}
+            receiptReport={receiptReport}
+            isSmall={isSmall}
+            isLoading={loading}
+          />
         </Box>
       </Box>
     </>

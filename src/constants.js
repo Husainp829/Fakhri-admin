@@ -11,7 +11,7 @@ export const permissionsList = [
 
 export const MARKAZ_LIST = [
   {
-    displayVal: "Zainy Masjid",
+    displayVal: "Zainy Masjid Sehen",
     value: "ZM",
   },
   {

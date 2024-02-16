@@ -129,7 +129,7 @@ export default () => {
             render={(record) => calcTotalPayable(currentEvent, record)}
             key="name"
           />
-          <NumberField source="paidAmount" />
+          <NumberField source="paidAmount" textAlign="left" />
           <FunctionField
             label="Submitter"
             source="submitter"

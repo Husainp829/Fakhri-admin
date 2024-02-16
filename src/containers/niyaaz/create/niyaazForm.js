@@ -43,9 +43,9 @@ export default () => {
             <SelectInput
               source="markaz"
               label="Markaz"
-              helperText="Select any one of Zainy Masjid, Burhani Hall"
+              helperText="Select any one of Zainy Masjid Sehen, Burhani Hall"
               choices={[
-                { id: "ZM", name: "Zainy Masjid" },
+                { id: "ZM", name: "Zainy Masjid Sehen" },
                 { id: "BH", name: "Burhani Hall" },
               ]}
               fullWidth
