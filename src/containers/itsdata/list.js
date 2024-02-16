@@ -20,7 +20,7 @@ const ListActions = () => (
 const itsFilters = [<SearchInput source="q" alwaysOn key="q" />];
 export default () => (
   <List actions={<ListActions />} filters={itsFilters}>
-    <DatagridConfigurable rowClick="">
+    <DatagridConfigurable rowClick="" bulkActionButtons={false}>
       <TextField source="id" label="ITS" />
       <TextField source="HOF_FM_TYPE" label="Type" />
       <TextField source="HOF_ID" label="HOF ITS" />
