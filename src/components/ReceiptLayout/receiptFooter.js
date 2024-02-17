@@ -7,13 +7,13 @@ const ReceiptFooter = () => (
     <div
       className="u-col u-col-100"
       style={{
-        padding: "10px 10px 10px",
+        padding: "5px 5px 5px",
         borderTop: "5px solid #ccc",
         boxSizing: "border-box",
       }}
     >
       <div>
-        <span style={{ fontSize: "16px" }}>
+        <span style={{ fontSize: "10px" }}>
           <li>Voluntary Contribution.</li>
           <li>This is a computer generated receipt and does not require a signature.</li>
         </span>
