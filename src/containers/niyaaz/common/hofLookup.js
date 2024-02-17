@@ -136,7 +136,7 @@ function HofLookup() {
               {!loading ? <SearchIcon /> : <CircularProgress size={20} />}
             </Search>
           </Box>
-          {noResult && <Typography sx={{ my: 3 }}>ITS Not Found in Jamaat</Typography>}
+          {noResult && <Typography sx={{ my: 3 }}>ITS Not an HOF or Not Found in Jamaat</Typography>}
           {itsData.length > 0 && (
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
