@@ -1,11 +1,6 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
-import React, { useContext, useEffect } from "react";
-import { Create, SimpleForm, useNotify } from "react-admin";
+import React from "react";
+import { Create, SimpleForm } from "react-admin";
 
-import { useFormContext } from "react-hook-form";
-import { callApi } from "../../../dataprovider/miscApis";
-import { EventContext } from "../../../dataprovider/eventProvider";
 import CreateForm from "./createForm";
 import { getEventId } from "../../../utils";
 
@@ -28,6 +23,29 @@ export default (props) => {
     HOFName: data.HOFName,
   });
 
+  const validateReceiptCreation = (values) => {
+    const errors = {};
+    if (!values.markaz) {
+      errors.markaz = "The markaz is required";
+    }
+    if (!values.HOFId) {
+      errors.markaz = "The HOF ITS is required";
+    }
+    if (!values.HOFName) {
+      errors.markaz = "The HOF Name is required";
+    }
+
+    if (!values.mode) {
+      errors.mode = "Payment Mode is Required";
+    }
+    const totalPayable = values.totalPayable - values.paidAmount;
+    if (values.amount > totalPayable) {
+      errors.amount = "Payment Amount cannot be greater than Payable";
+    }
+
+    return errors;
+  };
+
   const receiptDefaultValues = () => ({ niyaazId, eventId });
   return (
     <Create {...props} transform={transform} redirect={() => `niyaaz/${niyaazId}/show/receipts`}>
@@ -35,6 +53,7 @@ export default (props) => {
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}
         defaultValues={receiptDefaultValues}
+        validate={validateReceiptCreation}
       >
         <CreateForm niyaazId={niyaazId} />
       </SimpleForm>
