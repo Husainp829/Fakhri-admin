@@ -27,8 +27,13 @@ import { MARKAZ_LIST } from "../../constants";
 
 export default () => {
   const NiyaazFilters = [
-    <TextInput label="Search By HOF ITS" source="search" alwaysOn key={0} sx={{ minWidth: 300 }} />,
-    <TextInput label="Search By Form No" source="formNo" key={0} sx={{ minWidth: 300 }} />,
+    <TextInput
+      label="Search By HOF Name, HOF ITS, Form No"
+      source="search"
+      alwaysOn
+      key={0}
+      sx={{ minWidth: 500 }}
+    />,
     <SelectInput
       label="Markaz"
       source="markaz"
