@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
-import React, { useContext } from "react";
+import React from "react";
 import { Edit, useNotify, SimpleForm, useRecordContext, Toolbar, SaveButton } from "react-admin";
 import NiyaazForm from "./niyaazForm";
-import { calcTotalPayable } from "../../../utils";
-import { EventContext } from "../../../dataprovider/eventProvider";
 
 const EditToolbar = () => (
   <Toolbar>
@@ -20,8 +18,6 @@ export default (props) => {
     const record = useRecordContext();
     return <span>{record ? `Form No. ${record.formNo}` : ""}</span>;
   };
-
-  const { currentEvent } = useContext(EventContext);
 
   const validateNiyaazUpdation = (values) => {
     const errors = {};
@@ -55,13 +51,6 @@ export default (props) => {
         }
         return memberErrors;
       });
-    }
-    if (values.paidAmount > 0 && !values.mode) {
-      errors.mode = "Payment Mode is Required";
-    }
-    const totalPayable = calcTotalPayable(currentEvent, values);
-    if (values.paidAmount > totalPayable) {
-      errors.paidAmount = "Payment Amount cannot be greater than payable";
     }
     return errors;
   };
