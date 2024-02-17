@@ -29,8 +29,8 @@ const ReceiptDayWise = ({ receiptReport }) => {
                 <TableRow>
                   <TableCell>DAY</TableCell>
                   <TableCell align="right">CASH</TableCell>
-                  <TableCell align="right">ONLINE</TableCell>
                   <TableCell align="right">CHEQUE</TableCell>
+                  <TableCell align="right">ONLINE</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
