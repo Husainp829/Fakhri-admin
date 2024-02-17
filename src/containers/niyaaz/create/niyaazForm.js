@@ -103,7 +103,13 @@ export default () => {
           </Grid>
 
           <Grid item lg={12} xs={12}>
-            <NumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
+            <NumberInput
+              label="Paid Amount"
+              source="paidAmount"
+              fullWidth
+              defaultValue={0}
+              // max={calcTotalPayable(currentEvent, { takhmeenAmount, iftaari, chairs, zabihat })}
+            />
           </Grid>
           <Grid item lg={6} xs={6}>
             <RadioButtonGroupInput
