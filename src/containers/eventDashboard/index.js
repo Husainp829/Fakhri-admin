@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Box, useMediaQuery } from "@mui/material";
-import { Button, Title, useNotify } from "react-admin";
-import ArrowBack from "@mui/icons-material/ArrowBack";
+import { Title, useNotify } from "react-admin";
+
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import GridList from "./gridList";
 import { callApi } from "../../dataprovider/miscApis";
-import { getEventId, goToDashboard } from "../../utils";
-
+import { getEventId } from "../../utils";
+import { MARKAZ_LIST } from "../../constants";
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 const EventList = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const notify = useNotify();
@@ -14,6 +22,11 @@ const EventList = () => {
   const [receiptReport, setReceiptReport] = useState([]);
   const [loading, setLoading] = useState(false);
   const eventId = getEventId();
+  const [value, setValue] = useState("ZM");
+
+  const handleChange = (e, newValue) => {
+    setValue(newValue);
+  };
 
   const getStats = async () => {
     setLoading(true);
@@ -34,23 +47,22 @@ const EventList = () => {
   return (
     <>
       <Title title="DASHBOARD" />
-      <Box sx={{ mt: 2, p: 2 }}>
-        <Button
-          label="Select Event"
-          onClick={() => {
-            goToDashboard();
-          }}
-        >
-          <ArrowBack />
-        </Button>
-        <Box width={isSmall ? "auto" : "calc(100% - 1em)"}>
-          <GridList
-            niyaazCounts={niyaazCounts}
-            receiptReport={receiptReport}
-            isSmall={isSmall}
-            isLoading={loading}
-          />
+
+      <Box width={isSmall ? "auto" : "calc(100% - 1em)"} sx={{ p: 2 }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs value={value} onChange={handleChange} aria-label="Markaz Tabs">
+            {Object.keys(MARKAZ_LIST).map((markaz) => (
+              <Tab label={MARKAZ_LIST[markaz]} {...a11yProps(0)} key={markaz} value={markaz} />
+            ))}
+          </Tabs>
         </Box>
+        <GridList
+          niyaazCounts={niyaazCounts}
+          receiptReport={receiptReport}
+          isSmall={isSmall}
+          isLoading={loading}
+          selectedMarkaz={value}
+        />
       </Box>
     </>
   );

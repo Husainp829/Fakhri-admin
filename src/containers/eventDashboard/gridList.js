@@ -13,7 +13,7 @@ import { EventContext } from "../../dataprovider/eventProvider";
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
 
-const LoadedGridList = ({ niyaazCounts, receiptReport }) => {
+const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();
   return (
     <>
@@ -23,17 +23,17 @@ const LoadedGridList = ({ niyaazCounts, receiptReport }) => {
             <Typography variant="h5" sx={{ mb: 2 }}>
               Markaz Stats
             </Typography>
-            <MarkazStats niyaazCounts={niyaazCounts} />
+            <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
           </Grid>
         )}
         {permissions?.dashboard?.daywiseReceipt && (
           <>
             <Grid item xs={12} sx={{ mb: 5 }}>
-              <Typography variant="h5" sx={{ mb: 2 }}>
+              <Typography variant="h5" sx={{ mb: 0 }}>
                 Day Wise Receipt Report
               </Typography>
             </Grid>
-            <ReceiptDayWise receiptReport={receiptReport} />
+            <ReceiptDayWise receiptReport={receiptReport} selectedMarkaz={selectedMarkaz} />
           </>
         )}
       </Grid>

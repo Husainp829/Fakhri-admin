@@ -8,12 +8,14 @@ import {
   useDataProvider,
   useNotify,
   usePermissions,
+  Button,
 } from "react-admin";
 import dayjs from "dayjs";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import EventIcon from "@mui/icons-material/Event";
 import IconButton from "@mui/material/IconButton";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -111,9 +113,11 @@ export default (props) => {
       userMenu={<CustomUserMenu />}
     >
       <Box
-        style={{ margin: "5px 0px", padding: "0 18px 0 12px", borderRight: "1px solid #0A1F33" }}
+        style={{ margin: "5px 0px", padding: "0 0px 0 12px", borderRight: "1px solid #0A1F33" }}
       >
-        <img src={Logo} alt="logo" style={{ width: "40px" }} />
+        <Button variant="text" onClick={goToDashboard} sx={{ p: 0, m: 0 }}>
+          <img src={Logo} alt="logo" style={{ width: "40px" }} />
+        </Button>
       </Box>
       <Box flex="1" style={{ marginLeft: 15 }}>
         {currentEventId ? (
