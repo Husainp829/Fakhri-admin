@@ -55,7 +55,7 @@ export default (props) => {
     return errors;
   };
   return (
-    <Create {...props} onFailure={onFailure}>
+    <Create {...props} onFailure={onFailure} redirect="list">
       <SimpleForm warnWhenUnsavedChanges validate={validateNiyaazCreation}>
         <NiyaazForm />
       </SimpleForm>
