@@ -17,6 +17,7 @@ import HofLookup from "../common/hofLookup";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 import { calcTotalPayable } from "../../../utils";
 import { EventContext } from "../../../dataprovider/eventProvider";
+import { MARKAZ_LIST } from "../../../constants";
 
 export default () => {
   const { setValue } = useFormContext();
@@ -44,10 +45,10 @@ export default () => {
               source="markaz"
               label="Markaz"
               helperText="Select any one of Zainy Masjid Sehen, Burhani Hall"
-              choices={[
-                { id: "ZM", name: "Zainy Masjid Sehen" },
-                { id: "BH", name: "Burhani Hall" },
-              ]}
+              choices={Object.entries(MARKAZ_LIST).map(([key, value]) => ({
+                id: key,
+                name: value,
+              }))}
               fullWidth
               isRequired
               sx={{ mb: 3 }}
@@ -103,13 +104,7 @@ export default () => {
           </Grid>
 
           <Grid item lg={12} xs={12}>
-            <NumberInput
-              label="Paid Amount"
-              source="paidAmount"
-              fullWidth
-              defaultValue={0}
-              // max={calcTotalPayable(currentEvent, { takhmeenAmount, iftaari, chairs, zabihat })}
-            />
+            <NumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
           </Grid>
           <Grid item lg={6} xs={6}>
             <RadioButtonGroupInput
