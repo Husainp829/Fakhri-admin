@@ -111,3 +111,9 @@ export const calcTotalPayable = (currentEvent, data = {}) => {
   const zabihat = currentEvent.zabihat * parseInt(data.zabihat, 10);
   return takhmeenAmount + chairs + zabihat + iftaari;
 };
+
+export const calcTotalBalance = (currentEvent, data = {}) => {
+  const totalPayable = calcTotalPayable(currentEvent, data);
+  const paidAmount = parseInt(data.paidAmount, 10);
+  return totalPayable - paidAmount;
+};

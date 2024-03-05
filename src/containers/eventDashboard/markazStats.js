@@ -8,7 +8,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { calcTotalPayable } from "../../utils";
+import { calcTotalBalance, calcTotalPayable } from "../../utils";
 
 import { EventContext } from "../../dataprovider/eventProvider";
 
@@ -30,6 +30,7 @@ const MarkazStats = ({ niyaazCounts, selectedMarkaz }) => {
               <TableCell align="center">Zabihats</TableCell>
               <TableCell align="center">Payable</TableCell>
               <TableCell align="center">Paid</TableCell>
+              <TableCell align="center">Balance</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,6 +54,9 @@ const MarkazStats = ({ niyaazCounts, selectedMarkaz }) => {
                   </TableCell>
                   <TableCell align="center">
                     ₹ {Intl.NumberFormat("en-IN").format(row.paidAmount)}
+                  </TableCell>
+                  <TableCell align="center">
+                    ₹ {Intl.NumberFormat("en-IN").format(calcTotalBalance(currentEvent, row))}
                   </TableCell>
                 </TableRow>
               ))}

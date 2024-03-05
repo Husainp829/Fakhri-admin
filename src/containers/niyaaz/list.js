@@ -21,7 +21,7 @@ import {
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
-import { calcTotalPayable, downLoadPasses } from "../../utils";
+import { calcTotalBalance, calcTotalPayable, downLoadPasses } from "../../utils";
 import { EventContext } from "../../dataprovider/eventProvider";
 import { MARKAZ_LIST } from "../../constants";
 
@@ -85,6 +85,7 @@ export default () => {
         iftaari,
         totalPayable: calcTotalPayable(currentEvent, niy),
         paidAmount,
+        balance: calcTotalBalance(currentEvent, niy),
         markaz,
         comments,
         submitter: admin?.name || submitter,
@@ -104,6 +105,7 @@ export default () => {
           "zabihat",
           "iftaari",
           "paidAmount",
+          "balance",
           "markaz",
           "comments",
           "submitter",
@@ -139,6 +141,12 @@ export default () => {
             key="name"
           />
           <NumberField source="paidAmount" textAlign="left" />
+          <FunctionField
+            label="Balance"
+            source="balance"
+            render={(record) => calcTotalBalance(currentEvent, record)}
+            key="name"
+          />
           <FunctionField
             label="Submitter"
             source="submitter"
