@@ -62,7 +62,7 @@ const ReceiptDayWise = ({ receiptReport, selectedMarkaz }) => {
                 <TableCell align="center">CASH</TableCell>
                 <TableCell align="center">CHEQUE</TableCell>
                 <TableCell align="center">ONLINE</TableCell>
-                <TableCell align="center">TOTAL</TableCell>
+                {/* <TableCell align="center">TOTAL</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -78,10 +78,10 @@ const ReceiptDayWise = ({ receiptReport, selectedMarkaz }) => {
                   <TableCell align="center">
                     ₹ {Intl.NumberFormat("en-IN").format(Number(value.ONLINE || 0))}
                   </TableCell>
-                  <TableCell align="center">₹ {calcRowTotal(value)}</TableCell>
+                  {/* <TableCell align="center">₹ {calcRowTotal(value)}</TableCell> */}
                 </TableRow>
               ))}
-              <TotalRow values={receiptMap?.[selectedMarkaz] || {}} />
+              {/* <TotalRow values={receiptMap?.[selectedMarkaz] || {}} /> */}
             </TableBody>
           </Table>
         </TableContainer>
