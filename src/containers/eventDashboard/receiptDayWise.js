@@ -46,8 +46,7 @@ const TotalRow = ({ values }) => {
     </TableRow>
   );
 };
-const ReceiptDayWise = ({ receiptReport, selectedMarkaz }) => {
-  const receiptMap = receiptGroupBy(receiptReport);
+const ReceiptDayWise = ({ receiptMap, selectedMarkaz }) => {
   if (!selectedMarkaz) {
     return null;
   }

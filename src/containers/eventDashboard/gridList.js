@@ -1,20 +1,42 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
-import React, { useContext } from "react";
+import React from "react";
 
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import { usePermissions } from "react-admin";
+import { Button, downloadCSV, usePermissions } from "react-admin";
+import jsonExport from "jsonexport/dist";
+import DownloadIcon from "@mui/icons-material/Download";
 
-import { receiptGroupBy } from "../../utils";
 import LoadingGridList from "../../components/LoadingWidget";
-import { EventContext } from "../../dataprovider/eventProvider";
 
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
+import { receiptGroupBy } from "../../utils";
 
 const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();
+  const receiptMap = receiptGroupBy(receiptReport);
+
+  const exporter = () => {
+    const dailyReport = Object.entries(receiptMap?.[selectedMarkaz] || {}).map(([key, value]) => {
+      const { CASH, CHEQUE, ONLINE } = value;
+      return {
+        DAY: key,
+        CASH: CASH || 0,
+        CHEQUE: CHEQUE || 0,
+        ONLINE: ONLINE || 0,
+      };
+    });
+    jsonExport(
+      dailyReport,
+      {
+        headers: ["DAY", "CASH", "CHEQUE", "ONLINE"], // order fields in the export
+      },
+      (err, csv) => {
+        downloadCSV(csv, "Daily Report"); // download as 'posts.csv` file
+      }
+    );
+  };
+
   return (
     <>
       <Grid container spacing={1} sx={{ mt: 3 }}>
@@ -31,9 +53,12 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
             <Grid item xs={12} sx={{ mb: 5 }}>
               <Typography variant="h5" sx={{ mb: 0 }}>
                 Day Wise Receipt Report
+                <Button onClick={exporter}>
+                  <DownloadIcon />
+                </Button>
               </Typography>
             </Grid>
-            <ReceiptDayWise receiptReport={receiptReport} selectedMarkaz={selectedMarkaz} />
+            <ReceiptDayWise receiptMap={receiptMap} selectedMarkaz={selectedMarkaz} />
           </>
         )}
       </Grid>
