@@ -15,6 +15,7 @@ import {
   TextField,
   TextInput,
   TopToolbar,
+  WrapperField,
   downloadCSV,
   usePermissions,
 } from "react-admin";
@@ -92,28 +93,17 @@ export default () => {
         createdAt: dayjs(createdAt).format("DD/MM/YYYY"),
       };
     });
+    const columnOrder = JSON.parse(
+      localStorage.getItem("RaStore.preferences.niyaaz.datagrid.availableColumns") || "[]"
+    );
+
     jsonExport(
       niyaazForExport,
       {
-        headers: [
-          "formNo",
-          "HOFId",
-          "HOFName",
-          "HOFPhone",
-          "takhmeenAmount",
-          "chairs",
-          "zabihat",
-          "iftaari",
-          "paidAmount",
-          "balance",
-          "markaz",
-          "comments",
-          "submitter",
-          "createdAt",
-        ], // order fields in the export
+        headers: columnOrder.filter((c) => c.source !== "EDIT").map((c) => c.source), // order fields in the export
       },
       (err, csv) => {
-        downloadCSV(csv, "NiyaazTakhmeen"); // download as 'posts.csv` file
+        downloadCSV(csv, "NiyaazTakhmeen");
       }
     );
   };
@@ -128,7 +118,9 @@ export default () => {
         exporter={exporter}
       >
         <Datagrid rowClick="show" bulkActionButtons={false}>
-          <EditButton />
+          <WrapperField source="EDIT">
+            <EditButton />
+          </WrapperField>
           <TextField source="formNo" />
           <TextField source="markaz" />
           <TextField source="HOFId" label="HOF ID" />
