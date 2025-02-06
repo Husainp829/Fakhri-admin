@@ -91,7 +91,7 @@ const getTextColorByMarkaz = (markaz) => {
 };
 
 // Create Document Component
-const Passes = ({ familyMembers = [], formNo, markaz, event }) => (
+const Passes = ({ familyMembers = [], formNo, markaz, namaazVenue, event }) => (
   <Document width="100%">
     <Page size="A4" style={styles.page}>
       {familyMembers.map((fm, i) => (
@@ -188,6 +188,20 @@ const Passes = ({ familyMembers = [], formNo, markaz, event }) => (
               <Text style={{ width: "20%" }}>Age</Text>
               <Text style={{ marginRight: "10px" }}>:</Text>
               <Text style={{ width: "80%" }}>{fm.age}</Text>
+            </View>
+            <View
+              style={{
+                paddingTop: "3px",
+                fontSize: "12px",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={{ width: "20%" }}>Namaaz</Text>
+              <Text style={{ marginRight: "10px" }}>:</Text>
+              <Text style={{ width: "20%", marginRight: "10px" }}>{namaazVenue}</Text>
+              <Text style={{ width: "20%" }}>Jaman</Text>
+              <Text style={{ marginRight: "10px" }}>:</Text>
+              <Text style={{ width: "20%", marginRight: "10px" }}>{markaz}</Text>
             </View>
             <Text
               style={{

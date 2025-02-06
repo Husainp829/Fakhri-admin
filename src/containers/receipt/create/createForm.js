@@ -34,6 +34,7 @@ export default ({ niyaazId }) => {
             setValue("HOFName", niyaazData.HOFName);
             setValue("formNo", niyaazData.formNo);
             setValue("markaz", niyaazData.markaz);
+            setValue("namaazVenue", niyaazData.namaazVenue);
             setValue("totalPayable", calcTotalPayable(currentEvent, niyaazData));
             setValue("paidAmount", niyaazData.paidAmount);
             setValue(
@@ -73,14 +74,17 @@ export default ({ niyaazId }) => {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item lg={4} xs={6}>
+        <Grid item lg={6} xs={6}>
           <TextInput source="HOFId" label="HOF ITS" fullWidth disabled />
         </Grid>
-        <Grid item lg={4} xs={6}>
+        <Grid item lg={6} xs={6}>
           <TextInput source="formNo" label="Form No." fullWidth disabled />
         </Grid>
-        <Grid item lg={4} xs={6}>
+        <Grid item lg={6} xs={6}>
           <TextInput source="markaz" fullWidth disabled />
+        </Grid>
+        <Grid item lg={6} xs={6}>
+          <TextInput source="namaazVenue" fullWidth disabled />
         </Grid>
         <Grid item lg={6} xs={6}>
           <TextInput source="HOFName" label="Name" fullWidth disabled />

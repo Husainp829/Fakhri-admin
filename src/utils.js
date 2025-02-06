@@ -98,6 +98,7 @@ export const downLoadPasses = async (row) => {
       HOFITS={row.HOFId}
       formNo={row.formNo}
       markaz={row.markaz}
+      namaazVenue={row.namaazVenue}
       event={row.event}
     />
   ).toBlob();

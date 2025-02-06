@@ -24,7 +24,7 @@ import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
 import { calcTotalBalance, calcTotalPayable, downLoadPasses } from "../../utils";
 import { EventContext } from "../../dataprovider/eventProvider";
-import { MARKAZ_LIST } from "../../constants";
+import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
 
 export default () => {
   const NiyaazFilters = [
@@ -40,6 +40,14 @@ export default () => {
       source="markaz"
       key={1}
       choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
+      sx={{ marginBottom: 0 }}
+      alwaysOn
+    />,
+    <SelectInput
+      label="Namaaz Venue"
+      source="namaazVenue"
+      key={1}
+      choices={Object.entries(NAMAAZ_VENUE).map(([id, name]) => ({ id, name }))}
       sx={{ marginBottom: 0 }}
       alwaysOn
     />,
@@ -70,6 +78,7 @@ export default () => {
         iftaari,
         paidAmount,
         markaz,
+        namaazVenue,
         comments,
         admin,
         submitter,
@@ -88,6 +97,7 @@ export default () => {
         paidAmount,
         balance: calcTotalBalance(currentEvent, niy),
         markaz,
+        namaazVenue,
         comments,
         submitter: admin?.name || submitter,
         createdAt: dayjs(createdAt).format("DD/MM/YYYY"),
@@ -123,6 +133,7 @@ export default () => {
           </WrapperField>
           <TextField source="formNo" />
           <TextField source="markaz" />
+          <TextField source="namaazVenue" />
           <TextField source="HOFId" label="HOF ID" />
           <TextField source="HOFName" label="HOF Name" />
           <TextField source="HOFPhone" label="HOF Phone" />

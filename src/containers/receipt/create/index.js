@@ -19,6 +19,7 @@ export default (props) => {
     mode: data.mode,
     details: data.details,
     markaz: data.markaz,
+    namaazVenue: data.namaazVenue,
     HOFId: data.HOFId,
     HOFName: data.HOFName,
   });
@@ -27,6 +28,9 @@ export default (props) => {
     const errors = {};
     if (!values.markaz) {
       errors.markaz = "The markaz is required";
+    }
+    if (!values.namaazVenue) {
+      errors.namaazVenue = "The namaaz venue is required";
     }
     if (!values.HOFId) {
       errors.markaz = "The HOF ITS is required";

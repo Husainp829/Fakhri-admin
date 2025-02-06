@@ -1,5 +1,5 @@
 // export const apiUrl = "http://localhost:3012";
-export const apiUrl = "https://api.anjumanefakhripoona.org";
+export const apiUrl = "https://jmsapi.rapid-events.com";
 
 export const permissionsList = [
   { id: "admins.view", name: "View Admin" },
@@ -17,9 +17,15 @@ export const permissionsList = [
 ];
 
 export const MARKAZ_LIST = {
+  FM: "Fakhri Manzil",
   ZM: "Zainy Masjid Sehen",
   BH: "Burhani Hall",
-  JM: "Jamali Markaz",
+};
+
+export const NAMAAZ_VENUE = {
+  FM: "Fakhri Manzil",
+  ZM: "Zainy Masjid",
+  BH: "Burhani Hall",
 };
 
 export const ZABIHAT_UNIT = 4500;
