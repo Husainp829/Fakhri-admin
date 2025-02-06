@@ -21,6 +21,7 @@ export default () => (
       <NumberField source="amount" />
       <TextField source="mode" />
       <TextField source="markaz" />
+      <TextField source="namaazVenue" />
       <NumberField source="total" />
       <FunctionField
         label="Download"

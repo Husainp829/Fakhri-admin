@@ -17,7 +17,7 @@ import HofLookup from "../common/hofLookup";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 import { calcTotalPayable } from "../../../utils";
 import { EventContext } from "../../../dataprovider/eventProvider";
-import { MARKAZ_LIST } from "../../../constants";
+import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
 
 export default () => {
   const { setValue } = useFormContext();
@@ -40,12 +40,26 @@ export default () => {
               HOF Details <HofLookup change={() => {}} />
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <SelectInput
               source="markaz"
               label="Markaz"
-              helperText="Select any one of Zainy Masjid Sehen, Burhani Hall"
+              helperText="Select any one of Fakhri Manzil, Zainy Masjid Sehen, Burhani Hall"
               choices={Object.entries(MARKAZ_LIST).map(([key, value]) => ({
+                id: key,
+                name: value,
+              }))}
+              fullWidth
+              isRequired
+              sx={{ mb: 3 }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <SelectInput
+              source="namaazVenue"
+              label="Namaaz Venue"
+              helperText="Select any one of Fakhri Manzil, Zainy Masjid, Burhani Hall"
+              choices={Object.entries(NAMAAZ_VENUE).map(([key, value]) => ({
                 id: key,
                 name: value,
               }))}

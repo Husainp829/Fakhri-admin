@@ -18,6 +18,9 @@ export default (props) => {
     if (!values.markaz) {
       errors.markaz = "The markaz is required";
     }
+    if (!values.namaazVenue) {
+      errors.namaazVenue = "The namaaz venue is required";
+    }
     if (!values.HOFId) {
       errors.markaz = "The HOF ITS is required";
     }

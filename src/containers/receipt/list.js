@@ -16,7 +16,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
-import { MARKAZ_LIST } from "../../constants";
+import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
 
 export default () => {
   const { permissions } = usePermissions();
@@ -31,6 +31,7 @@ export default () => {
         amount,
         mode,
         markaz,
+        namaazVenue,
         details,
         admin,
         createdBy,
@@ -43,6 +44,7 @@ export default () => {
         amount,
         mode,
         markaz,
+        namaazVenue,
         details,
         createdBy: admin?.name || createdBy,
         date: dayjs(date).format("DD/MM/YYYY"),
@@ -59,6 +61,7 @@ export default () => {
           "amount",
           "mode",
           "markaz",
+          "namaazVenue",
           "details",
           "createdBy",
           "date",
@@ -80,6 +83,13 @@ export default () => {
       choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
       sx={{ marginBottom: 0 }}
     />,
+    <SelectInput
+      label="Namaaz Venue"
+      source="namaazVenue"
+      key={1}
+      choices={Object.entries(NAMAAZ_VENUE).map(([id, name]) => ({ id, name }))}
+      sx={{ marginBottom: 0 }}
+    />,
   ];
 
   return (
@@ -99,6 +109,7 @@ export default () => {
         <NumberField source="amount" />
         <TextField source="mode" />
         <TextField source="markaz" />
+        <TextField source="namaazVenue" />
         <FunctionField
           label="Created By"
           source="createdBy"
