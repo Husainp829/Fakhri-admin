@@ -18,14 +18,14 @@ export const permissionsList = [
 
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",
-  ZM: "Zainy Masjid Sehen",
   BH: "Burhani Hall",
+  ZM: "Zainy Masjid Sehen",
 };
 
 export const NAMAAZ_VENUE = {
   FM: "Fakhri Manzil",
-  ZM: "Zainy Masjid",
   BH: "Burhani Hall",
+  ZM: "Zainy Masjid",
 };
 
 export const ZABIHAT_UNIT = 4500;

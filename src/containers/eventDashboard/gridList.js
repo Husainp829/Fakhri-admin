@@ -42,16 +42,13 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
       <Grid container spacing={1} sx={{ mt: 3 }}>
         {permissions?.dashboard?.markaz && (
           <Grid item xs={12} sx={{ mb: 5 }}>
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              Jaman Venue Stats
-            </Typography>
             <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
           </Grid>
         )}
         {permissions?.dashboard?.daywiseReceipt && (
           <>
             <Grid item xs={12} sx={{ mb: 5 }}>
-              <Typography variant="h5" sx={{ mb: 0 }}>
+              <Typography variant="h6" sx={{ mb: 0 }}>
                 Day Wise Receipt Report
                 <Button onClick={exporter}>
                   <DownloadIcon />
