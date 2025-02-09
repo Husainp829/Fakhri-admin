@@ -48,7 +48,7 @@ export default () => {
           <Grid item xs={6}>
             <SelectInput
               source="markaz"
-              label="Markaz"
+              label="Jaman Venue"
               helperText="Select any one of Fakhri Manzil, Zainy Masjid Sehen, Burhani Hall"
               choices={Object.entries(MARKAZ_LIST).map(([key, value]) => ({
                 id: key,

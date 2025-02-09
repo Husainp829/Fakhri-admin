@@ -36,7 +36,7 @@ export default () => {
       sx={{ minWidth: 500 }}
     />,
     <SelectInput
-      label="Markaz"
+      label="Jaman Venue"
       source="markaz"
       key={1}
       choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}

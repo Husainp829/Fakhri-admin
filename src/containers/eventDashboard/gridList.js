@@ -43,7 +43,7 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
         {permissions?.dashboard?.markaz && (
           <Grid item xs={12} sx={{ mb: 5 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              Markaz Stats
+              Jaman Venue Stats
             </Typography>
             <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
           </Grid>

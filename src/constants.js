@@ -12,7 +12,7 @@ export const permissionsList = [
   { id: "receipt.create", name: "Create receipt" },
   { id: "receipt.edit", name: "Edit receipt" },
   { id: "receipt.export", name: "Export receipt" },
-  { id: "dashboard.markaz", name: "Markaz Stats" },
+  { id: "dashboard.markaz", name: "Jaman Venue Stats" },
   { id: "dashboard.daywiseReceipt", name: "Day Wise Receipt" },
 ];
 

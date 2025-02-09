@@ -77,7 +77,7 @@ export default () => {
     <TextInput label="Search By HOF ITS" source="HOFId" alwaysOn key={0} sx={{ minWidth: 300 }} />,
     <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
     <SelectInput
-      label="Markaz"
+      label="Jaman Venue"
       source="markaz"
       key={1}
       choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
