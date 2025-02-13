@@ -87,12 +87,14 @@ function HofLookup() {
     setValue("HOFName", data.Full_Name);
     setValue("HOFAddress", data.Address);
     setValue("HOFPhone", data.Mobile);
-    const family = (data?.familyMembers || []).map((fam) => ({
-      name: fam.Full_Name,
-      age: fam.Age,
-      gender: fam.Gender,
-      its: fam.ITS_ID,
-    }));
+    const family = (data?.familyMembers || [])
+      .sort((a, b) => b.HOF_FM_TYPE.localeCompare(a.HOF_FM_TYPE))
+      .map((fam) => ({
+        name: fam.Full_Name,
+        age: fam.Age,
+        gender: fam.Gender,
+        its: fam.ITS_ID,
+      }));
     setValue("familyMembers", family);
     const params = {
       HOFId: data.ITS_ID,
@@ -136,7 +138,9 @@ function HofLookup() {
               {!loading ? <SearchIcon /> : <CircularProgress size={20} />}
             </Search>
           </Box>
-          {noResult && <Typography sx={{ my: 3 }}>ITS Not an HOF or Not Found in Jamaat</Typography>}
+          {noResult && (
+            <Typography sx={{ my: 3 }}>ITS Not an HOF or Not Found in Jamaat</Typography>
+          )}
           {itsData.length > 0 && (
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
