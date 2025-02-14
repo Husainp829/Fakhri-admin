@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   TextInput,
   NumberInput,
@@ -6,6 +6,7 @@ import {
   SimpleFormIterator,
   FormDataConsumer,
   SelectInput,
+  BooleanInput,
 } from "react-admin";
 import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
@@ -15,7 +16,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { useWatch } from "react-hook-form";
+import { useWatch, useFormContext } from "react-hook-form";
 
 import HofLookup from "../common/hofLookup";
 import { calcTotalPayable } from "../../../utils";
@@ -23,12 +24,14 @@ import { EventContext } from "../../../dataprovider/eventProvider";
 import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
 
 export default () => {
+  const { setValue } = useFormContext();
   const { currentEvent } = useContext(EventContext);
   const takhmeenAmount = useWatch({ name: "takhmeenAmount" });
   const iftaari = useWatch({ name: "iftaari" });
   const chairs = useWatch({ name: "chairs" });
   const zabihat = useWatch({ name: "zabihat" });
   const paidAmount = useWatch({ name: "paidAmount" });
+  const familyMembers = useWatch({ name: "familyMembers" });
 
   const payable = calcTotalPayable(currentEvent, {
     takhmeenAmount,
@@ -36,6 +39,11 @@ export default () => {
     chairs,
     zabihat,
   });
+
+  useEffect(() => {
+    const chairCount = familyMembers?.filter((member) => member.hasChair).length || 0;
+    setValue("chairs", chairCount);
+  }, [familyMembers]);
   return (
     <Grid container spacing={1} sx={{ mt: 3 }}>
       <Grid item md={6} xs={12} sx={{ pr: 1 }}>
@@ -115,6 +123,7 @@ export default () => {
               helperText={`${chairs} X ₹${currentEvent.chairs} = ₹${chairs * currentEvent.chairs}`}
               min={0}
               sx={{ mb: 2 }}
+              disabled
             />
           </Grid>
           <Grid item lg={12} xs={12} sx={{ mb: 3 }}>
@@ -175,7 +184,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <TextInput
                           source={getSource("its")}
                           label="ITS"
@@ -184,7 +193,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <TextInput
                           source={getSource("age")}
                           helperText={false}
@@ -192,7 +201,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <SelectInput
                           source={getSource("gender")}
                           label="Gender"
@@ -204,6 +213,14 @@ export default () => {
                           fullWidth
                           isRequired
                           sx={{ mt: 0 }}
+                        />
+                      </Grid>
+                      <Grid item lg={3} xs={3}>
+                        <BooleanInput
+                          source={getSource("hasChair")}
+                          label="Chair"
+                          fullWidth
+                          sx={{ ml: 2 }}
                         />
                       </Grid>
                     </Grid>
