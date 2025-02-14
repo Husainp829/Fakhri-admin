@@ -98,9 +98,9 @@ const LayoutMenu = () => {
       ))}
       {/* <Menu.ResourceItem name="mohallas" />
       <Menu.ResourceItem name="lagatTypes" /> */}
-      <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="vendors" />
       <Menu.ResourceItem name="vendorTypes" />
+      <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
     </Menu>
   );

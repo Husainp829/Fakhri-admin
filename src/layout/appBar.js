@@ -22,7 +22,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link } from "react-router-dom";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { goToEvent, goToDashboard } from "../utils";
+import { goToEvent, goToDashboard, mS } from "../utils";
 import { EventContext } from "../dataprovider/eventProvider";
 import Logo from "../assets/logo.png";
 
@@ -101,7 +101,7 @@ export default (props) => {
     <AppBar
       sx={{
         "& .RaAppBar-menuButton": {
-          display: currentEventId ? "" : "",
+          display: currentEventId ? "" : "none",
         },
         "& .RaAppBar-menuButton svg": {
           color: (theme) => theme.palette.primary.main,
@@ -113,21 +113,55 @@ export default (props) => {
       userMenu={<CustomUserMenu />}
     >
       <Box
-        style={{ margin: "5px 0px", padding: "0 0px 0 12px", borderRight: "1px solid #0A1F33" }}
+        style={{
+          margin: "5px 0px",
+          padding: "0 6px 0 px",
+          width: mS ? "100px" : "200px",
+          overflowX: "hidden",
+        }}
       >
-        <Button variant="text" onClick={goToDashboard} sx={{ p: 0, m: 0 }}>
-          <img src={Logo} alt="logo" style={{ width: "40px" }} />
-        </Button>
-      </Box>
-      <Box flex="1" style={{ marginLeft: 15 }}>
-        {currentEventId ? (
-          <Typography variant="h5" color="primary" noWrap id="react-admin-title">
-            <span style={{ marginRight: "5px" }}>{current ?? "Dashboard"} - </span>
-          </Typography>
+        {mS ? (
+          <img
+            src={Logo}
+            alt="logo"
+            style={{
+              width: "80px",
+              borderRight: "1px solid #0A1F33",
+              paddingRight: 10,
+            }}
+          />
         ) : (
-          <Typography variant="h5" color="primary" noWrap>
-            <span>{current ?? "Dashboard"}</span>
-          </Typography>
+          <>
+            {currentEventId ? (
+              <Typography
+                variant="body2"
+                color="primary"
+                id="react-admin-title"
+                style={{ fontSize: "12px", lineHeight: "-10px" }}
+              >
+                <span style={{}}>{current ?? "Dashboard"} - </span>
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="primary" noWrap>
+                <span>{current ?? "Dashboard"}</span>
+              </Typography>
+            )}
+          </>
+        )}
+      </Box>
+      <Box flex={1} style={{ marginLeft: 0 }}>
+        {mS && (
+          <>
+            {currentEventId ? (
+              <Typography variant={mS ? "h5" : "p"} color="primary" noWrap id="react-admin-title">
+                <span style={{ marginRight: "5px" }}>{current ?? "Dashboard"} - </span>
+              </Typography>
+            ) : (
+              <Typography variant={mS ? "h5" : "p"} color="primary" noWrap>
+                <span>{current ?? "Dashboard"}</span>
+              </Typography>
+            )}
+          </>
         )}
       </Box>
 
@@ -150,6 +184,7 @@ export default (props) => {
           <MenuItem
             onClick={() => {
               goToDashboard();
+              setOpen(false);
               setCurrent("Dashboard");
             }}
           >
@@ -158,7 +193,7 @@ export default (props) => {
           {activeEvents.map((e) => (
             <MenuItem
               onClick={() => {
-                goToEvent(e);
+                goToEvent(e.id);
                 setCurrent(e.name);
               }}
               key={e.id}
