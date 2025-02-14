@@ -8,6 +8,7 @@ import {
   RadioButtonGroupInput,
   ArrayField,
   SelectInput,
+  BooleanInput,
 } from "react-admin";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -27,10 +28,16 @@ export default () => {
   const chairs = useWatch({ name: "chairs" });
   const zabihat = useWatch({ name: "zabihat" });
   const previousHistory = useWatch({ name: "previousHistory" });
+  const familyMembers = useWatch({ name: "familyMembers" });
 
   useEffect(() => {
     setValue("total", calcTotalPayable(currentEvent, { takhmeenAmount, iftaari, chairs, zabihat }));
   }, [takhmeenAmount, iftaari, chairs, zabihat]);
+
+  useEffect(() => {
+    const chairCount = familyMembers?.filter((member) => member.hasChair).length || 0;
+    setValue("chairs", chairCount);
+  }, [familyMembers]);
   return (
     <Grid container spacing={1} sx={{ mt: 3 }}>
       <Grid item md={6} xs={12} sx={{ pr: 1 }}>
@@ -108,9 +115,12 @@ export default () => {
               source="chairs"
               fullWidth
               defaultValue={0}
-              helperText={`${chairs} X ₹${currentEvent.chairs} = ₹${chairs * currentEvent.chairs}`}
+              helperText={`Toggle the chair selection per family member to add here. \n${chairs} X ₹${
+                currentEvent.chairs
+              } = ₹${chairs * currentEvent.chairs}`}
               min={0}
               sx={{ mb: 2 }}
+              disabled
             />
           </Grid>
           <Grid item lg={12} xs={12}>
@@ -171,7 +181,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <TextInput
                           source={getSource("its")}
                           label="ITS"
@@ -180,7 +190,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <TextInput
                           source={getSource("age")}
                           helperText={false}
@@ -188,7 +198,7 @@ export default () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={4} xs={3}>
+                      <Grid item lg={3} xs={3}>
                         <SelectInput
                           source={getSource("gender")}
                           label="Gender"
@@ -200,6 +210,14 @@ export default () => {
                           fullWidth
                           isRequired
                           sx={{ mt: 0 }}
+                        />
+                      </Grid>
+                      <Grid item lg={3} xs={3}>
+                        <BooleanInput
+                          source={getSource("hasChair")}
+                          label="Chair"
+                          fullWidth
+                          sx={{ ml: 2 }}
                         />
                       </Grid>
                     </Grid>

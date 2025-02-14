@@ -60,6 +60,11 @@ const styles = StyleSheet.create({
     fontSize: "14px",
     letterSpacing: "1px",
   },
+  chair: {
+    paddingLeft: "10px",
+    paddingBottom: "5px",
+    width: 20,
+  },
 });
 
 const getBgColorByMarkaz = (markaz) => {
@@ -201,15 +206,24 @@ const Passes = ({ familyMembers = [], formNo, markaz, namaazVenue, event }) => (
               <Text style={{ marginRight: "10px" }}>:</Text>
               <Text style={{ width: "20%", marginRight: "10px" }}>{markaz}</Text>
             </View>
-            <Text
+            <View
               style={{
-                marginTop: "15px",
-                fontFamily: "Roboto-Italic",
-                fontSize: "8px",
+                paddingTop: "15px",
+                flexDirection: "row",
+                justifyContent: "space-between",
               }}
             >
-              Note: Non-Transferable, Please carry this card everyday
-            </Text>
+              <Text
+                style={{
+                  fontFamily: "Roboto-Italic",
+                  fontSize: "8px",
+                }}
+              >
+                Note: Non-Transferable, Please carry this card everyday
+              </Text>
+
+              {fm.hasChair && <Image src="/chair.png" style={{ height: "20px" }} />}
+            </View>
           </View>
         </View>
       ))}
