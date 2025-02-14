@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from "react";
 import {
   AppBar,
@@ -8,14 +7,12 @@ import {
   useDataProvider,
   useNotify,
   usePermissions,
-  Button,
 } from "react-admin";
 import dayjs from "dayjs";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import EventIcon from "@mui/icons-material/Event";
 import IconButton from "@mui/material/IconButton";
-import ArrowBack from "@mui/icons-material/ArrowBack";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
