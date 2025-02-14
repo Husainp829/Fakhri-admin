@@ -222,7 +222,7 @@ const Passes = ({ familyMembers = [], formNo, markaz, namaazVenue, event }) => (
                 Note: Non-Transferable, Please carry this card everyday
               </Text>
 
-              {fm.hasChair && <Image src="/chair.png" style={{ height: "20px" }} />}
+              {fm.hasChair && <Image src="/chair.png" style={{ height: "50px" }} />}
             </View>
           </View>
         </View>
