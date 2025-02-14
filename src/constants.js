@@ -14,6 +14,9 @@ export const permissionsList = [
   { id: "receipt.export", name: "Export receipt" },
   { id: "dashboard.markaz", name: "Jaman Venue Stats" },
   { id: "dashboard.daywiseReceipt", name: "Day Wise Receipt" },
+  { id: "vendors.edit", name: "Vendors Add/Edit/Delete" },
+  { id: "vendorTypes.edit", name: "Vendor Types Master" },
+  { id: "vendorLedger.edit", name: "Vendor Ledger View/Edit/Delete" },
 ];
 
 export const MARKAZ_LIST = {
