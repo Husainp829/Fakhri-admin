@@ -125,9 +125,10 @@ export default (props) => {
             src={Logo}
             alt="logo"
             style={{
-              width: "80px",
+              width: "50px",
               borderRight: "1px solid #0A1F33",
               paddingRight: 10,
+              marginTop: 2,
             }}
           />
         ) : (
