@@ -27,6 +27,9 @@ import eventDashboard from "./containers/eventDashboard";
 import { getEventId } from "./utils";
 import EventProvider from "./dataprovider/eventProvider";
 import Receipt from "./containers/receipt/receiptPrint";
+import vendor from "./containers/vendor";
+import vendorType from "./containers/vendorType";
+import vendorLedger from "./containers/vendorLedger";
 
 const messages = {
   en: englishMessages,
@@ -53,14 +56,18 @@ const MainApp = () => {
           <>
             {permissions?.admins?.view && <Resource {...admin} />}
             {permissions?.view?.its && <Resource {...itsdata} />}
+            {permissions?.vendors?.edit && <Resource {...vendor} />}
+            {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
             {eventId && (
               <>
                 {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
                 {permissions?.receipt?.view && <Resource {...receipt} />}
+                {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
               </>
             )}
           </>
         )}
+
         <Resource {...event} />
 
         <CustomRoutes noLayout>

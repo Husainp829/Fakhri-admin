@@ -2,7 +2,13 @@
 /* eslint-disable no-unused-vars */
 import React, { createElement, useState } from "react";
 
-import { Menu, MenuItemLink, useResourceDefinitions, useSidebarState } from "react-admin";
+import {
+  Menu,
+  MenuItemLink,
+  usePermissions,
+  useResourceDefinitions,
+  useSidebarState,
+} from "react-admin";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SubMenu from "./subMenu";
@@ -12,10 +18,12 @@ const MENU_TYPES = {
   SABIL: "SABIL",
   FMB: "FMB",
   NIYAAZ: "NIYAAZ",
+  VENDOR: "VENDOR",
 };
 
 const LayoutMenu = () => {
   const resources = useResourceDefinitions();
+  const { permissions } = usePermissions();
   const [isOpen, setIsOpen] = useState({
     [MENU_TYPES.NIYAAZ]: true,
   });
@@ -32,6 +40,16 @@ const LayoutMenu = () => {
           icon: <AccountBoxIcon />,
           items: [resources.niyaaz, resources.receipts],
         },
+        ...(permissions?.vendorLedger?.edit
+          ? [
+              {
+                id: MENU_TYPES.VENDOR,
+                name: "Vendor Ledger",
+                icon: <AccountBoxIcon />,
+                items: [resources.vendorLedger],
+              },
+            ]
+          : []),
         // {
         //   id: MENU_TYPES.SABIL,
         //   name: "Sabil",
@@ -81,6 +99,8 @@ const LayoutMenu = () => {
       {/* <Menu.ResourceItem name="mohallas" />
       <Menu.ResourceItem name="lagatTypes" /> */}
       <Menu.ResourceItem name="itsdata" />
+      <Menu.ResourceItem name="vendors" />
+      <Menu.ResourceItem name="vendorTypes" />
       <Menu.ResourceItem name="admins" />
     </Menu>
   );
