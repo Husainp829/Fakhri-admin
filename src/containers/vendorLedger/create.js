@@ -3,20 +3,34 @@ import {
   TextInput,
   Create,
   SimpleForm,
-  ReferenceInput,
   NumberInput,
   DateInput,
-  SelectInput,
   RadioButtonGroupInput,
 } from "react-admin";
+import CustomReferenceInput from "../../components/CustomReferenceInput";
 
 export default (props) => (
-  <Create {...props}>
+  <Create {...props} sx={{ mt: 2 }}>
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 500 }}>
-      <ReferenceInput source="vendorId" reference="vendors">
-        <SelectInput fullWidth isRequired optionText="name" />
-      </ReferenceInput>
-      <ReferenceInput source="type" reference="vendorTypes" fullWidth isRequired />
+      <CustomReferenceInput
+        source="vendorId"
+        reference="vendors"
+        perPage={9999}
+        optionText="name"
+        fields={[
+          { source: "name", label: "Name" },
+          { source: "mobile", label: "Mobile" },
+        ]}
+        title="Vendor"
+      />
+      <CustomReferenceInput
+        source="type"
+        reference="vendorTypes"
+        perPage={9999}
+        optionText="id"
+        fields={[{ source: "id", label: "Type" }]}
+        title="Type"
+      />
       <NumberInput source="paid" isRequired fullWidth />
       <RadioButtonGroupInput
         sx={{ mt: 0 }}

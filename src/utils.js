@@ -118,3 +118,7 @@ export const calcTotalBalance = (currentEvent, data = {}) => {
   const paidAmount = parseInt(data.paidAmount, 10);
   return totalPayable - paidAmount;
 };
+
+export const mS = !!(
+  document.body.clientWidth >= 1024 || document.documentElement.clientWidth >= 1024
+);
