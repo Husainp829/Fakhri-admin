@@ -107,9 +107,9 @@ export default {
           body: JSON.stringify(params.data),
         })
       )
-    ).then(({ json: { rows } }) => ({
-      data: rows,
-    })),
+    ).then(() => ({
+        data: [],
+      })),
 
   deleteImage: (resource, params) =>
     httpClient(`${apiUrl}/${resource}/delete-image?${stringify(params)}`).then(() => ({
