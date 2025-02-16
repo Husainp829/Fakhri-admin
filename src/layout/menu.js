@@ -11,6 +11,8 @@ import {
 } from "react-admin";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import SubMenu from "./subMenu";
 import { getEventId } from "../utils";
 
@@ -19,6 +21,7 @@ const MENU_TYPES = {
   FMB: "FMB",
   NIYAAZ: "NIYAAZ",
   VENDOR: "VENDOR",
+  VENDOR_MASTER: "VENDOR_MASTER",
 };
 
 const LayoutMenu = () => {
@@ -45,11 +48,12 @@ const LayoutMenu = () => {
               {
                 id: MENU_TYPES.VENDOR,
                 name: "Vendor Ledger",
-                icon: <AccountBoxIcon />,
+                icon: <AccountBalanceWalletIcon />,
                 items: [resources.vendorLedger],
               },
             ]
           : []),
+
         // {
         //   id: MENU_TYPES.SABIL,
         //   name: "Sabil",
@@ -64,6 +68,21 @@ const LayoutMenu = () => {
         // },
       ]
     : [];
+
+  MENUS.push(
+    ...(permissions?.vendors?.edit
+      ? [
+          {
+            id: MENU_TYPES.VENDOR_MASTER,
+            name: "Vendor Master",
+            icon: <StorefrontIcon />,
+            items: [resources.vendors, resources.vendorTypes],
+          },
+        ]
+      : [])
+  );
+
+  console.log(MENUS);
 
   return (
     <Menu
@@ -98,8 +117,6 @@ const LayoutMenu = () => {
       ))}
       {/* <Menu.ResourceItem name="mohallas" />
       <Menu.ResourceItem name="lagatTypes" /> */}
-      <Menu.ResourceItem name="vendors" />
-      <Menu.ResourceItem name="vendorTypes" />
       <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
     </Menu>

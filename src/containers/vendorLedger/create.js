@@ -10,8 +10,9 @@ import {
 import CustomReferenceInput from "../../components/CustomReferenceInput";
 
 export default (props) => (
-  <Create {...props} sx={{ mt: 2 }}>
+  <Create {...props} sx={{ mt: 2 }} redirect="list">
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 500 }}>
+      <TextInput source="billNo" isRequired fullWidth />
       <CustomReferenceInput
         source="vendorId"
         reference="vendors"
@@ -21,17 +22,21 @@ export default (props) => (
           { source: "name", label: "Name" },
           { source: "mobile", label: "Mobile" },
         ]}
+        defaultKey="name"
         title="Vendor"
       />
       <CustomReferenceInput
         source="type"
         reference="vendorTypes"
         perPage={9999}
-        optionText="id"
         fields={[{ source: "id", label: "Type" }]}
+        defaultKey="id"
         title="Type"
       />
       <NumberInput source="paid" isRequired fullWidth />
+
+      <DateInput source="billDate" isRequired fullWidth />
+      <DateInput source="paidDate" isRequired fullWidth />
       <RadioButtonGroupInput
         sx={{ mt: 0 }}
         source="mode"
@@ -43,7 +48,7 @@ export default (props) => (
         fullWidth
         isRequired
       />
-      <DateInput source="date" isRequired fullWidth />
+
       <TextInput source="remarks" fullWidth />
     </SimpleForm>
   </Create>

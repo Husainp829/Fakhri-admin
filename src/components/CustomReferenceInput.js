@@ -10,9 +10,9 @@ import {
   Form,
   ReferenceInput,
   AutocompleteInput,
+  useCreateSuggestionContext,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import IconContentAdd from "@mui/icons-material/Add";
 import IconCancel from "@mui/icons-material/Cancel";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -20,45 +20,29 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { makeStyles } from "@mui/styles";
 
-function CustomQuickCreateButton({ onChange, fields, source, name, title }) {
-  const [showDialog, setShowDialog] = useState(false);
-
+function CustomQuickCreateButton({ fields, source, name, title, onChange, defaultKey }) {
+  const { filter, onCancel } = useCreateSuggestionContext();
   const [create, { isLoading }] = useCreate();
   const notify = useNotify();
   const { setValue } = useFormContext();
-  const handleClick = () => {
-    setShowDialog(true);
-  };
-
-  const handleCloseClick = () => {
-    setShowDialog(false);
-  };
 
   const handleSubmit = async (values) => {
-    create(
-      name,
-      { data: values },
-      {
-        onSuccess: (data) => {
-          setShowDialog(false);
-          setValue(source, data.id);
-          onChange();
-        },
-        onFailure: ({ error }) => {
-          notify(error.message, "error");
-        },
+    const data = await create(name, { data: values }, { returnPromise: true }).catch(
+      ({ error }) => {
+        notify(error.message, "error");
       }
     );
+    onChange();
+    setTimeout(() => {
+      setValue(source, data.id);
+    }, 1000);
   };
 
   return (
     <>
-      <Button onClick={handleClick} label="ra.action.create" sx={{ mt: 2, ml: 1 }}>
-        <IconContentAdd />
-      </Button>
-      <Dialog fullWidth open={showDialog} onClose={handleCloseClick} aria-label="Create">
+      <Dialog fullWidth open onClose={onCancel} aria-label="Create">
         <DialogTitle>Create {title}</DialogTitle>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} defaultValues={{ [defaultKey]: filter }}>
           <DialogContent>
             {fields.map((field) => (
               <TextInput
@@ -71,10 +55,10 @@ function CustomQuickCreateButton({ onChange, fields, source, name, title }) {
             ))}
           </DialogContent>
           <DialogActions>
-            <Button label="ra.action.cancel" onClick={handleCloseClick} disabled={isLoading}>
+            <Button label="ra.action.cancel" onClick={onCancel} disabled={isLoading}>
               <IconCancel />
             </Button>
-            <SaveButton disabled={isLoading} />
+            <SaveButton alwaysEnable />
           </DialogActions>
         </Form>
       </Dialog>
@@ -94,18 +78,26 @@ const CustomReferenceInput = (props) => {
   const classes = useStyles();
   const [version, setVersion] = useState(0);
   const handleChange = useCallback(() => setVersion(version + 1), [version]);
+
   return (
     <div className={classes.root}>
       <ReferenceInput key={version} {...props}>
-        <AutocompleteInput optionText={props.optionText} fullWidth />
+        <AutocompleteInput
+          optionText={props.optionText}
+          optionValue={props.optionValue}
+          fullWidth
+          create={
+            <CustomQuickCreateButton
+              onChange={handleChange}
+              name={props.reference}
+              source={props.source}
+              fields={props.fields}
+              title={props.title}
+              defaultKey={props.defaultKey}
+            />
+          }
+        />
       </ReferenceInput>
-      <CustomQuickCreateButton
-        onChange={handleChange}
-        name={props.reference}
-        source={props.source}
-        fields={props.fields}
-        title={props.title}
-      />
     </div>
   );
 };

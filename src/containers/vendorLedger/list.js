@@ -12,19 +12,26 @@ export default (props) => {
           tertiaryText={(record) =>
             `₹ ${Intl.NumberFormat("en-IN").format(Number(record.paid || 0))}`
           }
-          secondaryText={(record) =>
-            `${new Date(record.date).toLocaleDateString()} | ${record.mode}`
-          }
+          secondaryText={(record) => (
+            <>
+              Bill: {record.billNo} | {new Date(record.billDate).toLocaleDateString()}
+              <br />
+              Paid: {new Date(record.paidDate).toLocaleDateString()} | {record.mode}
+            </>
+          )}
           linkType="edit"
           rowSx={() => ({ borderBottom: "1px solid #afafaf" })}
         />
       ) : (
         <Datagrid rowClick="edit">
+          <TextField source="ledgerNo" />
+          <TextField source="billNo" />
           <TextField source="vendor.name" />
           <TextField source="type" />
+          <DateField source="billDate" label="Bill Date" />
           <NumberField source="paid" label="Payment (Rs)" />
+          <DateField source="paidDate" label="Payment Date" />
           <TextField source="mode" label="Payment Mode" />
-          <DateField source="date" label="Payment Date" />
           <TextField source="remarks" label="Remarks" />
         </Datagrid>
       )}

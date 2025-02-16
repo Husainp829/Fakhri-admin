@@ -5,7 +5,7 @@ import { TextInput, Edit, SimpleForm } from "react-admin";
 export default (props) => (
   <Edit {...props} mutationMode="optimistic">
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 400 }}>
-      <TextInput source="id" isRequired fullWidth />
+      <TextInput source="id" label="Type" isRequired fullWidth />
     </SimpleForm>
   </Edit>
 );
