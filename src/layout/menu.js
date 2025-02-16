@@ -82,8 +82,6 @@ const LayoutMenu = () => {
       : [])
   );
 
-  console.log(MENUS);
-
   return (
     <Menu
       sx={{

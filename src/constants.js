@@ -31,21 +31,12 @@ export const NAMAAZ_VENUE = {
   ZM: "Zainy Masjid",
 };
 
-export const ZABIHAT_UNIT = 4500;
-export const CHAIRS_UNIT = 500;
-export const HOME_HEADER = "Shehrullah-il-Moazzam 1444H";
-export const PASSES_HEADER = "Shehrullah-il-Moazzam 1444H Pass";
-export const RECEIPT_HEADER = "Shehrullah-il-Moazzam 1444H Receipt";
-export const RECEIPT_LIST_HEADER = "Shehrullah-il-Moazzam 1444 Niyaaz registration receipts";
-export const RECEIPT_ADD_HEADER = "Shehrullah-il-Moazzam 1444 new receipt";
-
 export const PAYMENT_MODE_CONST = {
   cash: "Cash",
   cheque: "Cheque",
   online: "Online",
 };
 export const Page404 = "Page not found, go home!";
-export const GrandTotal = "Grand Total";
 
 export const getType = (type) => {
   if (type === "CHULA" || type === "MUTTAVATTEEN") {
