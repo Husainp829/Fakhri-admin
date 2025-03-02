@@ -13,6 +13,7 @@ export default (props) => (
   <Create {...props} sx={{ mt: 2 }} redirect="list">
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 500 }}>
       <TextInput source="billNo" isRequired fullWidth />
+      <DateInput source="billDate" isRequired fullWidth />
       <CustomReferenceInput
         source="vendorId"
         reference="vendors"
@@ -24,6 +25,7 @@ export default (props) => (
         ]}
         defaultKey="name"
         title="Vendor"
+        isRequired
       />
       <CustomReferenceInput
         source="type"
@@ -33,10 +35,9 @@ export default (props) => (
         defaultKey="id"
         title="Type"
       />
-      <NumberInput source="paid" isRequired fullWidth />
+      <NumberInput source="paid" fullWidth />
 
-      <DateInput source="billDate" isRequired fullWidth />
-      <DateInput source="paidDate" isRequired fullWidth />
+      <DateInput source="paidDate" fullWidth />
       <RadioButtonGroupInput
         sx={{ mt: 0 }}
         source="mode"
@@ -46,7 +47,6 @@ export default (props) => (
           { id: "CHEQUE", name: "CHEQUE" },
         ]}
         fullWidth
-        isRequired
       />
 
       <TextInput source="remarks" fullWidth />
