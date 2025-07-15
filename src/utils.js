@@ -122,3 +122,13 @@ export const calcTotalBalance = (currentEvent, data = {}) => {
 export const mS = !!(
   document.body.clientWidth >= 1024 || document.documentElement.clientWidth >= 1024
 );
+
+export const calcBookingTotals = (halls) =>
+  halls.reduce(
+    (totals, hall) => ({
+      rent: totals.rent + (hall.rent || 0),
+      deposit: totals.deposit + (hall.deposit || 0),
+      thaals: totals.thaals + (hall.thaals || 0),
+    }),
+    { rent: 0, deposit: 0, thaals: 0 }
+  );

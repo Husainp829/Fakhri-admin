@@ -44,3 +44,5 @@ export const getType = (type) => {
   }
   return "ESTABLISHMENT";
 };
+
+export const PER_THAAL_COST = 110;
