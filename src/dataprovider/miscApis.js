@@ -3,12 +3,12 @@ import axios from "axios";
 import { apiUrl } from "../constants";
 import { getToken } from "./httpClient";
 
-export const callApi = async (location, body, requestType, headers = {}) => {
+export const callApi = async (location, data, requestType, headers = {}) => {
   const token = await getToken();
   return axios({
     method: requestType || "POST",
     url: `${apiUrl}/${location}`,
-    data: body,
+    ...(requestType === "POST" ? { data } : { params: data }),
     headers: {
       "Content-Type": "application/json",
       authorization: token,

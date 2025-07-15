@@ -30,6 +30,9 @@ import Receipt from "./containers/receipt/receiptPrint";
 import vendor from "./containers/vendor";
 import vendorType from "./containers/vendorType";
 import vendorLedger from "./containers/vendorLedger";
+import bookingPurpose from "./containers/bookingPurpose";
+import halls from "./containers/halls";
+import hallBookings from "./containers/hallBookings";
 
 const messages = {
   en: englishMessages,
@@ -58,6 +61,9 @@ const MainApp = () => {
             {permissions?.view?.its && <Resource {...itsdata} />}
             {permissions?.vendors?.edit && <Resource {...vendor} />}
             {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
+            <Resource {...bookingPurpose} />
+            <Resource {...halls} />
+            <Resource {...hallBookings} />
             {eventId && (
               <>
                 {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
