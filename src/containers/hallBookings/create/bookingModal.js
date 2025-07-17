@@ -137,7 +137,7 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
           label="Thaals"
           type="number"
           value={newHall.thaals}
-          onChange={(e) => handleFieldChange("thaals", e.target.value)}
+          onChange={(e) => handleFieldChange("thaals", parseInt(e.target.value || 0, 10))}
           InputLabelProps={{ shrink: true }}
           fullWidth
           defaultValue={0}

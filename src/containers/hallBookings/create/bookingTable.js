@@ -3,6 +3,9 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/m
 import { ReferenceField, TextField } from "react-admin";
 
 export default function HallBookingTable({ fields, remove }) {
+  if (fields?.length === 0) {
+    return null;
+  }
   return (
     <Table size="small" sx={{ mt: 2 }}>
       <TableHead>
@@ -28,7 +31,7 @@ export default function HallBookingTable({ fields, remove }) {
               </ReferenceField>
             </TableCell>
             <TableCell>{hb.date}</TableCell>
-            <TableCell>{hb.slot}</TableCell>
+            <TableCell sx={{ textTransform: "capitalize" }}>{hb.slot}</TableCell>
             <TableCell>{hb.thaals}</TableCell>
             <TableCell>
               <Button size="small" color="error" onClick={() => remove(index)}>
