@@ -33,6 +33,7 @@ import vendorLedger from "./containers/vendorLedger";
 import bookingPurpose from "./containers/bookingPurpose";
 import halls from "./containers/halls";
 import hallBookings from "./containers/hallBookings";
+import RentReceiptPrint from "./containers/hallBookings/rentReceiptPrint";
 
 const messages = {
   en: englishMessages,
@@ -87,6 +88,10 @@ const MainApp = () => {
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/labelprint" element={<LabelPrint />} />
+        </CustomRoutes>
+
+        <CustomRoutes noLayout>
+          <Route path="/cont-rcpt" element={<RentReceiptPrint />} />
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/forgot-password" element={<ForgotPassword />} />

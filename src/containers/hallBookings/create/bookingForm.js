@@ -1,14 +1,29 @@
 /* eslint-disable no-console */
 import React, { useEffect, useState } from "react";
-import { TextInput, ReferenceInput, NumberInput } from "react-admin";
+import { TextInput, ReferenceInput, NumberInput, SelectInput } from "react-admin";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import ITSLookup from "../common/ITSLookup";
 import HallBookingTable from "./bookingTable";
 import HallBookingModal from "./bookingModal";
-import { PurposeInput } from "../common/purposeInput";
 import { calcBookingTotals } from "../../../utils";
 import { PER_THAAL_COST } from "../../../constants";
+
+const LabelValue = ({ label, value, labelProps = {}, valueProps = {} }) => (
+  <TableRow>
+    <TableCell sx={{ width: "50%" }} />
+    <TableCell component="th" scope="row" sx={{ paddingRight: 2 }}>
+      <Typography variant="body1" color="text.secondary" {...labelProps}>
+        {label}
+      </Typography>
+    </TableCell>
+    <TableCell align="right">
+      <Typography variant="body1" color="text.primary" {...valueProps}>
+        ₹{value}
+      </Typography>
+    </TableCell>
+  </TableRow>
+);
 
 export default function HallBookingForm() {
   const { control, setValue } = useFormContext();
@@ -25,20 +40,18 @@ export default function HallBookingForm() {
   const depositAmount = useWatch({ name: "depositAmount" });
   const thaalAmount = useWatch({ name: "thaalAmount" });
 
+  const { rent, deposit, thaals, total: totalPayable } = calcBookingTotals(hallBookings);
   useEffect(() => {
-    if (hallBookings?.length > 0) {
-      const { rent, deposit, thaals } = calcBookingTotals(hallBookings);
-      if (rentAmount !== rent) {
-        setValue("rentAmount", rent);
-      }
-      if (depositAmount !== deposit) {
-        setValue("depositAmount", deposit);
-      }
-      if (thaalAmount !== thaals * PER_THAAL_COST) {
-        setValue("thaalAmount", thaals * PER_THAAL_COST);
-      }
+    if (rentAmount !== rent) {
+      setValue("rentAmount", rent);
     }
-  }, [hallBookings]);
+    if (depositAmount !== deposit) {
+      setValue("depositAmount", deposit);
+    }
+    if (thaalAmount !== thaals * PER_THAAL_COST) {
+      setValue("thaalAmount", thaals * PER_THAAL_COST);
+    }
+  }, [rent, deposit, thaals]);
 
   return (
     <Grid container spacing={1} sx={{ mt: 3 }}>
@@ -50,46 +63,11 @@ export default function HallBookingForm() {
         <TextInput source="phone" label="Phone" fullWidth isRequired />
 
         <ReferenceInput source="purpose" reference="bookingPurpose">
-          <PurposeInput fullWidth sx={{ mt: 0 }} isRequired optionText="id" />
+          <SelectInput fullWidth sx={{ mt: 0 }} isRequired optionText="id" />
         </ReferenceInput>
 
-        <NumberInput label="Deposit" source="depositAmount" fullWidth disabled defaultValue={0} />
-
-        <NumberInput label="Rent" source="rentAmount" fullWidth disabled defaultValue={0} />
-
-        <NumberInput
-          label="Sarkari Lagat"
-          source="sarkariLagat"
-          defaultValue={0}
-          fullWidth
-          disabled
-        />
-
-        <NumberInput
-          label="Thaal Amount"
-          source="thaalAmount"
-          fullWidth
-          disabled
-          defaultValue={0}
-        />
-
-        <NumberInput
-          label="Write Off Amount"
-          source="writeOffAmount"
-          fullWidth
-          disabled
-          defaultValue={0}
-        />
-
-        <NumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
-
-        <NumberInput
-          label="Refund Amount"
-          source="refundAmount"
-          fullWidth
-          disabled
-          defaultValue={0}
-        />
+        <TextInput source="mohalla" label="Mohalla" defaultValue="Fakhri Mohalla" fullWidth />
+        <TextInput source="sadarat" label="Sadarat" fullWidth />
       </Grid>
 
       <Grid
@@ -103,6 +81,27 @@ export default function HallBookingForm() {
         </Button>
 
         <HallBookingTable fields={fields} remove={remove} />
+        <Table size="small" sx={{ width: "100%", mt: 5 }}>
+          <TableBody>
+            <LabelValue label="Deposit" value={depositAmount || 0} />
+            <LabelValue label="Rent" value={rentAmount || 0} />
+            <LabelValue
+              label={`Thaal (₹${PER_THAAL_COST} x ${(thaalAmount || 0) / PER_THAAL_COST})`}
+              value={thaalAmount || 0}
+            />
+            <LabelValue label="Total Payable" value={totalPayable} />
+          </TableBody>
+        </Table>
+
+        <NumberInput
+          label="Deposit Amount Paid"
+          source="depositPaidAmount"
+          fullWidth
+          defaultValue={0}
+          sx={{ mt: 4.8 }}
+        />
+
+        <NumberInput label="Rent Amount Paid" source="paidAmount" fullWidth defaultValue={0} />
 
         <HallBookingModal
           open={open}
