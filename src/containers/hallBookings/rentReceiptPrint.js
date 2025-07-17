@@ -11,7 +11,7 @@ const RentReceiptPrint = () => {
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
-  const receiptId = searchParams.get("receiptId");
+  const receiptId = searchParams.get("id");
   const [data, setData] = useState({});
   const [error, setError] = useState();
 
