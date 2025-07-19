@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useGetList } from "react-admin";
 import { callApi } from "../../../dataprovider/miscApis";
-import { fromGregorian } from "../../../hijriDateUtils";
+import { fromGregorian } from "../../../utils/hijriDateUtils";
 
 const init = {
   hallId: "",

@@ -120,6 +120,7 @@ const LayoutMenu = () => {
       <Menu.ResourceItem name="bookingPurpose" />
       <Menu.ResourceItem name="halls" />
       <Menu.ResourceItem name="bookings" />
+      <Menu.ResourceItem name="contRcpt" />
     </Menu>
   );
 };

@@ -33,7 +33,10 @@ import vendorLedger from "./containers/vendorLedger";
 import bookingPurpose from "./containers/bookingPurpose";
 import halls from "./containers/halls";
 import hallBookings from "./containers/hallBookings";
-import RentReceiptPrint from "./containers/hallBookings/rentReceiptPrint";
+import RentReceiptPrint from "./containers/rentBookingReceipt/rentReceiptPrint";
+import DepositReceiptPrint from "./containers/hallBookings/depositReceiptPrint";
+import RazaPrint from "./containers/hallBookings/razaPrint";
+import rentBookingReceipt from "./containers/rentBookingReceipt";
 
 const messages = {
   en: englishMessages,
@@ -65,6 +68,7 @@ const MainApp = () => {
             <Resource {...bookingPurpose} />
             <Resource {...halls} />
             <Resource {...hallBookings} />
+            <Resource {...rentBookingReceipt} />
             {eventId && (
               <>
                 {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
@@ -91,7 +95,13 @@ const MainApp = () => {
         </CustomRoutes>
 
         <CustomRoutes noLayout>
-          <Route path="/cont-rcpt" element={<RentReceiptPrint />} />
+          <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+        </CustomRoutes>
+        <CustomRoutes noLayout>
+          <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
+        </CustomRoutes>
+        <CustomRoutes noLayout>
+          <Route path="/raza-print/:id" element={<RazaPrint />} />
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -123,7 +133,7 @@ const appTheme = {
     tonalOffset: 0.2,
   },
   typography: {
-    fontFamily: ["Quantico", "sans-serif"].join(","),
+    fontFamily: ["Quantico", "Roboto", "sans-serif"].join(","),
   },
   sidebar: {
     borderRight: "1px solid #000",
