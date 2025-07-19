@@ -2,8 +2,8 @@
 import React from "react";
 import dayjs from "dayjs";
 import ReactPDF from "@react-pdf/renderer";
-import { Passes } from "./components/pdf.js";
-import { PER_THAAL_COST } from "./constants";
+import { Passes } from "../components/pdf.js";
+import { PER_THAAL_COST } from "../constants";
 export const getEventId = () => {
   const { href } = window.location;
   const u = new URL(href);

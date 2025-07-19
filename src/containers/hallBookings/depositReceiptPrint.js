@@ -1,25 +1,21 @@
-/* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { ToWords } from "to-words";
+import QRCode from "react-qr-code";
+import { useParams } from "react-router";
 import dayjs from "dayjs";
 
 import ReceiptHeader from "../../components/ReceiptLayout/receiptHeader";
 import { callApiWithoutAuth } from "../../dataprovider/miscApis";
 
-const RentReceiptPrint = () => {
-  const { href } = window.location;
-  const params = href.split("?")[1];
-  const searchParams = new URLSearchParams(params);
-  const receiptId = searchParams.get("id");
-  const [data, setData] = useState({});
+const DepositReceiptPrint = () => {
+  const { id } = useParams();
+  const [data, setData] = useState();
   const [error, setError] = useState();
 
   useEffect(() => {
     const fetchData = () => {
-      callApiWithoutAuth(`contRcpt/${receiptId}`, {}, "GET")
+      callApiWithoutAuth(`depRcpt/${id}`, {}, "GET")
         .then(({ data: { rows } }) => {
-          console.log(rows);
           setData(rows?.[0] || {});
         })
         .catch(() => {
@@ -29,13 +25,14 @@ const RentReceiptPrint = () => {
     fetchData();
   }, []);
 
-  if (!data) {
-    return null;
-  }
-
   if (error) {
     return <div className="main-div">No Results Found</div>;
   }
+
+  if (!data) {
+    return <div className="main-div">...Loading</div>;
+  }
+
   const receiptData = data || {};
   const toWords = new ToWords();
 
@@ -43,7 +40,7 @@ const RentReceiptPrint = () => {
     <div className="main-div">
       <div style={{ border: "5px solid #ccc", boxSizing: "border-box" }}>
         <div className="u-row-container" style={{ padding: 0 }}>
-          <ReceiptHeader title="DAWOODI BOHRA JAMAAT TRUST" subTitle="Trust Reg No E/7038(P)" />
+          <ReceiptHeader title="FAKHRI MOHALLA JAMAAT" subTitle="Deposit Receipt" />
 
           <div className="u-row" style={{ margin: "0 auto" }}>
             <div style={{ display: "flex", width: "100%" }}>
@@ -53,11 +50,11 @@ const RentReceiptPrint = () => {
               >
                 <div style={{ padding: "10px 20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ paddingRight: "10px" }}>Receipt No.</div>
+                    <div style={{ paddingRight: "10px" }}>Receipt No. :</div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {data?.receiptNo}
+                      {data?.depositNo}
                     </div>
-                    <div style={{ padding: "0 10px" }}>Date: </div>
+                    <div style={{ padding: "0 10px" }}>Date : </div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
                       {dayjs(data.date).format("DD/MM/YYYY")}
                     </div>
@@ -65,36 +62,41 @@ const RentReceiptPrint = () => {
                 </div>
                 <div style={{ padding: "10px 20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ paddingRight: "10px" }}>Received From</div>
+                    <div style={{ paddingRight: "10px" }}>Booking Karnaar Name :</div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {data?.organiser}
+                      {data.organiser}
                     </div>
                   </div>
                 </div>
                 <div style={{ padding: "10px 20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ paddingRight: "10px" }}>ITS No.</div>
+                    <div style={{ paddingRight: "10px" }}>ITS No. :</div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {data?.organiserIts}
+                      {data.organiserIts}
                     </div>
-                    <div style={{ padding: "0 10px" }}>PAN No.</div>
-                    <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>-</div>
+                    <div style={{ paddingRight: "10px" }}>Booking No. :</div>
+                    <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
+                      {data.booking?.bookingNo}
+                    </div>
                   </div>
                 </div>
                 <div style={{ padding: "10px 20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ paddingRight: "10px" }}>The sum of ₹: </div>
+                    <div style={{ paddingRight: "10px" }}>Purpose of booking :</div>
+                    <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
+                      {data.booking?.purpose}
+                    </div>
+                    <div style={{ paddingRight: "10px" }}>Mohalla :</div>
+                    <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
+                      {data.booking?.mohalla}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: "10px 20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ paddingRight: "10px" }}>Deposit Amount ₹: </div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
                       {toWords.convert(receiptData.total || 0)} Only /-
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "10px 20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ paddingRight: "10px" }}>
-                      by{" "}
-                      {data?.mode === "ONLINE" ? `${data.mode} - (ref - ${data.ref})` : data.mode}{" "}
-                      towards Voluntary Contribution.
                     </div>
                   </div>
                 </div>
@@ -111,17 +113,16 @@ const RentReceiptPrint = () => {
                     >
                       ₹ {data.total} /-
                     </div>
-                    <span style={{ fontSize: 12 }}>VALID SUBJECT TO CLEARANCE</span>
                   </div>
                   <div
                     style={{
-                      borderTop: "1px solid #afafaf",
                       alignSelf: "center",
                       width: "180px",
                       textAlign: "center",
                     }}
                   >
-                    Received By
+                    <QRCode value={`${data.id}|${data.createdBy}`} size={100} />
+                    <p style={{ fontSize: 14, marginTop: -5 }}>Digitally Signed.</p>
                   </div>
                 </div>
               </div>
@@ -133,4 +134,4 @@ const RentReceiptPrint = () => {
   );
 };
 
-export default RentReceiptPrint;
+export default DepositReceiptPrint;

@@ -2,8 +2,11 @@
 /* eslint-disable camelcase */
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
+import { unflatten } from "flat";
 import { apiUrl } from "../constants";
 import httpClient from "./httpClient";
+
+const convertRows = (rows) => rows.map(unflatten);
 
 export default {
   getList: (resource, params) => {
@@ -20,7 +23,7 @@ export default {
     return httpClient(url).then(({ json: { count, rows, counts } }) => {
       localStorage.setItem(`${resource}_count`, JSON.stringify(counts));
       return {
-        data: rows,
+        data: convertRows(rows),
         total: count,
       };
     });
@@ -28,7 +31,7 @@ export default {
 
   getOne: (resource, params) =>
     httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
-      data: rows[0],
+      data: unflatten(rows[0]),
     })),
 
   getMany: (resource, params) => {
@@ -37,7 +40,7 @@ export default {
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { count, rows } }) => ({
-      data: rows,
+      data: convertRows(rows),
       total: count,
     }));
   },
@@ -55,7 +58,7 @@ export default {
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { rows, count } }) => ({
-      data: rows,
+      data: convertRows(rows),
       total: count,
     }));
   },
@@ -108,8 +111,8 @@ export default {
         })
       )
     ).then(() => ({
-        data: [],
-      })),
+      data: [],
+    })),
 
   deleteImage: (resource, params) =>
     httpClient(`${apiUrl}/${resource}/delete-image?${stringify(params)}`).then(() => ({
