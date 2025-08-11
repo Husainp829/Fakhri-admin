@@ -7,6 +7,7 @@ import {
   useRedirect,
   useNotify,
   useRefresh,
+  usePermissions,
 } from "react-admin";
 import PrintIcon from "@mui/icons-material/Print";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
@@ -20,6 +21,7 @@ import CloseBookingModal from "./CloseBookingModal";
 import { callApi } from "../../../../dataprovider/miscApis";
 
 const BookingShowActions = () => {
+  const { permissions } = usePermissions();
   const redirect = useRedirect();
   const record = useRecordContext();
   const notify = useNotify();
@@ -161,17 +163,19 @@ const BookingShowActions = () => {
             <ListItemText>Close Event</ListItemText>
           </MenuItem>
 
-          <MenuItem
-            onClick={() => {
-              setConfirmConfig({ type: "writeoff", open: true, loading: false });
-              handleMenuClose();
-            }}
-          >
-            <ListItemIcon>
-              <CancelIcon fontSize="small" color="warning" />
-            </ListItemIcon>
-            <ListItemText>Write-Off Booking</ListItemText>
-          </MenuItem>
+          {permissions?.writeoff?.allow && (
+            <MenuItem
+              onClick={() => {
+                setConfirmConfig({ type: "writeoff", open: true, loading: false });
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <CancelIcon fontSize="small" color="warning" />
+              </ListItemIcon>
+              <ListItemText>Write-Off Booking</ListItemText>
+            </MenuItem>
+          )}
         </Menu>
       </Box>
 
