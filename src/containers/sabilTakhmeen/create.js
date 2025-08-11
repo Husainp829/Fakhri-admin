@@ -1,7 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import { TextInput, Create, SimpleForm, ReferenceInput } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
 import MonthInput from "../../components/MonthInput";
 

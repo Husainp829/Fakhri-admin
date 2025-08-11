@@ -8,7 +8,7 @@ export const callApi = async (location, data, requestType, headers = {}) => {
   return axios({
     method: requestType || "POST",
     url: `${apiUrl}/${location}`,
-    ...(requestType === "POST" ? { data } : { params: data }),
+    ...(requestType === "GET" ? { params: data } : { data }),
     headers: {
       "Content-Type": "application/json",
       authorization: token,

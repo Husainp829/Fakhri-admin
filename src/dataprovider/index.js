@@ -31,7 +31,7 @@ export default {
 
   getOne: (resource, params) =>
     httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
-      data: unflatten(rows[0]),
+      data: rows[0],
     })),
 
   getMany: (resource, params) => {
@@ -40,7 +40,7 @@ export default {
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { count, rows } }) => ({
-      data: convertRows(rows),
+      data: rows,
       total: count,
     }));
   },
@@ -58,7 +58,7 @@ export default {
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { rows, count } }) => ({
-      data: convertRows(rows),
+      data: rows,
       total: count,
     }));
   },

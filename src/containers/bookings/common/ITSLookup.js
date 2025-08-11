@@ -8,14 +8,14 @@ import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   input: {
     width: "100%",
-    marginRight: theme.spacing(2),
-    marginTop: theme.spacing(2),
+    marginRight: 2,
+    marginTop: 2,
   },
   button: {
-    marginTop: theme.spacing(2),
+    marginTop: 2,
   },
   row: {
     cursor: "pointer",

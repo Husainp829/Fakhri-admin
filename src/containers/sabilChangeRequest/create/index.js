@@ -7,7 +7,7 @@ import {
   SelectInput,
   FormDataConsumer,
 } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "../common/itsInput";
 
 import TransferWithin from "./transferWithin";

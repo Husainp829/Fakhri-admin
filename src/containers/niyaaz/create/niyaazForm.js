@@ -10,7 +10,7 @@ import {
   SelectInput,
   BooleanInput,
 } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 import { useWatch, useFormContext } from "react-hook-form";
 

@@ -14,7 +14,7 @@ const DepositReceiptPrint = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      callApiWithoutAuth(`depRcpt/${id}`, {}, "GET")
+      callApiWithoutAuth(`contRcpt/${id}`, {}, "GET")
         .then(({ data: { rows } }) => {
           setData(rows?.[0] || {});
         })
@@ -33,7 +33,6 @@ const DepositReceiptPrint = () => {
     return <div className="main-div">...Loading</div>;
   }
 
-  const receiptData = data || {};
   const toWords = new ToWords();
 
   return (
@@ -52,7 +51,7 @@ const DepositReceiptPrint = () => {
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div style={{ paddingRight: "10px" }}>Receipt No. :</div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {data?.depositNo}
+                      {data?.receiptNo}
                     </div>
                     <div style={{ padding: "0 10px" }}>Date : </div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
@@ -96,7 +95,7 @@ const DepositReceiptPrint = () => {
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div style={{ paddingRight: "10px" }}>Deposit Amount ₹: </div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {toWords.convert(receiptData.total || 0)} Only /-
+                      {toWords.convert(data.amount || 0)} Only /-
                     </div>
                   </div>
                 </div>
@@ -111,7 +110,7 @@ const DepositReceiptPrint = () => {
                         fontSize: "30px",
                       }}
                     >
-                      ₹ {data.total} /-
+                      ₹ {data.amount} /-
                     </div>
                   </div>
                   <div

@@ -26,9 +26,11 @@ export default function HallBookingTable({ fields, remove }) {
                 reference="halls"
                 record={hb}
                 link={false} // disables link to show plain text
+                sx={{ mr: 1 }}
               >
                 <TextField source="name" />
               </ReferenceField>
+              <br />({hb.withAC ? "With AC" : "W/O AC"})
             </TableCell>
             <TableCell>{hb.date}</TableCell>
             <TableCell sx={{ textTransform: "capitalize" }}>{hb.slot}</TableCell>

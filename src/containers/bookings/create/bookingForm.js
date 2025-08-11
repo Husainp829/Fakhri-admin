@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { TextInput, ReferenceInput, NumberInput, SelectInput } from "react-admin";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { Grid, Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import { Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
 import ITSLookup from "../common/ITSLookup";
 import HallBookingTable from "./bookingTable";
 import HallBookingModal from "./bookingModal";
-import { calcBookingTotals } from "../../../utils";
-import { PER_THAAL_COST } from "../../../constants";
+import { calcBookingTotals } from "../../../utils/bookingCalculations";
 
 const LabelValue = ({ label, value, labelProps = {}, valueProps = {} }) => (
   <TableRow>
@@ -40,7 +40,13 @@ export default function HallBookingForm() {
   const depositAmount = useWatch({ name: "depositAmount" });
   const thaalAmount = useWatch({ name: "thaalAmount" });
 
-  const { rent, deposit, thaals, total: totalPayable } = calcBookingTotals(hallBookings);
+  const {
+    rentAmount: rent,
+    depositAmount: deposit,
+    thaalCount,
+    thaalAmount: thaals,
+    totalAmountPending: totalPayable,
+  } = calcBookingTotals({ halls: hallBookings });
   useEffect(() => {
     if (rentAmount !== rent) {
       setValue("rentAmount", rent);
@@ -48,8 +54,8 @@ export default function HallBookingForm() {
     if (depositAmount !== deposit) {
       setValue("depositAmount", deposit);
     }
-    if (thaalAmount !== thaals * PER_THAAL_COST) {
-      setValue("thaalAmount", thaals * PER_THAAL_COST);
+    if (thaalAmount !== thaals) {
+      setValue("thaalAmount", thaals);
     }
   }, [rent, deposit, thaals]);
 
@@ -86,7 +92,7 @@ export default function HallBookingForm() {
             <LabelValue label="Deposit" value={depositAmount || 0} />
             <LabelValue label="Rent" value={rentAmount || 0} />
             <LabelValue
-              label={`Thaal (₹${PER_THAAL_COST} x ${(thaalAmount || 0) / PER_THAAL_COST})`}
+              label={`Thaal (₹${thaalAmount / thaalCount} x ${thaalCount})`}
               value={thaalAmount || 0}
             />
             <LabelValue label="Total Payable" value={totalPayable} />

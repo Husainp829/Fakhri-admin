@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useDataProvider, useNotify, Title, ListActions, useRedirect } from "react-admin";
+import {
+  useDataProvider,
+  useNotify,
+  Title,
+  useRedirect,
+  TopToolbar,
+  CreateButton,
+} from "react-admin";
 import { Calendar, Views } from "react-big-calendar";
 import {
   Dialog,
@@ -8,11 +15,11 @@ import {
   DialogActions,
   Button,
   Typography,
-  Grid,
   Box,
   capitalize,
   IconButton,
 } from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
 import CloseIcon from "@mui/icons-material/Close";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import dayjs from "dayjs";
@@ -21,6 +28,7 @@ import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "../../utils/dayjsLocalizer";
 import CustomCalendarToolbar from "../../components/CustomCalenderToolbar";
+import { slotTimeRanges } from "../../constants";
 
 // Extend dayjs
 dayjs.extend(weekday);
@@ -51,11 +59,11 @@ const LabelValue = ({ label, value, grid }) => (
   </>
 );
 
-const slotTimeRanges = {
-  morning: [7, 10],
-  afternoon: [12, 15],
-  evening: [17, 23],
-};
+const BookingActions = () => (
+  <TopToolbar>
+    <CreateButton resource="bookings" />
+  </TopToolbar>
+);
 
 const HallBookingCalendar = () => {
   const dataProvider = useDataProvider();
@@ -63,7 +71,7 @@ const HallBookingCalendar = () => {
   const redirect = useRedirect();
 
   const [events, setEvents] = useState([]);
-  const [view, setView] = useState(Views.MONTH);
+  const [view, setView] = useState(Views.DAY);
   const [date, setDate] = useState(dayjs());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -134,9 +142,9 @@ const HallBookingCalendar = () => {
   }, [view, date, notify, dataProvider]);
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div>
       <Title title="Hall Bookings Calendar" />
-      <ListActions />
+      <BookingActions />
       <Calendar
         localizer={localizer}
         events={events}

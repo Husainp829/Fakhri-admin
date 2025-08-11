@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-key */
+/* eslint-disable no-console */
 import React from "react";
-import { Admin, Resource, defaultTheme, CustomRoutes } from "react-admin";
+import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
-import { red } from "@mui/material/colors";
+import { deepmerge } from "@mui/utils";
 import { Route } from "react-router-dom";
 
 import withClearCache from "./ClearCache";
@@ -22,8 +21,8 @@ import receipt from "./containers/receipt";
 import SabilReceipt from "./containers/sabilReceipt/sabilReceiptPrint";
 import FmbReceipt from "./containers/fmbReceipt/fmbReceiptPrint";
 import event from "./containers/event";
-import dashboard from "./containers/dashboard";
-import eventDashboard from "./containers/eventDashboard";
+import Dashboard from "./containers/dashboard";
+import EventDashboard from "./containers/eventDashboard";
 import { getEventId } from "./utils";
 import EventProvider from "./dataprovider/eventProvider";
 import Receipt from "./containers/receipt/receiptPrint";
@@ -32,11 +31,13 @@ import vendorType from "./containers/vendorType";
 import vendorLedger from "./containers/vendorLedger";
 import bookingPurpose from "./containers/bookingPurpose";
 import halls from "./containers/halls";
-import hallBookings from "./containers/hallBookings";
+import bookings from "./containers/bookings";
 import RentReceiptPrint from "./containers/rentBookingReceipt/rentReceiptPrint";
-import DepositReceiptPrint from "./containers/hallBookings/depositReceiptPrint";
-import RazaPrint from "./containers/hallBookings/razaPrint";
+import DepositReceiptPrint from "./containers/rentBookingReceipt/depositReceiptPrint";
+import RazaPrint from "./containers/bookings/razaPrint";
 import rentBookingReceipt from "./containers/rentBookingReceipt";
+import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint";
+import DefaultDashboard from "./containers/defaultDashboard";
 
 const messages = {
   en: englishMessages,
@@ -48,6 +49,13 @@ const i18nProvider = polyglotI18nProvider((locale) => messages[locale], "en", {
 
 const MainApp = () => {
   const eventId = getEventId();
+
+  const DashboardAdmin = () => {
+    const { permissions } = usePermissions();
+    if (!permissions?.event?.view) return <DefaultDashboard />;
+    return eventId ? <EventDashboard /> : <Dashboard />;
+  };
+
   return (
     <EventProvider>
       <Admin
@@ -55,7 +63,7 @@ const MainApp = () => {
         authProvider={authProvider}
         i18nProvider={i18nProvider}
         layout={layout}
-        dashboard={eventId ? eventDashboard : dashboard}
+        dashboard={DashboardAdmin}
         theme={appTheme}
         loginPage={MyLoginPage}
       >
@@ -65,10 +73,12 @@ const MainApp = () => {
             {permissions?.view?.its && <Resource {...itsdata} />}
             {permissions?.vendors?.edit && <Resource {...vendor} />}
             {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
-            <Resource {...bookingPurpose} />
-            <Resource {...halls} />
-            <Resource {...hallBookings} />
-            <Resource {...rentBookingReceipt} />
+            {permissions?.halls?.view && <Resource {...bookingPurpose} />}
+            {permissions?.halls?.view && <Resource {...halls} />}
+            {permissions?.bookings?.view && <Resource {...bookings} />}
+            {permissions?.bookings?.view && <Resource {...rentBookingReceipt} />}
+            {permissions?.bookings?.view && <Resource name="hallBookings" />}
+
             {eventId && (
               <>
                 {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
@@ -104,6 +114,9 @@ const MainApp = () => {
           <Route path="/raza-print/:id" element={<RazaPrint />} />
         </CustomRoutes>
         <CustomRoutes noLayout>
+          <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
+        </CustomRoutes>
+        <CustomRoutes noLayout>
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </CustomRoutes>
       </Admin>
@@ -116,8 +129,7 @@ const ClearCacheComponent = withClearCache(MainApp);
 function App() {
   return <ClearCacheComponent />;
 }
-const appTheme = {
-  ...defaultTheme,
+const appTheme = deepmerge(defaultTheme, {
   palette: {
     mode: "light",
     primary: {
@@ -128,7 +140,7 @@ const appTheme = {
       main: "#ffffff",
       contrastText: "#0A1F32",
     },
-    error: red,
+    error: { main: "#f44336" },
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },
@@ -139,10 +151,17 @@ const appTheme = {
     borderRight: "1px solid #000",
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        ".RaLayout-content": {
+          marginTop: "1rem",
+        },
+      },
+    },
+
     RaMenuItemLink: {
       styleOverrides: {
         root: {
-          // paddingLeft: "12px",
           "&.RaMenuItemLink-active": {
             background: "#6bd0dc",
             color: "#ffffff",
@@ -157,16 +176,6 @@ const appTheme = {
       },
     },
   },
-  overrides: {
-    MuiButton: {
-      root: {
-        color: "light", // Some CSS
-      },
-    },
-    "& .RaSidebar-drawerPaper": {
-      backgroundColor: "red",
-    },
-  },
-};
+});
 
 export default App;

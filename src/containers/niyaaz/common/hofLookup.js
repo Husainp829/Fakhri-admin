@@ -20,7 +20,7 @@ import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 import { callApi } from "../../../dataprovider/miscApis";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(({ theme }) => ({
   input: {
     width: "100%",
     marginRight: theme.spacing(2),
@@ -98,7 +98,7 @@ function HofLookup() {
     setValue("familyMembers", family);
     const params = {
       HOFId: data.ITS_ID,
-      includeEventData: true
+      includeEventData: true,
     };
     const u = new URLSearchParams(params).toString();
     callApi(`niyaaz?${u}`, undefined, "GET")

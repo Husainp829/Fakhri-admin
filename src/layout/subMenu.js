@@ -6,38 +6,11 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Typography from "@mui/material/Typography";
 import Collapse from "@mui/material/Collapse";
 import Tooltip from "@mui/material/Tooltip";
-import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles((theme) => ({
-  icon: { minWidth: theme.spacing(4) },
-  sidebarIsOpen: {
-    "& a": {
-      paddingLeft: theme.spacing(4),
-      transition: "padding-left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-    },
-  },
-  sidebarIsClosed: {
-    "& a": {
-      paddingLeft: theme.spacing(2),
-      transition: "padding-left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-    },
-  },
-}));
-
-const SubMenu = ({
-  handleToggle,
-  sidebarIsOpen,
-  isOpen,
-  name,
-  icon,
-  children,
-  dense,
-}) => {
-  const classes = useStyles();
-
+const SubMenu = ({ handleToggle, sidebarIsOpen, isOpen, name, icon, children, dense }) => {
   const header = (
     <MenuItem dense={dense} button onClick={handleToggle}>
-      <ListItemIcon className={classes.icon}>
+      <ListItemIcon sx={{ minWidth: (theme) => theme.spacing(4) }}>
         {isOpen ? <ExpandMore /> : icon}
       </ListItemIcon>
       <Typography variant="inherit" color="textSecondary">
@@ -60,9 +33,13 @@ const SubMenu = ({
           dense={dense}
           component="div"
           disablePadding
-          className={
-            sidebarIsOpen ? classes.sidebarIsOpen : classes.sidebarIsClosed
-          }
+          sx={{
+            "& a": {
+              paddingLeft: (theme) => theme.spacing(sidebarIsOpen ? 4 : 2),
+              transition: (theme) =>
+                `padding-left ${theme.transitions.duration.shortest}ms ${theme.transitions.easing.easeInOut}`,
+            },
+          }}
         >
           {children}
         </List>

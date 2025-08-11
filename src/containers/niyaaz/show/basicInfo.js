@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ArrayField, FunctionField, NumberField, SimpleShowLayout, TextField } from "react-admin";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 import { calcTotalPayable } from "../../../utils";
 import { EventContext } from "../../../dataprovider/eventProvider";

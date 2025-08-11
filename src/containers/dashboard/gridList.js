@@ -1,6 +1,6 @@
 import React from "react";
 import Skeleton from "@mui/material/Skeleton";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";

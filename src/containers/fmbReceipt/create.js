@@ -8,7 +8,7 @@ import {
   DateInput,
   RadioButtonGroupInput,
 } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
 
 export default (props) => {

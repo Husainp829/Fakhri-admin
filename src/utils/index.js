@@ -3,7 +3,6 @@ import React from "react";
 import dayjs from "dayjs";
 import ReactPDF from "@react-pdf/renderer";
 import { Passes } from "../components/pdf.js";
-import { PER_THAAL_COST } from "../constants";
 export const getEventId = () => {
   const { href } = window.location;
   const u = new URL(href);
@@ -124,17 +123,3 @@ export const calcTotalBalance = (currentEvent, data = {}) => {
 export const mS = !!(
   document.body.clientWidth >= 1024 || document.documentElement.clientWidth >= 1024
 );
-
-export const calcBookingTotals = (halls = []) =>
-  halls.reduce(
-    ({ rent, deposit, thaals, total }, { rent: r = 0, deposit: d = 0, thaals: t = 0 }) => {
-      const hallTotal = r + d + t * PER_THAAL_COST;
-      return {
-        rent: rent + r,
-        deposit: deposit + d,
-        thaals: thaals + t,
-        total: total + hallTotal,
-      };
-    },
-    { rent: 0, deposit: 0, thaals: 0, total: 0 }
-  );

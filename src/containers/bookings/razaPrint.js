@@ -11,6 +11,9 @@ const RazaPrint = () => {
   const { id } = useParams();
   const { data } = useGetOne("bookings", { id });
 
+  // eslint-disable-next-line no-console
+  console.log(data);
+
   const [error] = useState();
 
   if (error) return <Box p={3}>No Results Found</Box>;

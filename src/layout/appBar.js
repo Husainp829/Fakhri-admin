@@ -83,13 +83,6 @@ export default (props) => {
     </MenuItem>
   );
 
-  const CustomUserMenu = () => (
-    <UserMenu>
-      {permissions?.admins?.view && <ConfigurationMenu />}
-      <Logout />
-    </UserMenu>
-  );
-
   useEffect(() => {
     setOpen(true);
   }, [current]);
@@ -98,7 +91,7 @@ export default (props) => {
     <AppBar
       sx={{
         "& .RaAppBar-menuButton": {
-          display: currentEventId ? "" : "none",
+          display: currentEventId ? "" : "",
         },
         "& .RaAppBar-menuButton svg": {
           color: (theme) => theme.palette.primary.main,
@@ -107,7 +100,12 @@ export default (props) => {
       elevation={3}
       open={open}
       {...props}
-      userMenu={<CustomUserMenu />}
+      userMenu={
+        <UserMenu>
+          {permissions?.admins?.view && <ConfigurationMenu />}
+          <Logout />
+        </UserMenu>
+      }
     >
       <Box
         style={{
@@ -131,17 +129,12 @@ export default (props) => {
         ) : (
           <>
             {currentEventId ? (
-              <Typography
-                variant="body2"
-                color="primary"
-                id="react-admin-title"
-                style={{ fontSize: "12px", lineHeight: "-10px" }}
-              >
-                <span style={{}}>{current ?? "Dashboard"} - </span>
+              <Typography variant="body2" color="primary" id="react-admin-title" noWrap>
+                {current ?? "Dashboard"} -
               </Typography>
             ) : (
               <Typography variant="body2" color="primary" noWrap>
-                <span>{current ?? "Dashboard"}</span>
+                {current ?? "Dashboard"}
               </Typography>
             )}
           </>
@@ -151,11 +144,11 @@ export default (props) => {
         {mS && (
           <>
             {currentEventId ? (
-              <Typography variant={mS ? "h5" : "p"} color="primary" noWrap id="react-admin-title">
+              <Typography variant={mS ? "h6" : "p"} color="primary" noWrap id="react-admin-title">
                 <span style={{ marginRight: "5px" }}>{current ?? "Dashboard"} - </span>
               </Typography>
             ) : (
-              <Typography variant={mS ? "h5" : "p"} color="primary" noWrap>
+              <Typography variant={mS ? "h6" : "p"} color="primary" noWrap>
                 <span>{current ?? "Dashboard"}</span>
               </Typography>
             )}

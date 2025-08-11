@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { Chart } from "react-google-charts";
