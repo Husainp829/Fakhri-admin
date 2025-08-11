@@ -1,4 +1,4 @@
-import Icon from "@mui/icons-material/SupervisorAccountTwoTone";
+import Icon from "@mui/icons-material/ReceiptLongTwoTone";
 import List from "./list";
 import Create from "./create";
 

@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";

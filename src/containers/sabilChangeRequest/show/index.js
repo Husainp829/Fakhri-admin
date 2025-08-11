@@ -16,7 +16,7 @@ import {
   ChipField,
   WrapperField,
 } from "react-admin";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import { callApi } from "../../../dataprovider/miscApis";

@@ -1,6 +1,7 @@
 // CustomCalendarToolbar.jsx
 import React from "react";
-import { Box, IconButton, Typography, Grid, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Box, IconButton, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -17,10 +18,10 @@ const CustomCalendarToolbar = ({
   onView,
 }) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <Box p={2}>
+    <Box px={2} pb={2}>
       <Grid container alignItems="center" spacing={2} justifyContent="space-between">
         {/* Navigation Buttons */}
-        <Grid item>
+        <Grid item container alignItems="center">
           {/* Date Picker */}
           <DatePicker
             label="Jump to date"
@@ -32,6 +33,7 @@ const CustomCalendarToolbar = ({
               }
             }}
             slotProps={{ textField: { size: "small" } }}
+            sx={{ maxWidth: 200 }}
           />
           <IconButton onClick={() => onNavigate("PREV")}>
             <ArrowBackIcon />

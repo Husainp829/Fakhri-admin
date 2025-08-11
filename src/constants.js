@@ -2,6 +2,7 @@
 export const apiUrl = "https://jmsapi.rapid-events.com";
 
 export const permissionsList = [
+  { id: "event.view", name: "View Events" },
   { id: "admins.view", name: "View Admin" },
   { id: "view.its.data", name: "View ITS Data" },
   { id: "niyaaz.view", name: "View Niyaaz" },
@@ -17,6 +18,9 @@ export const permissionsList = [
   { id: "vendors.edit", name: "Vendors Add/Edit/Delete" },
   { id: "vendorTypes.edit", name: "Vendor Types Master" },
   { id: "vendorLedger.edit", name: "Vendor Ledger View/Edit/Delete" },
+  { id: "halls.view", name: "Halls View/Edit/Delete" },
+  { id: "bookings.view", name: "Bookings View/Edit" },
+  { id: "writeoff.allow", name: "Has WriteOff" },
 ];
 
 export const MARKAZ_LIST = {
@@ -45,4 +49,14 @@ export const getType = (type) => {
   return "ESTABLISHMENT";
 };
 
-export const PER_THAAL_COST = 110;
+export const slotTimeRanges = {
+  morning: [7, 10],
+  afternoon: [12, 15],
+  evening: [17, 23],
+};
+
+export const slotNameMap = {
+  morning: "Morning",
+  afternoon: "Afternoon",
+  evening: "Evening",
+};

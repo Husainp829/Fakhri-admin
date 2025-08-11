@@ -8,7 +8,7 @@ import {
   SelectInput,
   BooleanInput,
 } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";

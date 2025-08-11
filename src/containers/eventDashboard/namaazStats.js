@@ -6,7 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 
 const NamaazStats = ({ namaazCounts, selectedMarkaz }) => (
   <Grid container spacing={1} sx={{ mt: 3 }}>

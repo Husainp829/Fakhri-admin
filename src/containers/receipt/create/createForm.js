@@ -9,7 +9,7 @@ import {
   maxValue,
   required,
 } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import { useWatch, useFormContext } from "react-hook-form";
 import { callApi } from "../../../dataprovider/miscApis";
 import { EventContext } from "../../../dataprovider/eventProvider";

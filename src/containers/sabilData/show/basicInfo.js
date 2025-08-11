@@ -1,6 +1,6 @@
 import React from "react";
 import { DateField, FunctionField, SimpleShowLayout, TextField } from "react-admin";
-import { Grid } from "@mui/material";
+import { GridLegacy as Grid } from "@mui/material";
 
 export default () => (
   <Grid container spacing={2}>

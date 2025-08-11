@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Skeleton from "@mui/material/Skeleton";
 
 const styles = {

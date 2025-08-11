@@ -11,10 +11,13 @@ import {
   Select,
   MenuItem,
   TextField,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { useGetList } from "react-admin";
 import { callApi } from "../../../dataprovider/miscApis";
 import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { slotNameMap } from "../../../constants";
 
 const init = {
   hallId: "",
@@ -23,6 +26,7 @@ const init = {
   date: "",
   slot: "",
   thaals: 0,
+  withAC: false,
 };
 
 export default function HallBookingModal({ open, onClose, append, hallBookings }) {
@@ -99,6 +103,7 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
               handleFieldChange("hallId", hall.id);
               handleFieldChange("rent", hall.rent);
               handleFieldChange("deposit", hall.deposit);
+              handleFieldChange("acCharges", hall.acCharges);
             }}
           >
             {halls.map((hall) => (
@@ -127,9 +132,11 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
             value={newHall.slot}
             onChange={(e) => handleFieldChange("slot", e.target.value)}
           >
-            <MenuItem value="morning">Morning</MenuItem>
-            <MenuItem value="afternoon">Afternoon</MenuItem>
-            <MenuItem value="evening">Evening</MenuItem>
+            {Object.entries(slotNameMap).map(([val, key]) => (
+              <MenuItem value={val} key={key}>
+                {key}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -141,6 +148,20 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
           InputLabelProps={{ shrink: true }}
           fullWidth
           defaultValue={0}
+          sx={{ mt: 2 }}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={newHall.withAC}
+              onChange={(e) => handleFieldChange("withAC", e.target.checked)}
+              color="primary"
+              fullWidth
+              label="With AC"
+            />
+          }
+          label="With AC"
           sx={{ mt: 2 }}
         />
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { ReferenceInput, AutocompleteInput } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 
 export default () => (
   <Grid container spacing={1} sx={{ mt: 3 }}>

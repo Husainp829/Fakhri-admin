@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, ReferenceInput, DateInput, NumberInput } from "react-admin";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 
 import { ITSInput } from "../common/itsInput";

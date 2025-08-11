@@ -84,7 +84,7 @@ const RentReceiptPrint = () => {
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div style={{ paddingRight: "10px" }}>The sum of ₹: </div>
                     <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                      {toWords.convert(receiptData.total || 0)} Only /-
+                      {toWords.convert(receiptData.amount || 0)} Only /-
                     </div>
                   </div>
                 </div>
@@ -108,7 +108,7 @@ const RentReceiptPrint = () => {
                         fontSize: "30px",
                       }}
                     >
-                      ₹ {data.total} /-
+                      ₹ {data.amount} /-
                     </div>
                     <span style={{ fontSize: 12 }}>VALID SUBJECT TO CLEARANCE</span>
                   </div>
