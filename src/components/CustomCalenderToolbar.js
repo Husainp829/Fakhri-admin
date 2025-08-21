@@ -35,7 +35,7 @@ const CustomCalendarToolbar = ({
             slotProps={{
               textField: {
                 size: "small",
-                inputProps: { readOnly: true }, // 👈 disables typing
+                inputProps: { readOnly: true },
               },
             }}
             sx={{ maxWidth: 200 }}
