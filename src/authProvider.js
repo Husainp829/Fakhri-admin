@@ -1,87 +1,110 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-unused-vars */
-// import { apiUrl } from "./constants";
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   getIdTokenResult,
   signOut,
 } from "firebase/auth";
+import { LRUCache } from "lru-cache";
 import { authObj } from "./firebaseConfig";
 import { goToLogin } from "./utils";
 
+// --------------------
+// Helpers
+// --------------------
+const cache = new LRUCache({
+  max: 50, // max 50 users cached
+  ttl: 1000 * 60 * 5, // 5 min TTL
+});
+
+const parsePermissions = (permissions = []) =>
+  permissions.reduce((acc, p) => {
+    const [resource, perm = "view"] = p.split(".");
+    acc[resource] = { ...acc[resource], [perm]: true };
+    return acc;
+  }, {});
+
+const clearSession = async () => {
+  await signOut(authObj);
+  localStorage.clear();
+  goToLogin();
+};
+
+// --------------------
+// Core logic
+// --------------------
+const getCachedPermissions = async () => {
+  const user = authObj.currentUser;
+  if (!user) throw new Error("No user");
+
+  const cacheKey = user.uid;
+
+  // Always check cache first
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // If not cached, fetch once and populate
+  const token = await getIdTokenResult(user, true); // force refresh
+  const permissions = parsePermissions(token?.claims?.permissions || []);
+
+  cache.set(cacheKey, permissions);
+  return permissions;
+};
+
+// --------------------
+// Auth Provider
+// --------------------
 const authProvider = {
-  login: (params) => {
-    const { username, password } = params;
-    return new Promise((resolve, reject) =>
-      signInWithEmailAndPassword(authObj, username, password)
-        .then(async ({ user }) => {
-          const to = await getIdTokenResult(user, true).then((t) => t);
-          const permissions = to?.claims?.permissions;
-          if (!permissions) {
-            await signOut(authObj);
-            return reject(new Error("Unauthorized"));
-          }
-          return resolve();
-        })
-        .catch((error) => reject(error.message))
-    );
-  },
+  login: async ({ username, password }) => {
+    try {
+      const { user } = await signInWithEmailAndPassword(authObj, username, password);
 
-  logout: () =>
-    new Promise((resolve) =>
-      signOut(authObj).then(() => {
-        localStorage.clear();
-        goToLogin();
-        return resolve();
-      })
-    ),
+      // Always fetch fresh claims on login
+      const token = await getIdTokenResult(user, true);
+      const permissions = token?.claims?.permissions;
 
-  checkError: (error) => {
-    if (error?.status === 401) {
-      return new Promise((resolve, reject) =>
-        signOut(authObj).then(() => {
-          localStorage.clear();
-          goToLogin();
-          return reject();
-        })
-      );
+      if (!permissions) {
+        await clearSession();
+        throw new Error("Unauthorized");
+      }
+
+      // Warm cache
+      cache.set(user.uid, parsePermissions(permissions));
+    } catch (error) {
+      throw new Error(error.message);
     }
-    return Promise.resolve();
   },
 
-  checkAuth: async () =>
-    new Promise((resolve, reject) => {
-      onAuthStateChanged(authObj, (user) => {
+  logout: async () => {
+    await clearSession();
+  },
+
+  checkError: async (error) => {
+    if (error?.status === 401) {
+      await clearSession();
+      throw error;
+    }
+  },
+
+  checkAuth: async () => {
+    if (authObj.currentUser) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const unsub = onAuthStateChanged(authObj, (user) => {
+        unsub();
         if (user) {
           return resolve();
         }
         goToLogin();
-        return reject();
+        return reject(new Error("Not authenticated"));
       });
-    }),
+    });
+  },
 
-  getPermissions: async () =>
-    new Promise((resolve, reject) => {
-      onAuthStateChanged(authObj, async (user) => {
-        if (user) {
-          const to = await getIdTokenResult(user, true).then((t) => t);
-          const permissions = to?.claims?.permissions || [];
-          const permObj = {};
-          permissions.map((p) => {
-            const [resource, perm = "view"] = p.split(".");
-            if (permObj[resource]) {
-              permObj[resource] = { ...permObj[resource], [perm]: true };
-            } else {
-              permObj[resource] = { [perm]: true };
-            }
-            return null;
-          });
-          return resolve(permObj);
-        }
-        return reject();
-      });
-    }),
+  getPermissions: async (force = false) => getCachedPermissions(force),
 };
 
 export default authProvider;

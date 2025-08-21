@@ -15,10 +15,30 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CancelIcon from "@mui/icons-material/Cancel";
+import BalanceIcon from "@mui/icons-material/Balance";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
 import { callApi } from "../../../../dataprovider/miscApis";
+import { calcBookingTotals, calcPerThaalCost } from "../../../../utils/bookingCalculations";
+
+const ConfirmConfig = {
+  raza: {
+    title: "Confirm Raza Granted",
+    content: (record) =>
+      `Are you sure you want to mark Raza as granted for Booking #${record?.bookingNo}?`,
+  },
+  writeoff: {
+    title: "Confirm Write-Off Booking",
+    content: (record) =>
+      `Are you sure you want to write-off Booking #${record?.bookingNo}? This cannot be undone.`,
+  },
+  refundSettled: {
+    title: "Confirm Settle Refund",
+    content: (record) =>
+      `Are you sure you want to settle the refund for Booking #${record?.bookingNo}?`,
+  },
+};
 
 const BookingShowActions = () => {
   const { permissions } = usePermissions();
@@ -31,6 +51,14 @@ const BookingShowActions = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   if (!record) return null;
+
+  const perThaalCost = calcPerThaalCost(record.hallBookings);
+  const { totalAmountPending } = calcBookingTotals({
+    halls: record.hallBookings,
+    ...record,
+    jamaatLagatUnit: record.jamaatLagat,
+    perThaalCost,
+  });
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -48,6 +76,15 @@ const BookingShowActions = () => {
       await callApi(`bookings/${record.id}/write-off`, {}, "PUT")
         .then(() => {
           notify("Writeoff successfully", { type: "success" });
+        })
+        .catch(() => {
+          notify("Something went wrong", { type: "error" });
+        });
+      // API call here
+    } else if (confirmConfig?.type === "refundSettled") {
+      await callApi(`bookings/${record.id}/settle-refund`, {}, "PUT")
+        .then(() => {
+          notify("Refund settled successfully", { type: "success" });
         })
         .catch(() => {
           notify("Something went wrong", { type: "error" });
@@ -151,19 +188,21 @@ const BookingShowActions = () => {
             </MenuItem>
           )}
 
-          <MenuItem
-            onClick={() => {
-              setCloseModalOpen(true);
-              handleMenuClose();
-            }}
-          >
-            <ListItemIcon>
-              <EventAvailableIcon fontSize="small" color="error" />
-            </ListItemIcon>
-            <ListItemText>Close Event</ListItemText>
-          </MenuItem>
+          {!record.checkedOutOn && (
+            <MenuItem
+              onClick={() => {
+                setCloseModalOpen(true);
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <EventAvailableIcon fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Close Event</ListItemText>
+            </MenuItem>
+          )}
 
-          {permissions?.writeoff?.allow && (
+          {permissions?.writeoff?.allow && totalAmountPending > 0 && (
             <MenuItem
               onClick={() => {
                 setConfirmConfig({ type: "writeoff", open: true, loading: false });
@@ -174,6 +213,19 @@ const BookingShowActions = () => {
                 <CancelIcon fontSize="small" color="warning" />
               </ListItemIcon>
               <ListItemText>Write-Off Booking</ListItemText>
+            </MenuItem>
+          )}
+          {!record.refundReturnedOn && (
+            <MenuItem
+              onClick={() => {
+                setConfirmConfig({ type: "refundSettled", open: true, loading: false });
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <BalanceIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Settle Refund</ListItemText>
             </MenuItem>
           )}
         </Menu>
@@ -194,14 +246,8 @@ const BookingShowActions = () => {
       <Confirm
         isOpen={!!confirmConfig?.open}
         loading={confirmConfig?.loading}
-        title={
-          confirmConfig?.type === "raza" ? "Confirm Raza Granted" : "Confirm Write-Off Booking"
-        }
-        content={
-          confirmConfig?.type === "raza"
-            ? `Are you sure you want to mark Raza as granted for Booking #${record?.bookingNo}?`
-            : `Are you sure you want to write-off Booking #${record?.bookingNo}? This cannot be undone.`
-        }
+        title={ConfirmConfig[confirmConfig?.type]?.title}
+        content={ConfirmConfig[confirmConfig?.type]?.content(record)}
         onConfirm={handleConfirm}
         onClose={() => setConfirmConfig(null)}
       />

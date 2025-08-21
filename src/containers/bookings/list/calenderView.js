@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  useDataProvider,
-  useNotify,
-  Title,
-  useRedirect,
-  TopToolbar,
-  CreateButton,
-} from "react-admin";
+import { useDataProvider, useNotify, useRedirect } from "react-admin";
 import { Calendar, Views } from "react-big-calendar";
 import {
   Dialog,
@@ -19,16 +12,16 @@ import {
   capitalize,
   IconButton,
 } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import CloseIcon from "@mui/icons-material/Close";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import dayjsLocalizer from "../../utils/dayjsLocalizer";
-import CustomCalendarToolbar from "../../components/CustomCalenderToolbar";
-import { slotTimeRanges } from "../../constants";
+import dayjsLocalizer from "../../../utils/dayjsLocalizer";
+import CustomCalendarToolbar from "../../../components/CustomCalenderToolbar";
+import { slotTimeRanges } from "../../../constants";
 
 // Extend dayjs
 dayjs.extend(weekday);
@@ -36,14 +29,13 @@ dayjs.extend(localeData);
 dayjs.extend(customParseFormat);
 
 const CustomEventComponent = ({ event }) => (
-  <div style={{ color: "white", padding: 4 }}>
-    <div>
-      {dayjs(event.start).format("MMM D, h:mm A")} - {dayjs(event.end).format("h:mm A")}
-    </div>
-    <br />
-    <div>
-      <strong>{event.title}</strong>
-    </div>
+  <div style={{ color: "white", padding: 0 }}>
+    <Typography variant="caption" display="block">
+      {dayjs(event.start).format("MMM D, h A")} - {dayjs(event.end).format("h A")}
+    </Typography>
+    <Typography variant="caption" strong display="block">
+      {event.title}
+    </Typography>
   </div>
 );
 
@@ -52,20 +44,14 @@ const localizer = dayjsLocalizer;
 
 const LabelValue = ({ label, value, grid }) => (
   <>
-    <Grid item xs={12} md={grid || 6}>
+    <Grid item size={{ xs: 12, md: grid || 6 }}>
       <Typography fontWeight="bold">{label}</Typography>
       <Typography>{value}</Typography>
     </Grid>
   </>
 );
 
-const BookingActions = () => (
-  <TopToolbar>
-    <CreateButton resource="bookings" />
-  </TopToolbar>
-);
-
-const HallBookingCalendar = () => {
+const CalenderView = () => {
   const dataProvider = useDataProvider();
   const notify = useNotify();
   const redirect = useRedirect();
@@ -122,7 +108,8 @@ const HallBookingCalendar = () => {
         const [startHour, endHour] = slotTimeRanges[book.slot] || [0, 1];
         return {
           id: book.id,
-          title: `${book.hall?.name || "N/A"} (${capitalize(book.slot)})`,
+          title: `${book.hall?.name || "N/A"}`,
+          subTitle: `${capitalize(book.slot)}`,
           start: dayjs(book.date, "YYYY-MM-DD").hour(startHour).minute(0).second(0).toDate(),
           end: dayjs(book.date, "YYYY-MM-DD").hour(endHour).minute(0).second(0).toDate(),
           resource: book,
@@ -143,8 +130,6 @@ const HallBookingCalendar = () => {
 
   return (
     <div>
-      <Title title="Hall Bookings Calendar" />
-      <BookingActions />
       <Calendar
         localizer={localizer}
         events={events}
@@ -155,7 +140,7 @@ const HallBookingCalendar = () => {
         onView={setView}
         onNavigate={(val) => setDate(dayjs(val))}
         onSelectEvent={handleSelectEvent}
-        style={{ height: "calc(90vh - 100px)" }}
+        style={{ height: "calc(90vh - 35px)" }}
         tooltipAccessor={null}
         components={{
           event: CustomEventComponent,
@@ -223,4 +208,4 @@ const HallBookingCalendar = () => {
   );
 };
 
-export default HallBookingCalendar;
+export default CalenderView;

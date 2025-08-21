@@ -16,6 +16,9 @@ import {
   useDelete,
   Confirm,
   useNotify,
+  Toolbar,
+  DeleteButton,
+  SaveButton,
 } from "react-admin";
 import {
   Box,
@@ -34,6 +37,24 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { slotNameMap } from "../../../../constants";
+
+const CustomToolbar = ({ onClose, ...props }) => {
+  const refresh = useRefresh();
+
+  return (
+    <Toolbar {...props} sx={{ display: "flex", justifyContent: "space-between" }}>
+      <SaveButton />
+      <DeleteButton
+        mutationOptions={{
+          onSuccess: () => {
+            onClose();
+            refresh();
+          },
+        }}
+      />
+    </Toolbar>
+  );
+};
 
 const HallBookingEditModal = ({ id, open, onClose }) => {
   const refresh = useRefresh();
@@ -71,7 +92,7 @@ const HallBookingEditModal = ({ id, open, onClose }) => {
             },
           }}
         >
-          <SimpleForm>
+          <SimpleForm toolbar={<CustomToolbar onClose={onClose} />}>
             <TextInput source="hall.name" label="Hall" disabled fullWidth />
             <NumberInput source="thaals" label="Thaals" fullWidth />
             <DateInput source="date" label="Date" fullWidth />
@@ -189,9 +210,11 @@ const HallBookingsTable = () => {
     <Box mb={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Hall Bookings</Typography>
-        <Button variant="outlined" color="primary" onClick={() => setOpenCreate(true)}>
-          Add Hall
-        </Button>
+        {!record.checkedOutOn && (
+          <Button variant="outlined" color="primary" onClick={() => setOpenCreate(true)}>
+            Add Hall
+          </Button>
+        )}
       </Box>
 
       <Table size="small">
@@ -202,7 +225,7 @@ const HallBookingsTable = () => {
             <TableCell>Thaals</TableCell>
             <TableCell>Date</TableCell>
             <TableCell>Slot</TableCell>
-            <TableCell align="right">Actions</TableCell>
+            {!record.checkedOutOn && <TableCell align="right">Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -214,22 +237,24 @@ const HallBookingsTable = () => {
                 <TableCell>{hb.thaals}</TableCell>
                 <TableCell>{new Date(hb.date).toLocaleDateString()}</TableCell>
                 <TableCell>{slotNameMap[hb.slot]}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => handleEdit(hb.id)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton onClick={() => {}}>
-                    <IconButton
-                      color="error"
-                      onClick={() => {
-                        setSelectedId(hb.id);
-                        setOpen(true);
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
+                {!record.checkedOutOn && (
+                  <TableCell align="right">
+                    <IconButton onClick={() => handleEdit(hb.id)}>
+                      <EditIcon fontSize="small" />
                     </IconButton>
-                  </IconButton>
-                </TableCell>
+                    <IconButton onClick={() => {}}>
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setSelectedId(hb.id);
+                          setOpen(true);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (

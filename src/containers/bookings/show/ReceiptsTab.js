@@ -24,7 +24,7 @@ const ReceiptsTab = () => {
       sort={{ field: "date", order: "DESC" }}
       perPage={25}
     >
-      <Datagrid rowClick={false}>
+      <Datagrid rowClick={false} bulkActionButtons={false}>
         <TextField source="type" />
         <TextField source="receiptNo" label="Receipt No" />
         <TextField source="organiser" />

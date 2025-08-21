@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import { useWatch, useFormContext } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { callApi } from "../../../dataprovider/miscApis";
-import { calcBookingTotals } from "../../../utils/bookingCalculations";
+import { calcBookingTotals, calcPerThaalCost } from "../../../utils/bookingCalculations";
 
 const PaymentFields = ({ pending, type }) => {
   const mode = useWatch({ name: "mode" });
@@ -52,7 +52,7 @@ const PaymentFields = ({ pending, type }) => {
       )}
       {mode && mode !== "CASH" && (
         <Grid item size={12}>
-          <TextInput source="reference" fullWidth multiline />
+          <TextInput source="ref" fullWidth multiline />
         </Grid>
       )}
     </>
@@ -78,6 +78,8 @@ export default function BookingReceiptForm({ bookingId }) {
             calcBookingTotals({
               halls: bookingData.hallBookings,
               ...bookingData,
+              jamaatLagatUnit: bookingData.jamaatLagat,
+              perThaalCost: calcPerThaalCost(bookingData.hallBookings),
             });
 
           setValue("organiser", bookingData.organiser);
