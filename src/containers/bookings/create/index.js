@@ -27,7 +27,7 @@ export default (props) => {
 
   const onSuccess = (data) => {
     notify(`Booking created - ${data.id}`, { autoHideDuration: 5000, type: "success" });
-    redirect("/bookings");
+    redirect(`/bookings/${data.id}/show`);
   };
   return (
     <Create {...props} onFailure={onFailure} redirect="list" mutationOptions={{ onSuccess }}>

@@ -104,6 +104,7 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
               handleFieldChange("rent", hall.rent);
               handleFieldChange("deposit", hall.deposit);
               handleFieldChange("acCharges", hall.acCharges);
+              handleFieldChange("kitchenCleaning", hall.kitchenCleaning);
             }}
           >
             {halls.map((hall) => (

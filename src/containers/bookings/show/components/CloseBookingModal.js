@@ -17,7 +17,7 @@ import {
 import Grid from "@mui/material/GridLegacy";
 import { useGetList } from "react-admin";
 import dayjs from "dayjs";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+import { calcBookingTotals, calcPerThaalCost } from "../../../../utils/bookingCalculations";
 import { slotNameMap } from "../../../../constants";
 
 const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {
@@ -41,22 +41,28 @@ const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {
     }
   }, [hallBookings]);
 
+  const perThaalCost = calcPerThaalCost(record.hallBookings);
+
   // Calculations
   const breakdown = useMemo(() => {
     const {
       thaalAmount,
       thaalCount,
       refundAmount: refund,
+      jamaatLagat,
       totalAmountPending,
       rentAmount,
     } = calcBookingTotals({
       halls: hallBookings.map((h) => ({ ...h, thaals: actualThaals[h.id] })),
       ...record,
+      perThaalCost,
+      jamaatLagatUnit: record.jamaatLagat,
       extraExpenses: Number(extraExpenses) || 0,
     });
 
     return {
       rentAmount,
+      jamaatLagat,
       thaalAmount,
       thaalCount,
       totalPending: totalAmountPending,
@@ -84,6 +90,10 @@ const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {
     {
       label: "Rent Amount",
       value: breakdown.rentAmount,
+    },
+    {
+      label: "Jamaat Lagat",
+      value: breakdown.jamaatLagat,
     },
     {
       label: `Thaal Amount (${breakdown.thaalCount} × ${

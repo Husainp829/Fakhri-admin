@@ -2,25 +2,42 @@
 import React from "react";
 import { useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+import { calcBookingTotals, calcPerThaalCost } from "../../../../utils/bookingCalculations";
 
 const BookingSummary = () => {
   const record = useRecordContext();
   if (!record) return null;
 
-  const { depositAmount, rentAmount, thaalAmount, refundAmount, totalAmountPending } =
-    calcBookingTotals({
-      halls: record.hallBookings,
-      ...record,
-    });
+  const perThaalCost = calcPerThaalCost(record.hallBookings);
+
+  const {
+    depositAmount,
+    rentAmount,
+    jamaatLagat,
+    thaalCount,
+    thaalAmount,
+    refundAmount,
+    kitchenCleaningAmount,
+    totalAmountPending,
+  } = calcBookingTotals({
+    halls: record.hallBookings,
+    ...record,
+    jamaatLagatUnit: record.jamaatLagat,
+    perThaalCost,
+  });
 
   // Group amounts separately for columns
   const amountsLeft = [
     { label: "Deposit Amount", value: depositAmount },
     { label: "Rent Amount", value: rentAmount },
-    { label: "Thaal Amount", value: thaalAmount },
+    { label: "Kitchen Cleaning", value: kitchenCleaningAmount },
+    { label: "Jamaat Lagat", value: jamaatLagat },
+    {
+      label: `Thaal Amount (₹${thaalAmount / thaalCount || 0} x ${thaalCount})`,
+      value: thaalAmount,
+    },
     ...(record.extraExpenses > 0 ? [{ label: "Extra Expenses", value: record.extraExpenses }] : []),
     ...(record.writeOffAmount > 0
       ? [{ label: "Write Off Amount", value: record.writeOffAmount }]
@@ -33,7 +50,14 @@ const BookingSummary = () => {
     { label: "Paid Amount", value: record.paidAmount },
     { label: "Refund Amount", value: refundAmount },
     ...(record.refundReturnAmount > 0
-      ? [{ label: "Refund Return Amount", value: record.refundReturnAmount }]
+      ? [
+          { label: "Refund Amount Returned", value: record.refundReturnAmount },
+          {
+            label: "Refund Returned On",
+            value: dayjs(record.refundReturnedOn).format("DD MMM YYYY"),
+            type: "date",
+          },
+        ]
       : []),
   ];
 
@@ -56,7 +80,7 @@ const BookingSummary = () => {
 
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
-      <Grid item xs={12} md={6} borderRight="1px solid #efefef" pr={2}>
+      <Grid item size={{ xs: 12, md: 6 }} borderRight="1px solid #efefef" pr={2}>
         <Typography variant="h6" gutterBottom>
           Summary
         </Typography>
@@ -73,7 +97,7 @@ const BookingSummary = () => {
         </Table>
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid item size={{ xs: 12, md: 6 }}>
         <Typography variant="h6" gutterBottom>
           Payments
         </Typography>
@@ -82,14 +106,16 @@ const BookingSummary = () => {
           <TableBody>
             {amountsLeft.map((item, i) => (
               <TableRow key={item.label}>
-                <TableCell>
+                <TableCell sx={{ borderRight: "1px solid #efefef" }}>
                   <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
                 </TableCell>
                 <TableCell>
                   {amountsRight[i] ? (
                     <LabelValue
                       label={amountsRight[i].label}
-                      value={`₹${amountsRight[i].value ?? "0.00"}`}
+                      value={`${!amountsRight[i].type ? "₹" : ""}${
+                        amountsRight[i].value ?? "0.00"
+                      }`}
                     />
                   ) : (
                     ""

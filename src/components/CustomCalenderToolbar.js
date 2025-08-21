@@ -25,14 +25,19 @@ const CustomCalendarToolbar = ({
           {/* Date Picker */}
           <DatePicker
             label="Jump to date"
-            value={dayjs(selectedDate)}
+            value={selectedDate}
             onChange={(newValue) => {
-              if (newValue) {
+              if (newValue && newValue.isValid()) {
                 setSelectedDate(dayjs(newValue));
                 onNavigate("DATE", dayjs(newValue).toDate());
               }
             }}
-            slotProps={{ textField: { size: "small" } }}
+            slotProps={{
+              textField: {
+                size: "small",
+                inputProps: { readOnly: true }, // 👈 disables typing
+              },
+            }}
             sx={{ maxWidth: 200 }}
           />
           <IconButton onClick={() => onNavigate("PREV")}>

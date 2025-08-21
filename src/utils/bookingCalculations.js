@@ -1,26 +1,25 @@
-const PER_THAAL_COST = 110;
-
 /**
  * Calculate thaal amount based on number of thaals
  * @param {number} thaals
  * @returns {number}
  */
-const calculateThaalAmount = (thaals = 0) => (Number(thaals) || 0) * PER_THAAL_COST;
+const calculateThaalAmount = (thaals = 0, perThaalCost = 0) => (Number(thaals) || 0) * perThaalCost;
 
-/**
- * Total amount pending for payment
- * Formula: rentAmount + thaalAmount - paidAmount
- */
 const calculateTotalAmountPending = ({
   rentAmount = 0,
+  kitchenCleaningAmount = 0,
+  jamaatLagat = 0,
+  perThaalCost = 0,
   thaals = 0,
   paidAmount = 0,
   writeOffAmount = 0,
   extraExpenses = 0,
 }) => {
-  const thaalAmount = calculateThaalAmount(thaals);
+  const thaalAmount = calculateThaalAmount(thaals, perThaalCost);
   return (
     (Number(rentAmount) || 0) +
+    (Number(kitchenCleaningAmount) || 0) +
+    (Number(jamaatLagat) || 0) +
     thaalAmount +
     (Number(extraExpenses) || 0) -
     (Number(paidAmount) || 0) -
@@ -34,33 +33,47 @@ const calcBookingTotals = ({
   extraExpenses = 0,
   writeOffAmount = 0,
   paidAmount = 0,
+  jamaatLagatUnit = 0,
+  perThaalCost = 0,
 }) => {
   const {
     rent: rentAmount,
     deposit: depositAmount,
     thaals: thaalCount,
+    kitchenCleaning: kitchenCleaningAmount,
   } = halls.reduce(
-    (
-      { rent, deposit, thaals, total },
-      { rent: r = 0, deposit: d = 0, thaals: t = 0, acCharges = 0, withAC = false }
-    ) => {
-      const hallTotal = r + d + calculateThaalAmount(t);
-      let hallRent = rent + r;
-      if (withAC) {
-        hallRent += acCharges;
-      }
+    (acc, hall) => {
+      const {
+        rent = 0,
+        deposit = 0,
+        thaals = 0,
+        acCharges = 0,
+        kitchenCleaning = 0,
+        withAC = false,
+      } = hall;
+
+      const rentWithAC = rent + (withAC ? acCharges : 0);
+
       return {
-        rent: hallRent,
-        deposit: deposit + d,
-        thaals: thaals + t,
-        total: total + hallTotal,
+        rent: acc.rent + rentWithAC,
+        deposit: acc.deposit + deposit,
+        kitchenCleaning: acc.kitchenCleaning + kitchenCleaning,
+        thaals: acc.thaals + thaals,
       };
     },
-    { rent: 0, deposit: 0, thaals: 0, total: 0 }
+    { rent: 0, deposit: 0, kitchenCleaning: 0, thaals: 0, total: 0 }
   );
+
+  let jamaatLagat = 0;
+  if (jamaatLagatUnit > 0 && halls.length > 0) {
+    jamaatLagat = jamaatLagatUnit;
+  }
 
   const totalAmountPending = calculateTotalAmountPending({
     rentAmount,
+    kitchenCleaningAmount,
+    jamaatLagat,
+    perThaalCost,
     thaals: thaalCount,
     paidAmount,
     writeOffAmount,
@@ -73,13 +86,21 @@ const calcBookingTotals = ({
 
   return {
     rentAmount,
+    kitchenCleaningAmount,
+    jamaatLagat,
     depositAmount,
     thaalCount,
-    thaalAmount: calculateThaalAmount(thaalCount),
+    thaalAmount: calculateThaalAmount(thaalCount, perThaalCost),
     totalAmountPending,
     totalDepositPending,
     refundAmount,
   };
 };
 
-export { calcBookingTotals, calculateThaalAmount };
+const calcPerThaalCost = (halls = []) => {
+  if (halls.length === 0) return 0;
+  const { thaalAmount, thaals } = halls[0];
+  return thaalAmount / (thaals || 1);
+};
+
+export { calcBookingTotals, calcPerThaalCost };
