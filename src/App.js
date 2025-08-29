@@ -5,6 +5,8 @@ import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
 import { Route } from "react-router-dom";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import withClearCache from "./ClearCache";
 
@@ -40,6 +42,8 @@ import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint"
 import DefaultDashboard from "./containers/defaultDashboard";
 import employees from "./containers/employees";
 import employeesAttendance from "./containers/employeesAttendance";
+
+dayjs.extend(utc);
 
 const messages = {
   en: englishMessages,
