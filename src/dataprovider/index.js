@@ -10,10 +10,11 @@ const convertRows = (rows) => rows.map(unflatten);
 
 export default {
   getList: (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { pagination = {}, filter = {}, sort = {} } = params;
+    const { page = 1, perPage = 10 } = pagination;
+    const { field, order } = sort;
     const query = {
-      ...fetchUtils.flattenObject(params.filter),
+      ...fetchUtils.flattenObject(filter),
       orderBy: field,
       order,
       limit: perPage,

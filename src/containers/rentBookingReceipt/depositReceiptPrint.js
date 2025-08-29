@@ -36,15 +36,7 @@ const DepositReceiptPrint = () => {
   const toWords = new ToWords();
 
   return (
-    <div
-      className="main-div"
-      style={{
-        transform: "rotate(270deg)",
-        marginLeft: "-117px",
-        marginTop: " 117px",
-        height: "148mm",
-      }}
-    >
+    <div className="main-div">
       <div style={{ boxSizing: "border-box", height: "100%" }}>
         <div className="u-row-container" style={{ padding: 0 }}>
           <ReceiptHeader title="FAKHRI MOHALLA JAMAAT" subTitle="Deposit Receipt" />

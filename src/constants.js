@@ -5,6 +5,7 @@ export const permissionsList = [
   { id: "event.view", name: "View Events" },
   { id: "admins.view", name: "View Admin" },
   { id: "view.its.data", name: "View ITS Data" },
+  { id: "show.its.dump", name: "Show ITS Data" },
   { id: "niyaaz.view", name: "View Niyaaz" },
   { id: "niyaaz.create", name: "Create Niyaaz" },
   { id: "niyaaz.edit", name: "Edit Niyaaz" },
@@ -21,12 +22,19 @@ export const permissionsList = [
   { id: "halls.view", name: "Halls View/Edit/Delete" },
   { id: "bookings.view", name: "Bookings View/Edit" },
   { id: "writeoff.allow", name: "Has WriteOff" },
+  { id: "employees.view", name: "Employees View" },
 ];
 
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",
   BH: "Burhani Hall",
   ZM: "Zainy Masjid Sehen",
+};
+
+export const EMPLOYEE_TYPE = {
+  FMB_STAFF: "FMB_STAFF",
+  FM_STAFF: "FM STAFF",
+  BH_STAFF: "BH STAFF",
 };
 
 export const NAMAAZ_VENUE = {

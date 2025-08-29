@@ -38,6 +38,8 @@ import RazaPrint from "./containers/bookings/razaPrint";
 import rentBookingReceipt from "./containers/rentBookingReceipt";
 import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint";
 import DefaultDashboard from "./containers/defaultDashboard";
+import employees from "./containers/employees";
+import employeesAttendance from "./containers/employeesAttendance";
 
 const messages = {
   en: englishMessages,
@@ -70,7 +72,7 @@ const MainApp = () => {
         {(permissions) => (
           <>
             {permissions?.admins?.view && <Resource {...admin} />}
-            {permissions?.view?.its && <Resource {...itsdata} />}
+            {permissions?.show?.its && <Resource {...itsdata} />}
             {permissions?.vendors?.edit && <Resource {...vendor} />}
             {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
             {permissions?.halls?.view && <Resource {...bookingPurpose} />}
@@ -78,6 +80,8 @@ const MainApp = () => {
             {permissions?.bookings?.view && <Resource {...bookings} />}
             {permissions?.bookings?.view && <Resource {...rentBookingReceipt} />}
             {permissions?.bookings?.view && <Resource name="hallBookings" />}
+            {permissions?.employees?.view && <Resource {...employees} />}
+            {permissions?.employees?.view && <Resource {...employeesAttendance} />}
 
             {eventId && (
               <>
