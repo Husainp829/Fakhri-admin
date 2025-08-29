@@ -4,13 +4,12 @@ import { useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
-import { calcBookingTotals, calcPerThaalCost } from "../../../../utils/bookingCalculations";
+import { calcBookingTotals } from "../../../../utils/bookingCalculations";
 
 const BookingSummary = () => {
   const record = useRecordContext();
-  if (!record) return null;
 
-  const perThaalCost = calcPerThaalCost(record.hallBookings);
+  if (!record) return null;
 
   const {
     depositAmount,
@@ -22,36 +21,35 @@ const BookingSummary = () => {
     kitchenCleaningAmount,
     totalAmountPending,
   } = calcBookingTotals({
-    halls: record.hallBookings,
+    halls: (record.hallBookings || []).map((h) => ({ ...h, ...h.hall })),
     ...record,
-    jamaatLagatUnit: record.jamaatLagat,
-    perThaalCost,
+    jamaatLagatUnit: record.bookingPurpose?.jamaatLagat || 0,
+    perThaalCost: record.bookingPurpose?.perThaal,
+    mohalla: record.mohalla,
   });
 
   // Group amounts separately for columns
   const amountsLeft = [
-    { label: "Deposit Amount", value: depositAmount },
-    { label: "Rent Amount", value: rentAmount },
+    { label: "Deposit", value: depositAmount },
+    { label: "Contribution", value: rentAmount },
     { label: "Kitchen Cleaning", value: kitchenCleaningAmount },
     { label: "Jamaat Lagat", value: jamaatLagat },
     {
-      label: `Thaal Amount (₹${thaalAmount / thaalCount || 0} x ${thaalCount})`,
-      value: thaalAmount,
+      label: `Thaal (${thaalCount})`,
+      value: thaalAmount || 0,
     },
     ...(record.extraExpenses > 0 ? [{ label: "Extra Expenses", value: record.extraExpenses }] : []),
-    ...(record.writeOffAmount > 0
-      ? [{ label: "Write Off Amount", value: record.writeOffAmount }]
-      : []),
+    ...(record.writeOffAmount > 0 ? [{ label: "Write Off", value: record.writeOffAmount }] : []),
     { label: "Total Payable", value: totalAmountPending },
   ];
 
   const amountsRight = [
     { label: "Deposit Paid", value: record.depositPaidAmount },
-    { label: "Paid Amount", value: record.paidAmount },
-    { label: "Refund Amount", value: refundAmount },
+    { label: "Paid", value: record.paidAmount },
+    { label: "Refund", value: refundAmount },
     ...(record.refundReturnAmount > 0
       ? [
-          { label: "Refund Amount Returned", value: record.refundReturnAmount },
+          { label: "Refund Returned", value: record.refundReturnAmount },
           {
             label: "Refund Returned On",
             value: dayjs(record.refundReturnedOn).format("DD MMM YYYY"),

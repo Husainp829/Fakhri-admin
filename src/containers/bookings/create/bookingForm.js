@@ -44,6 +44,7 @@ export default function HallBookingForm() {
   const jamaatLagat = useWatch({ name: "jamaatLagat" });
   const jamaatLagatUnit = useWatch({ name: "jamaatLagatUnit" });
   const perThaalCost = useWatch({ name: "perThaalCost" });
+  const mohalla = useWatch({ name: "mohalla" });
 
   const mode = useWatch({ name: "mode" });
 
@@ -55,7 +56,12 @@ export default function HallBookingForm() {
     thaalCount,
     thaalAmount: thaals,
     totalAmountPending: totalPayable,
-  } = calcBookingTotals({ halls: hallBookings, jamaatLagatUnit, perThaalCost });
+  } = calcBookingTotals({
+    halls: hallBookings,
+    jamaatLagatUnit,
+    perThaalCost,
+    mohalla,
+  });
   useEffect(() => {
     if (rentAmount !== rent) {
       setValue("rentAmount", rent);
@@ -101,10 +107,7 @@ export default function HallBookingForm() {
           <TableBody>
             <LabelValue label="Deposit" value={depositAmount || 0} />
             <LabelValue label="Rent" value={rentAmount || 0} />
-            <LabelValue
-              label={`Thaal (₹${thaalAmount / thaalCount || perThaalCost || 0} x ${thaalCount})`}
-              value={thaalAmount || 0}
-            />
+            <LabelValue label={`Thaal (${thaalCount})`} value={thaalAmount || 0} />
             <LabelValue label="Kitchen Cleaning" value={kitchenCleaningAmount || 0} />
             <LabelValue label="Jamaat Lagat" value={jamaatLagat || 0} />
             <LabelValue label="Total Payable" value={totalPayable} />

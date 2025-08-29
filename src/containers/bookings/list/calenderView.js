@@ -57,7 +57,7 @@ const CalenderView = () => {
   const redirect = useRedirect();
 
   const [events, setEvents] = useState([]);
-  const [view, setView] = useState(Views.DAY);
+  const [view, setView] = useState(Views.MONTH);
   const [date, setDate] = useState(dayjs());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);

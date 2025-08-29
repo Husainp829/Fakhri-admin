@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NumberInput, useDataProvider } from "react-admin";
+import { TextInput, useDataProvider } from "react-admin";
 import CircularProgress from "@mui/material/CircularProgress";
 import Search from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
@@ -62,7 +62,7 @@ function ITSLookup() {
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        <NumberInput
+        <TextInput
           source="itsNo"
           label="ITS No"
           onChange={(e) => onChangeDetails(e)}

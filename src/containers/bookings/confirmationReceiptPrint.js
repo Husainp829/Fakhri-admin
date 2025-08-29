@@ -129,6 +129,19 @@ const ConfirmationVoucher = () => {
           Place:
           <Box flex={3} borderBottom="1px solid #cfcfcf" ml={1} />
         </Box>
+
+        <Box flex={1} borderBottom="1px solid #cfcfcf" sx={{ py: 1 }} />
+
+        <Box display="flex" justifyContent="space-between" my={2} mt={4}>
+          Refund Amount:
+          <Box flex={3} borderBottom="1px solid #cfcfcf" mr={5} ml={1} />
+          Refund Received:
+          <Box flex={3} borderBottom="1px solid #cfcfcf" ml={1} />
+        </Box>
+        <Box display="flex" justifyContent="space-between" my={2}>
+          Refund Date:
+          <Box flex={3} borderBottom="1px solid #cfcfcf" mr={5} ml={1} />
+        </Box>
       </Box>
     </Box>
   );

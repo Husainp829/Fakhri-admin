@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
 import { ReferenceField, TextField } from "react-admin";
+import dayjs from "dayjs";
 
 export default function HallBookingTable({ fields, remove }) {
   if (fields?.length === 0) {
@@ -32,7 +33,7 @@ export default function HallBookingTable({ fields, remove }) {
               </ReferenceField>
               <br />({hb.withAC ? "With AC" : "W/O AC"})
             </TableCell>
-            <TableCell>{hb.date}</TableCell>
+            <TableCell>{dayjs(hb.date).format("DD-MM-YYYY")}</TableCell>
             <TableCell sx={{ textTransform: "capitalize" }}>{hb.slot}</TableCell>
             <TableCell>{hb.thaals}</TableCell>
             <TableCell>
