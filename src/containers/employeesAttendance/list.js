@@ -15,12 +15,13 @@ import {
   MenuItem,
 } from "@mui/material";
 import dayjs from "dayjs";
+
 import { EMPLOYEE_TYPE } from "../../constants";
 import { callApi } from "../../dataprovider/miscApis";
 
 const EmployeeAttendanceList = () => {
   const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
-  const [type, setType] = useState(EMPLOYEE_TYPE.ROTI);
+  const [type, setType] = useState(EMPLOYEE_TYPE.FM_STAFF);
   const [attendance, setAttendance] = useState([]);
   const [daysInMonth, setDaysInMonth] = useState([]);
 
@@ -58,13 +59,13 @@ const EmployeeAttendanceList = () => {
     let cellContent;
     if (type === EMPLOYEE_TYPE.ROTI) {
       if (dayData.checkIn) {
-        cellContent = dayjs(dayData.checkIn).format("HH:mm");
+        cellContent = dayjs.utc(dayData.checkIn).format("HH:mm");
       } else {
         cellContent = "-";
       }
     } else {
-      const checkIn = dayData.checkIn ? dayjs(dayData.checkIn).format("HH:mm") : "-";
-      const checkOut = dayData.checkOut ? dayjs(dayData.checkOut).format("HH:mm") : "-";
+      const checkIn = dayData.checkIn ? dayjs.utc(dayData.checkIn).format("HH:mm") : "-";
+      const checkOut = dayData.checkOut ? dayjs.utc(dayData.checkOut).format("HH:mm") : "-";
       cellContent = `${checkIn} - ${checkOut}`;
     }
     return cellContent;

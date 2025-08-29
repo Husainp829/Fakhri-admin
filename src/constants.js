@@ -32,9 +32,9 @@ export const MARKAZ_LIST = {
 };
 
 export const EMPLOYEE_TYPE = {
+  FM_STAFF: "FM_STAFF",
+  BH_STAFF: "BH_STAFF",
   FMB_STAFF: "FMB_STAFF",
-  FM_STAFF: "FM STAFF",
-  BH_STAFF: "BH STAFF",
 };
 
 export const NAMAAZ_VENUE = {
