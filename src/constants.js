@@ -68,3 +68,10 @@ export const slotNameMap = {
   afternoon: "Afternoon",
   evening: "Evening",
 };
+
+export const hallColorMap = {
+  BH: "#32CD32",
+  "FM-G": "#FF8C00",
+  "FM-1": "#FF4500",
+  "FM-2": "#1E90FF",
+};

@@ -34,7 +34,10 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
   const [validationError, setValidationError] = useState("");
 
   // 🔑 Get halls list with React-Admin
-  const { data: halls = [] } = useGetList("halls");
+  const { data: halls = [] } = useGetList("halls", {
+    pagination: { page: 1, perPage: 100 },
+    sort: { field: "name", order: "ASC" },
+  });
 
   const handleFieldChange = (field, value) => {
     setNewHall((prev) => ({ ...prev, [field]: value }));
