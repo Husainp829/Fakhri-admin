@@ -21,7 +21,7 @@ import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "../../../utils/dayjsLocalizer";
 import CustomCalendarToolbar from "../../../components/CustomCalenderToolbar";
-import { slotTimeRanges } from "../../../constants";
+import { hallColorMap, slotTimeRanges } from "../../../constants";
 
 // Extend dayjs
 dayjs.extend(weekday);
@@ -151,6 +151,15 @@ const CalenderView = () => {
               setSelectedDate={setDate}
             />
           ),
+        }}
+        eventPropGetter={(event) => {
+          const hallShortCode = event?.resource?.hall?.shortCode;
+          return {
+            style: {
+              backgroundColor: hallColorMap[hallShortCode] || "grey",
+              color: "white",
+            },
+          };
         }}
       />
 

@@ -8,7 +8,7 @@ export default {
   edit: Edit,
   create: Create,
   icon: Icon,
-  label: "Employees",
-  options: { label: "Employees" },
+  label: "Staff",
+  options: { label: "Staff" },
   name: "employees",
 };

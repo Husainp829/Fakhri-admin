@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from "react";
-import { Title } from "react-admin";
+import { Button, Title } from "react-admin";
+import Icon from "@mui/icons-material/RefreshRounded";
 import {
   Box,
   Table,
@@ -83,14 +84,13 @@ const EmployeeAttendanceList = () => {
           size="small"
           sx={{ width: "15rem" }}
         />
-        <FormControl size="small">
+        <FormControl size="small" sx={{ width: "15rem" }}>
           <InputLabel id="type-label">Type</InputLabel>
           <Select
             labelId="type-label"
             value={type}
             onChange={(e) => setType(e.target.value)}
             label="Type"
-            sx={{ width: "15rem" }}
           >
             {Object.entries(EMPLOYEE_TYPE).map(([key, value]) => (
               <MenuItem key={key} value={key}>
@@ -99,6 +99,13 @@ const EmployeeAttendanceList = () => {
             ))}
           </Select>
         </FormControl>
+        <Button
+          variant="text"
+          onClick={fetchData}
+          sx={{ alignSelf: "center" }}
+          label="Refresh"
+          startIcon={<Icon />}
+        />
       </Box>
 
       <Table

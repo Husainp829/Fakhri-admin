@@ -4,7 +4,7 @@ import List from "./list";
 export default {
   list: List,
   icon: Icon,
-  label: "Employees Attendance",
-  options: { label: "Employees Attendance" },
+  label: "Staff Attendance",
+  options: { label: "Staff Attendance" },
   name: "employeesAttendance",
 };
