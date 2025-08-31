@@ -107,8 +107,14 @@ export default function HallBookingForm() {
           <TableBody>
             <LabelValue label="Deposit" value={depositAmount || 0} />
             <LabelValue label="Rent" value={rentAmount || 0} />
-            <LabelValue label={`Thaal (${thaalCount})`} value={thaalAmount || 0} />
-            <LabelValue label="Kitchen Cleaning" value={kitchenCleaningAmount || 0} />
+            {thaalAmount > 0 && (
+              <LabelValue label={`Thaal (${thaalCount})`} value={thaalAmount || 0} />
+            )}
+
+            {kitchenCleaningAmount > 0 && (
+              <LabelValue label="Kitchen Cleaning" value={kitchenCleaningAmount || 0} />
+            )}
+
             <LabelValue label="Jamaat Lagat" value={jamaatLagat || 0} />
             <LabelValue label="Total Payable" value={totalPayable} />
           </TableBody>
