@@ -32,12 +32,18 @@ const BookingSummary = () => {
   const amountsLeft = [
     { label: "Deposit", value: depositAmount },
     { label: "Contribution", value: rentAmount },
-    { label: "Kitchen Cleaning", value: kitchenCleaningAmount },
+    ...(kitchenCleaningAmount > 0
+      ? [{ label: "Kitchen Cleaning", value: kitchenCleaningAmount }]
+      : []),
     { label: "Jamaat Lagat", value: jamaatLagat },
-    {
-      label: `Thaal (${thaalCount})`,
-      value: thaalAmount || 0,
-    },
+    ...(thaalAmount > 0
+      ? [
+          {
+            label: `Thaal (${thaalCount})`,
+            value: thaalAmount || 0,
+          },
+        ]
+      : []),
     ...(record.extraExpenses > 0 ? [{ label: "Extra Expenses", value: record.extraExpenses }] : []),
     ...(record.writeOffAmount > 0 ? [{ label: "Write Off", value: record.writeOffAmount }] : []),
     { label: "Total Payable", value: totalAmountPending },

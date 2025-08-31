@@ -26,7 +26,7 @@ const init = {
   date: "",
   slot: "",
   thaals: 0,
-  withAC: false,
+  withAC: true,
 };
 
 export default function HallBookingModal({ open, onClose, append, hallBookings }) {
