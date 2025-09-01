@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDataProvider, useNotify, useRedirect } from "react-admin";
 import { Calendar, Views } from "react-big-calendar";
+import { useSearchParams } from "react-router-dom";
 import {
   Dialog,
   DialogTitle,
@@ -56,9 +58,17 @@ const CalenderView = () => {
   const notify = useNotify();
   const redirect = useRedirect();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // defaults from URL or fallback
+  const initialView = searchParams.get("view") || Views.MONTH;
+  const initialDate = dayjs(searchParams.get("date"))?.isValid()
+    ? dayjs(searchParams.get("date"))
+    : dayjs();
+
   const [events, setEvents] = useState([]);
-  const [view, setView] = useState(Views.MONTH);
-  const [date, setDate] = useState(dayjs());
+  const [view, setView] = useState(initialView);
+  const [date, setDate] = useState(initialDate);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -123,10 +133,17 @@ const CalenderView = () => {
   };
 
   useEffect(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("view", view);
+    newParams.set("date", date.format("YYYY-MM-DD"));
+    setSearchParams(newParams);
+  }, [view, date, setSearchParams]);
+
+  useEffect(() => {
     const timeout = setTimeout(loadEvents, 500);
 
     return () => clearTimeout(timeout);
-  }, [view, date, notify, dataProvider]);
+  }, [view, date]);
 
   return (
     <div>
@@ -142,6 +159,7 @@ const CalenderView = () => {
         onSelectEvent={handleSelectEvent}
         style={{ height: "calc(90vh - 35px)" }}
         tooltipAccessor={null}
+        date={date}
         components={{
           event: CustomEventComponent,
           toolbar: (toolbarProps) => (

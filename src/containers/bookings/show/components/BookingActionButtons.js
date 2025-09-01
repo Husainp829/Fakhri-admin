@@ -20,7 +20,7 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
 import { callApi } from "../../../../dataprovider/miscApis";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+import { useShowTotals } from "../context";
 
 const ConfirmConfig = {
   raza: {
@@ -50,15 +50,7 @@ const BookingShowActions = () => {
   const [confirmConfig, setConfirmConfig] = useState(null); // { type, open, loading }
   const [anchorEl, setAnchorEl] = useState(null);
 
-  if (!record) return null;
-
-  const { totalAmountPending } = calcBookingTotals({
-    halls: record.hallBookings,
-    ...record,
-    jamaatLagatUnit: record.bookingPurpose?.jamaatLagat || 0,
-    perThaalCost: record.bookingPurpose?.perThaal,
-    mohalla: record.mohalla,
-  });
+  const { totalAmountPending } = useShowTotals();
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);

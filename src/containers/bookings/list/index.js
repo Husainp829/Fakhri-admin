@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { CreateButton, Title, TopToolbar } from "react-admin";
+import { useSearchParams } from "react-router-dom";
 import CalenderView from "./calenderView";
 import ListView from "./listView";
 
@@ -13,9 +14,15 @@ const BookingActions = () => (
 );
 
 const HallBookingCalendar = () => {
-  const [value, setValue] = useState("CALENDAR");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const viewParam = searchParams.get("tab") || "CALENDAR";
+
   const handleChange = (e, newValue) => {
-    setValue(newValue);
+    if (newValue) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("tab", newValue);
+      setSearchParams(newParams);
+    }
   };
 
   return (
@@ -28,7 +35,7 @@ const HallBookingCalendar = () => {
         }}
       >
         <BookingActions />
-        <ToggleButtonGroup value={value} exclusive onChange={handleChange} sx={{ ml: 3 }}>
+        <ToggleButtonGroup value={viewParam} exclusive onChange={handleChange} sx={{ ml: 3 }}>
           <ToggleButton value="CALENDAR" aria-label="calendar">
             <CalendarMonthIcon />
           </ToggleButton>
@@ -37,8 +44,8 @@ const HallBookingCalendar = () => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      {value === "CALENDAR" && <CalenderView />}
-      {value === "LIST" && <ListView />}
+      {viewParam === "CALENDAR" && <CalenderView />}
+      {viewParam === "LIST" && <ListView />}
     </div>
   );
 };

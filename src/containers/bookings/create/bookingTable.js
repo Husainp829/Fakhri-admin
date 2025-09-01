@@ -12,6 +12,7 @@ export default function HallBookingTable({ fields, remove }) {
       <TableHead>
         <TableRow>
           <TableCell>Hall</TableCell>
+          <TableCell>Purpose</TableCell>
           <TableCell>Date</TableCell>
           <TableCell>Slot</TableCell>
           <TableCell>Thaals</TableCell>
@@ -33,6 +34,7 @@ export default function HallBookingTable({ fields, remove }) {
               </ReferenceField>
               <br />({hb.withAC ? "With AC" : "W/O AC"})
             </TableCell>
+            <TableCell>{hb.purpose}</TableCell>
             <TableCell>{dayjs(hb.date).format("DD-MM-YYYY")}</TableCell>
             <TableCell sx={{ textTransform: "capitalize" }}>{hb.slot}</TableCell>
             <TableCell>{hb.thaals}</TableCell>

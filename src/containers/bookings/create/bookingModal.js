@@ -39,6 +39,11 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
     sort: { field: "name", order: "ASC" },
   });
 
+  const { data: purposes = [] } = useGetList("bookingPurpose", {
+    pagination: { page: 1, perPage: 100 },
+    sort: { field: "id", order: "ASC" },
+  });
+
   const handleFieldChange = (field, value) => {
     setNewHall((prev) => ({ ...prev, [field]: value }));
   };
@@ -114,6 +119,25 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
             {halls.map((hall) => (
               <MenuItem key={hall.id} value={hall.id}>
                 {hall.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <InputLabel>Purpose</InputLabel>
+          <Select
+            label="Purpose"
+            value={newHall.purpose}
+            onChange={(e) => {
+              const purpose = purposes.find((h) => h.id === e.target.value);
+              handleFieldChange("purpose", purpose.id);
+              handleFieldChange("perThaal", purpose.perThaal || 0);
+              handleFieldChange("jamaatLagat", purpose.jamaatLagat || 0);
+            }}
+          >
+            {purposes.map((p) => (
+              <MenuItem key={p.id} value={p.id}>
+                {p.name}
               </MenuItem>
             ))}
           </Select>
