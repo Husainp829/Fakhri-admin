@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useEffect, useState } from "react";
-import { TextInput, ReferenceInput, NumberInput, RadioButtonGroupInput } from "react-admin";
+import { TextInput, NumberInput, RadioButtonGroupInput } from "react-admin";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -8,7 +8,6 @@ import ITSLookup from "../common/ITSLookup";
 import HallBookingTable from "./bookingTable";
 import HallBookingModal from "./bookingModal";
 import { calcBookingTotals } from "../../../utils/bookingCalculations";
-import { PurposeInput } from "../common/purposeInput";
 
 const LabelValue = ({ label, value, labelProps = {}, valueProps = {} }) => (
   <TableRow>
@@ -42,8 +41,6 @@ export default function HallBookingForm() {
   const depositAmount = useWatch({ name: "depositAmount" });
   const thaalAmount = useWatch({ name: "thaalAmount" });
   const jamaatLagat = useWatch({ name: "jamaatLagat" });
-  const jamaatLagatUnit = useWatch({ name: "jamaatLagatUnit" });
-  const perThaalCost = useWatch({ name: "perThaalCost" });
   const mohalla = useWatch({ name: "mohalla" });
 
   const mode = useWatch({ name: "mode" });
@@ -58,8 +55,6 @@ export default function HallBookingForm() {
     totalAmountPending: totalPayable,
   } = calcBookingTotals({
     halls: hallBookings,
-    jamaatLagatUnit,
-    perThaalCost,
     mohalla,
   });
   useEffect(() => {
@@ -88,10 +83,6 @@ export default function HallBookingForm() {
         <TextInput source="organiser" label="Organiser" fullWidth isRequired sx={{ mt: 3 }} />
 
         <TextInput source="phone" label="Phone" fullWidth isRequired />
-
-        <ReferenceInput source="purpose" reference="bookingPurpose">
-          <PurposeInput label="Purpose" optionText="name" debounce={300} fullWidth required />
-        </ReferenceInput>
 
         <TextInput source="mohalla" label="Mohalla" defaultValue="Fakhri Mohalla" fullWidth />
         <TextInput source="sadarat" label="Sadarat" fullWidth />

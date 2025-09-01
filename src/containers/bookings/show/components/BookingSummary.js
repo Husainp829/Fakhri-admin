@@ -4,12 +4,11 @@ import { useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+
+import { useShowTotals } from "../context";
 
 const BookingSummary = () => {
   const record = useRecordContext();
-
-  if (!record) return null;
 
   const {
     depositAmount,
@@ -20,13 +19,7 @@ const BookingSummary = () => {
     refundAmount,
     kitchenCleaningAmount,
     totalAmountPending,
-  } = calcBookingTotals({
-    halls: (record.hallBookings || []).map((h) => ({ ...h, ...h.hall })),
-    ...record,
-    jamaatLagatUnit: record.bookingPurpose?.jamaatLagat || 0,
-    perThaalCost: record.bookingPurpose?.perThaal,
-    mohalla: record.mohalla,
-  });
+  } = useShowTotals();
 
   // Group amounts separately for columns
   const amountsLeft = [
@@ -74,8 +67,8 @@ const BookingSummary = () => {
 
   const labelValueConfig = [
     { label: "Organizer", value: record.organiser },
+    { label: "ItsNo", value: record.itsNo },
     { label: "Phone", value: record.phone },
-    { label: "Purpose", value: record.purpose },
     { label: "Mohalla", value: record.mohalla },
     { label: "Sadarat", value: record.sadarat || "-" },
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },

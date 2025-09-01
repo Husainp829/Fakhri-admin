@@ -1,4 +1,3 @@
-// export const apiUrl = "http://localhost:3012";
 export const apiUrl = "https://jmsapi.rapid-events.com";
 
 export const permissionsList = [

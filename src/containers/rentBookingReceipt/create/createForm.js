@@ -67,32 +67,32 @@ export default function BookingReceiptForm({ bookingId }) {
   const totalAmountPending = useWatch({ name: "totalAmountPending" });
   const totalDepositPending = useWatch({ name: "totalDepositPending" });
 
+  const fetchData = async () => {
+    try {
+      const { data } = await callApi(`bookings/${bookingId}`, {}, "GET");
+
+      if (data.count > 0) {
+        const bookingData = data?.rows[0] || {};
+        const { totalAmountPending: totalAmount, totalDepositPending: totalDeposit } =
+          calcBookingTotals({
+            halls: bookingData.hallBookings.map((h) => ({ ...h, ...h.hall, ...h.bookingPurpose })),
+            ...bookingData,
+          });
+
+        setValue("organiser", bookingData.organiser);
+        setValue("organiserIts", bookingData.itsNo);
+        setValue("totalAmountPending", totalAmount);
+        setValue("totalDepositPending", totalDeposit);
+        setValue("mode", "CASH");
+      }
+    } catch (err) {
+      notify(err.message);
+    }
+  };
+
   useEffect(() => {
     if (!bookingId) return;
-
-    callApi(`bookings/${bookingId}`, {}, "GET")
-      .then(({ data }) => {
-        if (data.count > 0) {
-          const bookingData = data?.rows[0] || {};
-          const { totalAmountPending: totalAmount, totalDepositPending: totalDeposit } =
-            calcBookingTotals({
-              halls: bookingData.hallBookings,
-              ...bookingData,
-              jamaatLagatUnit: bookingData.bookingPurpose?.jamaatLagat || 0,
-              perThaalCost: bookingData.bookingPurpose?.perThaal,
-              mohalla: bookingData.mohalla,
-            });
-
-          setValue("organiser", bookingData.organiser);
-          setValue("organiserIts", bookingData.itsNo);
-          setValue("totalAmountPending", totalAmount);
-          setValue("totalDepositPending", totalDeposit);
-          setValue("mode", "CASH");
-        }
-      })
-      .catch((err) => {
-        notify(err.message);
-      });
+    fetchData();
   }, [bookingId, notify, setValue]);
 
   return (

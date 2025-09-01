@@ -221,6 +221,7 @@ const HallBookingsTable = () => {
         <TableHead>
           <TableRow>
             <TableCell>Hall</TableCell>
+            <TableCell>Purpose</TableCell>
             <TableCell>AC</TableCell>
             <TableCell>Thaals</TableCell>
             <TableCell>Date</TableCell>
@@ -230,19 +231,23 @@ const HallBookingsTable = () => {
         </TableHead>
         <TableBody>
           {hallBookings.length > 0 ? (
-            hallBookings.map((hb) => (
-              <TableRow key={hb.id}>
-                <TableCell>{hb.hall?.name}</TableCell>
-                <TableCell>{hb.withAC ? "With AC" : "W/O AC"}</TableCell>
-                <TableCell>{hb.thaals}</TableCell>
-                <TableCell>{new Date(hb.date).toLocaleDateString()}</TableCell>
-                <TableCell>{slotNameMap[hb.slot]}</TableCell>
-                {!record.checkedOutOn && (
-                  <TableCell align="right">
-                    <IconButton onClick={() => handleEdit(hb.id)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton onClick={() => {}}>
+            hallBookings
+              .slice()
+              .sort((a, b) => new Date(a.date) - new Date(b.date))
+              .map((hb) => (
+                <TableRow key={hb.id}>
+                  <TableCell>{hb.hall?.name}</TableCell>
+                  <TableCell>{hb.purpose}</TableCell>
+                  <TableCell>{hb.withAC ? "With AC" : "W/O AC"}</TableCell>
+                  <TableCell>{hb.thaals}</TableCell>
+                  <TableCell>{new Date(hb.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{slotNameMap[hb.slot]}</TableCell>
+                  {!record.checkedOutOn && (
+                    <TableCell align="right">
+                      <IconButton onClick={() => handleEdit(hb.id)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+
                       <IconButton
                         color="error"
                         onClick={() => {
@@ -252,11 +257,10 @@ const HallBookingsTable = () => {
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
-                    </IconButton>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
           ) : (
             <TableRow>
               <TableCell colSpan={6} align="center">

@@ -17,8 +17,8 @@ import {
 import Grid from "@mui/material/GridLegacy";
 import { useGetList } from "react-admin";
 import dayjs from "dayjs";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
 import { slotNameMap } from "../../../../constants";
+import { useShowTotals } from "../context";
 
 const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {
   const [actualThaals, setActualThaals] = useState({});
@@ -41,33 +41,27 @@ const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {
     }
   }, [hallBookings]);
 
-  // Calculations
-  const breakdown = useMemo(() => {
-    const {
-      thaalAmount,
-      thaalCount,
-      refundAmount: refund,
-      jamaatLagat,
-      totalAmountPending,
-      rentAmount,
-    } = calcBookingTotals({
-      halls: hallBookings.map((h) => ({ ...h, thaals: actualThaals[h.id] })),
-      ...record,
-      jamaatLagatUnit: record.bookingPurpose?.jamaatLagat || 0,
-      perThaalCost: record.bookingPurpose?.perThaal,
-      extraExpenses: Number(extraExpenses) || 0,
-      mohalla: record.mohalla,
-    });
+  const {
+    rentAmount,
+    jamaatLagat,
+    thaalCount,
+    thaalAmount,
+    refundAmount: refund,
+    totalAmountPending,
+  } = useShowTotals();
 
-    return {
+  // Calculations
+  const breakdown = useMemo(
+    () => ({
       rentAmount,
       jamaatLagat,
       thaalAmount,
       thaalCount,
       totalPending: totalAmountPending,
       refund,
-    };
-  }, [actualThaals, extraExpenses, record]);
+    }),
+    [actualThaals, extraExpenses, record]
+  );
 
   const handleThaalsChange = (hallId, value) => {
     setActualThaals((prev) => ({
