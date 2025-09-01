@@ -35,6 +35,7 @@ export const EMPLOYEE_TYPE = {
   FM_STAFF: "FM_STAFF",
   BH_STAFF: "BH_STAFF",
   FMB_STAFF: "FMB_STAFF",
+  ROTI_STAFF: "ROTI_STAFF",
 };
 
 export const NAMAAZ_VENUE = {

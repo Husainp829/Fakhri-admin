@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from "react";
-import { Button, Title } from "react-admin";
+import { Title } from "react-admin";
 import Icon from "@mui/icons-material/RefreshRounded";
 import {
   Box,
@@ -14,6 +14,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import dayjs from "dayjs";
 
@@ -57,18 +58,14 @@ const EmployeeAttendanceList = () => {
     const dayData = emp.days[d];
     if (!dayData) return "X";
 
-    let cellContent;
-    if (type === EMPLOYEE_TYPE.ROTI) {
-      if (dayData.checkIn) {
-        cellContent = dayjs.utc(dayData.checkIn).format("HH:mm");
-      } else {
-        cellContent = "-";
-      }
-    } else {
-      const checkIn = dayData.checkIn ? dayjs.utc(dayData.checkIn).format("HH:mm") : "-";
-      const checkOut = dayData.checkOut ? dayjs.utc(dayData.checkOut).format("HH:mm") : "-";
-      cellContent = `${checkIn} - ${checkOut}`;
+    if (typeof dayData === "string") {
+      return dayjs.utc(dayData).format("HH:mm");
     }
+
+    const checkIn = dayData.checkIn ? dayjs.utc(dayData.checkIn).format("HH:mm") : "-";
+    const checkOut = dayData.checkOut ? dayjs.utc(dayData.checkOut).format("HH:mm") : "-";
+    const cellContent = `${checkIn} - ${checkOut}`;
+
     return cellContent;
   };
 
@@ -82,9 +79,9 @@ const EmployeeAttendanceList = () => {
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           size="small"
-          sx={{ width: "15rem" }}
+          sx={{ width: "15rem !important" }}
         />
-        <FormControl size="small" sx={{ width: "15rem" }}>
+        <FormControl size="small" sx={{ width: "15rem !important" }}>
           <InputLabel id="type-label">Type</InputLabel>
           <Select
             labelId="type-label"
@@ -99,13 +96,16 @@ const EmployeeAttendanceList = () => {
             ))}
           </Select>
         </FormControl>
-        <Button
-          variant="text"
-          onClick={fetchData}
-          sx={{ alignSelf: "center" }}
+        <IconButton
           label="Refresh"
-          startIcon={<Icon />}
-        />
+          edge="start"
+          color="inherit"
+          onClick={fetchData}
+          aria-label="close"
+          sx={{ display: "flex", alignSelf: "center" }}
+        >
+          <Icon />
+        </IconButton>
       </Box>
 
       <Table
