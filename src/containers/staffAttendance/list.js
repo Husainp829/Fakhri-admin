@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { EMPLOYEE_TYPE } from "../../constants";
 import { callApi } from "../../dataprovider/miscApis";
 
-const EmployeeAttendanceList = () => {
+const StaffAttendanceList = () => {
   const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
   const [type, setType] = useState(EMPLOYEE_TYPE.FM_STAFF);
   const [attendance, setAttendance] = useState([]);
@@ -76,7 +76,7 @@ const EmployeeAttendanceList = () => {
 
   return (
     <Box p={2}>
-      <Title title="Employee Attendance" />
+      <Title title="Staff Attendance" />
       <Box mb={2} display="flex" gap={2}>
         <TextField
           label="Month"
@@ -125,7 +125,7 @@ const EmployeeAttendanceList = () => {
         <TableHead>
           <TableRow>
             <TableCell>Id</TableCell>
-            <TableCell>Employee</TableCell>
+            <TableCell>Name</TableCell>
             {daysInMonth.map((d) => {
               const date = dayjs(`${month}-${String(d).padStart(2, "0")}`);
               const dayLabel = date.format("ddd"); // 3-letter day
@@ -166,4 +166,4 @@ const EmployeeAttendanceList = () => {
   );
 };
 
-export default EmployeeAttendanceList;
+export default StaffAttendanceList;
