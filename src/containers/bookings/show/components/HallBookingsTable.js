@@ -95,6 +95,9 @@ const HallBookingEditModal = ({ id, open, onClose }) => {
           <SimpleForm toolbar={<CustomToolbar onClose={onClose} />}>
             <TextInput source="hall.name" label="Hall" disabled fullWidth />
             <NumberInput source="thaals" label="Thaals" fullWidth />
+            <ReferenceInput source="purpose" reference="bookingPurpose" fullWidth>
+              <SelectInput optionText="name" fullWidth />
+            </ReferenceInput>
             <DateInput source="date" label="Date" fullWidth />
             <SelectInput
               source="slot"
@@ -146,6 +149,9 @@ const HallBookingCreateModal = ({ open, onClose, bookingId }) => {
         >
           <SimpleForm defaultValues={{ bookingId }}>
             <ReferenceInput source="hallId" reference="halls">
+              <SelectInput optionText="name" fullWidth />
+            </ReferenceInput>
+            <ReferenceInput source="purpose" reference="bookingPurpose" fullWidth>
               <SelectInput optionText="name" fullWidth />
             </ReferenceInput>
             <NumberInput source="thaals" label="Thaals" fullWidth />

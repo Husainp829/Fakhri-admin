@@ -1,4 +1,5 @@
 export const apiUrl = "https://jmsapi.rapid-events.com";
+// export const apiUrl = "http://localhost:3012";
 
 export const permissionsList = [
   { id: "event.view", name: "View Events" },
@@ -31,10 +32,10 @@ export const MARKAZ_LIST = {
 };
 
 export const EMPLOYEE_TYPE = {
-  FM_STAFF: "FM_STAFF",
-  BH_STAFF: "BH_STAFF",
-  FMB_STAFF: "FMB_STAFF",
-  ROTI_STAFF: "ROTI_STAFF",
+  FM_STAFF: "FM STAFF",
+  BH_STAFF: "BH STAFF",
+  FMB_STAFF: "FMB STAFF",
+  ROTI_STAFF: "ROTI STAFF",
 };
 
 export const NAMAAZ_VENUE = {
