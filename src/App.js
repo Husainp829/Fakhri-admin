@@ -40,8 +40,8 @@ import RazaPrint from "./containers/bookings/razaPrint";
 import rentBookingReceipt from "./containers/rentBookingReceipt";
 import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint";
 import DefaultDashboard from "./containers/defaultDashboard";
-import employees from "./containers/employees";
-import employeesAttendance from "./containers/employeesAttendance";
+import staff from "./containers/staff";
+import staffAttendance from "./containers/staffAttendance";
 
 dayjs.extend(utc);
 
@@ -84,8 +84,8 @@ const MainApp = () => {
             {permissions?.bookings?.view && <Resource {...bookings} />}
             {permissions?.bookings?.view && <Resource {...rentBookingReceipt} />}
             {permissions?.bookings?.view && <Resource name="hallBookings" />}
-            {permissions?.employees?.view && <Resource {...employees} />}
-            {permissions?.employees?.view && <Resource {...employeesAttendance} />}
+            {permissions?.employees?.view && <Resource {...staff} />}
+            {permissions?.employees?.view && <Resource {...staffAttendance} />}
 
             {eventId && (
               <>

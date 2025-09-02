@@ -64,7 +64,12 @@ const EmployeeAttendanceList = () => {
 
     const checkIn = dayData.checkIn ? dayjs.utc(dayData.checkIn).format("HH:mm") : "-";
     const checkOut = dayData.checkOut ? dayjs.utc(dayData.checkOut).format("HH:mm") : "-";
-    const cellContent = `${checkIn} - ${checkOut}`;
+    let cellContent;
+    if (checkIn === checkOut) {
+      cellContent = `${checkIn} - X`;
+    } else {
+      cellContent = `${checkIn} - ${checkOut}`;
+    }
 
     return cellContent;
   };

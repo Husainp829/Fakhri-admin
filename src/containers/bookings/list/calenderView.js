@@ -209,7 +209,7 @@ const CalenderView = () => {
                 <LabelValue label="phone" value={selectedEvent?.booking?.phone || "N/A"} />
                 <LabelValue
                   label="Purpose"
-                  value={selectedEvent?.booking?.purpose || "N/A"}
+                  value={selectedEvent?.purpose || "N/A"}
                   grid={12}
                 />
                 <LabelValue label="Hall" value={selectedEvent?.hall?.name || "N/A"} grid={12} />
