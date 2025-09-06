@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useEffect, useState } from "react";
-import { TextInput, NumberInput, RadioButtonGroupInput } from "react-admin";
+import { TextInput, RadioButtonGroupInput } from "react-admin";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -8,6 +8,7 @@ import ITSLookup from "../common/ITSLookup";
 import HallBookingTable from "./bookingTable";
 import HallBookingModal from "./bookingModal";
 import { calcBookingTotals } from "../../../utils/bookingCalculations";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 const LabelValue = ({ label, value, labelProps = {}, valueProps = {} }) => (
   <TableRow>
@@ -111,7 +112,7 @@ export default function HallBookingForm() {
           </TableBody>
         </Table>
 
-        <NumberInput
+        <NoArrowKeyNumberInput
           label="Deposit Amount Paid"
           source="depositPaidAmount"
           fullWidth
@@ -120,7 +121,12 @@ export default function HallBookingForm() {
           helperText="Accept Deposit Amount In Cash Only"
         />
 
-        <NumberInput label="Rent Amount Paid" source="paidAmount" fullWidth defaultValue={0} />
+        <NoArrowKeyNumberInput
+          label="Rent Amount Paid"
+          source="paidAmount"
+          fullWidth
+          defaultValue={0}
+        />
 
         <RadioButtonGroupInput
           source="mode"
