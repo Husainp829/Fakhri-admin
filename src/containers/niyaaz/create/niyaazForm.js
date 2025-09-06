@@ -19,6 +19,7 @@ import NiyaazDataGrid from "../common/niyaazDataGrid";
 import { calcTotalPayable } from "../../../utils";
 import { EventContext } from "../../../dataprovider/eventProvider";
 import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default () => {
   const { setValue } = useFormContext();
@@ -93,14 +94,14 @@ export default () => {
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
           <Grid item lg={6} xs={6}>
-            <NumberInput source="takhmeenAmount" fullWidth defaultValue={0} />
+            <NoArrowKeyNumberInput source="takhmeenAmount" fullWidth defaultValue={0} />
           </Grid>
           <Grid item lg={6} xs={6}>
-            <NumberInput source="iftaari" fullWidth defaultValue={0} />
+            <NoArrowKeyNumberInput source="iftaari" fullWidth defaultValue={0} />
           </Grid>
 
           <Grid item lg={6} xs={6}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               source="zabihat"
               fullWidth
               defaultValue={0}
@@ -128,7 +129,7 @@ export default () => {
           </Grid>
 
           <Grid item lg={12} xs={12}>
-            <NumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
+            <NoArrowKeyNumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
           </Grid>
           <Grid item lg={6} xs={6}>
             <RadioButtonGroupInput

@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo } from "react";
 import {
   TextInput,
-  NumberInput,
   RadioButtonGroupInput,
   useNotify,
   minValue,
@@ -14,6 +13,7 @@ import { useWatch, useFormContext } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { callApi } from "../../../dataprovider/miscApis";
 import { calcBookingTotals } from "../../../utils/bookingCalculations";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 const PaymentFields = ({ pending, type }) => {
   const mode = useWatch({ name: "mode" });
@@ -34,7 +34,7 @@ const PaymentFields = ({ pending, type }) => {
       </Grid>
 
       <Grid item size={{ lg: 6, xs: 12 }}>
-        <NumberInput source="amount" fullWidth validate={validateAmount} />
+        <NoArrowKeyNumberInput source="amount" fullWidth validate={validateAmount} />
       </Grid>
       {type === "RENT" && (
         <Grid item size={{ lg: 12, xs: 12 }}>
