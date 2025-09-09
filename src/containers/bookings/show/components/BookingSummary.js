@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from "react";
-import { useRecordContext } from "react-admin";
+import { usePermissions, useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
@@ -9,6 +9,7 @@ import { useShowTotals } from "../context";
 
 const BookingSummary = () => {
   const record = useRecordContext();
+  const { permissions } = usePermissions();
 
   const {
     depositAmount,
@@ -94,46 +95,48 @@ const BookingSummary = () => {
         </Table>
       </Grid>
 
-      <Grid item size={{ xs: 12, md: 6 }}>
-        <Typography variant="h6" gutterBottom>
-          Payments
-        </Typography>
+      {permissions?.bookings.edit && (
+        <Grid item size={{ xs: 12, md: 6 }}>
+          <Typography variant="h6" gutterBottom>
+            Payments
+          </Typography>
 
-        <Table size="small" aria-label="payments" sx={{ borderTop: "1px solid #efefef" }}>
-          <TableBody>
-            {amountsLeft.map((item, i) => (
-              <TableRow key={item.label}>
-                <TableCell sx={{ borderRight: "1px solid #efefef" }}>
-                  <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
-                </TableCell>
-                <TableCell>
-                  {amountsRight[i] ? (
-                    <LabelValue
-                      label={amountsRight[i].label}
-                      value={`${!amountsRight[i].type ? "₹" : ""}${
-                        amountsRight[i].value ?? "0.00"
-                      }`}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {/* If amountsRight has more items than amountsLeft, show those too */}
-            {amountsRight.length > amountsLeft.length &&
-              amountsRight.slice(amountsLeft.length).map((item) => (
+          <Table size="small" aria-label="payments" sx={{ borderTop: "1px solid #efefef" }}>
+            <TableBody>
+              {amountsLeft.map((item, i) => (
                 <TableRow key={item.label}>
-                  <TableCell></TableCell>
-                  <TableCell>
+                  <TableCell sx={{ borderRight: "1px solid #efefef" }}>
                     <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
+                  </TableCell>
+                  <TableCell>
+                    {amountsRight[i] ? (
+                      <LabelValue
+                        label={amountsRight[i].label}
+                        value={`${!amountsRight[i].type ? "₹" : ""}${
+                          amountsRight[i].value ?? "0.00"
+                        }`}
+                      />
+                    ) : (
+                      ""
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
-          </TableBody>
-        </Table>
-      </Grid>
+
+              {/* If amountsRight has more items than amountsLeft, show those too */}
+              {amountsRight.length > amountsLeft.length &&
+                amountsRight.slice(amountsLeft.length).map((item) => (
+                  <TableRow key={item.label}>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </Grid>
+      )}
     </Grid>
   );
 };
