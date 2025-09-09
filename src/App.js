@@ -82,7 +82,7 @@ const MainApp = () => {
             {permissions?.halls?.view && <Resource {...bookingPurpose} />}
             {permissions?.halls?.view && <Resource {...halls} />}
             {permissions?.bookings?.view && <Resource {...bookings} />}
-            {permissions?.bookings?.view && <Resource {...rentBookingReceipt} />}
+            {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
             {permissions?.bookings?.view && <Resource name="hallBookings" />}
             {permissions?.employees?.view && <Resource {...staff} />}
             {permissions?.employees?.view && <Resource {...staffAttendance} />}

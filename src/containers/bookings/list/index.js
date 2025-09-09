@@ -2,18 +2,17 @@ import React from "react";
 import { Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import { CreateButton, Title, TopToolbar } from "react-admin";
+import { CreateButton, Title, TopToolbar, usePermissions } from "react-admin";
 import { useSearchParams } from "react-router-dom";
 import CalenderView from "./calenderView";
 import ListView from "./listView";
 
-const BookingActions = () => (
-  <TopToolbar>
-    <CreateButton resource="bookings" />
-  </TopToolbar>
+const BookingActions = ({ permissions }) => (
+  <TopToolbar>{permissions?.bookings?.edit && <CreateButton resource="bookings" />}</TopToolbar>
 );
 
 const HallBookingCalendar = () => {
+  const { permissions } = usePermissions();
   const [searchParams, setSearchParams] = useSearchParams();
   const viewParam = searchParams.get("tab") || "CALENDAR";
 
@@ -34,15 +33,17 @@ const HallBookingCalendar = () => {
           justifyContent: "flex-end",
         }}
       >
-        <BookingActions />
-        <ToggleButtonGroup value={viewParam} exclusive onChange={handleChange} sx={{ ml: 3 }}>
-          <ToggleButton value="CALENDAR" aria-label="calendar">
-            <CalendarMonthIcon />
-          </ToggleButton>
-          <ToggleButton value="LIST" aria-label="list">
-            <ViewListIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <BookingActions permissions={permissions} />
+        {permissions?.bookingReceipts?.view && (
+          <ToggleButtonGroup value={viewParam} exclusive onChange={handleChange} sx={{ ml: 3 }}>
+            <ToggleButton value="CALENDAR" aria-label="calendar">
+              <CalendarMonthIcon />
+            </ToggleButton>
+            <ToggleButton value="LIST" aria-label="list">
+              <ViewListIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        )}
       </Box>
       {viewParam === "CALENDAR" && <CalenderView />}
       {viewParam === "LIST" && <ListView />}

@@ -19,6 +19,7 @@ import {
   Toolbar,
   DeleteButton,
   SaveButton,
+  usePermissions,
 } from "react-admin";
 import {
   Box,
@@ -177,6 +178,7 @@ const HallBookingsTable = () => {
   const refresh = useRefresh();
   const notify = useNotify();
   const record = useRecordContext();
+  const { permissions } = usePermissions();
   const hallBookings = record.hallBookings || [];
   const [editId, setEditId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
@@ -216,7 +218,7 @@ const HallBookingsTable = () => {
     <Box mb={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Hall Bookings</Typography>
-        {!record.checkedOutOn && (
+        {permissions?.bookings?.edit && !record.checkedOutOn && (
           <Button variant="outlined" color="primary" onClick={() => setOpenCreate(true)}>
             Add Hall
           </Button>
@@ -232,7 +234,9 @@ const HallBookingsTable = () => {
             <TableCell>Thaals</TableCell>
             <TableCell>Date</TableCell>
             <TableCell>Slot</TableCell>
-            {!record.checkedOutOn && <TableCell align="right">Actions</TableCell>}
+            {permissions?.bookings?.edit && !record.checkedOutOn && (
+              <TableCell align="right">Actions</TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -248,7 +252,7 @@ const HallBookingsTable = () => {
                   <TableCell>{hb.thaals}</TableCell>
                   <TableCell>{new Date(hb.date).toLocaleDateString()}</TableCell>
                   <TableCell>{slotNameMap[hb.slot]}</TableCell>
-                  {!record.checkedOutOn && (
+                  {permissions?.bookings?.edit && !record.checkedOutOn && (
                     <TableCell align="right">
                       <IconButton onClick={() => handleEdit(hb.id)}>
                         <EditIcon fontSize="small" />

@@ -20,7 +20,10 @@ export const permissionsList = [
   { id: "vendorTypes.edit", name: "Vendor Types Master" },
   { id: "vendorLedger.edit", name: "Vendor Ledger View/Edit/Delete" },
   { id: "halls.view", name: "Halls View/Edit/Delete" },
-  { id: "bookings.view", name: "Bookings View/Edit" },
+  { id: "bookings.view", name: "Bookings View" },
+  { id: "bookings.edit", name: "Bookings Edit" },
+  { id: "bookingReceipts.view", name: "Booking Receipts View" },
+  { id: "bookingReceipts.edit", name: "Booking Receipts Edit" },
   { id: "writeoff.allow", name: "Has WriteOff" },
   { id: "employees.view", name: "Employees View" },
 ];
