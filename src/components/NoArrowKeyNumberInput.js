@@ -1,14 +1,22 @@
+/* eslint-disable consistent-return */
 import React from "react";
-import { NumberInput } from "react-admin";
+import { TextInput } from "react-admin";
 
 const NoArrowKeyNumberInput = (props) => (
-  <NumberInput
+  <TextInput
     {...props}
-    onKeyDown={(e) => {
-      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        e.preventDefault(); // block value change
-      }
+    type="text" // <-- text, not number
+    inputMode="numeric" // mobile shows numeric keyboard
+    pattern="[0-9]*" // hint for browsers
+    onInput={(e) => {
+      // Strip all non-digit chars
+      e.target.value = e.target.value.replace(/[^0-9]/g, "");
     }}
+    parse={(v) => {
+      if (v === "" || v === undefined || v === null) return null;
+      return Number(v);
+    }}
+    format={(v) => (v == null ? "" : String(v))}
   />
 );
 
