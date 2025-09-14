@@ -40,7 +40,7 @@ export default () => {
     setValue("chairs", chairCount);
   }, [familyMembers]);
   return (
-    <Grid container spacing={1} sx={{ mt: 3 }}>
+    <Grid container sx={{ mt: 3 }}>
       <Grid item md={6} xs={12} sx={{ pr: 1 }}>
         <Grid container>
           <Grid item xs={12}>
@@ -48,7 +48,7 @@ export default () => {
               HOF Details <HofLookup change={() => {}} />
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} pr={1}>
             <SelectInput
               source="markaz"
               label="Jaman Venue"
@@ -76,7 +76,7 @@ export default () => {
               sx={{ mb: 3 }}
             />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item lg={6} xs={6} pr={1}>
             <TextInput source="HOFId" label="HOF ITS" fullWidth isRequired />
           </Grid>
           <Grid item lg={6} xs={6}>
@@ -93,14 +93,14 @@ export default () => {
           <Grid item xs={12} sx={{ mb: 3 }}>
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item lg={6} xs={6} pr={1}>
             <NoArrowKeyNumberInput source="takhmeenAmount" fullWidth defaultValue={0} />
           </Grid>
           <Grid item lg={6} xs={6}>
             <NoArrowKeyNumberInput source="iftaari" fullWidth defaultValue={0} />
           </Grid>
 
-          <Grid item lg={6} xs={6}>
+          <Grid item lg={6} xs={6} pr={1}>
             <NoArrowKeyNumberInput
               source="zabihat"
               fullWidth
@@ -121,15 +121,34 @@ export default () => {
               } = ₹${chairs * currentEvent.chairs}`}
               min={0}
               sx={{ mb: 2 }}
-              disabled
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
             />
           </Grid>
           <Grid item lg={12} xs={12}>
-            <NumberInput label="Total Payable" source="total" fullWidth disabled defaultValue={0} />
+            <NumberInput
+              label="Total Payable"
+              source="total"
+              fullWidth
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
+              defaultValue={0}
+            />
           </Grid>
 
           <Grid item lg={12} xs={12}>
-            <NoArrowKeyNumberInput label="Paid Amount" source="paidAmount" fullWidth defaultValue={0} />
+            <NoArrowKeyNumberInput
+              label="Paid Amount"
+              source="paidAmount"
+              fullWidth
+              defaultValue={0}
+            />
           </Grid>
           <Grid item lg={6} xs={6}>
             <RadioButtonGroupInput

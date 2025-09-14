@@ -33,14 +33,13 @@ export default () => {
       source="search"
       alwaysOn
       key={0}
-      sx={{ minWidth: 500 }}
+      sx={{ minWidth: 400 }}
     />,
     <SelectInput
       label="Jaman Venue"
       source="markaz"
       key={1}
       choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
-      sx={{ marginBottom: 0 }}
       alwaysOn
     />,
     <SelectInput
@@ -48,7 +47,6 @@ export default () => {
       source="namaazVenue"
       key={1}
       choices={Object.entries(NAMAAZ_VENUE).map(([id, name]) => ({ id, name }))}
-      sx={{ marginBottom: 0 }}
       alwaysOn
     />,
   ];
