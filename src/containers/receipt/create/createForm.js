@@ -75,25 +75,93 @@ export default ({ niyaazId }) => {
     <>
       <Grid container spacing={1}>
         <Grid item lg={6} xs={6}>
-          <TextInput source="HOFId" label="HOF ITS" fullWidth disabled />
+          <TextInput
+            source="HOFId"
+            label="HOF ITS"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <TextInput source="formNo" label="Form No." fullWidth disabled />
+          <TextInput
+            source="formNo"
+            label="Form No."
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <TextInput source="markaz" fullWidth disabled />
+          <TextInput
+            source="markaz"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <TextInput source="namaazVenue" fullWidth disabled />
+          <TextInput
+            source="namaazVenue"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <TextInput source="HOFName" label="Name" fullWidth disabled />
-          <NumberInput source="totalPayable" fullWidth disabled />
+          <TextInput
+            source="HOFName"
+            label="Name"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
+          <NumberInput
+            source="totalPayable"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
           <NumberInput source="amount" fullWidth validate={validateAmount} />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <DateInput source="date" fullWidth defaultValue={new Date()} disabled />
-          <NumberInput source="balancePending" fullWidth disabled />
+          <DateInput
+            source="date"
+            fullWidth
+            defaultValue={new Date()}
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
+          <NumberInput
+            source="balancePending"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+          />
         </Grid>
       </Grid>
       <RadioButtonGroupInput
