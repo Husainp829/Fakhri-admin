@@ -141,6 +141,8 @@ export default function HallBookingForm() {
           <TextInput source="ref" label="Reference" fullWidth multiline />
         )}
 
+        <TextInput source="memberReference" label="Jamaat Member Reference" fullWidth multiline />
+
         <HallBookingModal
           open={open}
           onClose={() => setOpen(false)}
