@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState } from "react";
 import {
   Dialog,
@@ -21,6 +22,7 @@ import { slotNameMap } from "../../../constants";
 
 const init = {
   hallId: "",
+  purpose: "",
   rent: 0,
   deposit: 0,
   date: "",
@@ -107,13 +109,7 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
             label="Hall"
             value={newHall.hallId}
             onChange={(e) => {
-              const hall = halls.find((h) => h.id === e.target.value);
-              handleFieldChange("hallId", hall.id);
-              handleFieldChange("rent", hall.rent);
-              handleFieldChange("deposit", hall.deposit);
-              handleFieldChange("acCharges", hall.acCharges);
-              handleFieldChange("kitchenCleaning", hall.kitchenCleaning);
-              handleFieldChange("includeThaalCharges", hall.includeThaalCharges);
+              handleFieldChange("hallId", e.target.value);
             }}
           >
             {halls.map((hall) => (
@@ -128,11 +124,18 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
           <Select
             label="Purpose"
             value={newHall.purpose}
+            disabled={!newHall.hallId}
             onChange={(e) => {
-              const purpose = purposes.find((h) => h.id === e.target.value);
+              const purpose = purposes.find((p) => p.id === e.target.value);
               handleFieldChange("purpose", purpose.id);
               handleFieldChange("perThaal", purpose.perThaal || 0);
               handleFieldChange("jamaatLagat", purpose.jamaatLagat || 0);
+              const hall = purpose.hallCharges.find((p) => p.hallId === newHall.hallId) || {};
+              handleFieldChange("rent", hall.rent);
+              handleFieldChange("deposit", hall.deposit);
+              handleFieldChange("acCharges", hall.acCharges);
+              handleFieldChange("kitchenCleaning", hall.kitchenCleaning);
+              handleFieldChange("includeThaalCharges", hall.includeThaalCharges);
             }}
           >
             {purposes.map((p) => (
