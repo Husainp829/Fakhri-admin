@@ -11,7 +11,6 @@ export const PurposeInput = (props) => {
 
   useEffect(() => {
     if (selectedChoice?.id) {
-      setValue("jamaatLagatUnit", selectedChoice.jamaatLagat);
       setValue("perThaalCost", selectedChoice.perThaal);
     }
   }, [selectedChoice, type]);

@@ -129,7 +129,6 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
               const purpose = purposes.find((p) => p.id === e.target.value);
               handleFieldChange("purpose", purpose.id);
               handleFieldChange("perThaal", purpose.perThaal || 0);
-              handleFieldChange("jamaatLagat", purpose.jamaatLagat || 0);
               const hall = purpose.hallCharges.find((p) => p.hallId === newHall.hallId) || {};
               handleFieldChange("rent", hall.rent);
               handleFieldChange("deposit", hall.deposit);

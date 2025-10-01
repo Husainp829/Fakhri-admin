@@ -8,7 +8,6 @@ const calculateThaalAmount = (thaals = 0, perThaalCost = 0) => (Number(thaals) |
 const calculateTotalAmountPending = ({
   rentAmount = 0,
   kitchenCleaningAmount = 0,
-  jamaatLagat = 0,
   thaalAmount = 0,
   paidAmount = 0,
   writeOffAmount = 0,
@@ -17,7 +16,6 @@ const calculateTotalAmountPending = ({
   const total =
     Number(rentAmount) +
     Number(kitchenCleaningAmount) +
-    Number(jamaatLagat) +
     Number(thaalAmount) +
     Number(extraExpenses);
 
@@ -32,7 +30,6 @@ const calcBookingTotals = ({
   extraExpenses = 0,
   writeOffAmount = 0,
   paidAmount = 0,
-  mohalla = "Fakhri Mohalla",
 }) => {
   const {
     rent: rentAmount,
@@ -67,15 +64,9 @@ const calcBookingTotals = ({
     { rent: 0, deposit: 0, kitchenCleaning: 0, thaals: 0, thaalAmount: 0, total: 0 }
   );
 
-  let jamaatLagat = 0;
-  if (halls.length > 0 && halls[0].jamaatLagat > 0 && mohalla === "Fakhri Mohalla") {
-    jamaatLagat = halls[0].jamaatLagat;
-  }
-
   const totalAmountPending = calculateTotalAmountPending({
     rentAmount,
     kitchenCleaningAmount,
-    jamaatLagat,
     thaalAmount,
     paidAmount,
     writeOffAmount,
@@ -89,7 +80,6 @@ const calcBookingTotals = ({
   return {
     rentAmount,
     kitchenCleaningAmount,
-    jamaatLagat,
     depositAmount,
     thaalCount,
     thaalAmount,

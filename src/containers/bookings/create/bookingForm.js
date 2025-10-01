@@ -41,7 +41,6 @@ export default function HallBookingForm() {
   const kitchenCleaningAmount = useWatch({ name: "kitchenCleaningAmount" });
   const depositAmount = useWatch({ name: "depositAmount" });
   const thaalAmount = useWatch({ name: "thaalAmount" });
-  const jamaatLagat = useWatch({ name: "jamaatLagat" });
   const mohalla = useWatch({ name: "mohalla" });
 
   const mode = useWatch({ name: "mode" });
@@ -49,7 +48,6 @@ export default function HallBookingForm() {
   const {
     rentAmount: rent,
     kitchenCleaningAmount: kc,
-    jamaatLagat: lagat,
     depositAmount: deposit,
     thaalCount,
     thaalAmount: thaals,
@@ -70,9 +68,6 @@ export default function HallBookingForm() {
     }
     if (thaalAmount !== thaals) {
       setValue("thaalAmount", thaals);
-    }
-    if (jamaatLagat !== lagat) {
-      setValue("jamaatLagat", lagat);
     }
   }, [rent, deposit, thaals]);
 
@@ -107,7 +102,6 @@ export default function HallBookingForm() {
               <LabelValue label="Kitchen Cleaning" value={kitchenCleaningAmount || 0} />
             )}
 
-            <LabelValue label="Jamaat Lagat" value={jamaatLagat || 0} />
             <LabelValue label="Total Payable" value={totalPayable} />
           </TableBody>
         </Table>
