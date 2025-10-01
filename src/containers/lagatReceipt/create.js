@@ -5,30 +5,30 @@ import {
   SimpleForm,
   ReferenceInput,
   NumberInput,
-  DateInput,
-  RadioButtonGroupInput,
+  SelectInput,
 } from "react-admin";
-import Grid from "@mui/material/GridLegacy";
-import { ITSInput } from "./common/itsInput";
+
+import LagatITSLookup from "./common/lagatItsLookup";
+import PaymentModeInput from "./common/paymentModeInput";
 
 export default (props) => {
-  const optionRenderer = (choice) => `${choice.itsNo} - ${choice.sabilType}`;
-
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
-  const sabilId = searchParams.get("sabilId");
+  const bookingId = searchParams.get("bookingId");
 
   const transform = (data) => ({
-    sabilId: data.sabilId,
+    referenceId: bookingId,
+    itsNo: data.itsNo,
+    name: data.name,
     amount: data.amount,
-    receiptType: "DEBIT",
     paymentMode: data.paymentMode,
+    paymentRef: data.paymentRef,
     remarks: data.remarks,
-    receiptDate: data.receiptDate,
+    purpose: data.purpose,
   });
 
-  const receiptDefaultValues = () => ({ sabilId });
+  const receiptDefaultValues = () => ({});
   return (
     <Create {...props} transform={transform}>
       <SimpleForm
@@ -36,39 +36,14 @@ export default (props) => {
         sx={{ maxWidth: 700 }}
         defaultValues={receiptDefaultValues}
       >
-        <Grid container spacing={1}>
-          <Grid item lg={6} xs={6}>
-            <ReferenceInput source="sabilId" reference="sabilData" required>
-              <ITSInput
-                fullWidth
-                label="ITS No."
-                optionText={optionRenderer}
-                shouldRenderSuggestions={(val) => val.trim().length === 8}
-                noOptionsText="Enter valid ITS No."
-              />
-            </ReferenceInput>
-            <TextInput source="sabilNo" fullWidth disabled />
-            <TextInput source="takhmeenAmount" fullWidth disabled />
-            <NumberInput source="amount" fullWidth />
-            <NumberInput source="balancePending" fullWidth disabled />
-          </Grid>
-          <Grid item lg={6} xs={6}>
-            <TextInput source="sabilType" fullWidth disabled />
-            <TextInput source="name" label="Sabil Holder Name" fullWidth disabled />
-            <DateInput source="lastPaidDate" fullWidth disabled />
-            <DateInput source="receiptDate" fullWidth defaultValue={new Date()} />
-          </Grid>
-        </Grid>
+        <LagatITSLookup />
+        <TextInput source="name" label="Name" fullWidth />
+        <ReferenceInput source="purpose" reference="bookingPurpose" required>
+          <SelectInput fullWidth label="Purpose" noOptionsText="Select Purpose" />
+        </ReferenceInput>
+        <NumberInput source="amount" fullWidth />
 
-        <RadioButtonGroupInput
-          source="paymentMode"
-          choices={[
-            { id: "CASH", name: "CASH" },
-            { id: "ONLINE", name: "ONLINE" },
-            { id: "CHEQUE", name: "CHEQUE" },
-          ]}
-          fullWidth
-        />
+        <PaymentModeInput />
         <TextInput source="remarks" fullWidth />
       </SimpleForm>
     </Create>

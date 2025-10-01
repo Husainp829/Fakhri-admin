@@ -42,6 +42,8 @@ import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint"
 import DefaultDashboard from "./containers/defaultDashboard";
 import staff from "./containers/staff";
 import staffAttendance from "./containers/staffAttendance";
+import lagatReceipt from "./containers/lagatReceipt";
+import LagatReceipt from "./containers/lagatReceipt/lagatReceiptPrint";
 
 dayjs.extend(utc);
 
@@ -83,6 +85,7 @@ const MainApp = () => {
             {permissions?.halls?.view && <Resource {...halls} />}
             {permissions?.bookings?.view && <Resource {...bookings} />}
             {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
+            {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
             {permissions?.bookings?.view && <Resource name="hallBookings" />}
             {permissions?.employees?.view && <Resource {...staff} />}
             {permissions?.employees?.view && <Resource {...staffAttendance} />}
@@ -117,6 +120,9 @@ const MainApp = () => {
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
+        </CustomRoutes>
+        <CustomRoutes noLayout>
+          <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
         </CustomRoutes>
         <CustomRoutes noLayout>
           <Route path="/raza-print/:id" element={<RazaPrint />} />

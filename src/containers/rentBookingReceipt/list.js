@@ -11,6 +11,7 @@ import {
   usePermissions,
   Pagination,
   TextInput,
+  SelectInput,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
@@ -60,6 +61,58 @@ export default () => {
       alwaysOn
       key={0}
       sx={{ minWidth: 300 }}
+    />,
+    <SelectInput
+      label="Date Filters"
+      source="timePeriod"
+      key={1}
+      choices={[
+        {
+          id: "TODAY",
+          name: "Today",
+        },
+        {
+          id: "YESTERDAY",
+          name: "Yesterday",
+        },
+        {
+          id: "WEEK_TO_DATE",
+          name: "Week to Date",
+        },
+        {
+          id: "MONTH_TO_DATE",
+          name: "Month to Date",
+        },
+        {
+          id: "YEAR_TO_DATE",
+          name: "Year to Date",
+        },
+        {
+          id: "CURRENT_FINANCIAL_YEAR",
+          name: "Financial Year",
+        },
+        {
+          id: "LAST_7_DAYS",
+          name: "Last 7 Days",
+        },
+        {
+          id: "LAST_30_DAYS",
+          name: "Last 30 Days",
+        },
+        {
+          id: "LAST_90_DAYS",
+          name: "Last 90 Days",
+        },
+        {
+          id: "LAST_180_DAYS",
+          name: "Last 180 Days",
+        },
+        {
+          id: "LAST_365_DAYS",
+          name: "Last 365 Days",
+        },
+      ]}
+      alwaysOn
     />,
     <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
   ];

@@ -5,9 +5,9 @@ import Icon from "@mui/icons-material/Receipt";
 const ListLagatTypes = () => (
   <List sort={{ field: "id", order: "DESC" }}>
     <Datagrid rowClick="show">
-      <TextField source="name" label="Mohalla" />
-      <TextField source="amount" label="Mohalla" />
-      <TextField source="description" label="Mohalla" />
+      <TextField source="name" label="Name" />
+      <TextField source="amount" label="Amount" />
+      <TextField source="description" label="Description" />
     </Datagrid>
   </List>
 );
