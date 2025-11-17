@@ -52,10 +52,8 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
 
   const isDateValid = () => {
     if (!newHall.date) return false;
-    const selectedDate = new Date(newHall.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return selectedDate > today;
+
+    return true;
   };
 
   const isFormValid = newHall.hallId && newHall.slot && newHall.date && isDateValid();
