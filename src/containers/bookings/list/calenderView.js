@@ -33,7 +33,8 @@ dayjs.extend(customParseFormat);
 const CustomEventComponent = ({ event }) => (
   <div style={{ color: "white", padding: 0 }}>
     <Typography variant="caption" display="block">
-      {dayjs(event.start).format("MMM D, h A")} - {dayjs(event.end).format("h A")}
+      {dayjs(event.start).format("MMM D, h A")} -{" "}
+      {dayjs(event.end).format("h A")}
     </Typography>
     <Typography variant="caption" strong display="block">
       {event.title}
@@ -112,7 +113,10 @@ const CalenderView = () => {
     }
 
     try {
-      const bookings = await fetchHallBookings(rangeStart.toDate(), rangeEnd.toDate());
+      const bookings = await fetchHallBookings(
+        rangeStart.toDate(),
+        rangeEnd.toDate()
+      );
 
       const formatted = bookings.map((book) => {
         const [startHour, endHour] = slotTimeRanges[book.slot] || [0, 1];
@@ -120,8 +124,16 @@ const CalenderView = () => {
           id: book.id,
           title: `${book.hall?.name || "N/A"}`,
           subTitle: `${capitalize(book.slot)}`,
-          start: dayjs(book.date, "YYYY-MM-DD").hour(startHour).minute(0).second(0).toDate(),
-          end: dayjs(book.date, "YYYY-MM-DD").hour(endHour).minute(0).second(0).toDate(),
+          start: dayjs(book.date, "YYYY-MM-DD")
+            .hour(startHour)
+            .minute(0)
+            .second(0)
+            .toDate(),
+          end: dayjs(book.date, "YYYY-MM-DD")
+            .hour(endHour)
+            .minute(0)
+            .second(0)
+            .toDate(),
           resource: book,
         };
       });
@@ -181,8 +193,16 @@ const CalenderView = () => {
         }}
       />
 
-      <Dialog open={showModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }} py={1}>
+      <Dialog
+        open={showModal}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{ display: "flex", justifyContent: "space-between" }}
+          py={1}
+        >
           <Typography variant="h6" alignSelf="center">
             Booking Details
           </Typography>
@@ -205,16 +225,32 @@ const CalenderView = () => {
                   value={selectedEvent?.booking?.organiser || "N/A"}
                   grid={12}
                 />
-                <LabelValue label="ITS No." value={selectedEvent?.booking?.itsNo || "N/A"} />
-                <LabelValue label="phone" value={selectedEvent?.booking?.phone || "N/A"} />
+                <LabelValue
+                  label="ITS No."
+                  value={selectedEvent?.booking?.itsNo || "N/A"}
+                />
+                <LabelValue
+                  label="phone"
+                  value={selectedEvent?.booking?.phone || "N/A"}
+                />
                 <LabelValue
                   label="Purpose"
                   value={selectedEvent?.purpose || "N/A"}
                   grid={12}
                 />
-                <LabelValue label="Hall" value={selectedEvent?.hall?.name || "N/A"} grid={12} />
-                <LabelValue label="Date" value={dayjs(selectedEvent.date).format("YYYY-MM-DD")} />
-                <LabelValue label="Slot" value={capitalize(selectedEvent?.slot)} />
+                <LabelValue
+                  label="Hall"
+                  value={selectedEvent?.hall?.name || "N/A"}
+                  grid={12}
+                />
+                <LabelValue
+                  label="Date"
+                  value={dayjs(selectedEvent.date).format("DD-MM-YYYY")}
+                />
+                <LabelValue
+                  label="Slot"
+                  value={capitalize(selectedEvent?.slot)}
+                />
               </Grid>
             </Box>
           )}
