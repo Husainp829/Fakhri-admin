@@ -21,8 +21,16 @@ export default () => {
   const { permissions } = usePermissions();
   const exporter = (receipts) => {
     const receiptsForExport = receipts.map((receipt) => {
-      const { receiptNo, organiser, organiserIts, date, amount, mode, details, createdBy } =
-        receipt;
+      const {
+        receiptNo,
+        organiser,
+        organiserIts,
+        date,
+        amount,
+        mode,
+        details,
+        createdBy,
+      } = receipt;
       return {
         receiptNo,
         organiser,
@@ -114,7 +122,28 @@ export default () => {
       ]}
       alwaysOn
     />,
-    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
+    <SelectInput
+      label="Search By Type"
+      source="type"
+      key={2}
+      choices={[
+        {
+          id: "RENT",
+          name: "Rent",
+        },
+        {
+          id: "DEPOSIT",
+          name: "Deposit",
+        },
+      ]}
+      alwaysOn
+    />,
+    <TextInput
+      label="Search By Receipt No"
+      source="receiptNo"
+      key={0}
+      sx={{ minWidth: 300 }}
+    />,
   ];
 
   return (
@@ -132,10 +161,13 @@ export default () => {
         <DateField source="date" />
         <NumberField source="amount" />
         <TextField source="mode" />
+        <TextField source="type" />
         <FunctionField
           label="Created By"
           source="createdBy"
-          render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
+          render={(record) => (
+            <span>{record?.admin?.name || record.createdBy}</span>
+          )}
         />
         <FunctionField
           label="Download"
