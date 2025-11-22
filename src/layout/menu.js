@@ -116,7 +116,7 @@ const LayoutMenu = () => {
       {/* <Menu.ResourceItem name="mohallas" />
       <Menu.ResourceItem name="lagatTypes" /> */}
       <Menu.ResourceItem name="itsdata" />
-      <Menu.ResourceItem name="bookings" />
+      <Menu.ResourceItem name="hallBookings" />
       <Menu.ResourceItem name="contRcpt" />
       <Menu.ResourceItem name="lagatReceipts" />
       <Menu.ResourceItem name="halls" />
