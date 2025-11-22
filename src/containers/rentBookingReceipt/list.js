@@ -12,6 +12,7 @@ import {
   Pagination,
   TextInput,
   SelectInput,
+  DateInput,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
@@ -21,16 +22,8 @@ export default () => {
   const { permissions } = usePermissions();
   const exporter = (receipts) => {
     const receiptsForExport = receipts.map((receipt) => {
-      const {
-        receiptNo,
-        organiser,
-        organiserIts,
-        date,
-        amount,
-        mode,
-        details,
-        createdBy,
-      } = receipt;
+      const { receiptNo, organiser, organiserIts, date, amount, mode, details, createdBy } =
+        receipt;
       return {
         receiptNo,
         organiser,
@@ -70,58 +63,8 @@ export default () => {
       key={0}
       sx={{ minWidth: 300 }}
     />,
-    <SelectInput
-      label="Date Filters"
-      source="timePeriod"
-      key={1}
-      choices={[
-        {
-          id: "TODAY",
-          name: "Today",
-        },
-        {
-          id: "YESTERDAY",
-          name: "Yesterday",
-        },
-        {
-          id: "WEEK_TO_DATE",
-          name: "Week to Date",
-        },
-        {
-          id: "MONTH_TO_DATE",
-          name: "Month to Date",
-        },
-        {
-          id: "YEAR_TO_DATE",
-          name: "Year to Date",
-        },
-        {
-          id: "CURRENT_FINANCIAL_YEAR",
-          name: "Financial Year",
-        },
-        {
-          id: "LAST_7_DAYS",
-          name: "Last 7 Days",
-        },
-        {
-          id: "LAST_30_DAYS",
-          name: "Last 30 Days",
-        },
-        {
-          id: "LAST_90_DAYS",
-          name: "Last 90 Days",
-        },
-        {
-          id: "LAST_180_DAYS",
-          name: "Last 180 Days",
-        },
-        {
-          id: "LAST_365_DAYS",
-          name: "Last 365 Days",
-        },
-      ]}
-      alwaysOn
-    />,
+    <DateInput source="start" label="from" alwaysOn key={1} />,
+    <DateInput source="end" label="to" alwaysOn key={2} />,
     <SelectInput
       label="Search By Type"
       source="type"
@@ -138,12 +81,7 @@ export default () => {
       ]}
       alwaysOn
     />,
-    <TextInput
-      label="Search By Receipt No"
-      source="receiptNo"
-      key={0}
-      sx={{ minWidth: 300 }}
-    />,
+    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
   ];
 
   return (
@@ -165,9 +103,7 @@ export default () => {
         <FunctionField
           label="Created By"
           source="createdBy"
-          render={(record) => (
-            <span>{record?.admin?.name || record.createdBy}</span>
-          )}
+          render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
         />
         <FunctionField
           label="Download"

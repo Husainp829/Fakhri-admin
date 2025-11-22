@@ -33,12 +33,12 @@ import vendorType from "./containers/vendorType";
 import vendorLedger from "./containers/vendorLedger";
 import bookingPurpose from "./containers/bookingPurpose";
 import halls from "./containers/halls";
-import bookings from "./containers/bookings";
+import hallBookings, { bookings } from "./containers/hallBookings";
 import RentReceiptPrint from "./containers/rentBookingReceipt/rentReceiptPrint";
 import DepositReceiptPrint from "./containers/rentBookingReceipt/depositReceiptPrint";
-import RazaPrint from "./containers/bookings/razaPrint";
+import RazaPrint from "./containers/hallBookings/razaPrint";
 import rentBookingReceipt from "./containers/rentBookingReceipt";
-import ConfirmationVoucher from "./containers/bookings/confirmationReceiptPrint";
+import ConfirmationVoucher from "./containers/hallBookings/confirmationReceiptPrint";
 import DefaultDashboard from "./containers/defaultDashboard";
 import staff from "./containers/staff";
 import staffAttendance from "./containers/staffAttendance";
@@ -84,9 +84,9 @@ const MainApp = () => {
             {permissions?.halls?.view && <Resource {...bookingPurpose} />}
             {permissions?.halls?.view && <Resource {...halls} />}
             {permissions?.bookings?.view && <Resource {...bookings} />}
+            {permissions?.bookings?.view && <Resource {...hallBookings} />}
             {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
             {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
-            {permissions?.bookings?.view && <Resource name="hallBookings" />}
             {permissions?.employees?.view && <Resource {...staff} />}
             {permissions?.employees?.view && <Resource {...staffAttendance} />}
 
