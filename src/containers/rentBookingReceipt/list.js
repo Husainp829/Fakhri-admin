@@ -7,7 +7,6 @@ import {
   DateField,
   FunctionField,
   Button,
-  downloadCSV,
   usePermissions,
   Pagination,
   TextInput,
@@ -15,45 +14,58 @@ import {
   DateInput,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
+import { exportToExcel } from "../../utils/exportToExcel";
 
 export default () => {
   const { permissions } = usePermissions();
-  const exporter = (receipts) => {
-    const receiptsForExport = receipts.map((receipt) => {
-      const { receiptNo, organiser, organiserIts, date, amount, mode, details, createdBy } =
-        receipt;
-      return {
-        receiptNo,
-        organiser,
-        organiserIts,
-        amount,
-        mode,
-        details,
-        createdBy,
-        date: dayjs(date).format("DD/MM/YYYY"),
-      };
-    });
-    jsonExport(
-      receiptsForExport,
-      {
-        headers: [
-          "receiptNo",
-          "organiser",
-          "organiserIts",
-          "amount",
-          "mode",
-          "details",
-          "createdBy",
-          "date",
-        ], // order fields in the export
-      },
-      (err, csv) => {
-        downloadCSV(csv, "receipts"); // download as 'posts.csv` file
-      }
-    );
-  };
+
+  const receiptColumns = [
+    {
+      header: "Receipt No",
+      field: "receiptNo",
+      width: 15,
+    },
+    {
+      header: "ITS No.",
+      field: "organiserIts",
+      width: 12,
+    },
+    {
+      header: "Organiser",
+      field: "organiser",
+      width: 25,
+    },
+    {
+      header: "Date",
+      field: "date",
+      width: 15,
+      formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
+    },
+    {
+      header: "Amount",
+      field: "amount",
+      width: 12,
+    },
+    {
+      header: "Mode",
+      field: "mode",
+      width: 15,
+    },
+    {
+      header: "Type",
+      field: "type",
+      width: 15,
+    },
+    {
+      header: "Created By",
+      width: 20,
+      field: (rec) => rec?.admin?.name || rec.createdBy || "",
+    },
+    // 🚫 Do NOT export the "Download" button — not relevant in Excel
+  ];
+  const exporter = (records) =>
+    exportToExcel(receiptColumns, records, { filenamePrefix: "receipts", sheetName: "Receipts" });
 
   const ReceiptFilters = [
     <TextInput

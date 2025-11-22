@@ -1,8 +1,10 @@
+// BookingListWithExcelExport.jsx
 import React from "react";
 import {
   DatagridConfigurable as Datagrid,
   DateField,
   DateInput,
+  ExportButton,
   FilterButton,
   FunctionField,
   List,
@@ -13,7 +15,33 @@ import {
   TextInput,
   TopToolbar,
 } from "react-admin";
+import dayjs from "dayjs";
 import { slotNameMap } from "../../../constants";
+import { exportToExcel } from "../../../utils/exportToExcel";
+
+const columns = [
+  { header: "Booking No", field: "booking.bookingNo", width: 18 },
+  { header: "Organiser", field: "booking.organiser", width: 30 },
+  { header: "ITS No.", field: "booking.itsNo", width: 12 },
+  { header: "Phone", field: "booking.phone", width: 15 },
+  { header: "Hall", field: "hall.name", width: 25 },
+  {
+    header: "Date",
+    field: "date",
+    width: 14,
+    formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
+  },
+  {
+    header: "Slot",
+    // field can be function to map slot index to readable name
+    field: (rec) => (typeof rec.slot !== "undefined" ? slotNameMap[rec.slot] ?? rec.slot : ""),
+    width: 12,
+  },
+];
+
+// react-admin exporter (exports the records passed by react-admin)
+const exportBookings = (records) =>
+  exportToExcel(columns, records, { filenamePrefix: "bookings", sheetName: "Bookings" });
 
 export default () => {
   const BookingFilters = [
@@ -33,12 +61,14 @@ export default () => {
     <TopToolbar sx={{ justifyContent: "start" }}>
       <FilterButton />
       <SelectColumnsButton />
+      <ExportButton />
     </TopToolbar>
   );
 
   return (
     <>
       <List
+        exporter={exportBookings} // <- wire the exporter here
         pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
         filters={BookingFilters}
         actions={<ListActions />}
@@ -53,7 +83,7 @@ export default () => {
             return {
               backgroundColor: haPaidSomething ? "#ffffff55" : "#ff000055",
               "&&:hover": {
-                backgroundColor: haPaidSomething ? "#00000011" : "#ff000066", // darker red on hover
+                backgroundColor: haPaidSomething ? "#00000011" : "#ff000066",
               },
             };
           }}
