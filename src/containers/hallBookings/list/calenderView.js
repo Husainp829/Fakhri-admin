@@ -222,7 +222,8 @@ const CalenderView = () => {
         <DialogActions>
           <Button
             onClick={() => {
-              redirect("show", "bookings", selectedEvent.booking.id);
+              // eslint-disable-next-line no-console
+              redirect("show", "bookings", selectedEvent.bookingId);
               handleCloseModal();
             }}
             variant="contained"
