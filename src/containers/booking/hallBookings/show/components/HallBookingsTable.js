@@ -37,7 +37,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { slotNameMap } from "../../../../constants";
+import { slotNameMap } from "../../../../../constants";
 
 const CustomToolbar = ({ onClose, ...props }) => {
   const refresh = useRefresh();

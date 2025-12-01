@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, Create, SimpleForm, SelectInput } from "react-admin";
-import { EMPLOYEE_TYPE } from "../../constants";
+import { EMPLOYEE_TYPE } from "../../../constants";
 
 export default (props) => (
   <Create {...props} redirect="list">

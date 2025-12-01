@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from "react";
 import { TextInput, Edit, SimpleForm, SelectInput } from "react-admin";
-import { EMPLOYEE_TYPE } from "../../constants";
+import { EMPLOYEE_TYPE } from "../../../constants";
 
 export default (props) => (
   <Edit {...props} mutationMode="optimistic">

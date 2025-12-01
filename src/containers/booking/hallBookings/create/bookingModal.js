@@ -16,9 +16,9 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useGetList } from "react-admin";
-import { callApi } from "../../../dataprovider/miscApis";
-import { fromGregorian } from "../../../utils/hijriDateUtils";
-import { slotNameMap } from "../../../constants";
+import { callApi } from "../../../../dataprovider/miscApis";
+import { fromGregorian } from "../../../../utils/hijriDateUtils";
+import { slotNameMap } from "../../../../constants";
 
 const init = {
   hallId: "",
@@ -80,11 +80,15 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
     }
 
     try {
-      const bookings = await callApi(
-        `hallBookings?hallId=${newHall.hallId}&date=${newHall.date}&slot=${newHall.slot}`,
-        {},
-        "GET"
-      );
+      const bookings = await callApi({
+        location: "hallBookings",
+        data: {
+          hallId: newHall.hallId,
+          date: newHall.date,
+          slot: newHall.slot,
+        },
+        method: "GET",
+      });
 
       if (bookings.data?.count > 0) {
         throw new Error("This hall is already booked for the selected slot and date.");

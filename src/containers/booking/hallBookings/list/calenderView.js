@@ -21,9 +21,9 @@ import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import dayjsLocalizer from "../../../utils/dayjsLocalizer";
-import CustomCalendarToolbar from "../../../components/CustomCalenderToolbar";
-import { hallColorMap, slotTimeRanges } from "../../../constants";
+import dayjsLocalizer from "../../../../utils/dayjsLocalizer";
+import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
+import { hallColorMap, slotTimeRanges } from "../../../../constants";
 
 // Extend dayjs
 dayjs.extend(weekday);

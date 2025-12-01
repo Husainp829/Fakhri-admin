@@ -17,7 +17,7 @@ import {
 import Grid from "@mui/material/GridLegacy";
 import { useGetList } from "react-admin";
 import dayjs from "dayjs";
-import { slotNameMap } from "../../../../constants";
+import { slotNameMap } from "../../../../../constants";
 import { useShowTotals } from "../context";
 
 const CloseBookingModal = ({ open, onClose, record, onSubmit }) => {

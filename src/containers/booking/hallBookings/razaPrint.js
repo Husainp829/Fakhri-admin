@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import { Box, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@mui/material";
 import { useParams } from "react-router";
 
-import ReceiptHeader from "../../components/ReceiptLayout/receiptHeader";
-import { fromGregorian } from "../../utils/hijriDateUtils";
+import ReceiptHeader from "../../../components/ReceiptLayout/receiptHeader";
+import { fromGregorian } from "../../../utils/hijriDateUtils";
 
 const RazaPrint = () => {
   const { id } = useParams();

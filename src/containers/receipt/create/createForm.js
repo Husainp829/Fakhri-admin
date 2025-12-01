@@ -26,7 +26,7 @@ export default ({ niyaazId }) => {
 
   useEffect(() => {
     const getNiyaaz = () => {
-      callApi(`niyaaz/${niyaazId}`, {}, "GET")
+      callApi({ location: "niyaaz", method: "GET", id: niyaazId })
         .then(({ data }) => {
           if (data.count > 0) {
             const niyaazData = data?.rows[0] || {};

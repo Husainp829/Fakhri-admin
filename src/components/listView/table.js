@@ -28,7 +28,7 @@ export default () => {
   const rowsData = data;
 
   const handleUpdate = async (orderedData) => {
-    await callApi(`${resource}-order`, { orderedData })
+    await callApi({ location: `${resource}-order`, data: { orderedData } })
       .then(() => {})
       .catch((err) => {
         notify(err.message, { type: "warning" });

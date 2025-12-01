@@ -11,9 +11,9 @@ import {
 import Grid from "@mui/material/Grid";
 import { useWatch, useFormContext } from "react-hook-form";
 import { TextField } from "@mui/material";
-import { callApi } from "../../../dataprovider/miscApis";
-import { calcBookingTotals } from "../../../utils/bookingCalculations";
-import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
+import { callApi } from "../../../../dataprovider/miscApis";
+import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 const PaymentFields = ({ pending, type }) => {
   const mode = useWatch({ name: "mode" });
@@ -69,7 +69,7 @@ export default function BookingReceiptForm({ bookingId }) {
 
   const fetchData = async () => {
     try {
-      const { data } = await callApi(`bookings/${bookingId}`, {}, "GET");
+      const { data } = await callApi({ location: "bookings", method: "GET", id: bookingId });
 
       if (data.count > 0) {
         const bookingData = data?.rows[0] || {};

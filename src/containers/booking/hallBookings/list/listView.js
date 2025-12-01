@@ -16,8 +16,8 @@ import {
   TopToolbar,
 } from "react-admin";
 import dayjs from "dayjs";
-import { slotNameMap } from "../../../constants";
-import { exportToExcel } from "../../../utils/exportToExcel";
+import { slotNameMap } from "../../../../constants";
+import { exportToExcel } from "../../../../utils/exportToExcel";
 
 const columns = [
   { header: "Booking No", field: "booking.bookingNo", width: 18 },

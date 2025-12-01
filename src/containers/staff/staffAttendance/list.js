@@ -18,8 +18,8 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 
-import { EMPLOYEE_TYPE } from "../../constants";
-import { callApi } from "../../dataprovider/miscApis";
+import { EMPLOYEE_TYPE } from "../../../constants";
+import { callApi } from "../../../dataprovider/miscApis";
 
 const StaffAttendanceList = () => {
   const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
@@ -45,7 +45,11 @@ const StaffAttendanceList = () => {
 
   const fetchData = async () => {
     try {
-      const { data: response } = await callApi("employeesAttendance", { month, type }, "GET");
+      const { data: response } = await callApi({
+        location: "employeesAttendance",
+        data: { month, type },
+        method: "GET",
+      });
       setAttendance(response.data);
       return response.data;
     } catch (err) {

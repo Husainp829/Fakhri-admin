@@ -1,6 +1,6 @@
 // BookingTotalsContext.js
 import React, { createContext, useContext, useMemo } from "react";
-import { calcBookingTotals } from "../../../utils/bookingCalculations"; // adjust path
+import { calcBookingTotals } from "../../../../utils/bookingCalculations"; // adjust path
 
 const BookingShowContext = createContext(null);
 

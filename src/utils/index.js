@@ -9,12 +9,10 @@ export const getEventId = () => {
   return u.pathname.substring(1).replace(/\/$/, "");
 };
 export const goToEvent = (event) => {
-  const { href } = window.location;
-  const url = new URL(href);
-  window.location = `${url.origin}/${event.id}/#/`;
   localStorage.setItem(
     "currEvent",
     JSON.stringify({
+      id: event.id,
       name: event.name,
       hijriYear: event.hijriYear,
       slug: event.slug,

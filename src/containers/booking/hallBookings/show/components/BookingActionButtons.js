@@ -19,7 +19,7 @@ import BalanceIcon from "@mui/icons-material/Balance";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
-import { callApi } from "../../../../dataprovider/miscApis";
+import { callApi } from "../../../../../dataprovider/miscApis";
 import { useShowTotals } from "../context";
 
 const ConfirmConfig = {
@@ -57,7 +57,7 @@ const BookingShowActions = () => {
 
   const handleConfirm = async () => {
     if (confirmConfig?.type === "raza") {
-      await callApi(`bookings/${record.id}/grant-raza`, {}, "PUT")
+      await callApi({ location: `bookings/${record.id}/grant-raza`, method: "PUT" })
         .then(() => {
           notify("Raza marked successfully", { type: "success" });
         })
@@ -65,7 +65,7 @@ const BookingShowActions = () => {
           notify("Something went wrong", { type: "error" });
         });
     } else if (confirmConfig?.type === "writeoff") {
-      await callApi(`bookings/${record.id}/write-off`, {}, "PUT")
+      await callApi({ location: `bookings/${record.id}/write-off`, method: "PUT" })
         .then(() => {
           notify("Writeoff successfully", { type: "success" });
         })
@@ -74,7 +74,7 @@ const BookingShowActions = () => {
         });
       // API call here
     } else if (confirmConfig?.type === "refundSettled") {
-      await callApi(`bookings/${record.id}/settle-refund`, {}, "PUT")
+      await callApi({ location: `bookings/${record.id}/settle-refund`, method: "PUT" })
         .then(() => {
           notify("Refund settled successfully", { type: "success" });
         })
@@ -88,15 +88,15 @@ const BookingShowActions = () => {
   };
 
   const onClose = async (data) => {
-    await callApi(
-      `bookings/${record.id}/close`,
-      {
+    await callApi({
+      location: `bookings/${record.id}/close`,
+      data: {
         actualThaals: data.actualThaals,
         extraExpenses: data.extraExpenses,
         comments: data.comments,
       },
-      "PUT"
-    )
+      method: "PUT",
+    })
       .then(() => {
         notify("Raza marked successfully", { type: "success" });
       })

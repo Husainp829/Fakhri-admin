@@ -15,7 +15,7 @@ import {
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
-import { exportToExcel } from "../../utils/exportToExcel";
+import { exportToExcel } from "../../../utils/exportToExcel";
 
 export default () => {
   const { permissions } = usePermissions();
