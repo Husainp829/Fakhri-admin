@@ -37,7 +37,7 @@ const EventList = () => {
 
   const getStats = async () => {
     setLoading(true);
-    await callApi("stats", {}, "GET", { eventId })
+    await callApi({ location: "stats", headers: { eventId }, method: "GET" })
       .then(({ data }) => {
         setNiyaazCounts(data.niyaazCounts);
         setNamaazCounts(data.namaazVenueCounts);

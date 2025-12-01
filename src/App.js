@@ -1,12 +1,14 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
 import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useBaseRoute } from "./routeUtility";
 
 import withClearCache from "./ClearCache";
 
@@ -31,19 +33,20 @@ import Receipt from "./containers/receipt/receiptPrint";
 import vendor from "./containers/vendor";
 import vendorType from "./containers/vendorType";
 import vendorLedger from "./containers/vendorLedger";
-import bookingPurpose from "./containers/bookingPurpose";
-import halls from "./containers/halls";
-import hallBookings, { bookings } from "./containers/hallBookings";
-import RentReceiptPrint from "./containers/rentBookingReceipt/rentReceiptPrint";
-import DepositReceiptPrint from "./containers/rentBookingReceipt/depositReceiptPrint";
-import RazaPrint from "./containers/hallBookings/razaPrint";
-import rentBookingReceipt from "./containers/rentBookingReceipt";
-import ConfirmationVoucher from "./containers/hallBookings/confirmationReceiptPrint";
+import bookingPurpose from "./containers/booking/bookingPurpose";
+import halls from "./containers/booking/halls";
+import hallBookings, { bookings } from "./containers/booking/hallBookings";
+import RentReceiptPrint from "./containers/booking/rentBookingReceipt/rentReceiptPrint";
+import DepositReceiptPrint from "./containers/booking/rentBookingReceipt/depositReceiptPrint";
+import RazaPrint from "./containers/booking/hallBookings/razaPrint";
+import rentBookingReceipt from "./containers/booking/rentBookingReceipt";
+import ConfirmationVoucher from "./containers/booking/hallBookings/confirmationReceiptPrint";
 import DefaultDashboard from "./containers/defaultDashboard";
-import staff from "./containers/staff";
-import staffAttendance from "./containers/staffAttendance";
+import staff from "./containers/staff/staff";
+import staffAttendance from "./containers/staff/staffAttendance";
 import lagatReceipt from "./containers/lagatReceipt";
 import LagatReceipt from "./containers/lagatReceipt/lagatReceiptPrint";
+import BookingDashboard from "./containers/booking/bookingDashboard";
 
 dayjs.extend(utc);
 
@@ -58,12 +61,24 @@ const i18nProvider = polyglotI18nProvider((locale) => messages[locale], "en", {
 const MainApp = () => {
   const eventId = getEventId();
 
+  const baseRoute = useBaseRoute();
+
   const DashboardAdmin = () => {
     const { permissions } = usePermissions();
-    if (!permissions?.event?.view) return <DefaultDashboard />;
-    return eventId ? <EventDashboard /> : <Dashboard />;
-  };
 
+    switch (baseRoute) {
+      case "bookings":
+        return permissions?.bookings?.dashboard ? (
+          <BookingDashboard />
+        ) : (
+          <Navigate to="/" replace />
+        );
+      case "events":
+        return permissions?.event?.view ? <EventDashboard /> : <DefaultDashboard />;
+      default:
+        return <DefaultDashboard />;
+    }
+  };
   return (
     <EventProvider>
       <Admin
@@ -77,16 +92,42 @@ const MainApp = () => {
       >
         {(permissions) => (
           <>
+            {baseRoute === "bookings" && (
+              <>
+                {permissions?.bookings?.view && <Resource {...bookings} />}
+                {permissions?.bookings?.view && <Resource {...hallBookings} />}
+                {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
+                {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
+                {permissions?.halls?.view && <Resource {...bookingPurpose} />}
+                {permissions?.halls?.view && <Resource {...halls} />}
+                <CustomRoutes noLayout>
+                  <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+                </CustomRoutes>
+                <CustomRoutes noLayout>
+                  <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
+                </CustomRoutes>
+                <CustomRoutes noLayout>
+                  <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
+                </CustomRoutes>
+                <CustomRoutes noLayout>
+                  <Route path="/raza-print/:id" element={<RazaPrint />} />
+                </CustomRoutes>
+                <CustomRoutes noLayout>
+                  <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
+                </CustomRoutes>
+              </>
+            )}
             {permissions?.admins?.view && <Resource {...admin} />}
             {permissions?.show?.its && <Resource {...itsdata} />}
+            <CustomRoutes noLayout>
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+            </CustomRoutes>
+          </>
+        )}
+        {/* {(permissions) => (
+          <>
             {permissions?.vendors?.edit && <Resource {...vendor} />}
             {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
-            {permissions?.halls?.view && <Resource {...bookingPurpose} />}
-            {permissions?.halls?.view && <Resource {...halls} />}
-            {permissions?.bookings?.view && <Resource {...bookings} />}
-            {permissions?.bookings?.view && <Resource {...hallBookings} />}
-            {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
-            {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
             {permissions?.employees?.view && <Resource {...staff} />}
             {permissions?.employees?.view && <Resource {...staffAttendance} />}
 
@@ -98,9 +139,9 @@ const MainApp = () => {
               </>
             )}
           </>
-        )}
+        )} */}
 
-        <Resource {...event} />
+        {/* <Resource {...event} />
 
         <CustomRoutes noLayout>
           <Route path="/sabil-receipt" element={<SabilReceipt />} />
@@ -114,25 +155,7 @@ const MainApp = () => {
         <CustomRoutes noLayout>
           <Route path="/labelprint" element={<LabelPrint />} />
         </CustomRoutes>
-
-        <CustomRoutes noLayout>
-          <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/raza-print/:id" element={<RazaPrint />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </CustomRoutes>
+         */}
       </Admin>
     </EventProvider>
   );

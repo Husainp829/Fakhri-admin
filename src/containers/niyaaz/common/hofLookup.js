@@ -96,12 +96,15 @@ function HofLookup() {
         its: fam.ITS_ID,
       }));
     setValue("familyMembers", family);
-    const params = {
-      HOFId: data.ITS_ID,
-      includeEventData: true,
-    };
-    const u = new URLSearchParams(params).toString();
-    callApi(`niyaaz?${u}`, undefined, "GET")
+
+    callApi({
+      location: "niyaaz",
+      data: {
+        HOFId: data.ITS_ID,
+        includeEventData: true,
+      },
+      method: "GET",
+    })
       .then(({ data: previousHistory }) => {
         setValue("previousHistory", previousHistory);
       })

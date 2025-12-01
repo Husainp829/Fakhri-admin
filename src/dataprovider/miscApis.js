@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { apiUrl } from "../constants";
+import { apiUrl, getApiUrl } from "../constants";
 import { getToken } from "./httpClient";
 
-export const callApi = async (location, data, requestType, headers = {}) => {
+export const callApi = async ({ location, data = {}, method = "POST", headers = {}, id }) => {
   const token = await getToken();
   return axios({
-    method: requestType || "POST",
-    url: `${apiUrl}/${location}`,
-    ...(requestType === "GET" ? { params: data } : { data }),
+    method,
+    url: `${getApiUrl(location)}/${location}${id ? `/${id}` : ""}`,
+    ...(method === "GET" ? { params: data } : { data }),
     headers: {
       "Content-Type": "application/json",
       authorization: token,
@@ -16,13 +16,10 @@ export const callApi = async (location, data, requestType, headers = {}) => {
     },
   }).then((response) => response);
 };
-
-export const callApiWithoutAuth = async (location, body, requestType) =>
+export const callApiWithoutAuth = async ({ location, data = {}, method = "POST", id = null }) =>
   axios({
-    method: requestType || "POST",
-    url: `${apiUrl}/${location}`,
-    data: body,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    method,
+    url: `${getApiUrl(location)}/${location}${id ? `/${id}` : ""}`,
+    [method === "GET" ? "params" : "data"]: data,
+    headers: { "Content-Type": "application/json" },
   }).then((response) => response);
