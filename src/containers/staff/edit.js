@@ -1,6 +1,12 @@
 /* eslint-disable no-console */
 import React from "react";
-import { TextInput, Edit, SimpleForm, SelectInput } from "react-admin";
+import {
+  TextInput,
+  Edit,
+  SimpleForm,
+  SelectInput,
+  BooleanInput,
+} from "react-admin";
 import { EMPLOYEE_TYPE } from "../../constants";
 
 export default (props) => (
@@ -15,6 +21,12 @@ export default (props) => (
         choices={Object.entries(EMPLOYEE_TYPE).map(([id, name]) => ({ id, name }))}
         sx={{ marginBottom: 0 }}
         alwaysOn
+      />
+      <BooleanInput
+        label="Receive Booking Summaries via WhatsApp"
+        source="receiveBookingSummary"
+        fullWidth
+        defaultValue={false}
       />
     </SimpleForm>
   </Edit>
