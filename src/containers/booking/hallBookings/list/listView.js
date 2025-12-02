@@ -108,9 +108,7 @@ export default () => {
           <FunctionField
             label="Submitter"
             source="booking.submitter"
-            render={(record) => (
-              <span>{record?.booking?.admin?.name || record.booking?.submitter}</span>
-            )}
+            render={(record) => <span>{record.booking?.submitter?.name}</span>}
           />
           <FunctionField
             label="Show"
