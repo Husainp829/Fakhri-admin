@@ -9,12 +9,9 @@ import {
   useResourceDefinitions,
   useSidebarState,
 } from "react-admin";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import StorefrontIcon from "@mui/icons-material/Storefront";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import SubMenu from "./subMenu";
-import { getEventId } from "../utils";
 
 const MENU_TYPES = {
   SABIL: "SABIL",
@@ -34,43 +31,11 @@ const LayoutMenu = () => {
   const handleToggle = (type) => {
     setIsOpen({ ...isOpen, [type]: !isOpen[type] });
   };
-  const eventId = getEventId();
-  const MENUS = eventId
-    ? [
-        {
-          id: MENU_TYPES.NIYAAZ,
-          name: "Niyaaz",
-          icon: <AccountBoxIcon />,
-          items: [resources.niyaaz, resources.receipts],
-        },
-        ...(permissions?.vendorLedger?.edit
-          ? [
-              {
-                id: MENU_TYPES.VENDOR,
-                name: "Vendor Ledger",
-                icon: <AccountBalanceWalletIcon />,
-                items: [resources.vendorLedger],
-              },
-            ]
-          : []),
 
-        // {
-        //   id: MENU_TYPES.SABIL,
-        //   name: "Sabil",
-        //   icon: <AccountBoxIcon />,
-        //   items: [resources.sabilData, resources.sabilReceipt, resources.sabilChangeRequests],
-        // },
-        // {
-        //   id: MENU_TYPES.FMB,
-        //   name: "FMB",
-        //   icon: <AccountBoxIcon />,
-        //   items: [resources.fmbData, resources.fmbReceipt],
-        // },
-      ]
-    : [];
+  const MENUS = [];
 
   MENUS.push(
-    ...(permissions?.vendors?.edit
+    ...(permissions?.vendors?.edit && resources.vendors && resources.vendorTypes
       ? [
           {
             id: MENU_TYPES.VENDOR_MASTER,
@@ -91,6 +56,9 @@ const LayoutMenu = () => {
       }}
     >
       <MenuItemLink to="/" primaryText="Dashboard" leftIcon={<DashboardIcon />} />
+      <Menu.ResourceItem name="niyaaz" />
+      <Menu.ResourceItem name="receipts" />
+      <Menu.ResourceItem name="vendorLedger" />
       {MENUS.map((menu) => (
         <SubMenu
           key={menu.item}
@@ -115,14 +83,15 @@ const LayoutMenu = () => {
       ))}
       {/* <Menu.ResourceItem name="mohallas" />
       <Menu.ResourceItem name="lagatTypes" /> */}
-      <Menu.ResourceItem name="itsdata" />
+
       <Menu.ResourceItem name="hallBookings" />
       <Menu.ResourceItem name="contRcpt" />
-      <Menu.ResourceItem name="lagatReceipts" />
       <Menu.ResourceItem name="halls" />
       <Menu.ResourceItem name="bookingPurpose" />
       <Menu.ResourceItem name="employees" />
       <Menu.ResourceItem name="employeesAttendance" />
+      <Menu.ResourceItem name="lagatReceipts" />
+      <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
     </Menu>
   );

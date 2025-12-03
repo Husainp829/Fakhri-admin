@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { fetchUtils } from "react-admin";
 import { authObj } from "../firebaseConfig";
-import { getEventId } from "../utils";
+import { getRouteIdFromPathname } from "../utils/routeUtility";
 
 export const getToken = async () => {
   let token = localStorage.getItem("AUTH_TOKEN");
@@ -33,7 +33,7 @@ export default async (url, options = {}) => {
   }
 
   const token = await getToken();
-  const eventId = getEventId();
+  const eventId = getRouteIdFromPathname();
   options.headers.set("Accept", "application/json");
   options.headers.set("Authorization", token);
   options.headers.set("EventID", eventId);

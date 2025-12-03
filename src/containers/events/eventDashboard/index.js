@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Box, useMediaQuery, Divider, Typography } from "@mui/material";
-import { Title, useNotify } from "react-admin";
+import { Title, useNotify, useStore } from "react-admin";
 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import GridList from "./gridList";
-import { callApi } from "../../dataprovider/miscApis";
-import { getEventId } from "../../utils";
-import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
+import { callApi } from "../../../dataprovider/miscApis";
+import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
 import NamaazStats from "./namaazStats";
+import { useRouteId } from "../../../utils/routeUtility";
 
 function a11yProps(index) {
   return {
@@ -16,7 +16,7 @@ function a11yProps(index) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-const EventList = () => {
+const EventDashboard = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const notify = useNotify();
 
@@ -24,9 +24,10 @@ const EventList = () => {
   const [namaazCounts, setNamaazCounts] = useState([]);
   const [receiptReport, setReceiptReport] = useState([]);
   const [loading, setLoading] = useState(false);
-  const eventId = getEventId();
+  const eventId = useRouteId();
   const [value, setValue] = useState("FM");
   const [namaazValue, setNamaazValue] = useState("FM");
+  const [currentEvent] = useStore("currentEvent");
 
   const handleChange = (e, newValue) => {
     setValue(newValue);
@@ -54,7 +55,7 @@ const EventList = () => {
 
   return (
     <>
-      <Title title="DASHBOARD" />
+      <Title title={currentEvent?.name} />
 
       <Box width={isSmall ? "auto" : "calc(100% - 1em)"} sx={{ p: 2 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
@@ -100,4 +101,4 @@ const EventList = () => {
   );
 };
 
-export default EventList;
+export default EventDashboard;

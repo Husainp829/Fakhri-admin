@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Button,
   CreateButton,
@@ -18,12 +18,12 @@ import {
   WrapperField,
   downloadCSV,
   usePermissions,
+  useStore,
 } from "react-admin";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
 import { calcTotalBalance, calcTotalPayable, downLoadPasses } from "../../utils";
-import { EventContext } from "../../dataprovider/eventProvider";
 import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
 
 export default () => {
@@ -61,7 +61,7 @@ export default () => {
     </TopToolbar>
   );
 
-  const { currentEvent } = useContext(EventContext);
+  const [currentEvent] = useStore("currentEvent", null);
 
   const exporter = (niyaaz) => {
     const niyaazForExport = niyaaz.map((niy) => {

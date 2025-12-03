@@ -24,6 +24,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "../../../../utils/dayjsLocalizer";
 import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
 import { hallColorMap, slotTimeRanges } from "../../../../constants";
+import { useBaseRoute } from "../../../../utils/routeUtility";
 
 // Extend dayjs
 dayjs.extend(weekday);
@@ -135,13 +136,16 @@ const CalenderView = () => {
       notify("Error fetching hall bookings", { type: "warning" });
     }
   };
+  const baseRoute = useBaseRoute();
 
   useEffect(() => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("view", view);
-    newParams.set("date", date.format("YYYY-MM-DD"));
-    setSearchParams(newParams);
-  }, [view, date, setSearchParams]);
+    if (baseRoute === "bookings") {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("view", view);
+      newParams.set("date", date.format("YYYY-MM-DD"));
+      setSearchParams(newParams);
+    }
+  }, [view, date, setSearchParams, baseRoute]);
 
   useEffect(() => {
     const timeout = setTimeout(loadEvents, 500);

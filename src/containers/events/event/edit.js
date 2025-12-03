@@ -10,9 +10,9 @@ import {
   useNotify,
   useUpdate,
 } from "react-admin";
-import DateTimeInput from "../../components/DateTimeInput";
-import { uploadMedia } from "../../dataprovider/uploadProps";
-import { formatDateTime, parseDateTime } from "../../utils";
+import DateTimeInput from "../../../components/DateTimeInput";
+import { uploadMedia } from "../../../dataprovider/uploadProps";
+import { formatDateTime, parseDateTime } from "../../../utils";
 
 export default (props) => {
   const EventTitle = () => "Event Details";

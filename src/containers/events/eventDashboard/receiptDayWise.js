@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/GridLegacy";
-import { receiptGroupBy } from "../../utils";
+import { receiptGroupBy } from "../../../utils";
 
 const calcRowTotal = (row) => {
   const { CASH, CHEQUE, ONLINE } = row;

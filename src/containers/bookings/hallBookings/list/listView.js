@@ -73,6 +73,7 @@ export default () => {
         filters={BookingFilters}
         actions={<ListActions />}
         sort={{ field: "updatedAt", order: "DESC" }}
+        title={false}
       >
         <Datagrid
           rowClick={false}
