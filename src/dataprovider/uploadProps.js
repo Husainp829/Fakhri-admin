@@ -2,7 +2,7 @@
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import axios from "axios";
 import storage from "../firebaseConfig";
-import { apiUrl } from "../constants";
+import { getApiUrl } from "../constants";
 import { getToken } from "./httpClient";
 
 export default async (data, notify, type) => {
@@ -41,7 +41,7 @@ export const uploadMedia = async (file, notify, type) => {
   const token = await getToken();
   return axios({
     method: "post",
-    url: `${apiUrl}/media/upload`,
+    url: `${getApiUrl("media")}/media/upload`,
     data: formData,
     headers: {
       "Content-Type": "multipart/form-data",
@@ -55,7 +55,7 @@ export const uploadBase64Media = async (file) => {
   const token = await getToken();
   return axios({
     method: "post",
-    url: `${apiUrl}/itsdata/upload`,
+    url: `${getApiUrl("itsdata")}/itsdata/upload`,
     data: {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       base64Image: spl,

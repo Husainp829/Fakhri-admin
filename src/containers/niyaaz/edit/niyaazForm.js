@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   TextInput,
   NumberInput,
@@ -7,8 +7,9 @@ import {
   FormDataConsumer,
   SelectInput,
   BooleanInput,
+  useStore,
 } from "react-admin";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -20,12 +21,12 @@ import { useWatch, useFormContext } from "react-hook-form";
 
 import HofLookup from "../common/hofLookup";
 import { calcTotalPayable } from "../../../utils";
-import { EventContext } from "../../../dataprovider/eventProvider";
 import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
 
 export default () => {
   const { setValue } = useFormContext();
-  const { currentEvent } = useContext(EventContext);
+
+  const [currentEvent] = useStore("currentEvent");
   const takhmeenAmount = useWatch({ name: "takhmeenAmount" });
   const iftaari = useWatch({ name: "iftaari" });
   const chairs = useWatch({ name: "chairs" });
@@ -46,14 +47,14 @@ export default () => {
   }, [familyMembers]);
   return (
     <Grid container spacing={1} sx={{ mt: 3 }}>
-      <Grid item md={6} xs={12} sx={{ pr: 1 }}>
+      <Grid item size={{ md: 6, xs: 12 }} sx={{ pr: 1 }}>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item size={{ xs: 12 }}>
             <Typography variant="body1" sx={{ mb: 3 }}>
               HOF Details <HofLookup change={() => {}} />
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs: 6 }}>
             <SelectInput
               source="markaz"
               label="Jaman Venue"
@@ -67,7 +68,7 @@ export default () => {
               sx={{ mb: 3 }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs: 6 }}>
             <SelectInput
               source="namaazVenue"
               label="Namaaz Venue"
@@ -81,30 +82,30 @@ export default () => {
               sx={{ mb: 3 }}
             />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <TextInput source="HOFId" label="HOF ITS" fullWidth isRequired />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <TextInput source="HOFName" label="Full Name" fullWidth isRequired />
           </Grid>
-          <Grid item lg={12} xs={12}>
+          <Grid item size={{ lg: 12, xs: 12 }}>
             <TextInput source="HOFAddress" label="Address" fullWidth isRequired />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <TextInput source="HOFPhone" label="Phone" fullWidth isRequired />
           </Grid>
-          <Grid item xs={12}></Grid>
+          <Grid item size={{ xs: 12 }}></Grid>
 
-          <Grid item xs={12} sx={{ mb: 3 }}>
+          <Grid item size={{ xs: 12 }} sx={{ mb: 3 }}>
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <NumberInput source="takhmeenAmount" fullWidth defaultValue={0} min={0} />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <NumberInput source="iftaari" fullWidth defaultValue={0} min={0} />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <NumberInput
               source="zabihat"
               fullWidth
@@ -115,7 +116,7 @@ export default () => {
               }`}
             />
           </Grid>
-          <Grid item lg={6} xs={6}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <NumberInput
               source="chairs"
               fullWidth
@@ -126,7 +127,7 @@ export default () => {
               disabled
             />
           </Grid>
-          <Grid item lg={12} xs={12} sx={{ mb: 3 }}>
+          <Grid item size={{ lg: 12, xs: 12 }} sx={{ mb: 3 }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 500 }} aria-label="simple table">
                 <TableBody>
@@ -162,48 +163,38 @@ export default () => {
               </Table>
             </TableContainer>
           </Grid>
-          <Grid item lg={12} xs={12}>
+          <Grid item size={{ lg: 12, xs: 12 }}>
             <TextInput source="comments" fullWidth />
           </Grid>
         </Grid>
       </Grid>
-      <Grid item md={6} xs={12} sx={{ borderLeft: "1px solid #cccccc", pl: 1 }}>
+      <Grid item size={{ md: 6, xs: 12 }} sx={{ borderLeft: "1px solid #cccccc", pl: 1 }}>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item size={{ xs: 12 }}>
             <Typography variant="body1">Family Members</Typography>
             <ArrayInput source="familyMembers" fullWidth label="">
               <SimpleFormIterator inline fullWidth>
                 <FormDataConsumer>
-                  {({ getSource }) => (
+                  {() => (
                     <Grid container spacing={1} sx={{ my: 2 }}>
-                      <Grid item lg={12} xs={12} sx={{ mb: 1 }}>
-                        <TextInput
-                          source={getSource("name")}
-                          helperText={false}
-                          fullWidth
-                          isRequired
-                        />
+                      <Grid item size={{ lg: 12, xs: 12 }} sx={{ mb: 1 }}>
+                        <TextInput source="name" helperText={false} fullWidth isRequired />
                       </Grid>
-                      <Grid item lg={3} xs={3}>
+                      <Grid item size={{ lg: 3, xs: 3 }}>
                         <TextInput
-                          source={getSource("its")}
+                          source="its"
                           label="ITS"
                           helperText={false}
                           fullWidth
                           isRequired
                         />
                       </Grid>
-                      <Grid item lg={3} xs={3}>
-                        <TextInput
-                          source={getSource("age")}
-                          helperText={false}
-                          fullWidth
-                          isRequired
-                        />
+                      <Grid item size={{ lg: 3, xs: 3 }}>
+                        <TextInput source="age" helperText={false} fullWidth isRequired />
                       </Grid>
-                      <Grid item lg={3} xs={3}>
+                      <Grid item size={{ lg: 3, xs: 3 }}>
                         <SelectInput
-                          source={getSource("gender")}
+                          source="gender"
                           label="Gender"
                           helperText={false}
                           choices={[
@@ -212,16 +203,10 @@ export default () => {
                           ]}
                           fullWidth
                           isRequired
-                          sx={{ mt: 0 }}
                         />
                       </Grid>
-                      <Grid item lg={3} xs={3}>
-                        <BooleanInput
-                          source={getSource("hasChair")}
-                          label="Chair"
-                          fullWidth
-                          sx={{ ml: 2 }}
-                        />
+                      <Grid item size={{ lg: 3, xs: 3 }}>
+                        <BooleanInput source="hasChair" label="Chair" fullWidth sx={{ ml: 6 }} />
                       </Grid>
                     </Grid>
                   )}

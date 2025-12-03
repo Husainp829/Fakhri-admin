@@ -3,7 +3,7 @@
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
 import { unflatten } from "flat";
-import { apiUrl } from "../constants";
+import { getApiUrl } from "../constants";
 import httpClient from "./httpClient";
 
 const convertRows = (rows) => rows.map(unflatten);
@@ -20,7 +20,7 @@ export default {
       limit: perPage,
       startAfter: (page - 1) * perPage,
     };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { count, rows, counts } }) => {
       localStorage.setItem(`${resource}_count`, JSON.stringify(counts));
       return {
@@ -31,7 +31,7 @@ export default {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
       data: rows[0],
     })),
 
@@ -39,7 +39,7 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { count, rows } }) => ({
       data: rows,
       total: count,
@@ -57,7 +57,7 @@ export default {
       limit: perPage,
       startAfter: (page - 1) * perPage,
     };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json: { rows, count } }) => ({
       data: rows,
       total: count,
@@ -65,7 +65,7 @@ export default {
   },
 
   update: async (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`, {
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
       method: "PUT",
       body: JSON.stringify(params.data),
     }).then(({ json: { rows } }) => ({
@@ -76,14 +76,14 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+    return httpClient(`${getApiUrl(resource)}/${resource}?${stringify(query)}`, {
       method: "PUT",
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: json.data }));
   },
 
   create: async (resource, params) =>
-    httpClient(`${apiUrl}/${resource}`, {
+    httpClient(`${getApiUrl(resource)}/${resource}`, {
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json: { rows } }) => ({
@@ -91,13 +91,13 @@ export default {
     })),
 
   createMany: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/bulk-upload`, {
+    httpClient(`${getApiUrl(resource)}/${resource}/bulk-upload`, {
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json: { data } }) => ({ data })),
 
   delete: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`, {
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
       method: "DELETE",
     }).then(({ json: { rows } }) => ({
       data: rows[0],
@@ -106,7 +106,7 @@ export default {
   deleteMany: (resource, params) =>
     Promise.all(
       params.ids.map((id) =>
-        httpClient(`${apiUrl}/${resource}/${id}`, {
+        httpClient(`${getApiUrl(resource)}/${resource}/${id}`, {
           method: "DELETE",
           body: JSON.stringify(params.data),
         })
@@ -116,14 +116,14 @@ export default {
     })),
 
   deleteImage: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/delete-image?${stringify(params)}`).then(() => ({
+    httpClient(`${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`).then(() => ({
       data: "",
     })),
   pdfDownload: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${apiUrl}/${resource}/${params.name}?${stringify(query)}`).then(
+    return httpClient(`${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`).then(
       (response) => {
         const linkSource = `data:application/pdf;base64,${response.body}`;
         const downloadLink = document.createElement("a");

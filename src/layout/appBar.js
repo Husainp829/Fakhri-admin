@@ -1,161 +1,44 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  AppBar,
-  Logout,
-  UserMenu,
-  useSidebarState,
-  useDataProvider,
-  useNotify,
-  usePermissions,
-} from "react-admin";
-import dayjs from "dayjs";
+import React, { useState } from "react";
+import { AppBar, TitlePortal } from "react-admin";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import EventIcon from "@mui/icons-material/Event";
 import IconButton from "@mui/material/IconButton";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Link } from "react-router-dom";
-import { ListItemIcon, ListItemText } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { goToEvent, goToDashboard, mS } from "../utils";
-import { EventContext } from "../dataprovider/eventProvider";
+import { Button } from "@mui/material";
+
 import Logo from "../assets/logo.png";
+import { navigateToBaseRoute } from "../utils/routeUtility";
 
 export default (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { permissions } = usePermissions();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const dataProvider = useDataProvider();
-  const { events, setEvents, currentEventId, currentEvent, setEventsLoading } =
-    useContext(EventContext);
-  const [current, setCurrent] = useState("Dashboard");
-  const notify = useNotify();
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const activeEvents = [];
-  events.map((e) => {
-    if (dayjs(e.toDate) > dayjs()) {
-      activeEvents.push(e);
-    }
-    return e;
-  });
-
-  useEffect(() => {
-    setEventsLoading(true);
-    dataProvider
-      .getList("events", {
-        sort: { order: "ASC", field: "fromDate" },
-        pagination: { page: 1, perPage: 999 },
-      })
-      .then(({ data }) => {
-        setEvents(data);
-      })
-      .catch((error) => {
-        notify(error);
-      })
-      .finally(() => {
-        setEventsLoading(false);
-      });
-  }, []);
-
-  const [open, setOpen] = useSidebarState();
-
-  useEffect(() => {
-    if (currentEvent) {
-      setCurrent(currentEvent.name);
-    }
-  }, [currentEvent]);
-
-  const ConfigurationMenu = () => (
-    <MenuItem component={Link} to="/admins">
-      <ListItemIcon>
-        <SettingsIcon />
-      </ListItemIcon>
-      <ListItemText>Admin Users</ListItemText>
-    </MenuItem>
-  );
-
-  useEffect(() => {
-    setOpen(true);
-  }, [current]);
-
   return (
     <AppBar
       sx={{
         "& .RaAppBar-menuButton": {
-          display: currentEventId ? "" : "",
+          display: "",
         },
         "& .RaAppBar-menuButton svg": {
           color: (theme) => theme.palette.primary.main,
         },
       }}
       elevation={3}
-      open={open}
       {...props}
-      userMenu={
-        <UserMenu>
-          {permissions?.admins?.view && <ConfigurationMenu />}
-          <Logout />
-        </UserMenu>
-      }
     >
-      <Box
-        style={{
-          margin: "5px 0px",
-          padding: "0 6px 0 px",
-          width: mS ? "100px" : "200px",
-          overflowX: "hidden",
-        }}
-      >
-        {mS ? (
-          <img
-            src={Logo}
-            alt="logo"
-            style={{
-              width: "50px",
-              borderRight: "1px solid #0A1F33",
-              paddingRight: 10,
-              marginTop: 2,
-            }}
-          />
-        ) : (
-          <>
-            {currentEventId ? (
-              <Typography variant="body2" color="primary" id="react-admin-title" noWrap>
-                {current ?? "Dashboard"} -
-              </Typography>
-            ) : (
-              <Typography variant="body2" color="primary" noWrap>
-                {current ?? "Dashboard"}
-              </Typography>
-            )}
-          </>
-        )}
-      </Box>
-      <Box flex={1} style={{ marginLeft: 0 }}>
-        {mS && (
-          <>
-            {currentEventId ? (
-              <Typography variant={mS ? "h6" : "p"} color="primary" noWrap id="react-admin-title">
-                <span style={{ marginRight: "5px" }}>{current ?? "Dashboard"} - </span>
-              </Typography>
-            ) : (
-              <Typography variant={mS ? "h6" : "p"} color="primary" noWrap>
-                <span>{current ?? "Dashboard"}</span>
-              </Typography>
-            )}
-          </>
-        )}
-      </Box>
-
+      <Button onClick={() => navigateToBaseRoute()}>
+        <img src={Logo} alt="logo" width="50px" />
+      </Button>
+      <TitlePortal />
       <Box>
         <IconButton
           color="primary"
@@ -174,24 +57,11 @@ export default (props) => {
         >
           <MenuItem
             onClick={() => {
-              goToDashboard();
-              setOpen(false);
-              setCurrent("Dashboard");
+              navigateToBaseRoute();
             }}
           >
             Dashboard
           </MenuItem>
-          {activeEvents.map((e) => (
-            <MenuItem
-              onClick={() => {
-                goToEvent(e.id);
-                setCurrent(e.name);
-              }}
-              key={e.id}
-            >
-              {e.name}
-            </MenuItem>
-          ))}
         </Menu>
       </Box>
     </AppBar>

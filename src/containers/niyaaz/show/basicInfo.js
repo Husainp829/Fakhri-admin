@@ -1,12 +1,18 @@
-import React, { useContext } from "react";
-import { ArrayField, FunctionField, NumberField, SimpleShowLayout, TextField } from "react-admin";
+import React from "react";
+import {
+  ArrayField,
+  FunctionField,
+  NumberField,
+  SimpleShowLayout,
+  TextField,
+  useStore,
+} from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 import { calcTotalPayable } from "../../../utils";
-import { EventContext } from "../../../dataprovider/eventProvider";
 
 export default () => {
-  const { currentEvent } = useContext(EventContext);
+  const [currentEvent] = useStore("currentEvent");
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={3}>
