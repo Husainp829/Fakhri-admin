@@ -2,14 +2,14 @@ import React from "react";
 import { Create, SimpleForm } from "react-admin";
 
 import CreateForm from "./createForm";
-import { getEventId } from "../../../utils";
+import { useRouteId } from "../../../utils/routeUtility";
 
 export default (props) => {
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
   const niyaazId = searchParams.get("niyaazId");
-  const eventId = getEventId();
+  const eventId = useRouteId();
 
   const transform = (data) => ({
     eventId: data.eventId,

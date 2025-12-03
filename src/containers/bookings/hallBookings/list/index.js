@@ -6,6 +6,7 @@ import { CreateButton, Title, TopToolbar, usePermissions } from "react-admin";
 import { useSearchParams } from "react-router-dom";
 import CalenderView from "./calenderView";
 import ListView from "./listView";
+import { useBaseRoute } from "../../../../utils/routeUtility";
 
 const BookingActions = ({ permissions }) => (
   <TopToolbar>{permissions?.bookings?.edit && <CreateButton resource="bookings" />}</TopToolbar>
@@ -16,8 +17,10 @@ const HallBookingCalendar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const viewParam = searchParams.get("tab") || "CALENDAR";
 
+  const baseRoute = useBaseRoute();
+
   const handleChange = (e, newValue) => {
-    if (newValue) {
+    if (newValue && baseRoute === "bookings") {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("tab", newValue);
       setSearchParams(newParams);
@@ -26,7 +29,7 @@ const HallBookingCalendar = () => {
 
   return (
     <div>
-      <Title title="Hall Bookings Calendar" />
+      <Title title="Hall Bookings" />
       <Box
         sx={{
           display: "flex",

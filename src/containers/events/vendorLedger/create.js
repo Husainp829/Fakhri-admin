@@ -1,21 +1,16 @@
 import React from "react";
 import {
   TextInput,
-  Edit,
+  Create,
   SimpleForm,
   NumberInput,
   DateInput,
   RadioButtonGroupInput,
-  useRecordContext,
 } from "react-admin";
-import CustomReferenceInput from "../../components/CustomReferenceInput";
+import CustomReferenceInput from "../../../components/CustomReferenceInput";
 
-const PostTitle = () => {
-  const record = useRecordContext();
-  return <span> {record ? `Ledger-${record.ledgerNo}` : ""}</span>;
-};
 export default (props) => (
-  <Edit {...props} sx={{ mt: 2 }} title={<PostTitle />}>
+  <Create {...props} sx={{ mt: 2 }} redirect="list">
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 500 }}>
       <TextInput source="billNo" isRequired fullWidth />
       <DateInput source="billDate" isRequired fullWidth />
@@ -30,6 +25,7 @@ export default (props) => (
         ]}
         defaultKey="name"
         title="Vendor"
+        isRequired
       />
       <CustomReferenceInput
         source="type"
@@ -40,6 +36,7 @@ export default (props) => (
         title="Type"
       />
       <NumberInput source="paid" fullWidth />
+
       <DateInput source="paidDate" fullWidth />
       <RadioButtonGroupInput
         sx={{ mt: 0 }}
@@ -54,5 +51,5 @@ export default (props) => (
 
       <TextInput source="remarks" fullWidth />
     </SimpleForm>
-  </Edit>
+  </Create>
 );

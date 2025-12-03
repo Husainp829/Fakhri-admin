@@ -6,11 +6,11 @@ import { Button, downloadCSV, usePermissions } from "react-admin";
 import jsonExport from "jsonexport/dist";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import LoadingGridList from "../../components/LoadingWidget";
+import LoadingGridList from "../../../components/LoadingWidget";
 
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
-import { receiptGroupBy } from "../../utils";
+import { receiptGroupBy } from "../../../utils";
 
 const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();

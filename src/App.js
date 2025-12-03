@@ -8,7 +8,7 @@ import { deepmerge } from "@mui/utils";
 import { Navigate, Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useBaseRoute } from "./routeUtility";
+import { useBaseRoute, useRouteId } from "./utils/routeUtility";
 
 import withClearCache from "./ClearCache";
 
@@ -18,35 +18,33 @@ import layout from "./layout";
 import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
 import niyaaz from "./containers/niyaaz";
-import LabelPrint from "./containers/labelPrint";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
 import receipt from "./containers/receipt";
 import SabilReceipt from "./containers/sabilReceipt/sabilReceiptPrint";
 import FmbReceipt from "./containers/fmbReceipt/fmbReceiptPrint";
-import event from "./containers/event";
-import Dashboard from "./containers/dashboard";
-import EventDashboard from "./containers/eventDashboard";
-import { getEventId } from "./utils";
-import EventProvider from "./dataprovider/eventProvider";
+import event from "./containers/events/event";
+import EventsDashboard from "./containers/events/dashboard";
+import ActiveEventDashboard from "./containers/events/eventDashboard";
 import Receipt from "./containers/receipt/receiptPrint";
-import vendor from "./containers/vendor";
-import vendorType from "./containers/vendorType";
-import vendorLedger from "./containers/vendorLedger";
-import bookingPurpose from "./containers/booking/bookingPurpose";
-import halls from "./containers/booking/halls";
-import hallBookings, { bookings } from "./containers/booking/hallBookings";
-import RentReceiptPrint from "./containers/booking/rentBookingReceipt/rentReceiptPrint";
-import DepositReceiptPrint from "./containers/booking/rentBookingReceipt/depositReceiptPrint";
-import RazaPrint from "./containers/booking/hallBookings/razaPrint";
-import rentBookingReceipt from "./containers/booking/rentBookingReceipt";
-import ConfirmationVoucher from "./containers/booking/hallBookings/confirmationReceiptPrint";
+import vendor from "./containers/events/vendor";
+import vendorType from "./containers/events/vendorType";
+import vendorLedger from "./containers/events/vendorLedger";
+import bookingPurpose from "./containers/bookings/bookingPurpose";
+import halls from "./containers/bookings/halls";
+import hallBookings, { bookings } from "./containers/bookings/hallBookings";
+import RentReceiptPrint from "./containers/bookings/rentBookingReceipt/rentReceiptPrint";
+import DepositReceiptPrint from "./containers/bookings/rentBookingReceipt/depositReceiptPrint";
+import RazaPrint from "./containers/bookings/hallBookings/razaPrint";
+import rentBookingReceipt from "./containers/bookings/rentBookingReceipt";
+import ConfirmationVoucher from "./containers/bookings/hallBookings/confirmationReceiptPrint";
 import DefaultDashboard from "./containers/defaultDashboard";
 import staff from "./containers/staff/staff";
 import staffAttendance from "./containers/staff/staffAttendance";
 import lagatReceipt from "./containers/lagatReceipt";
 import LagatReceipt from "./containers/lagatReceipt/lagatReceiptPrint";
-import BookingDashboard from "./containers/booking/bookingDashboard";
+import BookingDashboard from "./containers/bookings/dashboard";
+import StaffDashboard from "./containers/staff/dashboard";
 
 dayjs.extend(utc);
 
@@ -59,9 +57,8 @@ const i18nProvider = polyglotI18nProvider((locale) => messages[locale], "en", {
 });
 
 const MainApp = () => {
-  const eventId = getEventId();
-
   const baseRoute = useBaseRoute();
+  const routeId = useRouteId();
 
   const DashboardAdmin = () => {
     const { permissions } = usePermissions();
@@ -71,93 +68,98 @@ const MainApp = () => {
         return permissions?.bookings?.dashboard ? (
           <BookingDashboard />
         ) : (
-          <Navigate to="/" replace />
+          <Navigate to="/hallBookings" />
         );
-      case "events":
-        return permissions?.event?.view ? <EventDashboard /> : <DefaultDashboard />;
+      case "events": {
+        if (permissions?.event?.view) {
+          if (routeId) {
+            return <ActiveEventDashboard />;
+          }
+          return <EventsDashboard />;
+        }
+        return <DefaultDashboard />;
+      }
+      case "staff":
+        return permissions?.staff?.view ? <StaffDashboard /> : <Navigate to="/employees" />;
       default:
         return <DefaultDashboard />;
     }
   };
   return (
-    <EventProvider>
-      <Admin
-        dataProvider={dataProvider}
-        authProvider={authProvider}
-        i18nProvider={i18nProvider}
-        layout={layout}
-        dashboard={DashboardAdmin}
-        theme={appTheme}
-        loginPage={MyLoginPage}
-      >
-        {(permissions) => (
-          <>
-            {baseRoute === "bookings" && (
-              <>
-                {permissions?.bookings?.view && <Resource {...bookings} />}
-                {permissions?.bookings?.view && <Resource {...hallBookings} />}
-                {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
-                {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
-                {permissions?.halls?.view && <Resource {...bookingPurpose} />}
-                {permissions?.halls?.view && <Resource {...halls} />}
-                <CustomRoutes noLayout>
-                  <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
-                </CustomRoutes>
-                <CustomRoutes noLayout>
-                  <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
-                </CustomRoutes>
-                <CustomRoutes noLayout>
-                  <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
-                </CustomRoutes>
-                <CustomRoutes noLayout>
-                  <Route path="/raza-print/:id" element={<RazaPrint />} />
-                </CustomRoutes>
-                <CustomRoutes noLayout>
-                  <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
-                </CustomRoutes>
-              </>
-            )}
-            {permissions?.admins?.view && <Resource {...admin} />}
-            {permissions?.show?.its && <Resource {...itsdata} />}
-            <CustomRoutes noLayout>
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-            </CustomRoutes>
-          </>
-        )}
-        {/* {(permissions) => (
-          <>
-            {permissions?.vendors?.edit && <Resource {...vendor} />}
-            {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
-            {permissions?.employees?.view && <Resource {...staff} />}
-            {permissions?.employees?.view && <Resource {...staffAttendance} />}
+    <Admin
+      dataProvider={dataProvider}
+      authProvider={authProvider}
+      i18nProvider={i18nProvider}
+      layout={layout}
+      dashboard={DashboardAdmin}
+      theme={appTheme}
+      loginPage={MyLoginPage}
+    >
+      {(permissions) => (
+        <>
+          {baseRoute === "bookings" && (
+            <>
+              {permissions?.bookings?.view && <Resource {...bookings} />}
+              {permissions?.bookings?.view && <Resource {...hallBookings} />}
+              {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
+              {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
+              {permissions?.halls?.view && <Resource {...bookingPurpose} />}
+              {permissions?.halls?.view && <Resource {...halls} />}
+              <CustomRoutes noLayout>
+                <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+              </CustomRoutes>
+              <CustomRoutes noLayout>
+                <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
+              </CustomRoutes>
+              <CustomRoutes noLayout>
+                <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
+              </CustomRoutes>
+              <CustomRoutes noLayout>
+                <Route path="/raza-print/:id" element={<RazaPrint />} />
+              </CustomRoutes>
+              <CustomRoutes noLayout>
+                <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
+              </CustomRoutes>
+            </>
+          )}
+          {baseRoute === "events" && (
+            <>
+              {routeId && (
+                <>
+                  {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
+                  {permissions?.receipt?.view && <Resource {...receipt} />}
+                  {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
+                  <CustomRoutes noLayout>
+                    <Route path="/niyaaz-receipt" element={<Receipt />} />
+                  </CustomRoutes>
+                </>
+              )}
+              {permissions?.vendors?.edit && <Resource {...vendor} />}
+              {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
+              <Resource {...event} />
+            </>
+          )}
+          {baseRoute === "staff" && (
+            <>
+              {permissions?.employees?.view && <Resource {...staff} />}
+              {permissions?.employees?.view && <Resource {...staffAttendance} />}
+            </>
+          )}
+          {permissions?.admins?.view && <Resource {...admin} />}
+          {permissions?.show?.its && <Resource {...itsdata} />}
+          <CustomRoutes noLayout>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </CustomRoutes>
+        </>
+      )}
 
-            {eventId && (
-              <>
-                {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
-                {permissions?.receipt?.view && <Resource {...receipt} />}
-                {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
-              </>
-            )}
-          </>
-        )} */}
-
-        {/* <Resource {...event} />
-
-        <CustomRoutes noLayout>
-          <Route path="/sabil-receipt" element={<SabilReceipt />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/niyaaz-receipt" element={<Receipt />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/fmb-receipt" element={<FmbReceipt />} />
-        </CustomRoutes>
-        <CustomRoutes noLayout>
-          <Route path="/labelprint" element={<LabelPrint />} />
-        </CustomRoutes>
-         */}
-      </Admin>
-    </EventProvider>
+      <CustomRoutes noLayout>
+        <Route path="/sabil-receipt" element={<SabilReceipt />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/fmb-receipt" element={<FmbReceipt />} />
+      </CustomRoutes>
+    </Admin>
   );
 };
 

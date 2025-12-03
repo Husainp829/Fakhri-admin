@@ -1,8 +1,8 @@
 import React from "react";
 import { ToWords } from "to-words";
-import { useGetOne } from "react-admin";
+import { useGetOne, useStore } from "react-admin";
 import ReceiptPrint from "../../components/ReceiptLayout";
-import { formatDate, getCurrentEvent } from "../../utils";
+import { formatDate } from "../../utils";
 import { MARKAZ_LIST } from "../../constants";
 
 const Receipt = () => {
@@ -11,7 +11,7 @@ const Receipt = () => {
   const searchParams = new URLSearchParams(params);
   const receiptId = searchParams.get("receiptId");
   const { data } = useGetOne("receipts", { id: receiptId });
-  const currentEvent = getCurrentEvent();
+  const [currentEvent] = useStore("currentEvent");
 
   if (!data) {
     return null;

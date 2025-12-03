@@ -1,16 +1,31 @@
 /* eslint-disable no-shadow */
-import React, { useContext } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Box, useMediaQuery } from "@mui/material";
-import { Title } from "react-admin";
+import { Title, useDataProvider, useNotify, useStore } from "react-admin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import dayjs from "dayjs";
 import GridList from "./gridList";
-import { EventContext } from "../../dataprovider/eventProvider";
 
 const EventList = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const { events, eventsLoading } = useContext(EventContext);
+  const [events, setEvents] = useStore("events", []);
+  const dataProvider = useDataProvider();
+  const notify = useNotify();
+
+  useEffect(() => {
+    dataProvider
+      .getList("events", {
+        sort: { order: "ASC", field: "fromDate" },
+        pagination: { page: 1, perPage: 999 },
+      })
+      .then(({ data }) => {
+        setEvents(data);
+      })
+      .catch((error) => {
+        notify(error);
+      });
+  }, []);
 
   const [value, setValue] = React.useState(0);
 
@@ -29,21 +44,28 @@ const EventList = () => {
       "aria-controls": `event-tabpanel-${index}`,
     };
   }
+
+  const { activeEvents, pastEvents } = useMemo(
+    () =>
+      events.reduce(
+        (acc, event) => {
+          if (dayjs(event.toDate) > dayjs()) {
+            acc.activeEvents.push(event);
+          } else {
+            acc.pastEvents.push(event);
+          }
+          return acc;
+        },
+        { activeEvents: [], pastEvents: [] }
+      ),
+    [events]
+  );
+
   if (!events) return null;
-  const activeEvents = [];
-  const pastEvents = [];
-  events.map((e) => {
-    if (dayjs(e.toDate) > dayjs()) {
-      activeEvents.push(e);
-    } else {
-      pastEvents.push(e);
-    }
-    return e;
-  });
 
   return (
     <>
-      <Title title="ADMIN" />
+      <Title title="Events" />
       <Box display="flex">
         <Box sx={{ width: "100%" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider", mt: 1 }}>
@@ -53,10 +75,10 @@ const EventList = () => {
             </Tabs>
           </Box>
           <TabPanel value={value} index={0}>
-            <GridList events={activeEvents} isSmall={isSmall} isLoading={eventsLoading} />
+            <GridList events={activeEvents} isSmall={isSmall} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <GridList events={pastEvents} isSmall={isSmall} isLoading={eventsLoading} />
+            <GridList events={pastEvents} isSmall={isSmall} />
           </TabPanel>
         </Box>
       </Box>
