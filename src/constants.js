@@ -1,6 +1,13 @@
 export const apiUrl = "https://jmsapi.rapid-events.com";
 // export const apiUrl = "http://localhost:3012";
 
+export const getApiUrl = (resource) =>
+  ["bookings", "halls", "hallBookings", "contRcpt", "media", "itsdata"].some((item) =>
+    resource.startsWith(item)
+  )
+    ? `${apiUrl}/v2`
+    : apiUrl;
+
 export const permissionsList = [
   { id: "event.view", name: "View Events" },
   { id: "admins.view", name: "View Admin" },
@@ -22,6 +29,7 @@ export const permissionsList = [
   { id: "halls.view", name: "Halls View/Edit/Delete" },
   { id: "bookings.view", name: "Bookings View" },
   { id: "bookings.edit", name: "Bookings Edit" },
+  { id: "bookings.dashboard", name: "Booking Dashboard" },
   { id: "bookingReceipts.view", name: "Booking Receipts View" },
   { id: "bookingReceipts.edit", name: "Booking Receipts Edit" },
   { id: "writeoff.allow", name: "Has WriteOff" },

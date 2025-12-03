@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   TextInput,
   NumberInput,
@@ -8,11 +8,11 @@ import {
   minValue,
   maxValue,
   required,
+  useStore,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { useWatch, useFormContext } from "react-hook-form";
 import { callApi } from "../../../dataprovider/miscApis";
-import { EventContext } from "../../../dataprovider/eventProvider";
 import { calcTotalPayable } from "../../../utils";
 
 export default ({ niyaazId }) => {
@@ -22,11 +22,11 @@ export default ({ niyaazId }) => {
   const amount = useWatch({ name: "amount" });
   const totalPayable = useWatch({ name: "totalPayable" });
   const paidAmount = useWatch({ name: "paidAmount" });
-  const { currentEvent } = useContext(EventContext);
+  const [currentEvent] = useStore("currentEvent");
 
   useEffect(() => {
     const getNiyaaz = () => {
-      callApi(`niyaaz/${niyaazId}`, {}, "GET")
+      callApi({ location: "niyaaz", method: "GET", id: niyaazId })
         .then(({ data }) => {
           if (data.count > 0) {
             const niyaazData = data?.rows[0] || {};

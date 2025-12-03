@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-import React, { useContext } from "react";
-import { Create, useNotify, SimpleForm, useRedirect } from "react-admin";
+import React from "react";
+import { Create, useNotify, SimpleForm, useRedirect, useStore } from "react-admin";
 import NiyaazForm from "./niyaazForm";
-import { EventContext } from "../../../dataprovider/eventProvider";
 import { calcTotalPayable } from "../../../utils";
 
 export default (props) => {
@@ -11,7 +10,8 @@ export default (props) => {
   const onFailure = (error) => {
     notify(`Could not edit post: ${error.message}`);
   };
-  const { currentEvent } = useContext(EventContext);
+
+  const [currentEvent] = useStore("currentEvent");
 
   const validateNiyaazCreation = (values) => {
     const errors = {};

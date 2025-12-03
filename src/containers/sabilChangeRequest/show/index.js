@@ -49,7 +49,11 @@ const SabilActions = () => {
             title="Approve Change Request"
             content="Are you sure you want to approve this request?"
             onConfirm={() =>
-              callApi(`sabilChangeRequests/approve/${record.id}`, {}, "PUT")
+              callApi({
+                location: "sabilChangeRequests/approve",
+                method: "PUT",
+                id: record.id,
+              })
                 .then(() => {
                   notify("Approved");
                   refresh();
@@ -70,7 +74,7 @@ const SabilActions = () => {
             title="Decline Change Request"
             content="Are you sure you want to decline this request?"
             onConfirm={() =>
-              callApi(`sabilChangeRequests/decline/${record.id}`, {}, "PUT")
+              callApi({ location: "sabilChangeRequests/decline", method: "PUT", id: record.id })
                 .then(() => {
                   notify("Approved");
                 })
