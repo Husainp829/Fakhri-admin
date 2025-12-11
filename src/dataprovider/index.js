@@ -31,9 +31,11 @@ export default {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
-      data: rows[0],
-    })),
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(
+      ({ json: { rows } }) => ({
+        data: rows[0],
+      })
+    ),
 
   getMany: (resource, params) => {
     const query = {
@@ -76,19 +78,80 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${getApiUrl(resource)}/${resource}?${stringify(query)}`, {
-      method: "PUT",
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json.data }));
+    return httpClient(
+      `${getApiUrl(resource)}/${resource}?${stringify(query)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(params.data),
+      }
+    ).then(({ json }) => ({ data: json.data }));
   },
 
-  create: async (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}`, {
+  create: async (resource, params) => {
+    // Handle special sync action for WhatsApp templates
+    if (resource === "whatsappTemplates" && params.meta?.action === "sync") {
+      return httpClient(`${getApiUrl(resource)}/${resource}/sync`, {
+        method: "POST",
+      }).then(({ json: { count, rows } }) => ({
+        data: { id: "sync", count, rows },
+      }));
+    }
+
+    // Handle refresh action for individual template
+    if (
+      resource === "whatsappTemplates" &&
+      params.meta?.action === "refresh" &&
+      params.meta?.name
+    ) {
+      return httpClient(
+        `${getApiUrl(resource)}/${resource}/${params.meta.name}/refresh`,
+        {
+          method: "POST",
+        }
+      ).then(({ json: { rows } }) => ({
+        data: rows[0],
+      }));
+    }
+
+    // Handle retry-failed action for broadcasts
+    if (
+      resource === "whatsappBroadcasts" &&
+      params.meta?.action === "retry-failed" &&
+      params.meta?.id
+    ) {
+      return httpClient(
+        `${getApiUrl(resource)}/${resource}/${params.meta.id}/retry-failed`,
+        {
+          method: "POST",
+        }
+      ).then(({ json }) => ({
+        data: { id: params.meta.id, ...json },
+      }));
+    }
+
+    // Handle cancel action for broadcasts
+    if (
+      resource === "whatsappBroadcasts" &&
+      params.meta?.action === "cancel" &&
+      params.meta?.id
+    ) {
+      return httpClient(
+        `${getApiUrl(resource)}/${resource}/${params.meta.id}/cancel`,
+        {
+          method: "POST",
+        }
+      ).then(({ json }) => ({
+        data: { id: params.meta.id, ...json },
+      }));
+    }
+
+    return httpClient(`${getApiUrl(resource)}/${resource}`, {
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    })),
+    }));
+  },
 
   createMany: (resource, params) =>
     httpClient(`${getApiUrl(resource)}/${resource}/bulk-upload`, {
@@ -116,23 +179,25 @@ export default {
     })),
 
   deleteImage: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`).then(() => ({
+    httpClient(
+      `${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`
+    ).then(() => ({
       data: "",
     })),
   pdfDownload: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`).then(
-      (response) => {
-        const linkSource = `data:application/pdf;base64,${response.body}`;
-        const downloadLink = document.createElement("a");
-        const fileName = `${params.name}-${Date.now()}.pdf`;
-        downloadLink.href = linkSource;
-        downloadLink.download = fileName;
-        downloadLink.click();
-        return { data: [] };
-      }
-    );
+    return httpClient(
+      `${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`
+    ).then((response) => {
+      const linkSource = `data:application/pdf;base64,${response.body}`;
+      const downloadLink = document.createElement("a");
+      const fileName = `${params.name}-${Date.now()}.pdf`;
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+      return { data: [] };
+    });
   },
 };
