@@ -1,9 +1,16 @@
-export const apiUrl = "https://jmsapi.rapid-events.com";
-// export const apiUrl = "http://localhost:3012";
+// export const apiUrl = "https://jmsapi.rapid-events.com";
+export const apiUrl = "http://localhost:3012";
 
 export const getApiUrl = (resource) =>
   [
-    // "bookings", "halls", "hallBookings", "contRcpt", "media", "itsdata"
+    "bookings",
+    "halls",
+    "hallBookings",
+    "contRcpt",
+    "media",
+    "itsdata",
+    "whatsappTemplates",
+    "whatsappBroadcasts",
   ].some((item) => resource.startsWith(item))
     ? `${apiUrl}/v2`
     : apiUrl;

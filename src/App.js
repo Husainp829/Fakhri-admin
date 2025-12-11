@@ -1,7 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
-import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
+import {
+  Admin,
+  Resource,
+  defaultTheme,
+  CustomRoutes,
+  usePermissions,
+} from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
@@ -17,6 +23,8 @@ import authProvider from "./authProvider";
 import layout from "./layout";
 import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
+import whatsappTemplates from "./containers/whatsappTemplates";
+import whatsappBroadcasts from "./containers/whatsappBroadcasts";
 import niyaaz from "./containers/niyaaz";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
@@ -80,7 +88,11 @@ const MainApp = () => {
         return <DefaultDashboard />;
       }
       case "staff":
-        return permissions?.staff?.view ? <StaffDashboard /> : <Navigate to="/employees" />;
+        return permissions?.staff?.view ? (
+          <StaffDashboard />
+        ) : (
+          <Navigate to="/employees" />
+        );
       default:
         return <DefaultDashboard />;
     }
@@ -101,8 +113,12 @@ const MainApp = () => {
             <>
               {permissions?.bookings?.view && <Resource {...bookings} />}
               {permissions?.bookings?.view && <Resource {...hallBookings} />}
-              {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
-              {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
+              {permissions?.bookingReceipts?.view && (
+                <Resource {...rentBookingReceipt} />
+              )}
+              {permissions?.bookingReceipts?.view && (
+                <Resource {...lagatReceipt} />
+              )}
               {permissions?.halls?.view && <Resource {...bookingPurpose} />}
               {permissions?.halls?.view && <Resource {...halls} />}
               <CustomRoutes noLayout>
@@ -118,7 +134,10 @@ const MainApp = () => {
                 <Route path="/raza-print/:id" element={<RazaPrint />} />
               </CustomRoutes>
               <CustomRoutes noLayout>
-                <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
+                <Route
+                  path="/confirmation-voucher/:id"
+                  element={<ConfirmationVoucher />}
+                />
               </CustomRoutes>
             </>
           )}
@@ -128,7 +147,9 @@ const MainApp = () => {
                 <>
                   {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
                   {permissions?.receipt?.view && <Resource {...receipt} />}
-                  {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
+                  {permissions?.vendorLedger?.edit && (
+                    <Resource {...vendorLedger} />
+                  )}
                   <CustomRoutes noLayout>
                     <Route path="/niyaaz-receipt" element={<Receipt />} />
                   </CustomRoutes>
@@ -142,11 +163,15 @@ const MainApp = () => {
           {baseRoute === "staff" && (
             <>
               {permissions?.employees?.view && <Resource {...staff} />}
-              {permissions?.employees?.view && <Resource {...staffAttendance} />}
+              {permissions?.employees?.view && (
+                <Resource {...staffAttendance} />
+              )}
             </>
           )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
+          {permissions?.admins?.view && <Resource {...whatsappTemplates} />}
+          {permissions?.admins?.view && <Resource {...whatsappBroadcasts} />}
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />
           </CustomRoutes>
