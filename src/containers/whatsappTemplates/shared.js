@@ -17,6 +17,7 @@ import {
   CardContent,
   Paper,
 } from "@mui/material";
+import { format } from "../../utils/whatsappFormatter";
 
 /**
  * Template Preview Component
@@ -73,11 +74,13 @@ export const TemplatePreview = ({ formData }) => {
             sx={{
               bgcolor: "#DCF8C6",
               borderRadius: "7.5px",
+              borderBottomRightRadius: "0px",
               p: 2,
               mb: 1,
               maxWidth: "320px",
               position: "relative",
               "&::after": {
+                // eslint-disable-next-line quotes
                 content: '""',
                 position: "absolute",
                 bottom: 0,
@@ -102,13 +105,30 @@ export const TemplatePreview = ({ formData }) => {
                 {headerComponent.format === "TEXT" && headerComponent.text ? (
                   <Typography
                     variant="body2"
+                    component="div"
                     sx={{
                       fontWeight: 600,
                       color: "#000",
+                      "& strong": {
+                        fontWeight: 700,
+                      },
+                      "& i": {
+                        fontStyle: "italic",
+                      },
+                      "& s": {
+                        textDecoration: "line-through",
+                      },
+                      "& code": {
+                        fontFamily: "monospace",
+                        backgroundColor: "rgba(0,0,0,0.05)",
+                        padding: "2px 4px",
+                        borderRadius: "3px",
+                      },
                     }}
-                  >
-                    {headerComponent.text}
-                  </Typography>
+                    dangerouslySetInnerHTML={{
+                      __html: format(headerComponent.text),
+                    }}
+                  />
                 ) : (
                   <Box
                     sx={{
@@ -130,52 +150,70 @@ export const TemplatePreview = ({ formData }) => {
             {bodyComponent && (
               <Typography
                 variant="body2"
+                component="div"
                 sx={{
                   color: "#000",
                   whiteSpace: "pre-wrap",
                   mb: footerComponent || buttonsComponent ? 1.5 : 0,
                   lineHeight: 1.5,
+                  "& strong": {
+                    fontWeight: 600,
+                  },
+                  "& i": {
+                    fontStyle: "italic",
+                  },
+                  "& s": {
+                    textDecoration: "line-through",
+                  },
+                  "& code": {
+                    fontFamily: "monospace",
+                    backgroundColor: "rgba(0,0,0,0.05)",
+                    padding: "2px 4px",
+                    borderRadius: "3px",
+                  },
                 }}
-              >
-                {(() => {
-                  let text = bodyComponent.text || "";
-                  // Use form example variables if available, then Meta API values, then defaults
-                  let sampleValues = null;
-                  if (
-                    formData?.exampleVariables &&
-                    formData.exampleVariables.length > 0
-                  ) {
-                    // Use values from form
-                    sampleValues = formData.exampleVariables.map(
-                      (v) => v.value
-                    );
-                  } else if (
-                    formData?.bodyExampleValues ||
-                    formData?.components?.find((c) => c.type === "BODY")
-                      ?.example?.body_text?.[0]
-                  ) {
-                    // Use Meta API example values
-                    sampleValues =
+                dangerouslySetInnerHTML={{
+                  __html: (() => {
+                    let text = bodyComponent.text || "";
+                    // Use form example variables if available, then Meta API values, then defaults
+                    let sampleValues = null;
+                    if (
+                      formData?.exampleVariables &&
+                      formData.exampleVariables.length > 0
+                    ) {
+                      // Use values from form
+                      sampleValues = formData.exampleVariables.map(
+                        (v) => v.value
+                      );
+                    } else if (
                       formData?.bodyExampleValues ||
                       formData?.components?.find((c) => c.type === "BODY")
-                        ?.example?.body_text?.[0];
-                  } else {
-                    // Default samples
-                    sampleValues = [
-                      "John",
-                      "ORD-12345",
-                      "10:00 AM",
-                      "₹1,500",
-                      "2024-01-15",
-                    ];
-                  }
-                  text = text.replace(/\{\{(\d+)\}\}/g, (match, num) => {
-                    const index = parseInt(num, 10) - 1;
-                    return sampleValues?.[index] || match;
-                  });
-                  return text;
-                })()}
-              </Typography>
+                        ?.example?.body_text?.[0]
+                    ) {
+                      // Use Meta API example values
+                      sampleValues =
+                        formData?.bodyExampleValues ||
+                        formData?.components?.find((c) => c.type === "BODY")
+                          ?.example?.body_text?.[0];
+                    } else {
+                      // Default samples
+                      sampleValues = [
+                        "John",
+                        "ORD-12345",
+                        "10:00 AM",
+                        "₹1,500",
+                        "2024-01-15",
+                      ];
+                    }
+                    text = text.replace(/\{\{(\d+)\}\}/g, (match, num) => {
+                      const index = parseInt(num, 10) - 1;
+                      return sampleValues?.[index] || match;
+                    });
+                    // Format the text using WhatsApp formatter
+                    return format(text);
+                  })(),
+                }}
+              />
             )}
 
             {/* Footer */}

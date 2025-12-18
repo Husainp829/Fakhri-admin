@@ -72,7 +72,7 @@ const BroadcastActions = () => {
         <Button
           label="Retry Failed"
           onClick={handleRetryFailed}
-          startIcon={<RetryIcon />}
+          startIcon={<CancelIcon />}
         />
       )}
       {canCancel && (

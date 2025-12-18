@@ -98,6 +98,7 @@ const LayoutMenu = () => {
       <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
       <Menu.ResourceItem name="whatsappTemplates" />
+      <Menu.ResourceItem name="whatsappBroadcasts" />
     </Menu>
   );
 };

@@ -7,10 +7,7 @@ import {
   required,
   useNotify,
   useRedirect,
-  useDataProvider,
   FormDataConsumer,
-  ArrayInput,
-  SimpleFormIterator,
   useGetList,
 } from "react-admin";
 import {
@@ -24,8 +21,9 @@ import {
   Tab,
 } from "@mui/material";
 import { TemplatePreview } from "../whatsappTemplates/shared";
+import AdvancedFilterBuilder from "../../components/AdvancedFilterBuilder";
 
-const TemplateSelector = ({ onChange, value }) => {
+const TemplateSelector = ({ onChange }) => {
   const { data: templates, isLoading } = useGetList("whatsappTemplates", {
     filter: { status: "APPROVED" },
     pagination: { page: 1, perPage: 1000 },
@@ -46,108 +44,71 @@ const TemplateSelector = ({ onChange, value }) => {
       validate={required()}
       onChange={(e) => {
         onChange?.(e);
-        const selectedTemplate = approvedTemplates.find(
-          (t) => t.name === e.target.value
-        );
         // You can set default parameters here if needed
       }}
     />
   );
 };
 
-const RecipientFilters = () => {
-  const { data: sectors } = useGetList("itsdata", {
-    pagination: { page: 1, perPage: 1000 },
-  });
-
-  const uniqueSectors = [
-    ...new Set(
-      (sectors || []).map((s) => s.Sector).filter((s) => s && s.trim() !== "")
-    ),
-  ].sort();
-
-  const uniqueSubSectors = [
-    ...new Set(
-      (sectors || [])
-        .map((s) => s.Sub_Sector)
-        .filter((s) => s && s.trim() !== "")
-    ),
-  ].sort();
-
-  return (
-    <Box>
-      <Typography variant="h6" gutterBottom>
-        Filter Recipients from ITS Data
-      </Typography>
-      <FormDataConsumer>
-        {({ formData, ...rest }) => (
-          <>
-            <SelectInput
-              source="filterCriteria.sector"
-              label="Sector"
-              choices={uniqueSectors.map((s) => ({ id: s, name: s }))}
-              multiple
-            />
-            <SelectInput
-              source="filterCriteria.subSector"
-              label="Sub-Sector"
-              choices={uniqueSubSectors.map((s) => ({ id: s, name: s }))}
-              multiple
-            />
-            <SelectInput
-              source="filterCriteria.hofFmType"
-              label="Type"
-              choices={[
-                { id: "HOF", name: "Head of Family" },
-                { id: "FM", name: "Family Member" },
-              ]}
-            />
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              OR: Manual Phone Numbers
-            </Typography>
-            <TextInput
-              source="recipientPhoneNumbers"
-              label="Phone Numbers (one per line)"
-              multiline
-              rows={6}
-              helperText="Enter phone numbers, one per line. Will be formatted automatically."
-              format={(value) =>
-                Array.isArray(value) ? value.join("\n") : value
+const RecipientFilters = () => (
+  <Box>
+    <FormDataConsumer>
+      {({ formData, ...rest }) => (
+        <>
+          <AdvancedFilterBuilder
+            value={formData?.filterCriteria}
+            onChange={(filterGroup) => {
+              // Use react-admin's form.change method
+              if (rest.form && rest.form.change) {
+                rest.form.change("filterCriteria", filterGroup);
               }
-              parse={(value) => {
-                if (!value) return [];
-                return value
-                  .split("\n")
-                  .map((p) => p.trim())
-                  .filter((p) => p.length > 0);
-              }}
-            />
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              OR: Specific ITS IDs
-            </Typography>
-            <TextInput
-              source="recipientItsIds"
-              label="ITS IDs (comma-separated)"
-              helperText="Enter ITS IDs separated by commas"
-              format={(value) =>
-                Array.isArray(value) ? value.join(", ") : value
-              }
-              parse={(value) => {
-                if (!value) return [];
-                return value
-                  .split(",")
-                  .map((id) => id.trim())
-                  .filter((id) => id.length > 0);
-              }}
-            />
-          </>
-        )}
-      </FormDataConsumer>
-    </Box>
-  );
-};
+            }}
+          />
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="h6" gutterBottom>
+            OR: Manual Phone Numbers
+          </Typography>
+          <TextInput
+            source="recipientPhoneNumbers"
+            label="Phone Numbers (one per line)"
+            multiline
+            rows={6}
+            helperText="Enter phone numbers, one per line. Will be formatted automatically."
+            format={(value) =>
+              Array.isArray(value) ? value.join("\n") : value
+            }
+            parse={(value) => {
+              if (!value) return [];
+              return value
+                .split("\n")
+                .map((p) => p.trim())
+                .filter((p) => p.length > 0);
+            }}
+          />
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            OR: Specific ITS IDs
+          </Typography>
+          <TextInput
+            source="recipientItsIds"
+            label="ITS IDs (comma-separated)"
+            helperText="Enter ITS IDs separated by commas"
+            format={(value) =>
+              Array.isArray(value) ? value.join(", ") : value
+            }
+            parse={(value) => {
+              if (!value) return [];
+              return value
+                .split(",")
+                .map((id) => id.trim())
+                .filter((id) => id.length > 0);
+            }}
+          />
+        </>
+      )}
+    </FormDataConsumer>
+  </Box>
+);
 
 const ParameterMapper = ({ templateName }) => {
   const { data: templates, isLoading } = useGetList("whatsappTemplates", {
@@ -250,7 +211,7 @@ const BroadcastPreview = ({ formData }) => {
   // Replace variables with form parameters
   if (formData.parameters && typeof formData.parameters === "object") {
     const paramValues = Object.keys(formData.parameters)
-      .sort((a, b) => parseInt(a) - parseInt(b))
+      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
       .map((key) => formData.parameters[key])
       .filter(Boolean);
     if (paramValues.length > 0 && previewData.components) {
@@ -280,7 +241,6 @@ const BroadcastPreview = ({ formData }) => {
 export default () => {
   const notify = useNotify();
   const redirect = useRedirect();
-  const dataProvider = useDataProvider();
   const [tabValue, setTabValue] = useState(0);
 
   const transform = (data) => {
@@ -299,7 +259,7 @@ export default () => {
     return {
       templateName: data.templateName,
       name: data.name,
-      parameters: parameters,
+      parameters,
       filterCriteria: data.filterCriteria || null,
       recipientPhoneNumbers: data.recipientPhoneNumbers || null,
       recipientItsIds: data.recipientItsIds || null,
@@ -339,10 +299,10 @@ export default () => {
             <Divider sx={{ my: 2 }} />
 
             <FormDataConsumer>
-              {({ formData, ...rest }) => (
+              {({ formData }) => (
                 <TemplateSelector
                   value={formData?.templateName}
-                  onChange={(e) => {
+                  onChange={() => {
                     // Template selection handled by SelectInput
                   }}
                 />
