@@ -3,24 +3,28 @@ import dayjs from "dayjs";
 import { TextInput, Create, SimpleForm, ReferenceInput } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
-import MonthInput from "../../components/MonthInput";
+import MonthInput from "../../../components/MonthInput";
 
 export default (props) => {
-  const optionRenderer = (choice) => `${choice.itsNo}`;
+  const optionRenderer = (choice) => `${choice.itsNo} - ${choice.sabilType}`;
 
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
-  const fmbId = searchParams.get("fmbId");
+  const sabilId = searchParams.get("sabilId");
   const transform = (data) => ({
-    fmbId: data.fmbId,
+    sabilId: data.sabilId,
     takhmeenAmount: data.newTakhmeenAmount,
     startDate: dayjs(data.startDate).startOf("month"),
   });
 
-  const takhmeenDefaultValues = () => ({ fmbId });
+  const takhmeenDefaultValues = () => ({ sabilId });
   return (
-    <Create {...props} transform={transform} redirect={`/fmbData/${fmbId}/show/takhmeenHistory`}>
+    <Create
+      {...props}
+      transform={transform}
+      redirect={`/sabilData/${sabilId}/show/takhmeenHistory`}
+    >
       <SimpleForm
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}
@@ -28,7 +32,7 @@ export default (props) => {
       >
         <Grid container spacing={1}>
           <Grid item lg={6} xs={6}>
-            <ReferenceInput source="fmbId" reference="fmbData" required>
+            <ReferenceInput source="sabilId" reference="sabilData" required>
               <ITSInput
                 fullWidth
                 label="ITS No."
@@ -37,7 +41,7 @@ export default (props) => {
                 noOptionsText="Enter valid ITS No."
               />
             </ReferenceInput>
-            <TextInput source="fmbNo" fullWidth disabled />
+            <TextInput source="sabilNo" fullWidth disabled />
             <TextInput
               source="previousTakhmeenAmount"
               fullWidth
@@ -47,7 +51,8 @@ export default (props) => {
             <MonthInput source="startDate" fullWidth label="Start Date" />
           </Grid>
           <Grid item lg={6} xs={6}>
-            <TextInput source="name" label="FMB Account Holder Name" fullWidth disabled />
+            <TextInput source="sabilType" fullWidth disabled />
+            <TextInput source="name" label="Sabil Holder Name" fullWidth disabled />
             <TextInput source="newTakhmeenAmount" fullWidth label="New Takhmeen Amount" />
           </Grid>
         </Grid>

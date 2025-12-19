@@ -91,6 +91,11 @@ const LayoutMenu = () => {
       <Menu.ResourceItem name="employees" />
       <Menu.ResourceItem name="employeesAttendance" />
       <Menu.ResourceItem name="lagatReceipts" />
+      <Menu.ResourceItem name="sabilData" />
+      <Menu.ResourceItem name="sabilReceipt" />
+      <Menu.ResourceItem name="sabilChangeRequests" />
+      <Menu.ResourceItem name="fmbData" />
+      <Menu.ResourceItem name="fmbReceipt" />
       <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
     </Menu>
