@@ -2,7 +2,7 @@ import React from "react";
 import { Edit, SimpleForm, SelectInput, FormDataConsumer } from "react-admin";
 import ChulaSabilCreate from "./chulaSabil";
 import EstablishmentCreate from "./establishment";
-import { getType } from "../../../constants";
+import { getType } from "../../../../constants";
 
 export default (props) => {
   const transform = (data) => {

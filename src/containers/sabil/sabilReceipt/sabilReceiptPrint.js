@@ -3,8 +3,8 @@
 import React from "react";
 import { ToWords } from "to-words";
 import { useGetOne } from "react-admin";
-import ReceiptPrint from "../../components/ReceiptLayout";
-import { formatDate } from "../../utils";
+import ReceiptPrint from "../../../components/ReceiptLayout";
+import { formatDate } from "../../../utils";
 
 const SabilReceipt = ({ ...props }) => {
   const { href } = window.location;

@@ -19,7 +19,7 @@ import {
 import Grid from "@mui/material/GridLegacy";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "../../../../dataprovider/miscApis";
 import { getColor } from "../utils";
 
 const SabilActions = () => {

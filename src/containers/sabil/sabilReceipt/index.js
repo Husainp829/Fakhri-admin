@@ -6,7 +6,7 @@ export default {
   list: List,
   create: Create,
   icon: Icon,
-  label: "Sabil Receipts",
-  options: { label: "Sabil Receipts" },
+  label: "Receipts",
+  options: { label: "Receipts" },
   name: "sabilReceipt",
 };
