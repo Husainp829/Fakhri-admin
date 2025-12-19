@@ -40,10 +40,12 @@ export default function HallBookingForm() {
   const rentAmount = useWatch({ name: "rentAmount" });
   const kitchenCleaningAmount = useWatch({ name: "kitchenCleaningAmount" });
   const depositAmount = useWatch({ name: "depositAmount" });
+  const jamaatLagat = useWatch({ name: "jamaatLagat" });
   const thaalAmount = useWatch({ name: "thaalAmount" });
   const mohalla = useWatch({ name: "mohalla" });
 
   const mode = useWatch({ name: "mode" });
+  const jamaatLagatMode = useWatch({ name: "jamaatLagatMode" });
 
   const {
     rentAmount: rent,
@@ -55,6 +57,7 @@ export default function HallBookingForm() {
   } = calcBookingTotals({
     halls: hallBookings,
     mohalla,
+    jamaatLagat,
   });
   useEffect(() => {
     if (rentAmount !== rent) {
@@ -102,6 +105,8 @@ export default function HallBookingForm() {
               <LabelValue label="Kitchen Cleaning" value={kitchenCleaningAmount || 0} />
             )}
 
+            {jamaatLagat > 0 && <LabelValue label="Jamaat Lagat" value={jamaatLagat || 0} />}
+
             <LabelValue label="Total Payable" value={totalPayable} />
           </TableBody>
         </Table>
@@ -133,6 +138,27 @@ export default function HallBookingForm() {
         />
         {mode && mode !== "CASH" && (
           <TextInput source="ref" label="Reference" fullWidth multiline />
+        )}
+
+        <NoArrowKeyNumberInput
+          label="Jamaat Lagat"
+          source="jamaatLagat"
+          fullWidth
+          defaultValue={0}
+        />
+
+        <RadioButtonGroupInput
+          source="jamaatLagatMode"
+          label="Jamaat Lagat Payment Mode"
+          choices={[
+            { id: "CASH", name: "CASH" },
+            { id: "ONLINE", name: "ONLINE" },
+            { id: "CHEQUE", name: "CHEQUE" },
+          ]}
+          sx={{ textAlign: "left" }}
+        />
+        {jamaatLagatMode && jamaatLagatMode !== "CASH" && (
+          <TextInput source="jamaatLagatRef" label="Jamaat Lagat Reference" fullWidth multiline />
         )}
 
         <TextInput source="memberReference" label="Jamaat Member Reference" fullWidth multiline />
