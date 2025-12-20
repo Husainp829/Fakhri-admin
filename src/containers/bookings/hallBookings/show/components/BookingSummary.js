@@ -14,7 +14,6 @@ const BookingSummary = () => {
   const {
     depositAmount,
     rentAmount,
-    jamaatLagat,
     thaalCount,
     thaalAmount,
     refundAmount,
@@ -29,7 +28,6 @@ const BookingSummary = () => {
     ...(kitchenCleaningAmount > 0
       ? [{ label: "Kitchen Cleaning", value: kitchenCleaningAmount }]
       : []),
-    { label: "Jamaat Lagat", value: jamaatLagat },
     ...(thaalAmount > 0
       ? [
           {
@@ -46,6 +44,7 @@ const BookingSummary = () => {
   const amountsRight = [
     { label: "Deposit Paid", value: record.depositPaidAmount },
     { label: "Paid", value: record.paidAmount },
+    { label: "Jamaat Lagat Paid", value: record.jamaatLagat || 0 },
     { label: "Refund", value: refundAmount },
     ...(record.refundReturnAmount > 0
       ? [

@@ -86,11 +86,12 @@ const LayoutMenu = () => {
 
       <Menu.ResourceItem name="hallBookings" />
       <Menu.ResourceItem name="contRcpt" />
+      <Menu.ResourceItem name="lagatReceipts" />
       <Menu.ResourceItem name="halls" />
+      <Menu.ResourceItem name="blockedHallDates" />
       <Menu.ResourceItem name="bookingPurpose" />
       <Menu.ResourceItem name="employees" />
       <Menu.ResourceItem name="employeesAttendance" />
-      <Menu.ResourceItem name="lagatReceipts" />
       <Menu.ResourceItem name="sabilData" />
       <Menu.ResourceItem name="sabilReceipt" />
       <Menu.ResourceItem name="sabilChangeRequests" />
