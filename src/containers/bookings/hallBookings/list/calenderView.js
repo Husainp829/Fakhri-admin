@@ -42,6 +42,11 @@ const CustomEventComponent = ({ event }) => (
     <Typography variant="bold1" strong display="block" sx={{ color: "red" }}>
       {event.tentative ? "TENTATIVE" : ""}
     </Typography>
+    {event.isBlockedDate && (
+      <Typography variant="caption" strong display="block">
+        {event.purpose}
+      </Typography>
+    )}
   </div>
 );
 
@@ -77,7 +82,7 @@ const CalenderView = () => {
   const [showModal, setShowModal] = useState(false);
 
   const handleSelectEvent = (event) => {
-    if (event?.resource) {
+    if (event?.resource && !event?.isBlockedDate) {
       setSelectedEvent(event.resource);
       setShowModal(true);
     }
@@ -95,6 +100,7 @@ const CalenderView = () => {
       filter: {
         start: dayjs(start).format("YYYY-MM-DD"),
         end: dayjs(end).format("YYYY-MM-DD"),
+        includeBlockedDates: true,
       },
     });
     return data;
@@ -120,6 +126,17 @@ const CalenderView = () => {
 
       const formatted = bookings.map((book) => {
         const [startHour, endHour] = slotTimeRanges[book.slot] || [0, 1];
+        if (book.isBlockedDate) {
+          return {
+            id: book.id,
+            title: `${book.hall?.name || "N/A"}`,
+            subTitle: `${capitalize(book.slot)}`,
+            start: dayjs(book.date, "YYYY-MM-DD").hour(startHour).minute(0).second(0).toDate(),
+            end: dayjs(book.date, "YYYY-MM-DD").hour(endHour).minute(0).second(0).toDate(),
+            isBlockedDate: true,
+            purpose: book.purpose,
+          };
+        }
         return {
           id: book.id,
           title: `${book.hall?.name || "N/A"}`,
@@ -180,6 +197,14 @@ const CalenderView = () => {
         }}
         eventPropGetter={(event) => {
           const hallShortCode = event?.resource?.hall?.shortCode;
+          if (event?.isBlockedDate) {
+            return {
+              style: {
+                backgroundColor: "grey",
+                color: "white",
+              },
+            };
+          }
           return {
             style: {
               backgroundColor: hallColorMap[hallShortCode] || "grey",

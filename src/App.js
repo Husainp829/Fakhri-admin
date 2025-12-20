@@ -54,6 +54,7 @@ import fmbData from "./containers/fmb/fmbData";
 import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
 import FmbDashboard from "./containers/fmb/dashboard";
+import blockedHallDates from "./containers/bookings/blockedHallDates";
 
 dayjs.extend(utc);
 
@@ -119,6 +120,7 @@ const MainApp = () => {
               {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
               {permissions?.halls?.view && <Resource {...bookingPurpose} />}
               {permissions?.halls?.view && <Resource {...halls} />}
+              {permissions?.bookings?.view && <Resource {...blockedHallDates} />}
 
               <CustomRoutes noLayout>
                 <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />

@@ -11,6 +11,7 @@ export const getApiUrl = (resource) =>
     "itsdata",
     "employees",
     "employeesAttendance",
+    "blockedHallDates",
   ].some((item) => resource.startsWith(item))
     ? `${apiUrl}/v2`
     : apiUrl;
