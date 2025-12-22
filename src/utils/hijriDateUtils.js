@@ -40,6 +40,22 @@ const MONTH_NAMES = {
       "Zilhaj",
     ],
   },
+  code: {
+    en: [
+      "Moharram",
+      "Safar",
+      "R1",
+      "R2",
+      "J1",
+      "J2",
+      "Rajab",
+      "Shabaan",
+      "Ramadaan",
+      "Shawwal",
+      "Zilqadah",
+      "Zilhaj",
+    ],
+  },
 };
 
 // Julian check
@@ -99,8 +115,12 @@ const fromAJD = (ajd) => {
   return { year, month, day };
 };
 
-export function fromGregorian(gregorianDate) {
+export const fromGregorian = (gregorianDate, format = "short") => {
   const ajd = gregorianToAJD(gregorianDate);
   const { year, month, day } = fromAJD(ajd);
-  return `${day} ${MONTH_NAMES.short.en[month]} ${year}`;
-}
+  const monthName = MONTH_NAMES[format].en[month];
+  if (format === "code") {
+    return `${day} ${monthName}`;
+  }
+  return `${day} ${monthName} ${year}`;
+};

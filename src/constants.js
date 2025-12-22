@@ -9,7 +9,9 @@ export const getApiUrl = (resource) =>
     "contRcpt",
     "media",
     "itsdata",
-    "whatsappTemplates",
+    "employees",
+    "employeesAttendance",
+    "blockedHallDates",
     "whatsappBroadcasts",
     "whatsappBroadcastRecipients",
   ].some((item) => resource.startsWith(item))

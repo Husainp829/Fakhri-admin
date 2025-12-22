@@ -81,7 +81,7 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
 
     try {
       const bookings = await callApi({
-        location: "hallBookings",
+        location: "hallBookings/check-availability",
         data: {
           hallId: newHall.hallId,
           date: newHall.date,
@@ -89,15 +89,16 @@ export default function HallBookingModal({ open, onClose, append, hallBookings }
         },
         method: "GET",
       });
-
-      if (bookings.data?.count > 0) {
-        throw new Error("This hall is already booked for the selected slot and date.");
+      if (bookings.data?.available === false) {
+        throw new Error(bookings.data?.reason);
       }
 
       append(newHall);
       handleClose();
     } catch (err) {
-      setValidationError("This hall is already booked for the selected slot and date.");
+      setValidationError(
+        err.message || "This hall is already booked for the selected slot and date."
+      );
     }
   };
 
