@@ -87,71 +87,13 @@ export default {
     ).then(({ json }) => ({ data: json.data }));
   },
 
-  create: async (resource, params) => {
-    // Handle special sync action for WhatsApp templates
-    if (resource === "whatsappTemplates" && params.meta?.action === "sync") {
-      return httpClient(`${getApiUrl(resource)}/${resource}/sync`, {
-        method: "POST",
-      }).then(({ json: { count, rows } }) => ({
-        data: { id: "sync", count, rows },
-      }));
-    }
-
-    // Handle refresh action for individual template
-    if (
-      resource === "whatsappTemplates" &&
-      params.meta?.action === "refresh" &&
-      params.meta?.name
-    ) {
-      return httpClient(
-        `${getApiUrl(resource)}/${resource}/${params.meta.name}/refresh`,
-        {
-          method: "POST",
-        }
-      ).then(({ json: { rows } }) => ({
-        data: rows[0],
-      }));
-    }
-
-    // Handle retry-failed action for broadcasts
-    if (
-      resource === "whatsappBroadcasts" &&
-      params.meta?.action === "retry-failed" &&
-      params.meta?.id
-    ) {
-      return httpClient(
-        `${getApiUrl(resource)}/${resource}/${params.meta.id}/retry-failed`,
-        {
-          method: "POST",
-        }
-      ).then(({ json }) => ({
-        data: { id: params.meta.id, ...json },
-      }));
-    }
-
-    // Handle cancel action for broadcasts
-    if (
-      resource === "whatsappBroadcasts" &&
-      params.meta?.action === "cancel" &&
-      params.meta?.id
-    ) {
-      return httpClient(
-        `${getApiUrl(resource)}/${resource}/${params.meta.id}/cancel`,
-        {
-          method: "POST",
-        }
-      ).then(({ json }) => ({
-        data: { id: params.meta.id, ...json },
-      }));
-    }
-
-    return httpClient(`${getApiUrl(resource)}/${resource}`, {
+  create: async (resource, params) =>
+    httpClient(`${getApiUrl(resource)}/${resource}`, {
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    }));
-  },
+    })),
 
   createMany: (resource, params) =>
     httpClient(`${getApiUrl(resource)}/${resource}/bulk-upload`, {
@@ -198,6 +140,24 @@ export default {
       downloadLink.download = fileName;
       downloadLink.click();
       return { data: [] };
+    });
+  },
+  previewRecipients: (resource, params) => {
+    const { filterCriteria, limit = 25, offset = 0 } = params;
+    return httpClient(`${getApiUrl(resource)}/${resource}/preview-recipients`, {
+      method: "POST",
+      body: JSON.stringify({
+        filterCriteria,
+        limit,
+        offset,
+      }),
+    }).then(({ json }) => {
+      const recipients = json.recipients || [];
+      return {
+        data: convertRows(recipients),
+        total: json.count || 0,
+        fields: json.fields || [],
+      };
     });
   },
 };
