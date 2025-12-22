@@ -28,8 +28,8 @@ import niyaaz from "./containers/niyaaz";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
 import receipt from "./containers/receipt";
-import SabilReceipt from "./containers/sabilReceipt/sabilReceiptPrint";
-import FmbReceipt from "./containers/fmbReceipt/fmbReceiptPrint";
+import SabilReceipt from "./containers/sabil/sabilReceipt/sabilReceiptPrint";
+import FmbReceipt from "./containers/fmb/fmbReceipt/fmbReceiptPrint";
 import event from "./containers/events/event";
 import EventsDashboard from "./containers/events/dashboard";
 import ActiveEventDashboard from "./containers/events/eventDashboard";
@@ -49,9 +49,19 @@ import DefaultDashboard from "./containers/defaultDashboard";
 import staff from "./containers/staff/staff";
 import staffAttendance from "./containers/staff/staffAttendance";
 import lagatReceipt from "./containers/lagatReceipt";
-import LagatReceipt from "./containers/lagatReceipt/lagatReceiptPrint";
+import LagatReceiptPrint from "./containers/lagatReceipt/lagatReceiptPrint";
 import BookingDashboard from "./containers/bookings/dashboard";
 import StaffDashboard from "./containers/staff/dashboard";
+import SabilDashboard from "./containers/sabil/dashboard";
+import sabilData from "./containers/sabil/sabilData";
+import sabilTakhmeen from "./containers/sabil/sabilTakhmeen";
+import sabilReceipt from "./containers/sabil/sabilReceipt";
+import sabilChangeRequests from "./containers/sabil/sabilChangeRequest";
+import fmbData from "./containers/fmb/fmbData";
+import fmbReceipt from "./containers/fmb/fmbReceipt";
+import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
+import FmbDashboard from "./containers/fmb/dashboard";
+import blockedHallDates from "./containers/bookings/blockedHallDates";
 
 dayjs.extend(utc);
 
@@ -92,10 +102,23 @@ const MainApp = () => {
         ) : (
           <Navigate to="/employees" />
         );
+      case "sabil":
+        return permissions?.admins?.view ? (
+          <SabilDashboard />
+        ) : (
+          <Navigate to="/sabilData" />
+        );
+      case "fmb":
+        return permissions?.admins?.view ? (
+          <FmbDashboard />
+        ) : (
+          <Navigate to="/fmbData" />
+        );
       default:
         return <DefaultDashboard />;
     }
   };
+
   return (
     <Admin
       dataProvider={dataProvider}
@@ -120,15 +143,14 @@ const MainApp = () => {
               )}
               {permissions?.halls?.view && <Resource {...bookingPurpose} />}
               {permissions?.halls?.view && <Resource {...halls} />}
-              <CustomRoutes noLayout>
-                <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
-              </CustomRoutes>
+              {permissions?.bookings?.view && (
+                <Resource {...blockedHallDates} />
+              )}
+
               <CustomRoutes noLayout>
                 <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
               </CustomRoutes>
-              <CustomRoutes noLayout>
-                <Route path="/lagat-rcpt/:id" element={<LagatReceipt />} />
-              </CustomRoutes>
+
               <CustomRoutes noLayout>
                 <Route path="/raza-print/:id" element={<RazaPrint />} />
               </CustomRoutes>
@@ -167,9 +189,33 @@ const MainApp = () => {
               )}
             </>
           )}
+          {baseRoute === "sabil" && (
+            <>
+              {permissions?.admins?.view && <Resource {...sabilData} />}
+              {permissions?.admins?.view && <Resource {...sabilReceipt} />}
+              {permissions?.admins?.view && <Resource {...sabilTakhmeen} />}
+              {permissions?.admins?.view && (
+                <Resource {...sabilChangeRequests} />
+              )}
+            </>
+          )}
+          {baseRoute === "fmb" && (
+            <>
+              {permissions?.admins?.view && <Resource {...fmbData} />}
+              {permissions?.admins?.view && <Resource {...fmbReceipt} />}
+              {permissions?.admins?.view && <Resource {...fmbTakhmeen} />}
+            </>
+          )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
           {permissions?.admins?.view && <Resource {...whatsappBroadcasts} />}
+          {/* auth-less routes */}
+          <CustomRoutes noLayout>
+            <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+          </CustomRoutes>
+          <CustomRoutes noLayout>
+            <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
+          </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />
           </CustomRoutes>

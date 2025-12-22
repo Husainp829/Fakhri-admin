@@ -1,6 +1,7 @@
 // BookingListWithExcelExport.jsx
 import React from "react";
 import {
+  CreateButton,
   DatagridConfigurable as Datagrid,
   DateField,
   DateInput,
@@ -18,6 +19,7 @@ import {
 import dayjs from "dayjs";
 import { slotNameMap } from "../../../../constants";
 import { exportToExcel } from "../../../../utils/exportToExcel";
+import ViewToggle from "./viewToggle";
 
 const columns = [
   { header: "Booking No", field: "booking.bookingNo", width: 18 },
@@ -50,7 +52,7 @@ export default () => {
       source="search"
       alwaysOn
       key={0}
-      sx={{ minWidth: 500 }}
+      sx={{ minWidth: 300 }}
       resettable
     />,
     <DateInput source="start" label="from" alwaysOn key={1} resettable />,
@@ -58,10 +60,12 @@ export default () => {
   ];
 
   const ListActions = () => (
-    <TopToolbar sx={{ justifyContent: "start" }}>
+    <TopToolbar sx={{ justifyContent: "start", alignItems: "center" }}>
       <FilterButton />
       <SelectColumnsButton />
       <ExportButton />
+      <CreateButton />
+      <ViewToggle hideCreateButton />
     </TopToolbar>
   );
 

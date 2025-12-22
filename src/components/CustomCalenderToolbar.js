@@ -8,6 +8,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import dayjs from "dayjs";
+import { fromGregorian } from "../utils/hijriDateUtils";
+import ViewToggle from "../containers/bookings/hallBookings/list/viewToggle";
 
 const CustomCalendarToolbar = ({
   label,
@@ -16,12 +18,13 @@ const CustomCalendarToolbar = ({
   setSelectedDate,
   view,
   onView,
+  date,
 }) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Box px={2} pb={2}>
       <Grid container alignItems="center" spacing={2} justifyContent="space-between">
         {/* Navigation Buttons */}
-        <Grid item container alignItems="center">
+        <Grid item container alignItems="center" justifyContent="start">
           {/* Date Picker */}
           <DatePicker
             label="Jump to date"
@@ -38,25 +41,25 @@ const CustomCalendarToolbar = ({
                 inputProps: { readOnly: true },
               },
             }}
-            sx={{ maxWidth: 200 }}
+            sx={{ maxWidth: 160 }}
           />
-          <IconButton onClick={() => onNavigate("PREV")}>
+          <IconButton onClick={() => onNavigate("PREV")} size="small">
             <ArrowBackIcon />
           </IconButton>
-          <IconButton onClick={() => onNavigate("NEXT")}>
+          <IconButton onClick={() => onNavigate("NEXT")} size="small">
             <ArrowForwardIcon />
           </IconButton>
         </Grid>
 
         {/* Label */}
         <Grid item>
-          <Typography variant="h6" align="center">
-            {label}
+          <Typography variant="subtitle2" align="center">
+            {view === "day" ? `${label} | ${fromGregorian(new Date(date), "short")}` : label}
           </Typography>
         </Grid>
 
         {/* View Tabs */}
-        <Grid item>
+        <Grid item container alignItems="center" justifyContent="space-between">
           <ToggleButtonGroup
             value={view}
             exclusive
@@ -70,6 +73,7 @@ const CustomCalendarToolbar = ({
             <ToggleButton value="week">Week</ToggleButton>
             <ToggleButton value="month">Month</ToggleButton>
           </ToggleButtonGroup>
+          <ViewToggle />
         </Grid>
       </Grid>
     </Box>

@@ -4,6 +4,7 @@ import { Title, usePermissions } from "react-admin";
 import BookOnlineIcon from "@mui/icons-material/BookOnline";
 import BadgeIcon from "@mui/icons-material/Badge";
 import FestivalIcon from "@mui/icons-material/Festival";
+import TableRowsIcon from "@mui/icons-material/TableRows";
 
 import { navigateToBaseRoute } from "../../utils/routeUtility";
 
@@ -43,6 +44,14 @@ export default function DefaultDashboard() {
             "events",
           ],
           [permissions?.employees?.view, BadgeIcon, "Staff", "View and manage all staff", "staff"],
+          [
+            permissions?.admins?.view,
+            BadgeIcon,
+            "Sabil",
+            "View and manage all sabil data",
+            "sabil",
+          ],
+          [permissions?.admins?.view, TableRowsIcon, "FMB", "View and manage all fmb data", "fmb"],
         ].map(
           ([perm, icon, title, description, path]) =>
             perm && (
