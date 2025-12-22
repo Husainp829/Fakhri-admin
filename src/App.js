@@ -23,7 +23,6 @@ import authProvider from "./authProvider";
 import layout from "./layout";
 import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
-import whatsappTemplates from "./containers/whatsappTemplates";
 import whatsappBroadcasts from "./containers/whatsappBroadcasts";
 import niyaaz from "./containers/niyaaz";
 import MyLoginPage from "./layout/login";
@@ -170,7 +169,6 @@ const MainApp = () => {
           )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
-          {permissions?.admins?.view && <Resource {...whatsappTemplates} />}
           {permissions?.admins?.view && <Resource {...whatsappBroadcasts} />}
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />

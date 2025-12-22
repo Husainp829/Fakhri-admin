@@ -1,277 +1,213 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Create,
   SimpleForm,
   TextInput,
-  SelectInput,
   required,
   useNotify,
   useRedirect,
-  FormDataConsumer,
-  useGetList,
+  SaveButton,
+  Toolbar,
 } from "react-admin";
 import {
   Box,
-  Typography,
-  Divider,
-  Card,
-  CardContent,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Button,
   Alert,
-  Tabs,
-  Tab,
 } from "@mui/material";
-import { TemplatePreview } from "../whatsappTemplates/shared";
-import AdvancedFilterBuilder from "../../components/AdvancedFilterBuilder";
+import {
+  RecipientSelectionStep,
+  TemplateSelectionStep,
+  SummaryStep,
+} from "./components";
+import { TemplateProvider, RecipientSelectionProvider } from "./context";
+import { transformBroadcastData } from "./components/utils";
 
-const TemplateSelector = ({ onChange }) => {
-  const { data: templates, isLoading } = useGetList("whatsappTemplates", {
-    filter: { status: "APPROVED" },
-    pagination: { page: 1, perPage: 1000 },
-  });
+// Custom form-level validator
+const validateForm = (values) => {
+  const errors = {};
 
-  if (isLoading) return <Typography>Loading templates...</Typography>;
+  // Check if recipients are previewed
+  if (!values.recipientsPreviewed) {
+    errors.recipientsPreviewed =
+      "Please preview recipients before saving. Click 'Preview Recipients' for filter-based selection.";
+  }
 
-  const approvedTemplates = templates || [];
-
-  return (
-    <SelectInput
-      source="templateName"
-      label="Template"
-      choices={approvedTemplates.map((t) => ({
-        id: t.name,
-        name: `${t.name} (${t.category})`,
-      }))}
-      validate={required()}
-      onChange={(e) => {
-        onChange?.(e);
-        // You can set default parameters here if needed
-      }}
-    />
-  );
-};
-
-const RecipientFilters = () => (
-  <Box>
-    <FormDataConsumer>
-      {({ formData, ...rest }) => (
-        <>
-          <AdvancedFilterBuilder
-            value={formData?.filterCriteria}
-            onChange={(filterGroup) => {
-              // Use react-admin's form.change method
-              if (rest.form && rest.form.change) {
-                rest.form.change("filterCriteria", filterGroup);
-              }
-            }}
-          />
-          <Divider sx={{ my: 3 }} />
-          <Typography variant="h6" gutterBottom>
-            OR: Manual Phone Numbers
-          </Typography>
-          <TextInput
-            source="recipientPhoneNumbers"
-            label="Phone Numbers (one per line)"
-            multiline
-            rows={6}
-            helperText="Enter phone numbers, one per line. Will be formatted automatically."
-            format={(value) =>
-              Array.isArray(value) ? value.join("\n") : value
-            }
-            parse={(value) => {
-              if (!value) return [];
-              return value
-                .split("\n")
-                .map((p) => p.trim())
-                .filter((p) => p.length > 0);
-            }}
-          />
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            OR: Specific ITS IDs
-          </Typography>
-          <TextInput
-            source="recipientItsIds"
-            label="ITS IDs (comma-separated)"
-            helperText="Enter ITS IDs separated by commas"
-            format={(value) =>
-              Array.isArray(value) ? value.join(", ") : value
-            }
-            parse={(value) => {
-              if (!value) return [];
-              return value
-                .split(",")
-                .map((id) => id.trim())
-                .filter((id) => id.length > 0);
-            }}
-          />
-        </>
-      )}
-    </FormDataConsumer>
-  </Box>
-);
-
-const ParameterMapper = ({ templateName }) => {
-  const { data: templates, isLoading } = useGetList("whatsappTemplates", {
-    filter: { name: templateName },
-    pagination: { page: 1, perPage: 1 },
-  });
-
-  if (!templateName) {
-    return (
-      <Alert severity="info">
-        Select a template first to configure parameters
-      </Alert>
+  // Basic parameter validation: if parameters exist, ensure they're not empty
+  // Full validation with template body text happens in TemplateSelectionStep component
+  // Handles both old format (simple string values) and new format (objects with type/value/column)
+  if (values.templateName && values.parameters) {
+    const parameters = values.parameters || {};
+    const paramKeys = Object.keys(parameters).sort(
+      (a, b) => parseInt(a, 10) - parseInt(b, 10)
     );
-  }
 
-  if (isLoading) {
-    return <Typography>Loading template...</Typography>;
-  }
+    // Check if any parameter is empty
+    const emptyParams = paramKeys.filter((key) => {
+      const param = parameters[key];
 
-  const selectedTemplate = templates?.[0];
-  if (!selectedTemplate) {
-    return <Typography>Template not found</Typography>;
-  }
-
-  // Extract variables from body text
-  const bodyText = selectedTemplate.bodyText || "";
-  const variableMatches = bodyText.match(/\{\{(\d+)\}\}/g) || [];
-  const variables = variableMatches.map((m) => {
-    const num = parseInt(m.replace(/\{\{|\}\}/g, ""), 10);
-    return { number: num, placeholder: m };
-  });
-
-  if (variables.length === 0) {
-    return (
-      <Alert severity="info">
-        This template has no variables. No parameters needed.
-      </Alert>
-    );
-  }
-
-  return (
-    <Box>
-      <Typography variant="h6" gutterBottom>
-        Template Parameters
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Enter values for each template variable. These will be sent to all
-        recipients.
-      </Typography>
-      {variables.map((variable) => (
-        <TextInput
-          key={variable.number}
-          source={`parameters.${variable.number}`}
-          label={variable.placeholder}
-          validate={required()}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-      ))}
-      <Alert severity="info" sx={{ mt: 2 }}>
-        Note: Currently, all recipients receive the same parameter values.
-        Per-recipient parameter mapping will be added in a future update.
-      </Alert>
-    </Box>
-  );
-};
-
-const BroadcastPreview = ({ formData }) => {
-  const { data: templates, isLoading } = useGetList("whatsappTemplates", {
-    filter: { name: formData?.templateName },
-    pagination: { page: 1, perPage: 1 },
-  });
-
-  if (!formData?.templateName) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            Select a template to see preview
-          </Typography>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isLoading) {
-    return <Typography>Loading template...</Typography>;
-  }
-
-  const selectedTemplate = templates?.[0];
-  if (!selectedTemplate) {
-    return <Typography>Template not found</Typography>;
-  }
-
-  const previewData = {
-    ...selectedTemplate,
-    components: selectedTemplate.components || [],
-  };
-
-  // Replace variables with form parameters
-  if (formData.parameters && typeof formData.parameters === "object") {
-    const paramValues = Object.keys(formData.parameters)
-      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-      .map((key) => formData.parameters[key])
-      .filter(Boolean);
-    if (paramValues.length > 0 && previewData.components) {
-      const bodyComponent = previewData.components.find(
-        (c) => c.type === "BODY"
-      );
-      if (bodyComponent) {
-        previewData.exampleVariables = paramValues.map((v) => ({ value: v }));
+      // Handle new structure: { type: "text", value: "..." } or { type: "column", column: "Full_Name" }
+      if (param && typeof param === "object" && param.type) {
+        if (param.type === "text") {
+          const { value } = param;
+          return (
+            value === undefined ||
+            value === null ||
+            (typeof value === "string" && value.trim() === "")
+          );
+        }
+        if (param.type === "column") {
+          const { column } = param;
+          return (
+            column === undefined ||
+            column === null ||
+            (typeof column === "string" && column.trim() === "")
+          );
+        }
+        return true; // Invalid structure
       }
+
+      // Handle old structure: simple string value (backward compatibility)
+      return (
+        !param ||
+        param === null ||
+        (typeof param === "string" && param.trim() === "")
+      );
+    });
+
+    if (emptyParams.length > 0) {
+      // Add error for each empty parameter
+      emptyParams.forEach((key) => {
+        const param = parameters[key];
+        if (param && typeof param === "object" && param.type) {
+          if (param.type === "text") {
+            errors[
+              `parameters.${key}.value`
+            ] = `Parameter {{${key}}} value is required`;
+          } else if (param.type === "column") {
+            errors[
+              `parameters.${key}.column`
+            ] = `Parameter {{${key}}} column is required`;
+          } else {
+            errors[`parameters.${key}`] = `Parameter {{${key}}} is required`;
+          }
+        } else {
+          errors[`parameters.${key}`] = `Parameter {{${key}}} is required`;
+        }
+      });
     }
   }
 
-  return (
-    <Box sx={{ position: "sticky", top: 20 }}>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Preview
-          </Typography>
-          <TemplatePreview formData={previewData} />
-        </CardContent>
-      </Card>
-    </Box>
-  );
+  return errors;
 };
 
 export default () => {
   const notify = useNotify();
   const redirect = useRedirect();
-  const [tabValue, setTabValue] = useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const [stepValidations, setStepValidations] = useState({
+    step0: false, // Recipient selection step
+    step1: false, // Template selection step
+  });
+  const [stepErrors, setStepErrors] = useState({
+    step0: null, // Error message for step 0
+    step1: null, // Error message for step 1
+  });
 
-  const transform = (data) => {
-    // Parameters are already in object format (parameters.1, parameters.2, etc.)
-    // Convert to array format expected by backend
-    const parameters = {};
-    if (data.parameters && typeof data.parameters === "object") {
-      Object.keys(data.parameters).forEach((key) => {
-        const value = data.parameters[key];
-        if (value !== undefined && value !== null && value !== "") {
-          parameters[key] = String(value);
-        }
+  const transform = useCallback(
+    (data) =>
+      // Use shared transformation utility
+      transformBroadcastData(data),
+    []
+  );
+
+  const onSuccess = useCallback(
+    (data) => {
+      notify("Broadcast created successfully. Messages are being sent.", {
+        type: "success",
       });
+      redirect("show", "whatsappBroadcasts", data.id);
+    },
+    [notify, redirect]
+  );
+
+  // Handle step validation changes
+  const handleStepValidationChange = useCallback(
+    (stepIndex, isValid, errorMessage = null) => {
+      setStepValidations((prev) => ({
+        ...prev,
+        [`step${stepIndex}`]: isValid,
+      }));
+      setStepErrors((prev) => ({
+        ...prev,
+        [`step${stepIndex}`]: errorMessage,
+      }));
+    },
+    []
+  );
+
+  // Navigation handlers with validation checks
+  const handleNext = useCallback(() => {
+    // Get the current step's validation state
+    const currentStepKey = `step${activeStep}`;
+    const isCurrentStepValid = stepValidations[currentStepKey];
+
+    // Block navigation if current step is invalid
+    if (!isCurrentStepValid) {
+      // Show error message for the current step
+      const errorMessage = stepErrors[currentStepKey];
+      if (errorMessage) {
+        notify(errorMessage, { type: "warning" });
+      } else if (activeStep === 0) {
+        // Default error message for step 0 (Recipient selection)
+        notify(
+          "Please preview recipients before proceeding. Click 'Preview Recipients' for filter-based selection.",
+          { type: "warning" }
+        );
+      } else if (activeStep === 1) {
+        // Default error message for step 1 (Template selection)
+        notify(
+          "Please select a template and fill all required parameters before proceeding.",
+          { type: "warning" }
+        );
+      }
+      return; // Block navigation
     }
 
-    return {
-      templateName: data.templateName,
-      name: data.name,
-      parameters,
-      filterCriteria: data.filterCriteria || null,
-      recipientPhoneNumbers: data.recipientPhoneNumbers || null,
-      recipientItsIds: data.recipientItsIds || null,
-      createdBy: data.createdBy || "admin", // TODO: Get from auth context
-    };
-  };
+    // Only proceed if validation passes
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // Clear error for this step when moving forward
+    setStepErrors((prev) => ({
+      ...prev,
+      [currentStepKey]: null,
+    }));
+  }, [activeStep, stepValidations, stepErrors, notify]);
 
-  const onSuccess = (data) => {
-    notify("Broadcast created successfully. Messages are being sent.", {
-      type: "success",
-    });
-    redirect("show", "whatsappBroadcasts", data.id);
+  const handleBack = useCallback(() => {
+    // Back navigation doesn't require validation
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  }, []);
+
+  // Memoize validation change callbacks for each step to prevent infinite loops
+  const handleStep0ValidationChange = useCallback(
+    (isValid, errorMessage) =>
+      handleStepValidationChange(0, isValid, errorMessage),
+    [handleStepValidationChange]
+  );
+
+  // Custom toolbar that only shows Save button on final step
+  const CustomToolbar = (props) => {
+    if (activeStep !== 2) {
+      return null; // Don't show toolbar on steps 0 and 1
+    }
+    return (
+      <Toolbar {...props}>
+        <SaveButton />
+      </Toolbar>
+    );
   };
 
   return (
@@ -280,65 +216,93 @@ export default () => {
       mutationOptions={{ onSuccess }}
       title="Create WhatsApp Broadcast"
     >
-      <SimpleForm>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 3,
-            flexDirection: { xs: "column", md: "row" },
-          }}
-        >
-          <Box sx={{ flex: { md: "0 0 60%" } }}>
-            <TextInput
-              source="name"
-              label="Broadcast Name"
-              validate={required()}
-              helperText="A descriptive name for this broadcast"
-            />
+      <SimpleForm validate={validateForm} toolbar={<CustomToolbar />}>
+        {/* Template Provider to share template data across all steps */}
+        <TemplateProvider>
+          {/* Recipient Selection Provider to manage recipient selection state */}
+          <RecipientSelectionProvider>
+            {/* Broadcast Name at the top */}
+            <Box sx={{ mb: 3 }}>
+              <TextInput
+                source="name"
+                label="Broadcast Name"
+                validate={required()}
+                helperText="A descriptive name for this broadcast"
+              />
+            </Box>
 
-            <Divider sx={{ my: 2 }} />
-
-            <FormDataConsumer>
-              {({ formData }) => (
-                <TemplateSelector
-                  value={formData?.templateName}
-                  onChange={() => {
-                    // Template selection handled by SelectInput
-                  }}
-                />
-              )}
-            </FormDataConsumer>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
-              <Tab label="Recipients" />
-              <Tab label="Parameters" />
-            </Tabs>
-
-            {tabValue === 0 && (
-              <Box sx={{ mt: 2 }}>
-                <RecipientFilters />
-              </Box>
-            )}
-
-            {tabValue === 1 && (
-              <Box sx={{ mt: 2 }}>
-                <FormDataConsumer>
-                  {({ formData }) => (
-                    <ParameterMapper templateName={formData?.templateName} />
+            {/* Stepper with 3 steps */}
+            <Stepper activeStep={activeStep} orientation="vertical">
+              {/* Step 1: Select Recipients */}
+              <Step>
+                <StepLabel>Select Recipients</StepLabel>
+                <StepContent>
+                  <RecipientSelectionStep
+                    onValidationChange={handleStep0ValidationChange}
+                  />
+                  {stepErrors.step0 && (
+                    <Alert severity="error" sx={{ mt: 2, mb: 1 }}>
+                      {stepErrors.step0}
+                    </Alert>
                   )}
-                </FormDataConsumer>
-              </Box>
-            )}
-          </Box>
+                  <Box sx={{ mb: 2, mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      onClick={handleNext}
+                      disabled={!stepValidations.step0}
+                      sx={{ mr: 1 }}
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                </StepContent>
+              </Step>
 
-          <Box sx={{ flex: { md: "0 0 35%" } }}>
-            <FormDataConsumer>
-              {({ formData }) => <BroadcastPreview formData={formData} />}
-            </FormDataConsumer>
-          </Box>
-        </Box>
+              {/* Step 2: Template & Parameters */}
+              <Step>
+                <StepLabel>Template & Parameters</StepLabel>
+                <StepContent>
+                  <TemplateSelectionStep
+                    onValidationChange={(isValid, errorMessage) =>
+                      handleStepValidationChange(1, isValid, errorMessage)
+                    }
+                  />
+                  {stepErrors.step1 && (
+                    <Alert severity="error" sx={{ mt: 2, mb: 1 }}>
+                      {stepErrors.step1}
+                    </Alert>
+                  )}
+                  <Box sx={{ mb: 2, mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      onClick={handleNext}
+                      disabled={!stepValidations.step1}
+                      sx={{ mr: 1 }}
+                    >
+                      Next
+                    </Button>
+                    <Button onClick={handleBack}>Back</Button>
+                  </Box>
+                </StepContent>
+              </Step>
+
+              {/* Step 3: Summary */}
+              <Step>
+                <StepLabel>Summary & Confirmation</StepLabel>
+                <StepContent>
+                  <SummaryStep />
+                  <Box sx={{ mb: 2, mt: 2 }}>
+                    <Button onClick={handleBack}>Back</Button>
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      Review all selections above. Click the Save button in the
+                      toolbar to create the broadcast.
+                    </Alert>
+                  </Box>
+                </StepContent>
+              </Step>
+            </Stepper>
+          </RecipientSelectionProvider>
+        </TemplateProvider>
       </SimpleForm>
     </Create>
   );

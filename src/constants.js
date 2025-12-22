@@ -11,6 +11,7 @@ export const getApiUrl = (resource) =>
     "itsdata",
     "whatsappTemplates",
     "whatsappBroadcasts",
+    "whatsappBroadcastRecipients",
   ].some((item) => resource.startsWith(item))
     ? `${apiUrl}/v2`
     : apiUrl;
