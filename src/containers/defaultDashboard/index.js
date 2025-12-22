@@ -5,6 +5,7 @@ import BookOnlineIcon from "@mui/icons-material/BookOnline";
 import BadgeIcon from "@mui/icons-material/Badge";
 import FestivalIcon from "@mui/icons-material/Festival";
 import TableRowsIcon from "@mui/icons-material/TableRows";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 
 import { navigateToBaseRoute } from "../../utils/routeUtility";
 
@@ -52,6 +53,13 @@ export default function DefaultDashboard() {
             "sabil",
           ],
           [permissions?.admins?.view, TableRowsIcon, "FMB", "View and manage all fmb data", "fmb"],
+          [
+            permissions?.receipt?.view,
+            ReceiptIcon,
+            "Miqaat Niyaaz Receipts",
+            "View and manage all miqaat niyaaz receipts",
+            "miqaat",
+          ],
         ].map(
           ([perm, icon, title, description, path]) =>
             perm && (
