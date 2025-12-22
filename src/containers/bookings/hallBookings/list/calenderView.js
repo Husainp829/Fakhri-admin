@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { useDataProvider, useNotify, useRedirect } from "react-admin";
+import { useDataProvider, useNotify, useRedirect, useSidebarState } from "react-admin";
 import { Calendar, Views } from "react-big-calendar";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -13,6 +12,8 @@ import {
   Box,
   capitalize,
   IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,30 +26,43 @@ import dayjsLocalizer from "../../../../utils/dayjsLocalizer";
 import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
 import { hallColorMap, slotTimeRanges } from "../../../../constants";
 import { useBaseRoute } from "../../../../utils/routeUtility";
+import { fromGregorian } from "../../../../utils/hijriDateUtils";
 
 // Extend dayjs
 dayjs.extend(weekday);
 dayjs.extend(localeData);
 dayjs.extend(customParseFormat);
 
-const CustomEventComponent = ({ event }) => (
-  <div style={{ color: "white", padding: 0 }}>
-    <Typography variant="caption" display="block">
-      {dayjs(event.start).format("MMM D, h A")} - {dayjs(event.end).format("h A")}
-    </Typography>
-    <Typography variant="caption" strong display="block">
-      {event.title}
-    </Typography>
-    <Typography variant="bold1" strong display="block" sx={{ color: "red" }}>
-      {event.tentative ? "TENTATIVE" : ""}
-    </Typography>
-    {event.isBlockedDate && (
-      <Typography variant="caption" strong display="block">
-        {event.purpose}
+const CustomEventComponent = ({ event }) => {
+  const muiTheme = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  return (
+    <div style={{ color: "white", padding: 0 }}>
+      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "1.5vw" : "0.8vw" }}>
+        {dayjs(event.start).format("h A")} - {dayjs(event.end).format("h A")}
+        <br />
+        {event.title}
+        {event.tentative && <div style={{ color: "red" }}>TENTATIVE</div>}
+        <br />
+        {event.isBlockedDate && event.purpose}
       </Typography>
-    )}
-  </div>
-);
+    </div>
+  );
+};
+
+const MonthDateHeader = ({ date, onDrillDown }) => {
+  const gregorianDay = dayjs(date).date(); // 1–31
+  const hijriDay = fromGregorian(date, "code");
+  const muiTheme = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  return (
+    <Button variant="text" size="small" onClick={onDrillDown}>
+      <span style={{ fontSize: isMobile ? "0.6rem" : "0.8rem" }}>
+        {isMobile ? `${gregorianDay} | ${hijriDay}` : `${gregorianDay} | ${hijriDay}`}
+      </span>
+    </Button>
+  );
+};
 
 // Custom localizer for react-big-calendar using dayjs
 const localizer = dayjsLocalizer;
@@ -66,11 +80,14 @@ const CalenderView = () => {
   const dataProvider = useDataProvider();
   const notify = useNotify();
   const redirect = useRedirect();
+  const muiTheme = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  const [sidebarOpen] = useSidebarState();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   // defaults from URL or fallback
-  const initialView = searchParams.get("view") || Views.MONTH;
+  const initialView = searchParams.get("view") || isMobile ? Views.DAY : Views.MONTH;
   const initialDate = dayjs(searchParams.get("date"))?.isValid()
     ? dayjs(searchParams.get("date"))
     : dayjs();
@@ -170,6 +187,13 @@ const CalenderView = () => {
     return () => clearTimeout(timeout);
   }, [view, date]);
 
+  const calendarStyle = isMobile
+    ? { height: "95vh", width: "95vw" }
+    : {
+        height: "calc(100vh - 8vh)",
+        width: sidebarOpen ? "calc(100vw - 255px)" : "calc(100vw - 65px)",
+      };
+
   return (
     <div>
       <Calendar
@@ -182,7 +206,7 @@ const CalenderView = () => {
         onView={setView}
         onNavigate={(val) => setDate(dayjs(val))}
         onSelectEvent={handleSelectEvent}
-        style={{ height: "calc(90vh - 35px)" }}
+        style={calendarStyle}
         tooltipAccessor={null}
         date={date}
         components={{
@@ -194,6 +218,10 @@ const CalenderView = () => {
               setSelectedDate={setDate}
             />
           ),
+          month: {
+            dateHeader: MonthDateHeader,
+          },
+          week: { header: MonthDateHeader },
         }}
         eventPropGetter={(event) => {
           const hallShortCode = event?.resource?.hall?.shortCode;
