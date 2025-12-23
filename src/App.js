@@ -1,13 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
-import {
-  Admin,
-  Resource,
-  defaultTheme,
-  CustomRoutes,
-  usePermissions,
-} from "react-admin";
+import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
@@ -100,23 +94,11 @@ const MainApp = () => {
         return <DefaultDashboard />;
       }
       case "staff":
-        return permissions?.staff?.view ? (
-          <StaffDashboard />
-        ) : (
-          <Navigate to="/employees" />
-        );
+        return permissions?.staff?.view ? <StaffDashboard /> : <Navigate to="/employees" />;
       case "sabil":
-        return permissions?.admins?.view ? (
-          <SabilDashboard />
-        ) : (
-          <Navigate to="/sabilData" />
-        );
+        return permissions?.admins?.view ? <SabilDashboard /> : <Navigate to="/sabilData" />;
       case "fmb":
-        return permissions?.admins?.view ? (
-          <FmbDashboard />
-        ) : (
-          <Navigate to="/fmbData" />
-        );
+        return permissions?.admins?.view ? <FmbDashboard /> : <Navigate to="/fmbData" />;
       case "miqaat":
         return permissions?.receipt?.view ? (
           <MiqaatDashboard />
@@ -144,17 +126,11 @@ const MainApp = () => {
             <>
               {permissions?.bookings?.view && <Resource {...bookings} />}
               {permissions?.bookings?.view && <Resource {...hallBookings} />}
-              {permissions?.bookingReceipts?.view && (
-                <Resource {...rentBookingReceipt} />
-              )}
-              {permissions?.bookingReceipts?.view && (
-                <Resource {...lagatReceipt} />
-              )}
+              {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
+              {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
               {permissions?.halls?.view && <Resource {...bookingPurpose} />}
               {permissions?.halls?.view && <Resource {...halls} />}
-              {permissions?.bookings?.view && (
-                <Resource {...blockedHallDates} />
-              )}
+              {permissions?.bookings?.view && <Resource {...blockedHallDates} />}
 
               <CustomRoutes noLayout>
                 <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
@@ -164,10 +140,7 @@ const MainApp = () => {
                 <Route path="/raza-print/:id" element={<RazaPrint />} />
               </CustomRoutes>
               <CustomRoutes noLayout>
-                <Route
-                  path="/confirmation-voucher/:id"
-                  element={<ConfirmationVoucher />}
-                />
+                <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
               </CustomRoutes>
             </>
           )}
@@ -177,9 +150,7 @@ const MainApp = () => {
                 <>
                   {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
                   {permissions?.receipt?.view && <Resource {...receipt} />}
-                  {permissions?.vendorLedger?.edit && (
-                    <Resource {...vendorLedger} />
-                  )}
+                  {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
                   <CustomRoutes noLayout>
                     <Route path="/niyaaz-receipt" element={<Receipt />} />
                   </CustomRoutes>
@@ -193,9 +164,7 @@ const MainApp = () => {
           {baseRoute === "staff" && (
             <>
               {permissions?.employees?.view && <Resource {...staff} />}
-              {permissions?.employees?.view && (
-                <Resource {...staffAttendance} />
-              )}
+              {permissions?.employees?.view && <Resource {...staffAttendance} />}
             </>
           )}
           {baseRoute === "sabil" && (
@@ -203,9 +172,7 @@ const MainApp = () => {
               {permissions?.admins?.view && <Resource {...sabilData} />}
               {permissions?.admins?.view && <Resource {...sabilReceipt} />}
               {permissions?.admins?.view && <Resource {...sabilTakhmeen} />}
-              {permissions?.admins?.view && (
-                <Resource {...sabilChangeRequests} />
-              )}
+              {permissions?.admins?.view && <Resource {...sabilChangeRequests} />}
             </>
           )}
           {baseRoute === "fmb" && (
@@ -216,11 +183,7 @@ const MainApp = () => {
             </>
           )}
           {baseRoute === "miqaat" && (
-            <>
-              {permissions?.receipt?.view && (
-                <Resource {...miqaatNiyaazReceipts} />
-              )}
-            </>
+            <>{permissions?.receipt?.view && <Resource {...miqaatNiyaazReceipts} />}</>
           )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
@@ -233,10 +196,7 @@ const MainApp = () => {
             <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
           </CustomRoutes>
           <CustomRoutes noLayout>
-            <Route
-              path="/mqt-rcpt/:id"
-              element={<MiqaatNiyaazReceiptPrint />}
-            />
+            <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
           </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />
