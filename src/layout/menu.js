@@ -55,11 +55,7 @@ const LayoutMenu = () => {
         height: "100%",
       }}
     >
-      <MenuItemLink
-        to="/"
-        primaryText="Dashboard"
-        leftIcon={<DashboardIcon />}
-      />
+      <MenuItemLink to="/" primaryText="Dashboard" leftIcon={<DashboardIcon />} />
       <Menu.ResourceItem name="niyaaz" />
       <Menu.ResourceItem name="receipts" />
       <Menu.ResourceItem name="vendorLedger" />
