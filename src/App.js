@@ -17,6 +17,7 @@ import authProvider from "./authProvider";
 import layout from "./layout";
 import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
+import whatsappBroadcasts from "./containers/whatsappBroadcasts";
 import niyaaz from "./containers/niyaaz";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
@@ -186,6 +187,7 @@ const MainApp = () => {
           )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
+          {permissions?.admins?.view && <Resource {...whatsappBroadcasts} />}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
