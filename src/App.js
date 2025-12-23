@@ -78,8 +78,6 @@ const MainApp = () => {
   const DashboardAdmin = () => {
     const { permissions } = usePermissions();
 
-    console.log(permissions);
-
     switch (baseRoute) {
       case "bookings":
         return hasPermission(permissions, "bookings.dashboard") ? (
