@@ -100,6 +100,7 @@ const LayoutMenu = () => {
       <Menu.ResourceItem name="fmbReceipt" />
       <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
+      <Menu.ResourceItem name="whatsappBroadcasts" />
     </Menu>
   );
 };

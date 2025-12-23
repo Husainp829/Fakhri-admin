@@ -13,6 +13,8 @@ export const getApiUrl = (resource) =>
     "employeesAttendance",
     "blockedHallDates",
     "miqaatNiyaazReceipts",
+    "whatsappBroadcasts",
+    "whatsappBroadcastRecipients",
   ].some((item) => resource.startsWith(item))
     ? `${apiUrl}/v2`
     : apiUrl;
