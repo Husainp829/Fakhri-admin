@@ -62,6 +62,9 @@ import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
 import FmbDashboard from "./containers/fmb/dashboard";
 import blockedHallDates from "./containers/bookings/blockedHallDates";
+import miqaatNiyaazReceipts from "./containers/miqaat/miqaatNiyaazReceipts";
+import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrint";
+import MiqaatDashboard from "./containers/miqaat/dashboard";
 
 dayjs.extend(utc);
 
@@ -113,6 +116,12 @@ const MainApp = () => {
           <FmbDashboard />
         ) : (
           <Navigate to="/fmbData" />
+        );
+      case "miqaat":
+        return permissions?.receipt?.view ? (
+          <MiqaatDashboard />
+        ) : (
+          <Navigate to="/miqaatNiyaazReceipts" />
         );
       default:
         return <DefaultDashboard />;
@@ -206,6 +215,13 @@ const MainApp = () => {
               {permissions?.admins?.view && <Resource {...fmbTakhmeen} />}
             </>
           )}
+          {baseRoute === "miqaat" && (
+            <>
+              {permissions?.receipt?.view && (
+                <Resource {...miqaatNiyaazReceipts} />
+              )}
+            </>
+          )}
           {permissions?.admins?.view && <Resource {...admin} />}
           {permissions?.show?.its && <Resource {...itsdata} />}
           {permissions?.admins?.view && <Resource {...whatsappBroadcasts} />}
@@ -215,6 +231,12 @@ const MainApp = () => {
           </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
+          </CustomRoutes>
+          <CustomRoutes noLayout>
+            <Route
+              path="/mqt-rcpt/:id"
+              element={<MiqaatNiyaazReceiptPrint />}
+            />
           </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -90,6 +90,7 @@ const LayoutMenu = () => {
 
       <Menu.ResourceItem name="hallBookings" />
       <Menu.ResourceItem name="contRcpt" />
+      <Menu.ResourceItem name="miqaatNiyaazReceipts" />
       <Menu.ResourceItem name="lagatReceipts" />
       <Menu.ResourceItem name="halls" />
       <Menu.ResourceItem name="blockedHallDates" />
