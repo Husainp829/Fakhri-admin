@@ -220,4 +220,22 @@ export default {
       return { data: [] };
     });
   },
+  previewRecipients: (resource, params) => {
+    const { filterCriteria, limit = 25, offset = 0 } = params;
+    return httpClient(`${getApiUrl(resource)}/${resource}/preview-recipients`, {
+      method: "POST",
+      body: JSON.stringify({
+        filterCriteria,
+        limit,
+        offset,
+      }),
+    }).then(({ json }) => {
+      const recipients = json.recipients || [];
+      return {
+        data: convertRows(recipients),
+        total: json.count || 0,
+        fields: json.fields || [],
+      };
+    });
+  },
 };
