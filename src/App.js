@@ -1,7 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
-import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
+import {
+  Admin,
+  Resource,
+  defaultTheme,
+  CustomRoutes,
+  usePermissions,
+} from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
@@ -9,6 +15,7 @@ import { Navigate, Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useBaseRoute, useRouteId } from "./utils/routeUtility";
+import { hasPermission } from "./utils/permissionUtils";
 
 import withClearCache from "./ClearCache";
 
@@ -73,15 +80,17 @@ const MainApp = () => {
   const DashboardAdmin = () => {
     const { permissions } = usePermissions();
 
+    console.log(permissions);
+
     switch (baseRoute) {
       case "bookings":
-        return permissions?.bookings?.dashboard ? (
+        return hasPermission(permissions, "bookings.dashboard") ? (
           <BookingDashboard />
         ) : (
           <Navigate to="/hallBookings" />
         );
       case "events": {
-        if (permissions?.event?.view) {
+        if (hasPermission(permissions, "event.view")) {
           if (routeId) {
             return <ActiveEventDashboard />;
           }
@@ -90,11 +99,23 @@ const MainApp = () => {
         return <DefaultDashboard />;
       }
       case "staff":
-        return permissions?.staff?.view ? <StaffDashboard /> : <Navigate to="/employees" />;
+        return hasPermission(permissions, "staff.view") ? (
+          <StaffDashboard />
+        ) : (
+          <Navigate to="/employees" />
+        );
       case "sabil":
-        return permissions?.admins?.view ? <SabilDashboard /> : <Navigate to="/sabilData" />;
+        return hasPermission(permissions, "admins.view") ? (
+          <SabilDashboard />
+        ) : (
+          <Navigate to="/sabilData" />
+        );
       case "fmb":
-        return permissions?.admins?.view ? <FmbDashboard /> : <Navigate to="/fmbData" />;
+        return hasPermission(permissions, "admins.view") ? (
+          <FmbDashboard />
+        ) : (
+          <Navigate to="/fmbData" />
+        );
       default:
         return <DefaultDashboard />;
     }
@@ -114,13 +135,27 @@ const MainApp = () => {
         <>
           {baseRoute === "bookings" && (
             <>
-              {permissions?.bookings?.view && <Resource {...bookings} />}
-              {permissions?.bookings?.view && <Resource {...hallBookings} />}
-              {permissions?.bookingReceipts?.view && <Resource {...rentBookingReceipt} />}
-              {permissions?.bookingReceipts?.view && <Resource {...lagatReceipt} />}
-              {permissions?.halls?.view && <Resource {...bookingPurpose} />}
-              {permissions?.halls?.view && <Resource {...halls} />}
-              {permissions?.bookings?.view && <Resource {...blockedHallDates} />}
+              {hasPermission(permissions, "bookings.view") && (
+                <Resource {...bookings} />
+              )}
+              {hasPermission(permissions, "bookings.view") && (
+                <Resource {...hallBookings} />
+              )}
+              {hasPermission(permissions, "bookingReceipts.view") && (
+                <Resource {...rentBookingReceipt} />
+              )}
+              {hasPermission(permissions, "bookingReceipts.view") && (
+                <Resource {...lagatReceipt} />
+              )}
+              {hasPermission(permissions, "halls.view") && (
+                <Resource {...bookingPurpose} />
+              )}
+              {hasPermission(permissions, "halls.view") && (
+                <Resource {...halls} />
+              )}
+              {hasPermission(permissions, "bookings.view") && (
+                <Resource {...blockedHallDates} />
+              )}
 
               <CustomRoutes noLayout>
                 <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
@@ -130,7 +165,10 @@ const MainApp = () => {
                 <Route path="/raza-print/:id" element={<RazaPrint />} />
               </CustomRoutes>
               <CustomRoutes noLayout>
-                <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
+                <Route
+                  path="/confirmation-voucher/:id"
+                  element={<ConfirmationVoucher />}
+                />
               </CustomRoutes>
             </>
           )}
@@ -138,42 +176,72 @@ const MainApp = () => {
             <>
               {routeId && (
                 <>
-                  {permissions?.niyaaz?.view && <Resource {...niyaaz} />}
-                  {permissions?.receipt?.view && <Resource {...receipt} />}
-                  {permissions?.vendorLedger?.edit && <Resource {...vendorLedger} />}
+                  {hasPermission(permissions, "niyaaz.view") && (
+                    <Resource {...niyaaz} />
+                  )}
+                  {hasPermission(permissions, "receipts.view") && (
+                    <Resource {...receipt} />
+                  )}
+                  {hasPermission(permissions, "vendorLedger.edit") && (
+                    <Resource {...vendorLedger} />
+                  )}
                   <CustomRoutes noLayout>
                     <Route path="/niyaaz-receipt" element={<Receipt />} />
                   </CustomRoutes>
                 </>
               )}
-              {permissions?.vendors?.edit && <Resource {...vendor} />}
-              {permissions?.vendorTypes?.edit && <Resource {...vendorType} />}
+              {hasPermission(permissions, "vendors.edit") && (
+                <Resource {...vendor} />
+              )}
+              {hasPermission(permissions, "vendorTypes.edit") && (
+                <Resource {...vendorType} />
+              )}
               <Resource {...event} />
             </>
           )}
           {baseRoute === "staff" && (
             <>
-              {permissions?.employees?.view && <Resource {...staff} />}
-              {permissions?.employees?.view && <Resource {...staffAttendance} />}
+              {hasPermission(permissions, "employees.view") && (
+                <Resource {...staff} />
+              )}
+              {hasPermission(permissions, "employees.view") && (
+                <Resource {...staffAttendance} />
+              )}
             </>
           )}
           {baseRoute === "sabil" && (
             <>
-              {permissions?.admins?.view && <Resource {...sabilData} />}
-              {permissions?.admins?.view && <Resource {...sabilReceipt} />}
-              {permissions?.admins?.view && <Resource {...sabilTakhmeen} />}
-              {permissions?.admins?.view && <Resource {...sabilChangeRequests} />}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...sabilData} />
+              )}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...sabilReceipt} />
+              )}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...sabilTakhmeen} />
+              )}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...sabilChangeRequests} />
+              )}
             </>
           )}
           {baseRoute === "fmb" && (
             <>
-              {permissions?.admins?.view && <Resource {...fmbData} />}
-              {permissions?.admins?.view && <Resource {...fmbReceipt} />}
-              {permissions?.admins?.view && <Resource {...fmbTakhmeen} />}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...fmbData} />
+              )}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...fmbReceipt} />
+              )}
+              {hasPermission(permissions, "admins.view") && (
+                <Resource {...fmbTakhmeen} />
+              )}
             </>
           )}
-          {permissions?.admins?.view && <Resource {...admin} />}
-          {permissions?.show?.its && <Resource {...itsdata} />}
+          {hasPermission(permissions, "admins.view") && <Resource {...admin} />}
+          {hasPermission(permissions, "view.its.data") && (
+            <Resource {...itsdata} />
+          )}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />

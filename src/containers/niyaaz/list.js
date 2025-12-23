@@ -23,8 +23,13 @@ import {
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
-import { calcTotalBalance, calcTotalPayable, downLoadPasses } from "../../utils";
+import {
+  calcTotalBalance,
+  calcTotalPayable,
+  downLoadPasses,
+} from "../../utils";
 import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
+import { hasPermission } from "../../utils/permissionUtils";
 
 export default () => {
   const NiyaazFilters = [
@@ -56,8 +61,8 @@ export default () => {
     <TopToolbar sx={{ justifyContent: "start" }}>
       <FilterButton />
       <SelectColumnsButton />
-      {permissions?.niyaaz?.create && <CreateButton />}
-      {permissions?.niyaaz?.export && <ExportButton />}
+      {hasPermission(permissions, "niyaaz.create") && <CreateButton />}
+      {hasPermission(permissions, "niyaaz.export") && <ExportButton />}
     </TopToolbar>
   );
 
@@ -102,13 +107,17 @@ export default () => {
       };
     });
     const columnOrder = JSON.parse(
-      localStorage.getItem("RaStore.preferences.niyaaz.datagrid.availableColumns") || "[]"
+      localStorage.getItem(
+        "RaStore.preferences.niyaaz.datagrid.availableColumns"
+      ) || "[]"
     );
 
     jsonExport(
       niyaazForExport,
       {
-        headers: columnOrder.filter((c) => c.source !== "EDIT").map((c) => c.source), // order fields in the export
+        headers: columnOrder
+          .filter((c) => c.source !== "EDIT")
+          .map((c) => c.source), // order fields in the export
       },
       (err, csv) => {
         downloadCSV(csv, "NiyaazTakhmeen");
@@ -151,13 +160,19 @@ export default () => {
           <FunctionField
             label="Submitter"
             source="submitter"
-            render={(record) => <span>{record?.admin?.name || record.submitter}</span>}
+            render={(record) => (
+              <span>{record?.admin?.name || record.submitter}</span>
+            )}
           />
           <FunctionField
             label="Download"
             source="updatedAt"
             render={(record) => (
-              <Button onClick={() => downLoadPasses({ ...record, event: currentEvent })}>
+              <Button
+                onClick={() =>
+                  downLoadPasses({ ...record, event: currentEvent })
+                }
+              >
                 <DownloadIcon />
               </Button>
             )}
