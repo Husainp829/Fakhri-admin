@@ -16,6 +16,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
 import { exportToExcel } from "../../../utils/exportToExcel";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 export default () => {
   const { permissions } = usePermissions();
@@ -65,7 +66,10 @@ export default () => {
     // 🚫 Do NOT export the "Download" button — not relevant in Excel
   ];
   const exporter = (records) =>
-    exportToExcel(receiptColumns, records, { filenamePrefix: "receipts", sheetName: "Receipts" });
+    exportToExcel(receiptColumns, records, {
+      filenamePrefix: "receipts",
+      sheetName: "Receipts",
+    });
 
   const ReceiptFilters = [
     <TextInput
@@ -93,13 +97,18 @@ export default () => {
       ]}
       alwaysOn
     />,
-    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
+    <TextInput
+      label="Search By Receipt No"
+      source="receiptNo"
+      key={0}
+      sx={{ minWidth: 300 }}
+    />,
   ];
 
   return (
     <List
       hasCreate={false}
-      exporter={permissions?.receipt?.export && exporter}
+      exporter={hasPermission(permissions, "receipts.export") && exporter}
       pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
       sort={{ field: "date", order: "DESC" }}
       filters={ReceiptFilters}
@@ -115,7 +124,9 @@ export default () => {
         <FunctionField
           label="Created By"
           source="createdBy"
-          render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
+          render={(record) => (
+            <span>{record?.admin?.name || record.createdBy}</span>
+          )}
         />
         <FunctionField
           label="Download"

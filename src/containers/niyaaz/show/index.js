@@ -21,6 +21,7 @@ import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
 import { downLoadPasses } from "../../../utils";
+import { hasPermission } from "../../../utils/permissionUtils";
 const NiyaazActions = () => {
   const redirect = useRedirect();
   const {
@@ -40,7 +41,7 @@ const NiyaazActions = () => {
 
   return (
     <TopToolbar>
-      {permissions?.receipt?.create && (
+      {hasPermission(permissions, "receipts.create") && (
         <Button
           color="success"
           variant="contained"
@@ -65,7 +66,7 @@ const NiyaazActions = () => {
         <PrintIcon sx={{ mr: 1 }} />
         Print Passes
       </Button>
-      {permissions?.niyaaz?.edit && (
+      {hasPermission(permissions, "niyaaz.edit") && (
         <>
           <Button
             id="basic-button"

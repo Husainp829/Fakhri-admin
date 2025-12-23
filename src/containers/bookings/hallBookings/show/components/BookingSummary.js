@@ -1,11 +1,18 @@
 /* eslint-disable no-console */
 import React from "react";
 import { usePermissions, useRecordContext } from "react-admin";
-import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import {
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
 
 import { useShowTotals } from "../context";
+import { hasPermission } from "../../../../../utils/permissionUtils";
 
 const BookingSummary = () => {
   const record = useRecordContext();
@@ -36,8 +43,12 @@ const BookingSummary = () => {
           },
         ]
       : []),
-    ...(record.extraExpenses > 0 ? [{ label: "Extra Expenses", value: record.extraExpenses }] : []),
-    ...(record.writeOffAmount > 0 ? [{ label: "Write Off", value: record.writeOffAmount }] : []),
+    ...(record.extraExpenses > 0
+      ? [{ label: "Extra Expenses", value: record.extraExpenses }]
+      : []),
+    ...(record.writeOffAmount > 0
+      ? [{ label: "Write Off", value: record.writeOffAmount }]
+      : []),
     { label: "Total Payable", value: totalAmountPending },
   ];
 
@@ -59,7 +70,10 @@ const BookingSummary = () => {
   ];
 
   const LabelValue = ({ label, value }) => (
-    <Typography component="div" sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+    <Typography
+      component="div"
+      sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+    >
       <span>{label}:</span>
       <strong>{value}</strong>
     </Typography>
@@ -72,16 +86,28 @@ const BookingSummary = () => {
     { label: "Mohalla", value: record.mohalla },
     { label: "Sadarat", value: record.sadarat || "-" },
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },
-    { label: "Booked On", value: dayjs(record.createdAt).format("DD MMM YYYY") },
+    {
+      label: "Booked On",
+      value: dayjs(record.createdAt).format("DD MMM YYYY"),
+    },
   ];
 
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
-      <Grid item size={{ xs: 12, md: 6 }} borderRight="1px solid #efefef" pr={2}>
+      <Grid
+        item
+        size={{ xs: 12, md: 6 }}
+        borderRight="1px solid #efefef"
+        pr={2}
+      >
         <Typography variant="h6" gutterBottom>
           Summary
         </Typography>
-        <Table size="small" aria-label="summary" sx={{ borderTop: "1px solid #efefef" }}>
+        <Table
+          size="small"
+          aria-label="summary"
+          sx={{ borderTop: "1px solid #efefef" }}
+        >
           <TableBody>
             {labelValueConfig.map(({ label, value }) => (
               <TableRow key={label}>
@@ -94,18 +120,25 @@ const BookingSummary = () => {
         </Table>
       </Grid>
 
-      {permissions?.bookings.edit && (
+      {hasPermission(permissions, "bookings.edit") && (
         <Grid item size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>
             Payments
           </Typography>
 
-          <Table size="small" aria-label="payments" sx={{ borderTop: "1px solid #efefef" }}>
+          <Table
+            size="small"
+            aria-label="payments"
+            sx={{ borderTop: "1px solid #efefef" }}
+          >
             <TableBody>
               {amountsLeft.map((item, i) => (
                 <TableRow key={item.label}>
                   <TableCell sx={{ borderRight: "1px solid #efefef" }}>
-                    <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
+                    <LabelValue
+                      label={item.label}
+                      value={`₹${item.value ?? "0.00"}`}
+                    />
                   </TableCell>
                   <TableCell>
                     {amountsRight[i] ? (
@@ -128,7 +161,10 @@ const BookingSummary = () => {
                   <TableRow key={item.label}>
                     <TableCell></TableCell>
                     <TableCell>
-                      <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
+                      <LabelValue
+                        label={item.label}
+                        value={`₹${item.value ?? "0.00"}`}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
