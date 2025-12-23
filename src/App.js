@@ -1,13 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
-import {
-  Admin,
-  Resource,
-  defaultTheme,
-  CustomRoutes,
-  usePermissions,
-} from "react-admin";
+import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
 import { deepmerge } from "@mui/utils";
@@ -24,6 +18,7 @@ import authProvider from "./authProvider";
 import layout from "./layout";
 import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
+import whatsappBroadcasts from "./containers/whatsappBroadcasts";
 import niyaaz from "./containers/niyaaz";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
@@ -62,6 +57,9 @@ import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
 import FmbDashboard from "./containers/fmb/dashboard";
 import blockedHallDates from "./containers/bookings/blockedHallDates";
+import miqaatNiyaazReceipts from "./containers/miqaat/miqaatNiyaazReceipts";
+import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrint";
+import MiqaatDashboard from "./containers/miqaat/dashboard";
 
 dayjs.extend(utc);
 
@@ -116,6 +114,12 @@ const MainApp = () => {
         ) : (
           <Navigate to="/fmbData" />
         );
+      case "miqaat":
+        return hasPermission(permissions, "receipts.view") ? (
+          <MiqaatDashboard />
+        ) : (
+          <Navigate to="/miqaatNiyaazReceipts" />
+        );
       default:
         return <DefaultDashboard />;
     }
@@ -135,27 +139,15 @@ const MainApp = () => {
         <>
           {baseRoute === "bookings" && (
             <>
-              {hasPermission(permissions, "bookings.view") && (
-                <Resource {...bookings} />
-              )}
-              {hasPermission(permissions, "bookings.view") && (
-                <Resource {...hallBookings} />
-              )}
+              {hasPermission(permissions, "bookings.view") && <Resource {...bookings} />}
+              {hasPermission(permissions, "bookings.view") && <Resource {...hallBookings} />}
               {hasPermission(permissions, "bookingReceipts.view") && (
                 <Resource {...rentBookingReceipt} />
               )}
-              {hasPermission(permissions, "bookingReceipts.view") && (
-                <Resource {...lagatReceipt} />
-              )}
-              {hasPermission(permissions, "halls.view") && (
-                <Resource {...bookingPurpose} />
-              )}
-              {hasPermission(permissions, "halls.view") && (
-                <Resource {...halls} />
-              )}
-              {hasPermission(permissions, "bookings.view") && (
-                <Resource {...blockedHallDates} />
-              )}
+              {hasPermission(permissions, "bookingReceipts.view") && <Resource {...lagatReceipt} />}
+              {hasPermission(permissions, "halls.view") && <Resource {...bookingPurpose} />}
+              {hasPermission(permissions, "halls.view") && <Resource {...halls} />}
+              {hasPermission(permissions, "bookings.view") && <Resource {...blockedHallDates} />}
 
               <CustomRoutes noLayout>
                 <Route path="/dep-rcpt/:id" element={<DepositReceiptPrint />} />
@@ -165,10 +157,7 @@ const MainApp = () => {
                 <Route path="/raza-print/:id" element={<RazaPrint />} />
               </CustomRoutes>
               <CustomRoutes noLayout>
-                <Route
-                  path="/confirmation-voucher/:id"
-                  element={<ConfirmationVoucher />}
-                />
+                <Route path="/confirmation-voucher/:id" element={<ConfirmationVoucher />} />
               </CustomRoutes>
             </>
           )}
@@ -176,12 +165,8 @@ const MainApp = () => {
             <>
               {routeId && (
                 <>
-                  {hasPermission(permissions, "niyaaz.view") && (
-                    <Resource {...niyaaz} />
-                  )}
-                  {hasPermission(permissions, "receipts.view") && (
-                    <Resource {...receipt} />
-                  )}
+                  {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaaz} />}
+                  {hasPermission(permissions, "receipts.view") && <Resource {...receipt} />}
                   {hasPermission(permissions, "vendorLedger.edit") && (
                     <Resource {...vendorLedger} />
                   )}
@@ -190,64 +175,51 @@ const MainApp = () => {
                   </CustomRoutes>
                 </>
               )}
-              {hasPermission(permissions, "vendors.edit") && (
-                <Resource {...vendor} />
-              )}
-              {hasPermission(permissions, "vendorTypes.edit") && (
-                <Resource {...vendorType} />
-              )}
+              {hasPermission(permissions, "vendors.edit") && <Resource {...vendor} />}
+              {hasPermission(permissions, "vendorTypes.edit") && <Resource {...vendorType} />}
               <Resource {...event} />
             </>
           )}
           {baseRoute === "staff" && (
             <>
-              {hasPermission(permissions, "employees.view") && (
-                <Resource {...staff} />
-              )}
-              {hasPermission(permissions, "employees.view") && (
-                <Resource {...staffAttendance} />
-              )}
+              {hasPermission(permissions, "employees.view") && <Resource {...staff} />}
+              {hasPermission(permissions, "employees.view") && <Resource {...staffAttendance} />}
             </>
           )}
           {baseRoute === "sabil" && (
             <>
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...sabilData} />
-              )}
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...sabilReceipt} />
-              )}
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...sabilTakhmeen} />
-              )}
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...sabilChangeRequests} />
-              )}
+              {hasPermission(permissions, "admins.view") && <Resource {...sabilData} />}
+              {hasPermission(permissions, "admins.view") && <Resource {...sabilReceipt} />}
+              {hasPermission(permissions, "admins.view") && <Resource {...sabilTakhmeen} />}
+              {hasPermission(permissions, "admins.view") && <Resource {...sabilChangeRequests} />}
             </>
           )}
           {baseRoute === "fmb" && (
             <>
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...fmbData} />
-              )}
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...fmbReceipt} />
-              )}
-              {hasPermission(permissions, "admins.view") && (
-                <Resource {...fmbTakhmeen} />
+              {hasPermission(permissions, "admins.view") && <Resource {...fmbData} />}
+              {hasPermission(permissions, "admins.view") && <Resource {...fmbReceipt} />}
+              {hasPermission(permissions, "admins.view") && <Resource {...fmbTakhmeen} />}
+            </>
+          )}
+          {baseRoute === "miqaat" && (
+            <>
+              {hasPermission(permissions, "receipts.view") && (
+                <Resource {...miqaatNiyaazReceipts} />
               )}
             </>
           )}
           {hasPermission(permissions, "admins.view") && <Resource {...admin} />}
-          {hasPermission(permissions, "view.its.data") && (
-            <Resource {...itsdata} />
-          )}
+          {hasPermission(permissions, "show.its") && <Resource {...itsdata} />}
+          {hasPermission(permissions, "admins.view") && <Resource {...whatsappBroadcasts} />}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
           </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
+          </CustomRoutes>
+          <CustomRoutes noLayout>
+            <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
           </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />
