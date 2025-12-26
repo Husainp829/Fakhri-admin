@@ -111,8 +111,22 @@ const getCachedPermissions = async (force = false) => {
 
   const cacheKey = user.uid;
 
+  // Check for cache bust flag
+  let shouldForceRefresh = force;
+  if (!shouldForceRefresh && typeof window !== "undefined") {
+    const bustTimestamp = sessionStorage.getItem("permissionsCacheBust");
+    if (bustTimestamp) {
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+      if (parseInt(bustTimestamp, 10) > fiveMinutesAgo) {
+        shouldForceRefresh = true;
+        // Clear the cache entry
+        cache.delete(cacheKey);
+      }
+    }
+  }
+
   // Check cache first (unless force refresh)
-  if (!force) {
+  if (!shouldForceRefresh) {
     const cached = cache.get(cacheKey);
     if (cached) {
       return cached;

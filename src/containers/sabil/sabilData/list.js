@@ -67,16 +67,12 @@ function TabbedDatagrid() {
       render={(record) => record.itsdata?.Full_Name || record.name}
       key="name"
     />,
-    <TextField source="pendingBalance" key="pendingBalance" />,
-    <TextField source="paidBalance" key="paidBalance" />,
     <TextField
       source="sabilTakhmeenCurrent.takhmeenAmount"
       label="Takhmeen"
       key="takhmeenAmount"
     />,
     <TextField source="mohallah" label="Mohallah" key="itsdata" />,
-    <TextField source="itsdata.Sector_Incharge_Name" label="Masool" key="itsdata" />,
-    <TextField source="category" key="category" />,
     <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />,
   ];
 

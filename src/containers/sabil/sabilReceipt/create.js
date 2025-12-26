@@ -50,7 +50,6 @@ export default (props) => {
             <TextInput source="sabilNo" fullWidth disabled />
             <TextInput source="takhmeenAmount" fullWidth disabled />
             <NumberInput source="amount" fullWidth />
-            <NumberInput source="balancePending" fullWidth disabled />
           </Grid>
           <Grid item lg={6} xs={6}>
             <TextInput source="sabilType" fullWidth disabled />

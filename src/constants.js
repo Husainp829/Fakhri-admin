@@ -2,21 +2,7 @@ export const apiUrl = "https://jmsapi.rapid-events.com";
 // export const apiUrl = "http://localhost:3012";
 
 export const getApiUrl = () => `${apiUrl}/v2`;
-// [
-//   "bookings",
-//   "halls",
-//   "hallBookings",
-//   "contRcpt",
-//   "media",
-//   "itsdata",
-//   "employees",
-//   "employeesAttendance",
-//   "blockedHallDates",
-//   "miqaatNiyaazReceipts",
-//   "whatsappBroadcasts",
-//   "whatsappBroadcastRecipients",
-//   "admins",
-// ].some((item) => resource.startsWith(item))
+// [].some((item) => resource.startsWith(item))
 //   ? `${apiUrl}/v2`
 //   : apiUrl;
 

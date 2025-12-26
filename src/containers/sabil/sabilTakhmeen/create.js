@@ -1,9 +1,8 @@
 import React from "react";
-import dayjs from "dayjs";
 import { TextInput, Create, SimpleForm, ReferenceInput } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
-import MonthInput from "../../../components/MonthInput";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default (props) => {
   const optionRenderer = (choice) => `${choice.itsNo} - ${choice.sabilType}`;
@@ -15,7 +14,6 @@ export default (props) => {
   const transform = (data) => ({
     sabilId: data.sabilId,
     takhmeenAmount: data.newTakhmeenAmount,
-    startDate: dayjs(data.startDate).startOf("month"),
   });
 
   const takhmeenDefaultValues = () => ({ sabilId });
@@ -23,7 +21,7 @@ export default (props) => {
     <Create
       {...props}
       transform={transform}
-      redirect={`/sabilData/${sabilId}/show/takhmeenHistory`}
+      redirect={`/sabilData/${sabilId}/show`}
     >
       <SimpleForm
         warnWhenUnsavedChanges
@@ -48,12 +46,15 @@ export default (props) => {
               disabled
               label="Previous Takhmeen Amount"
             />
-            <MonthInput source="startDate" fullWidth label="Start Date" />
           </Grid>
           <Grid item lg={6} xs={6}>
             <TextInput source="sabilType" fullWidth disabled />
             <TextInput source="name" label="Sabil Holder Name" fullWidth disabled />
-            <TextInput source="newTakhmeenAmount" fullWidth label="New Takhmeen Amount" />
+            <NoArrowKeyNumberInput
+              source="newTakhmeenAmount"
+              fullWidth
+              label="New Takhmeen Amount"
+            />
           </Grid>
         </Grid>
         <TextInput source="remarks" fullWidth />

@@ -60,8 +60,6 @@ export default (props) => {
               />
             </ReferenceInput>
             <TextInput source="sabilNo" fullWidth disabled />
-            <TextInput source="pendingBalance" fullWidth disabled />
-            <TextInput source="paidBalance" fullWidth disabled />
           </Grid>
           <Grid item lg={6} xs={6}>
             <TextInput source="sabilType" fullWidth disabled />

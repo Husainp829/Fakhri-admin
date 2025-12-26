@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
-import React from "react";
+import React, { useEffect } from "react";
 import { Admin, Resource, defaultTheme, CustomRoutes, usePermissions } from "react-admin";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useBaseRoute, useRouteId } from "./utils/routeUtility";
 import { hasPermission } from "./utils/permissionUtils";
+import { checkAndClearCacheFromURL } from "./utils/clearPermissionCache";
 
 import withClearCache from "./ClearCache";
 
@@ -52,6 +53,7 @@ import sabilData from "./containers/sabil/sabilData";
 import sabilTakhmeen from "./containers/sabil/sabilTakhmeen";
 import sabilReceipt from "./containers/sabil/sabilReceipt";
 import sabilChangeRequests from "./containers/sabil/sabilChangeRequest";
+import sabilLedger from "./containers/sabil/sabilLedger";
 import fmbData from "./containers/fmb/fmbData";
 import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
@@ -74,6 +76,11 @@ const i18nProvider = polyglotI18nProvider((locale) => messages[locale], "en", {
 const MainApp = () => {
   const baseRoute = useBaseRoute();
   const routeId = useRouteId();
+
+  // Check URL for permission cache refresh parameter
+  useEffect(() => {
+    checkAndClearCacheFromURL();
+  }, []);
 
   const DashboardAdmin = () => {
     const { permissions } = usePermissions();
@@ -101,7 +108,7 @@ const MainApp = () => {
           <Navigate to="/employees" />
         );
       case "sabil":
-        return hasPermission(permissions, "admins.view") ? (
+        return hasPermission(permissions, "sabil.view") ? (
           <SabilDashboard />
         ) : (
           <Navigate to="/sabilData" />
@@ -186,10 +193,11 @@ const MainApp = () => {
           )}
           {baseRoute === "sabil" && (
             <>
-              {hasPermission(permissions, "admins.view") && <Resource {...sabilData} />}
-              {hasPermission(permissions, "admins.view") && <Resource {...sabilReceipt} />}
-              {hasPermission(permissions, "admins.view") && <Resource {...sabilTakhmeen} />}
-              {hasPermission(permissions, "admins.view") && <Resource {...sabilChangeRequests} />}
+              {hasPermission(permissions, "sabil.view") && <Resource {...sabilData} />}
+              {hasPermission(permissions, "sabilReceipts.view") && <Resource {...sabilReceipt} />}
+              {hasPermission(permissions, "sabil.view") && <Resource {...sabilTakhmeen} />}
+              {hasPermission(permissions, "sabil.view") && <Resource {...sabilChangeRequests} />}
+              {hasPermission(permissions, "sabil.view") && <Resource {...sabilLedger} />}
             </>
           )}
           {baseRoute === "fmb" && (

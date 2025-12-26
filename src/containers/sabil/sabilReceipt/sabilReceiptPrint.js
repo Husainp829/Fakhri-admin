@@ -30,7 +30,22 @@ const SabilReceipt = ({ ...props }) => {
   );
 
   return (
-    <ReceiptPrint>
+    <ReceiptPrint
+      title={
+        <>
+          DAWOODI BOHRA JAMAAT TRUST
+          <br />
+          FAKHRI MOHALLA POONA
+        </>
+      }
+      subTitle={
+        <>
+          Trust Reg No E/7038(P)
+          <br />
+          Managed By Anjuman-e-Fakhri
+        </>
+      }
+    >
       <div style={{ display: "flex", width: "100%" }}>
         <div
           className="u-col u-col-82p27"
