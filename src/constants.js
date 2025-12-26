@@ -15,37 +15,10 @@ export const getApiUrl = (resource) =>
     "miqaatNiyaazReceipts",
     "whatsappBroadcasts",
     "whatsappBroadcastRecipients",
+    "admins",
   ].some((item) => resource.startsWith(item))
     ? `${apiUrl}/v2`
     : apiUrl;
-
-export const permissionsList = [
-  { id: "event.view", name: "View Events" },
-  { id: "admins.view", name: "View Admin" },
-  { id: "view.its.data", name: "View ITS Data" },
-  { id: "show.its.dump", name: "Show ITS Data" },
-  { id: "niyaaz.view", name: "View Niyaaz" },
-  { id: "niyaaz.create", name: "Create Niyaaz" },
-  { id: "niyaaz.edit", name: "Edit Niyaaz" },
-  { id: "niyaaz.export", name: "Export Niyaaz" },
-  { id: "receipt.view", name: "View receipt" },
-  { id: "receipt.create", name: "Create receipt" },
-  { id: "receipt.edit", name: "Edit receipt" },
-  { id: "receipt.export", name: "Export receipt" },
-  { id: "dashboard.markaz", name: "Jaman Venue Stats" },
-  { id: "dashboard.daywiseReceipt", name: "Day Wise Receipt" },
-  { id: "vendors.edit", name: "Vendors Add/Edit/Delete" },
-  { id: "vendorTypes.edit", name: "Vendor Types Master" },
-  { id: "vendorLedger.edit", name: "Vendor Ledger View/Edit/Delete" },
-  { id: "halls.view", name: "Halls View/Edit/Delete" },
-  { id: "bookings.view", name: "Bookings View" },
-  { id: "bookings.edit", name: "Bookings Edit" },
-  { id: "bookings.dashboard", name: "Booking Dashboard" },
-  { id: "bookingReceipts.view", name: "Booking Receipts View" },
-  { id: "bookingReceipts.edit", name: "Booking Receipts Edit" },
-  { id: "writeoff.allow", name: "Has WriteOff" },
-  { id: "employees.view", name: "Employees View" },
-];
 
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",
