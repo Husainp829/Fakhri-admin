@@ -17,10 +17,19 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CancelIcon from "@mui/icons-material/Cancel";
 import BalanceIcon from "@mui/icons-material/Balance";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
 import { callApi } from "../../../../../dataprovider/miscApis";
 import { useShowTotals } from "../context";
+import { hasPermission } from "../../../../../utils/permissionUtils";
 
 const ConfirmConfig = {
   raza: {
@@ -57,7 +66,10 @@ const BookingShowActions = () => {
 
   const handleConfirm = async () => {
     if (confirmConfig?.type === "raza") {
-      await callApi({ location: `bookings/${record.id}/grant-raza`, method: "PUT" })
+      await callApi({
+        location: `bookings/${record.id}/grant-raza`,
+        method: "PUT",
+      })
         .then(() => {
           notify("Raza marked successfully", { type: "success" });
         })
@@ -65,7 +77,10 @@ const BookingShowActions = () => {
           notify("Something went wrong", { type: "error" });
         });
     } else if (confirmConfig?.type === "writeoff") {
-      await callApi({ location: `bookings/${record.id}/write-off`, method: "PUT" })
+      await callApi({
+        location: `bookings/${record.id}/write-off`,
+        method: "PUT",
+      })
         .then(() => {
           notify("Writeoff successfully", { type: "success" });
         })
@@ -74,7 +89,10 @@ const BookingShowActions = () => {
         });
       // API call here
     } else if (confirmConfig?.type === "refundSettled") {
-      await callApi({ location: `bookings/${record.id}/settle-refund`, method: "PUT" })
+      await callApi({
+        location: `bookings/${record.id}/settle-refund`,
+        method: "PUT",
+      })
         .then(() => {
           notify("Refund settled successfully", { type: "success" });
         })
@@ -110,7 +128,12 @@ const BookingShowActions = () => {
 
   return (
     <TopToolbar
-      sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 3 }}
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        mt: 3,
+      }}
     >
       <Box>
         <Typography variant="h5" fontWeight="bold">
@@ -127,7 +150,11 @@ const BookingShowActions = () => {
         >
           Actions
         </Button>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
           <MenuItem
             onClick={() => {
               redirect(`/contRcpt/create?bookingId=${record?.id}`);
@@ -194,23 +221,32 @@ const BookingShowActions = () => {
             </MenuItem>
           )}
 
-          {permissions?.writeoff?.allow && totalAmountPending > 0 && (
-            <MenuItem
-              onClick={() => {
-                setConfirmConfig({ type: "writeoff", open: true, loading: false });
-                handleMenuClose();
-              }}
-            >
-              <ListItemIcon>
-                <CancelIcon fontSize="small" color="warning" />
-              </ListItemIcon>
-              <ListItemText>Write-Off Booking</ListItemText>
-            </MenuItem>
-          )}
+          {hasPermission(permissions, "writeoff.allow") &&
+            totalAmountPending > 0 && (
+              <MenuItem
+                onClick={() => {
+                  setConfirmConfig({
+                    type: "writeoff",
+                    open: true,
+                    loading: false,
+                  });
+                  handleMenuClose();
+                }}
+              >
+                <ListItemIcon>
+                  <CancelIcon fontSize="small" color="warning" />
+                </ListItemIcon>
+                <ListItemText>Write-Off Booking</ListItemText>
+              </MenuItem>
+            )}
           {!record.refundReturnedOn && (
             <MenuItem
               onClick={() => {
-                setConfirmConfig({ type: "refundSettled", open: true, loading: false });
+                setConfirmConfig({
+                  type: "refundSettled",
+                  open: true,
+                  loading: false,
+                });
                 handleMenuClose();
               }}
             >
