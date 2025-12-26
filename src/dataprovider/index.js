@@ -13,6 +13,19 @@ const convertRows = (rows) => rows.map(unflatten);
 let availablePermissionsCache = null;
 let availablePermissionsPromise = null;
 
+// Export function to clear cache
+export const clearAvailablePermissionsCache = () => {
+  availablePermissionsCache = null;
+  availablePermissionsPromise = null;
+};
+
+// Listen for cache clear events
+if (typeof window !== "undefined") {
+  window.addEventListener("permissionsCacheCleared", () => {
+    clearAvailablePermissionsCache();
+  });
+}
+
 /**
  * Fetch available permissions (cached)
  */

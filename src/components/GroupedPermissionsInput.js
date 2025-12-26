@@ -13,10 +13,24 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import { authObj } from "../firebaseConfig";
 import { isWildcard, buildResourceGroups } from "../utils/permissionUtils";
+import { shouldBustCache } from "../utils/clearPermissionCache";
 
 // Module-level cache for permissions to prevent refetching
 let permissionsCache = null;
 let permissionsCachePromise = null;
+
+// Export function to clear cache (for development/debugging)
+export const clearPermissionsCache = () => {
+  permissionsCache = null;
+  permissionsCachePromise = null;
+};
+
+// Listen for cache clear events
+if (typeof window !== "undefined") {
+  window.addEventListener("permissionsCacheCleared", () => {
+    clearPermissionsCache();
+  });
+}
 
 /**
  * Pure function: Check if a permission should be displayed as checked
@@ -55,10 +69,18 @@ const GroupedPermissionsInput = (props) => {
       return;
     }
 
-    if (permissionsCache) {
+    // Check if cache should be busted
+    const bustCache = shouldBustCache();
+
+    if (permissionsCache && !bustCache) {
       setLocalChoices(permissionsCache);
       setIsLoading(false);
       return;
+    }
+
+    // If cache should be busted, clear it
+    if (bustCache) {
+      permissionsCache = null;
     }
 
     if (permissionsCachePromise) {
