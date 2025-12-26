@@ -1,14 +1,10 @@
 /* eslint-disable brace-style */
-import {
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { LRUCache } from "lru-cache";
 import { authObj } from "./firebaseConfig";
 import { goToLogin } from "./utils";
 import httpClient from "./dataprovider/httpClient";
-import { apiUrl } from "./constants";
+import { getApiUrl } from "./constants";
 import { parsePermissionsArray } from "./utils/permissionUtils";
 
 // --------------------
@@ -70,7 +66,7 @@ const clearSession = async () => {
  */
 const fetchPermissionsFromAPI = async () => {
   try {
-    const url = `${apiUrl}/admins/me/permissions`;
+    const url = `${getApiUrl()}/admins/me/permissions`;
     const response = await httpClient(url);
 
     // API returns { count: number, rows: string[] } based on AdminsService.getAdminPermissions
@@ -128,9 +124,7 @@ const getCachedPermissions = async (force = false) => {
 
   // Parse and cache permissions (empty object if no permissions)
   const permissions =
-    permissionArray && permissionArray.length > 0
-      ? parsePermissionsArray(permissionArray)
-      : {};
+    permissionArray && permissionArray.length > 0 ? parsePermissionsArray(permissionArray) : {};
 
   cache.set(cacheKey, permissions);
   return permissions;
@@ -142,11 +136,7 @@ const getCachedPermissions = async (force = false) => {
 const authProvider = {
   login: async ({ username, password }) => {
     try {
-      const { user } = await signInWithEmailAndPassword(
-        authObj,
-        username,
-        password
-      );
+      const { user } = await signInWithEmailAndPassword(authObj, username, password);
 
       // Always fetch fresh permissions from API on login
       const permissionArray = await fetchPermissionsFromAPI();
