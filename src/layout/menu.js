@@ -12,6 +12,7 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import SubMenu from "./subMenu";
+import { hasPermission } from "../utils/permissionUtils";
 
 const MENU_TYPES = {
   SABIL: "SABIL",
@@ -35,7 +36,9 @@ const LayoutMenu = () => {
   const MENUS = [];
 
   MENUS.push(
-    ...(permissions?.vendors?.edit && resources.vendors && resources.vendorTypes
+    ...(hasPermission(permissions, "vendors.edit") &&
+    resources.vendors &&
+    resources.vendorTypes
       ? [
           {
             id: MENU_TYPES.VENDOR_MASTER,
@@ -55,7 +58,11 @@ const LayoutMenu = () => {
         height: "100%",
       }}
     >
-      <MenuItemLink to="/" primaryText="Dashboard" leftIcon={<DashboardIcon />} />
+      <MenuItemLink
+        to="/"
+        primaryText="Dashboard"
+        leftIcon={<DashboardIcon />}
+      />
       <Menu.ResourceItem name="niyaaz" />
       <Menu.ResourceItem name="receipts" />
       <Menu.ResourceItem name="vendorLedger" />
@@ -100,6 +107,7 @@ const LayoutMenu = () => {
       <Menu.ResourceItem name="fmbReceipt" />
       <Menu.ResourceItem name="itsdata" />
       <Menu.ResourceItem name="admins" />
+      <Menu.ResourceItem name="whatsappBroadcasts" />
     </Menu>
   );
 };

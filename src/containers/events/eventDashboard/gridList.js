@@ -11,21 +11,24 @@ import LoadingGridList from "../../../components/LoadingWidget";
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
 import { receiptGroupBy } from "../../../utils";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();
   const receiptMap = receiptGroupBy(receiptReport);
 
   const exporter = () => {
-    const dailyReport = Object.entries(receiptMap?.[selectedMarkaz] || {}).map(([key, value]) => {
-      const { CASH, CHEQUE, ONLINE } = value;
-      return {
-        DAY: key,
-        CASH: CASH || 0,
-        CHEQUE: CHEQUE || 0,
-        ONLINE: ONLINE || 0,
-      };
-    });
+    const dailyReport = Object.entries(receiptMap?.[selectedMarkaz] || {}).map(
+      ([key, value]) => {
+        const { CASH, CHEQUE, ONLINE } = value;
+        return {
+          DAY: key,
+          CASH: CASH || 0,
+          CHEQUE: CHEQUE || 0,
+          ONLINE: ONLINE || 0,
+        };
+      }
+    );
     jsonExport(
       dailyReport,
       {
@@ -40,12 +43,15 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   return (
     <>
       <Grid container spacing={1} sx={{ mt: 3 }}>
-        {permissions?.dashboard?.markaz && (
+        {hasPermission(permissions, "dashboard.markaz") && (
           <Grid item xs={12} sx={{ mb: 5 }}>
-            <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
+            <MarkazStats
+              niyaazCounts={niyaazCounts}
+              selectedMarkaz={selectedMarkaz}
+            />
           </Grid>
         )}
-        {permissions?.dashboard?.daywiseReceipt && (
+        {hasPermission(permissions, "dashboard.daywiseReceipt") && (
           <>
             <Grid item xs={12} sx={{ mb: 5 }}>
               <Typography variant="h6" sx={{ mb: 0 }}>
@@ -55,7 +61,10 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
                 </Button>
               </Typography>
             </Grid>
-            <ReceiptDayWise receiptMap={receiptMap} selectedMarkaz={selectedMarkaz} />
+            <ReceiptDayWise
+              receiptMap={receiptMap}
+              selectedMarkaz={selectedMarkaz}
+            />
           </>
         )}
       </Grid>

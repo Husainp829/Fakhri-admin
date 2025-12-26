@@ -8,6 +8,7 @@ import TableRowsIcon from "@mui/icons-material/TableRows";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 
 import { navigateToBaseRoute } from "../../utils/routeUtility";
+import { hasPermission } from "../../utils/permissionUtils";
 
 const DashboardCard = ({ icon: Icon, title, description, path }) => (
   <Card sx={{ minHeight: 150, width: "100%" }}>
@@ -31,30 +32,42 @@ export default function DefaultDashboard() {
       <Grid container spacing={2} mt={3}>
         {[
           [
-            permissions?.bookings?.view,
+            hasPermission(permissions, "bookings.view"),
             BookOnlineIcon,
             "Bookings",
             "View and manage all hall bookings",
             "bookings",
           ],
           [
-            permissions?.event?.view,
+            hasPermission(permissions, "event.view"),
             FestivalIcon,
             "Events",
             "View and manage all events",
             "events",
           ],
-          [permissions?.employees?.view, BadgeIcon, "Staff", "View and manage all staff", "staff"],
           [
-            permissions?.admins?.view,
+            hasPermission(permissions, "employees.view"),
+            BadgeIcon,
+            "Staff",
+            "View and manage all staff",
+            "staff",
+          ],
+          [
+            hasPermission(permissions, "admins.view"),
             BadgeIcon,
             "Sabil",
             "View and manage all sabil data",
             "sabil",
           ],
-          [permissions?.admins?.view, TableRowsIcon, "FMB", "View and manage all fmb data", "fmb"],
           [
-            permissions?.receipt?.view,
+            hasPermission(permissions, "admins.view"),
+            TableRowsIcon,
+            "FMB",
+            "View and manage all fmb data",
+            "fmb",
+          ],
+          [
+            hasPermission(permissions, "receipts.view"),
             ReceiptIcon,
             "Miqaat Niyaaz Receipts",
             "View and manage all miqaat niyaaz receipts",
