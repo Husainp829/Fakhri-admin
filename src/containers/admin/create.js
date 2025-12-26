@@ -1,6 +1,6 @@
 import React from "react";
-import { TextInput, Create, SimpleForm, PasswordInput, CheckboxGroupInput } from "react-admin";
-import { permissionsList } from "../../constants";
+import { TextInput, Create, SimpleForm, PasswordInput } from "react-admin";
+import GroupedPermissionsInput from "../../components/GroupedPermissionsInput";
 
 export default (props) => (
   <Create {...props}>
@@ -8,11 +8,9 @@ export default (props) => (
       <TextInput source="name" />
       <TextInput source="email" />
       <PasswordInput source="password" />
-      <CheckboxGroupInput
+      <GroupedPermissionsInput
         source="permissions"
-        choices={permissionsList}
-        row={false}
-        defaultValue={permissionsList.filter((p) => p.checked).map((p) => p.id)}
+        reference="admins/permissions/available"
       />
     </SimpleForm>
   </Create>

@@ -5,8 +5,70 @@ import { stringify } from "query-string";
 import { unflatten } from "flat";
 import { getApiUrl } from "../constants";
 import httpClient from "./httpClient";
+import { normalizePermissionsWithChoices } from "../utils/permissionUtils";
 
 const convertRows = (rows) => rows.map(unflatten);
+
+// Cache for available permissions (used for normalization)
+let availablePermissionsCache = null;
+let availablePermissionsPromise = null;
+
+/**
+ * Fetch available permissions (cached)
+ */
+const getAvailablePermissions = async () => {
+  if (availablePermissionsCache) {
+    return availablePermissionsCache;
+  }
+
+  if (availablePermissionsPromise) {
+    return availablePermissionsPromise;
+  }
+
+  availablePermissionsPromise = httpClient(
+    `${getApiUrl()}/admins/permissions/available`,
+    {
+      method: "GET",
+    }
+  )
+    .then(({ json }) => {
+      availablePermissionsCache = json.rows || json.data || [];
+      availablePermissionsPromise = null;
+      return availablePermissionsCache;
+    })
+    .catch((error) => {
+      console.error("Failed to fetch permissions for normalization:", error);
+      availablePermissionsPromise = null;
+      return [];
+    });
+
+  return availablePermissionsPromise;
+};
+
+/**
+ * Normalize admin permissions before saving
+ */
+const normalizeAdminPermissions = async (data) => {
+  if (!data.permissions || !Array.isArray(data.permissions)) {
+    return data;
+  }
+
+  const availableChoices = await getAvailablePermissions();
+
+  if (!availableChoices || availableChoices.length === 0) {
+    return data;
+  }
+
+  const normalized = normalizePermissionsWithChoices(
+    data.permissions,
+    availableChoices
+  );
+
+  return {
+    ...data,
+    permissions: normalized,
+  };
+};
 
 export default {
   getList: (resource, params) => {
@@ -31,9 +93,11 @@ export default {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
-      data: rows[0],
-    })),
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(
+      ({ json: { rows } }) => ({
+        data: rows[0],
+      })
+    ),
 
   getMany: (resource, params) => {
     const query = {
@@ -64,31 +128,50 @@ export default {
     }));
   },
 
-  update: async (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
+  update: async (resource, params) => {
+    let dataToSend = params.data;
+
+    // Normalize permissions for admins resource
+    if (resource === "admins" && dataToSend.permissions) {
+      dataToSend = await normalizeAdminPermissions(dataToSend);
+    }
+
+    return httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
       method: "PUT",
-      body: JSON.stringify(params.data),
+      body: JSON.stringify(dataToSend),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    })),
+    }));
+  },
 
   updateMany: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${getApiUrl(resource)}/${resource}?${stringify(query)}`, {
-      method: "PUT",
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json.data }));
+    return httpClient(
+      `${getApiUrl(resource)}/${resource}?${stringify(query)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(params.data),
+      }
+    ).then(({ json }) => ({ data: json.data }));
   },
 
-  create: async (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}`, {
+  create: async (resource, params) => {
+    let dataToSend = params.data;
+
+    // Normalize permissions for admins resource
+    if (resource === "admins" && dataToSend.permissions) {
+      dataToSend = await normalizeAdminPermissions(dataToSend);
+    }
+
+    return httpClient(`${getApiUrl(resource)}/${resource}`, {
       method: "POST",
-      body: JSON.stringify(params.data),
+      body: JSON.stringify(dataToSend),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    })),
+    }));
+  },
 
   createMany: (resource, params) =>
     httpClient(`${getApiUrl(resource)}/${resource}/bulk-upload`, {
@@ -116,23 +199,43 @@ export default {
     })),
 
   deleteImage: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`).then(() => ({
+    httpClient(
+      `${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`
+    ).then(() => ({
       data: "",
     })),
   pdfDownload: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`).then(
-      (response) => {
-        const linkSource = `data:application/pdf;base64,${response.body}`;
-        const downloadLink = document.createElement("a");
-        const fileName = `${params.name}-${Date.now()}.pdf`;
-        downloadLink.href = linkSource;
-        downloadLink.download = fileName;
-        downloadLink.click();
-        return { data: [] };
-      }
-    );
+    return httpClient(
+      `${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`
+    ).then((response) => {
+      const linkSource = `data:application/pdf;base64,${response.body}`;
+      const downloadLink = document.createElement("a");
+      const fileName = `${params.name}-${Date.now()}.pdf`;
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+      return { data: [] };
+    });
+  },
+  previewRecipients: (resource, params) => {
+    const { filterCriteria, limit = 25, offset = 0 } = params;
+    return httpClient(`${getApiUrl(resource)}/${resource}/preview-recipients`, {
+      method: "POST",
+      body: JSON.stringify({
+        filterCriteria,
+        limit,
+        offset,
+      }),
+    }).then(({ json }) => {
+      const recipients = json.recipients || [];
+      return {
+        data: convertRows(recipients),
+        total: json.count || 0,
+        fields: json.fields || [],
+      };
+    });
   },
 };
