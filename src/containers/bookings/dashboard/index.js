@@ -1,18 +1,17 @@
-/* eslint-disable no-console */
-/* eslint-disable no-nested-ternary */
-// src/reports/EventStatsPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Title } from "react-admin";
 import {
+  Box,
   Card,
   CardContent,
   Typography,
   CircularProgress,
-  Box,
-  TextField,
+  Paper,
+  Chip,
+  Grid,
   Button,
+  Divider,
 } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
 import {
   BarChart,
   Bar,
@@ -26,8 +25,11 @@ import {
   Legend,
 } from "recharts";
 import { format, parseISO } from "date-fns";
-
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { callApi } from "../../../dataprovider/miscApis";
+
+dayjs.extend(utc);
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#8dd1e1", "#a4de6c"];
 
@@ -36,61 +38,125 @@ function fmt(n) {
   return Number(n).toLocaleString();
 }
 
+function StatCard({ title, value, subtitle, color = "primary" }) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+          {title}
+        </Typography>
+        <Typography variant="h5" color={color}>
+          {value}
+        </Typography>
+        {subtitle && (
+          <Typography variant="caption" color="textSecondary">
+            {subtitle}
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DateRangeFilter({ startDate, endDate, onStartDateChange, onEndDateChange, onApply }) {
+  return (
+    <Card sx={{ mb: 3 }}>
+      <CardContent>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item size={{ xs: 12, sm: 4 }}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => onStartDateChange(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                fontSize: "14px",
+              }}
+            />
+          </Grid>
+          <Grid item size={{ xs: 12, sm: 4 }}>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => onEndDateChange(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                fontSize: "14px",
+              }}
+            />
+          </Grid>
+          <Grid item size={{ xs: 12, sm: 4 }}>
+            <Button
+              variant="contained"
+              onClick={onApply}
+              fullWidth
+              sx={{ height: "40px" }}
+            >
+              Apply Filter
+            </Button>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function BookingDashboard() {
-  // default dates from your SQL example
-  const [startDate, setStartDate] = useState("2025-11-01"); // booking summary
-  const [endDate, setEndDate] = useState("2025-11-30");
+  const now = dayjs.utc();
+  const [startDate, setStartDate] = useState(now.startOf("month").format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(now.endOf("month").format("YYYY-MM-DD"));
 
   const [loading, setLoading] = useState(true);
-  const [loadingSummary, setLoadingSummary] = useState(true);
   const [halls, setHalls] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [totalRent, setTotalRent] = useState(0);
   const [error, setError] = useState(null);
 
-  // Unified fetch: /bookingStats returns both halls and summary in one response
   const fetchBookingStats = async (sDate, eDate) => {
-    // two loaders: one for halls chart and one for summary area
     setLoading(true);
-    setLoadingSummary(true);
     setError(null);
     try {
-      // callAPI expected to wrap fetch and return parsed json or throw on non-2xx
       const payload = { startDate: sDate, endDate: eDate };
       const resp = await callApi({ location: "bookingStats", data: payload, method: "GET" });
       const json = resp && resp.data ? resp.data : {};
 
-      // backend may return { halls: [...], summary: {...} } or { data: { halls, summary } }
-      console.log(json);
-      const hallsCandidate = json.hallStats;
-      const hallsData = Array.isArray(hallsCandidate) ? hallsCandidate : [];
-
-      const summaryCandidate = json.bookingStats;
+      const hallsCandidate = json.hallStats || [];
+      const summaryCandidate = json.bookingStats || {};
+      const totalRentValue = Number(json.totalRent || 0);
 
       setHalls(
-        (hallsData || []).map((r) => ({
+        hallsCandidate.map((r) => ({
           ...r,
           rent: Number(r.rent || 0),
-          hallCount: Number(r.hallCount || r.count || 0),
+          hallCount: Number(r.hallCount || 0),
+          occupancyPercentage: Number(r.occupancyPercentage || 0),
         }))
       );
 
-      const obj = summaryCandidate || {};
+      setTotalRent(totalRentValue);
+
       setSummary({
-        paidAmount: Number(obj.paidAmount || 0),
-        depositPaidAmount: Number(obj.depositPaidAmount || 0),
-        refundReturnAmount: Number(obj.refundReturnAmount || 0),
-        writeOffAmount: Number(obj.writeOffAmount || 0),
-        extraExpenses: Number(obj.extraExpenses || 0),
-        jamaatLagat: Number(obj.jamaatLagat || 0),
+        paidAmount: Number(summaryCandidate.paidAmount || 0),
+        depositPaidAmount: Number(summaryCandidate.depositPaidAmount || 0),
+        refundReturnAmount: Number(summaryCandidate.refundReturnAmount || 0),
+        writeOffAmount: Number(summaryCandidate.writeOffAmount || 0),
+        extraExpenses: Number(summaryCandidate.extraExpenses || 0),
+        jamaatLagat: Number(summaryCandidate.jamaatLagat || 0),
       });
     } catch (err) {
       console.error(err);
       setError(err.message || err);
       setHalls([]);
       setSummary(null);
+      setTotalRent(0);
     } finally {
       setLoading(false);
-      setLoadingSummary(false);
     }
   };
 
@@ -99,155 +165,132 @@ export default function BookingDashboard() {
     // eslint-disable-next-line
   }, []);
 
-  const onRefresh = () => {
+  const handleDateRangeChange = () => {
     fetchBookingStats(startDate, endDate);
   };
 
+  const selectedDateRange = useMemo(
+    () => `${format(parseISO(startDate), "MMM d")} - ${format(parseISO(endDate), "MMM d")}`,
+    [startDate, endDate]
+  );
+
+  // Calculate totals
+  const totalBookings = halls.reduce((sum, h) => sum + h.hallCount, 0);
+  const avgOccupancy =
+    halls.length > 0
+      ? Math.round(halls.reduce((sum, h) => sum + h.occupancyPercentage, 0) / halls.length)
+      : 0;
+
   // Prepare chart data
-  const rentBarData = halls.map((h) => ({ name: h.name || h.hallId, rent: Number(h.rent || 0) }));
-  const countPieData = halls.map((h, i) => ({
+  const rentBarData = halls.map((h) => ({
     name: h.name || h.hallId,
-    value: Number(h.hallCount || 0),
-    color: COLORS[i % COLORS.length],
+    rent: h.rent,
   }));
 
-  // booking summary pie data (breakdown)
+  const occupancyBarData = halls.map((h) => ({
+    name: h.name || h.hallId,
+    occupancy: h.occupancyPercentage,
+  }));
+
   const bookingBreakdown = summary
     ? [
         { name: "Paid", value: summary.paidAmount },
         { name: "Deposits", value: summary.depositPaidAmount },
         { name: "Refunds", value: summary.refundReturnAmount },
         { name: "WriteOff", value: summary.writeOffAmount },
-        { name: "ExtraExpenses", value: summary.extraExpenses },
-        { name: "JamaatLagat", value: summary.jamaatLagat },
-      ]
+        { name: "Extra Expenses", value: summary.extraExpenses },
+        { name: "Jamaat Lagat", value: summary.jamaatLagat },
+      ].filter((d) => d.value && d.value !== 0)
     : [];
 
-  const selectedDate = useMemo(
-    () => `${format(parseISO(startDate), "MMM d")} - ${format(parseISO(endDate), "MMM d")}`,
-    [startDate, endDate]
-  );
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          p: 3,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Title title="Booking Dashboard" />
+        <Paper sx={{ p: 3, textAlign: "center" }}>
+          <Typography color="error">Error: {error}</Typography>
+        </Paper>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ p: 2 }}>
-      <Title title="Event / Hall statistics" />
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Title title="Booking Dashboard" />
+        <Chip label={selectedDateRange} color="primary" variant="outlined" />
+      </Box>
+
+      <DateRangeFilter
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        onApply={handleDateRangeChange}
+      />
+
+      {/* Summary Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title="Total Revenue"
+            value={`₹${fmt(totalRent)}`}
+            subtitle={selectedDateRange}
+          />
+        </Grid>
+        <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title="Total Bookings"
+            value={fmt(totalBookings)}
+            subtitle={selectedDateRange}
+          />
+        </Grid>
+        <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title="Average Occupancy"
+            value={`${avgOccupancy}%`}
+            subtitle="Across all halls"
+          />
+        </Grid>
+        <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title="Paid Amount"
+            value={`₹${fmt(summary?.paidAmount || 0)}`}
+            subtitle="From bookings"
+          />
+        </Grid>
+      </Grid>
+
+      {/* Charts Row 1 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="subtitle2">Bookings range</Typography>
-              <TextField
-                label="Start date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-                size="small"
-                sx={{ mb: 1 }}
-              />
-              <TextField
-                label="End date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-                size="small"
-              />
-              <Box mt={1} display="flex" gap={1}>
-                <Button variant="contained" onClick={onRefresh}>
-                  Load Summary
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        {/* Summary cards */}
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={6} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle2">Total Rent ({selectedDate})</Typography>
-                  <Typography variant="h5">
-                    ₹{fmt(halls.reduce((s, r) => s + (Number(r.rent) || 0), 0))}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle2">Total Hall Count ({selectedDate})</Typography>
-                  <Typography variant="h5">
-                    {fmt(halls.reduce((s, r) => s + (Number(r.hallCount) || 0), 0))}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Booking totals */}
-            <Grid item xs={12}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle2">Bookings summary ({selectedDate})</Typography>
-                  {loadingSummary ? (
-                    <Box display="flex" alignItems="center" justifyContent="center" p={2}>
-                      <CircularProgress size={20} />
-                    </Box>
-                  ) : summary ? (
-                    <Grid container spacing={1}>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">Paid</Typography>
-                        <Typography variant="subtitle1">₹{fmt(summary.paidAmount)}</Typography>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">Deposits</Typography>
-                        <Typography variant="subtitle1">
-                          ₹{fmt(summary.depositPaidAmount)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">Refunds</Typography>
-                        <Typography variant="subtitle1">
-                          ₹{fmt(summary.refundReturnAmount)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">WriteOff</Typography>
-                        <Typography variant="subtitle1">₹{fmt(summary.writeOffAmount)}</Typography>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">ExtraExpenses</Typography>
-                        <Typography variant="subtitle1">₹{fmt(summary.extraExpenses)}</Typography>
-                      </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="caption">JamaatLagat</Typography>
-                        <Typography variant="subtitle1">₹{fmt(summary.jamaatLagat)}</Typography>
-                      </Grid>
-                    </Grid>
-                  ) : (
-                    <Typography color="error">No summary data</Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Grid>
-        {/* Charts area */}
-        <Grid item xs={12} md={6}>
-          <Card style={{ height: 360 }}>
-            <CardContent style={{ height: "100%" }}>
-              <Typography variant="h6">Rent per Hall</Typography>
-              {loading ? (
-                <Box height={240} display="flex" alignItems="center" justifyContent="center">
-                  <CircularProgress />
+              <Typography variant="h6" gutterBottom>
+                Rent per Hall
+              </Typography>
+              {halls.length === 0 ? (
+                <Box height={300} display="flex" alignItems="center" justifyContent="center">
+                  <Typography color="textSecondary">No data available</Typography>
                 </Box>
-              ) : halls.length === 0 ? (
-                <Typography>No hall data for selected date</Typography>
               ) : (
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={rentBarData} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
                     <XAxis dataKey="name" angle={-35} textAnchor="end" height={70} interval={0} />
                     <YAxis />
@@ -259,79 +302,159 @@ export default function BookingDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card style={{ height: 360 }}>
-            <CardContent style={{ height: "100%" }}>
-              <Typography variant="h6">Hall counts</Typography>
-              {loading ? (
-                <Box height={240} display="flex" alignItems="center" justifyContent="center">
-                  <CircularProgress />
-                </Box>
-              ) : halls.length === 0 ? (
-                <Typography>No hall data for selected date</Typography>
-              ) : (
-                <ResponsiveContainer width="100%" height={260}>
-                  <PieChart>
-                    <Pie
-                      data={countPieData}
-                      dataKey="value"
-                      nameKey="name"
-                      outerRadius={90}
-                      label={(entry) => `${entry.name} (${entry.value})`}
-                    >
-                      {countPieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                    <Tooltip formatter={(v) => `${v}`} />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        {/* Booking breakdown pie */}
-        <Grid item xs={12} md={6}>
+
+        <Grid item size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Booking funds breakdown (range)</Typography>
-              {loadingSummary || !summary ? (
-                <Box height={200} display="flex" alignItems="center" justifyContent="center">
-                  <CircularProgress />
+              <Typography variant="h6" gutterBottom>
+                Occupancy Percentage
+              </Typography>
+              {halls.length === 0 ? (
+                <Box height={300} display="flex" alignItems="center" justifyContent="center">
+                  <Typography color="textSecondary">No data available</Typography>
                 </Box>
               ) : (
-                <Box height={360}>
-                  <ResponsiveContainer width="100%" height={360}>
-                    <PieChart>
-                      <Pie
-                        data={bookingBreakdown.filter((d) => d.value && d.value !== 0)}
-                        dataKey="value"
-                        nameKey="name"
-                        outerRadius={90}
-                        label={(entry) => `${entry.name} (${Number(entry.value).toLocaleString()})`}
-                      >
-                        {bookingBreakdown.map((entry, idx) => (
-                          <Cell key={`b-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Legend />
-                      <Tooltip formatter={(v) => `₹${Number(v).toLocaleString()}`} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </Box>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={occupancyBarData}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 60 }}
+                  >
+                    <XAxis dataKey="name" angle={-35} textAnchor="end" height={70} interval={0} />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip formatter={(v) => `${v}%`} />
+                    <Bar dataKey="occupancy" name="Occupancy" fill="#82ca9d" />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Error */}
-      {error && (
-        <Box mt={2}>
-          <Typography color="error">Error: {String(error)}</Typography>
-        </Box>
-      )}
+      {/* Charts Row 2 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Booking Funds Breakdown
+              </Typography>
+              {!summary || bookingBreakdown.length === 0 ? (
+                <Box height={300} display="flex" alignItems="center" justifyContent="center">
+                  <Typography color="textSecondary">No data available</Typography>
+                </Box>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={bookingBreakdown}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={100}
+                      label={(entry) => `${entry.name}: ₹${Number(entry.value).toLocaleString()}`}
+                    >
+                      {bookingBreakdown.map((entry, idx) => (
+                        <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                    <Tooltip formatter={(v) => `₹${Number(v).toLocaleString()}`} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Booking Summary
+              </Typography>
+              {!summary ? (
+                <Box height={300} display="flex" alignItems="center" justifyContent="center">
+                  <Typography color="textSecondary">No data available</Typography>
+                </Box>
+              ) : (
+                <Box>
+                  <Box sx={{ mb: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Paid Amount
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600}>
+                        ₹{fmt(summary.paidAmount)}
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Deposits
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600}>
+                        ₹{fmt(summary.depositPaidAmount)}
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Refunds
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600} color="error">
+                        ₹{fmt(summary.refundReturnAmount)}
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Write Off
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600} color="warning.main">
+                        ₹{fmt(summary.writeOffAmount)}
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Extra Expenses
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600}>
+                        ₹{fmt(summary.extraExpenses)}
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Jamaat Lagat
+                      </Typography>
+                      <Typography variant="h6" fontWeight={600}>
+                        ₹{fmt(summary.jamaatLagat)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Divider sx={{ my: 2 }} />
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Net Total
+                    </Typography>
+                    <Typography variant="h5" fontWeight={700} color="primary">
+                      ₹{fmt(
+                        summary.paidAmount +
+                          summary.depositPaidAmount -
+                          summary.refundReturnAmount -
+                          summary.writeOffAmount +
+                          summary.extraExpenses +
+                          summary.jamaatLagat
+                      )}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
