@@ -1,17 +1,14 @@
-import React from "react";
-import { Datagrid, TextField, List } from "react-admin";
 import Icon from "@mui/icons-material/CalendarMonth";
-
-const ListMohalla = () => (
-  <List sort={{ field: "id", order: "DESC" }}>
-    <Datagrid rowClick="show" bulkActionButtons={false}>
-      <TextField source="id" label="Purpose" />
-    </Datagrid>
-  </List>
-);
+import list from "./list";
+import show from "./show";
+import create from "./create";
+import edit from "./edit";
 
 export default {
-  list: ListMohalla,
+  list,
+  show,
+  create,
+  edit,
   icon: Icon,
   label: "Purpose",
   options: { label: "Purpose" },

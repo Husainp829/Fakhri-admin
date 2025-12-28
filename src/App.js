@@ -54,6 +54,7 @@ import sabilTakhmeen from "./containers/sabil/sabilTakhmeen";
 import sabilReceipt from "./containers/sabil/sabilReceipt";
 import sabilChangeRequests from "./containers/sabil/sabilChangeRequest";
 import sabilLedger from "./containers/sabil/sabilLedger";
+import cronStatus from "./containers/cronStatus";
 import fmbData from "./containers/fmb/fmbData";
 import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
@@ -121,9 +122,9 @@ const MainApp = () => {
         );
       case "miqaat":
         return hasPermission(permissions, "receipts.view") ? (
-          <MiqaatDashboard />
-        ) : (
           <Navigate to="/miqaatNiyaazReceipts" />
+        ) : (
+          <MiqaatDashboard />
         );
       default:
         return <DefaultDashboard />;
@@ -217,6 +218,7 @@ const MainApp = () => {
           {hasPermission(permissions, "admins.view") && <Resource {...admin} />}
           {hasPermission(permissions, "show.its") && <Resource {...itsdata} />}
           {hasPermission(permissions, "admins.view") && <Resource {...whatsappBroadcasts} />}
+          {hasPermission(permissions, "cronStatus.view") && <Resource {...cronStatus} name="cronStatus" />}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
