@@ -32,7 +32,7 @@ export default (props) => {
           color: (theme) => theme.palette.primary.main,
         },
       }}
-      elevation={3}
+      elevation={2}
       {...props}
     >
       <Button onClick={() => navigateToBaseRoute()}>

@@ -3,7 +3,7 @@ import { Title, useRedirect } from "react-admin";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import { callApi } from "../../../dataprovider/miscApis";
 import { COLORS } from "./constants";
-import DateRangeFilter from "./components/DateRangeFilter";
+import DateRangeFilter from "../../../components/DateRangeFilter";
 import DashboardHeader from "./components/DashboardHeader";
 import FinancialMetrics from "./components/FinancialMetrics";
 import ChartsRow from "./components/ChartsRow";
@@ -40,49 +40,22 @@ const getDateRangeFromURL = () => {
   return getDefaultDateRange();
 };
 
-// Helper function to update URL params with date range
-const updateURLParams = (startDate, endDate) => {
-  if (typeof window === "undefined") return;
-
-  const urlParams = new URLSearchParams(window.location.search);
-
-  if (startDate) {
-    urlParams.set("startDate", startDate);
-  } else {
-    urlParams.delete("startDate");
-  }
-
-  if (endDate) {
-    urlParams.set("endDate", endDate);
-  } else {
-    urlParams.delete("endDate");
-  }
-
-  const queryString = urlParams.toString();
-  const newUrl = queryString
-    ? `${window.location.pathname}?${queryString}`
-    : window.location.pathname;
-  window.history.replaceState({}, "", newUrl);
-};
-
 export default function SabilDashboard() {
   const redirect = useRedirect();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState(null);
 
-  // Initialize date range from URL params or default
-  const initialDateRange = getDateRangeFromURL();
-  const [startDate, setStartDate] = useState(initialDateRange.startDate);
-  const [endDate, setEndDate] = useState(initialDateRange.endDate);
+  // Get default date range (current financial year)
+  const defaultDateRange = getDefaultDateRange();
 
-  const fetchStats = async () => {
+  const fetchStats = async (sDate, eDate) => {
     setLoading(true);
     setError(null);
     try {
       const queryParams = new URLSearchParams();
-      if (startDate) queryParams.append("startDate", startDate);
-      if (endDate) queryParams.append("endDate", endDate);
+      if (sDate) queryParams.append("startDate", sDate);
+      if (eDate) queryParams.append("endDate", eDate);
 
       const response = await callApi({
         location: "sabilLedger",
@@ -100,38 +73,15 @@ export default function SabilDashboard() {
     }
   };
 
-  // Initialize from URL params on mount and sync on URL changes
+  // Initialize from URL params on mount
   useEffect(() => {
-    // Fetch stats on mount (dates are already initialized from URL)
-    fetchStats();
-
-    // Listen for browser back/forward navigation
-    const handlePopState = () => {
-      const urlDateRange = getDateRangeFromURL();
-      setStartDate(urlDateRange.startDate);
-      setEndDate(urlDateRange.endDate);
-      fetchStats();
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
+    const urlDateRange = getDateRangeFromURL();
+    fetchStats(urlDateRange.startDate, urlDateRange.endDate);
+    // eslint-disable-next-line
   }, []);
 
-  const handleStartDateChange = (newStartDate) => {
-    setStartDate(newStartDate);
-    updateURLParams(newStartDate, endDate);
-  };
-
-  const handleEndDateChange = (newEndDate) => {
-    setEndDate(newEndDate);
-    updateURLParams(startDate, newEndDate);
-  };
-
-  const handleDateRangeChange = () => {
-    updateURLParams(startDate, endDate);
-    fetchStats();
+  const handleDateRangeChange = (newStartDate, newEndDate) => {
+    fetchStats(newStartDate, newEndDate);
   };
 
   const handleViewNotPaidSabils = () => {
@@ -237,11 +187,9 @@ export default function SabilDashboard() {
       <Title title="Sabil Dashboard" />
 
       <DateRangeFilter
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={handleStartDateChange}
-        onEndDateChange={handleEndDateChange}
-        onApply={handleDateRangeChange}
+        defaultStartDate={defaultDateRange.startDate}
+        defaultEndDate={defaultDateRange.endDate}
+        onDateChange={handleDateRangeChange}
       />
 
       <DashboardHeader

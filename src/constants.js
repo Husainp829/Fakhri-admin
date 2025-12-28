@@ -2,9 +2,6 @@ export const apiUrl = "https://jmsapi.rapid-events.com";
 // export const apiUrl = "http://localhost:3012";
 
 export const getApiUrl = () => `${apiUrl}/v2`;
-// [].some((item) => resource.startsWith(item))
-//   ? `${apiUrl}/v2`
-//   : apiUrl;
 
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",

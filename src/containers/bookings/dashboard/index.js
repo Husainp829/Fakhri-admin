@@ -9,7 +9,6 @@ import {
   Paper,
   Chip,
   Grid,
-  Button,
   Divider,
 } from "@mui/material";
 import {
@@ -28,6 +27,7 @@ import { format, parseISO } from "date-fns";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { callApi } from "../../../dataprovider/miscApis";
+import DateRangeFilter from "../../../components/DateRangeFilter";
 
 dayjs.extend(utc);
 
@@ -58,59 +58,13 @@ function StatCard({ title, value, subtitle, color = "primary" }) {
   );
 }
 
-function DateRangeFilter({ startDate, endDate, onStartDateChange, onEndDateChange, onApply }) {
-  return (
-    <Card sx={{ mb: 3 }}>
-      <CardContent>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item size={{ xs: 12, sm: 4 }}>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => onStartDateChange(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                fontSize: "14px",
-              }}
-            />
-          </Grid>
-          <Grid item size={{ xs: 12, sm: 4 }}>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => onEndDateChange(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                fontSize: "14px",
-              }}
-            />
-          </Grid>
-          <Grid item size={{ xs: 12, sm: 4 }}>
-            <Button
-              variant="contained"
-              onClick={onApply}
-              fullWidth
-              sx={{ height: "40px" }}
-            >
-              Apply Filter
-            </Button>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function BookingDashboard() {
   const now = dayjs.utc();
-  const [startDate, setStartDate] = useState(now.startOf("month").format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(now.endOf("month").format("YYYY-MM-DD"));
+  const defaultStartDate = now.startOf("month").format("YYYY-MM-DD");
+  const defaultEndDate = now.endOf("month").format("YYYY-MM-DD");
+
+  const [startDate, setStartDate] = useState(defaultStartDate);
+  const [endDate, setEndDate] = useState(defaultEndDate);
 
   const [loading, setLoading] = useState(true);
   const [halls, setHalls] = useState([]);
@@ -160,13 +114,31 @@ export default function BookingDashboard() {
     }
   };
 
+  // Initialize from URL params on mount
   useEffect(() => {
-    fetchBookingStats(startDate, endDate);
+    // Get date range from URL or use defaults
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlStartDate = urlParams.get("startDate");
+      const urlEndDate = urlParams.get("endDate");
+
+      if (urlStartDate && urlEndDate) {
+        setStartDate(urlStartDate);
+        setEndDate(urlEndDate);
+        fetchBookingStats(urlStartDate, urlEndDate);
+        return;
+      }
+    }
+
+    // Use defaults if no URL params
+    fetchBookingStats(defaultStartDate, defaultEndDate);
     // eslint-disable-next-line
   }, []);
 
-  const handleDateRangeChange = () => {
-    fetchBookingStats(startDate, endDate);
+  const handleDateRangeChange = (newStartDate, newEndDate) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    fetchBookingStats(newStartDate, newEndDate);
   };
 
   const selectedDateRange = useMemo(
@@ -238,11 +210,9 @@ export default function BookingDashboard() {
       </Box>
 
       <DateRangeFilter
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-        onApply={handleDateRangeChange}
+        defaultStartDate={defaultStartDate}
+        defaultEndDate={defaultEndDate}
+        onDateChange={handleDateRangeChange}
       />
 
       {/* Summary Cards */}
@@ -379,7 +349,14 @@ export default function BookingDashboard() {
               ) : (
                 <Box>
                   <Box sx={{ mb: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Paid Amount
                       </Typography>
@@ -388,7 +365,14 @@ export default function BookingDashboard() {
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Deposits
                       </Typography>
@@ -397,16 +381,30 @@ export default function BookingDashboard() {
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Refunds
                       </Typography>
-                      <Typography variant="h6" fontWeight={600} color="error">
+                      <Typography variant="h6" fontWeight={600}>
                         ₹{fmt(summary.refundReturnAmount)}
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Write Off
                       </Typography>
@@ -415,7 +413,14 @@ export default function BookingDashboard() {
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Extra Expenses
                       </Typography>
@@ -424,7 +429,13 @@ export default function BookingDashboard() {
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
                       <Typography variant="body2" color="textSecondary">
                         Jamaat Lagat
                       </Typography>
@@ -434,21 +445,6 @@ export default function BookingDashboard() {
                     </Box>
                   </Box>
                   <Divider sx={{ my: 2 }} />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="subtitle1" fontWeight={600}>
-                      Net Total
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} color="primary">
-                      ₹{fmt(
-                        summary.paidAmount +
-                          summary.depositPaidAmount -
-                          summary.refundReturnAmount -
-                          summary.writeOffAmount +
-                          summary.extraExpenses +
-                          summary.jamaatLagat
-                      )}
-                    </Typography>
-                  </Box>
                 </Box>
               )}
             </CardContent>
