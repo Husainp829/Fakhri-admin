@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Typography, Divider, Stack, Paper } from "@mui/material";
 import QRCode from "react-qr-code";
 import dayjs from "dayjs";
-import "./CommonReceiptA5.css";
 
 /**
  * Reusable Receipt Line Component
