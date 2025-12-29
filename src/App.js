@@ -61,7 +61,7 @@ import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
 import FmbDashboard from "./containers/fmb/dashboard";
 import blockedHallDates from "./containers/bookings/blockedHallDates";
 import miqaatNiyaazReceipts from "./containers/miqaat/miqaatNiyaazReceipts";
-import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrint";
+import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrintA5";
 import MiqaatDashboard from "./containers/miqaat/dashboard";
 
 dayjs.extend(utc);
@@ -121,10 +121,10 @@ const MainApp = () => {
           <Navigate to="/fmbData" />
         );
       case "miqaat":
-        return hasPermission(permissions, "receipts.view") ? (
-          <Navigate to="/miqaatNiyaazReceipts" />
-        ) : (
+        return hasPermission(permissions, "miqaatNiyaazReceipts.dashboard") ? (
           <MiqaatDashboard />
+        ) : (
+          <Navigate to="/miqaatNiyaazReceipts" />
         );
       default:
         return <DefaultDashboard />;
@@ -210,7 +210,7 @@ const MainApp = () => {
           )}
           {baseRoute === "miqaat" && (
             <>
-              {hasPermission(permissions, "receipts.view") && (
+              {hasPermission(permissions, "miqaatNiyaazReceipts.view") && (
                 <Resource {...miqaatNiyaazReceipts} />
               )}
             </>

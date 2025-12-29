@@ -1,20 +1,304 @@
-import React from "react";
-import { Title } from "react-admin";
-import { Card, CardContent, Typography, Box, Grid } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  TextField,
+  Button,
+  CircularProgress,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
+import {
+  Title,
+  List,
+  Datagrid,
+  TextField as RATextField,
+  DateField,
+  FunctionField,
+  useRedirect,
+} from "react-admin";
+import DownloadIcon from "@mui/icons-material/Download";
+import EditIcon from "@mui/icons-material/Edit";
+import dayjs from "dayjs";
+import { callApi } from "../../../dataprovider/miscApis";
 
-export default function MiqaatDashboard() {
+const MiqaatNiyaazDashboard = () => {
+  const redirect = useRedirect();
+  const [loading, setLoading] = useState(true);
+  const [reportData, setReportData] = useState(null);
+  const [financialYear, setFinancialYear] = useState(() => {
+    const now = dayjs();
+    const month = now.month() + 1; // 1-12
+    const year = now.year();
+    if (month >= 4) {
+      return `${year}-${year + 1}`;
+    }
+    return `${year - 1}-${year}`;
+  });
+
+  const fetchLedgerReport = async () => {
+    setLoading(true);
+    try {
+      const response = await callApi({
+        location: "miqaatNiyaazReceipts",
+        method: "GET",
+        id: `ledger/report${financialYear ? `?financialYear=${financialYear}` : ""}`,
+      });
+      if (response?.data) {
+        setReportData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch ledger report:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLedgerReport();
+  }, [financialYear]);
+
+  const generateFinancialYearOptions = () => {
+    const options = [];
+    const currentYear = dayjs().year();
+    const currentMonth = dayjs().month() + 1;
+
+    // Generate options for last 5 years and next 2 years
+    for (let i = -5; i <= 2; i += 1) {
+      const year = currentYear + i;
+      if (i === 0 && currentMonth < 4) {
+        // Current FY if we're before April
+        options.push({ value: `${year - 1}-${year}`, label: `${year - 1}-${year}` });
+      } else if (i === 0 && currentMonth >= 4) {
+        // Current FY if we're in or after April
+        options.push({ value: `${year}-${year + 1}`, label: `${year}-${year + 1}` });
+      } else {
+        const startYear = year;
+        const endYear = year + 1;
+        options.push({ value: `${startYear}-${endYear}`, label: `${startYear}-${endYear}` });
+      }
+    }
+    return options.reverse();
+  };
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount || 0);
+
+  // Calculate financial year date range
+  const getFinancialYearDateRange = (fy) => {
+    const [startYear, endYear] = fy.split("-").map(Number);
+    return {
+      startDate: `${startYear}-04-01`,
+      endDate: `${endYear}-03-31`,
+    };
+  };
+
+  const fyDateRange = getFinancialYearDateRange(financialYear);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          p: 3,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
+        <Title title="Miqaat Niyaaz Ledger Dashboard" />
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ p: 2 }}>
-      <Title title="Miqaat Management" />
-      <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, md: 8 }}>
+    <Box sx={{ p: 3 }}>
+      <Title title="Miqaat Niyaaz Ledger Dashboard" />
+
+      <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
+        <TextField
+          select
+          label="Financial Year"
+          value={financialYear}
+          onChange={(e) => setFinancialYear(e.target.value)}
+          sx={{ minWidth: 200 }}
+          size="small"
+        >
+          {generateFinancialYearOptions().map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <Button variant="outlined" onClick={fetchLedgerReport}>
+          Refresh
+        </Button>
+      </Box>
+
+      {reportData && (
+        <>
+          {/* Summary Cards */}
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom variant="body2">
+                    Opening Balance
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color={reportData.openingBalance >= 0 ? "success.main" : "error.main"}
+                  >
+                    {formatCurrency(reportData.openingBalance)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom variant="body2">
+                    Total CREDIT
+                  </Typography>
+                  <Typography variant="h5" color="success.main">
+                    {formatCurrency(reportData.creditTotal)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom variant="body2">
+                    Total DEBIT
+                  </Typography>
+                  <Typography variant="h5" color="error.main">
+                    {formatCurrency(reportData.debitTotal)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom variant="body2">
+                    Closing Balance
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color={reportData.closingBalance >= 0 ? "success.main" : "error.main"}
+                  >
+                    {formatCurrency(reportData.closingBalance)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Ledger Entries List */}
           <Card>
             <CardContent>
-              <Typography variant="subtitle2">Miqaat Dashboard</Typography>
+              <Typography variant="h6" gutterBottom>
+                Ledger Entries ({reportData.entryCount})
+              </Typography>
+              <List
+                resource="miqaatNiyaazReceipts"
+                filter={{
+                  receiptDate_gte: fyDateRange.startDate,
+                  receiptDate_lte: fyDateRange.endDate,
+                }}
+                sort={{ field: "receiptDate", order: "DESC" }}
+                disableSyncWithLocation
+                perPage={50}
+                actions={
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", p: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => redirect("/miqaatNiyaazReceipts/create")}
+                    >
+                      Create
+                    </Button>
+                  </Box>
+                }
+              >
+                <Datagrid bulkActionButtons={false}>
+                  <DateField source="receiptDate" label="Date" />
+                  <FunctionField
+                    label="Type"
+                    render={(record) => (
+                      <Typography
+                        variant="body2"
+                        color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
+                        fontWeight="bold"
+                      >
+                        {record.receiptType}
+                      </Typography>
+                    )}
+                  />
+                  <RATextField source="receiptNo" label="Receipt No" />
+                  <RATextField source="name" label="Name" />
+                  <RATextField source="itsNo" label="ITS No" />
+                  <RATextField source="purpose" label="Purpose" />
+                  <FunctionField
+                    label="Amount"
+                    render={(record) => (
+                      <Typography
+                        variant="body2"
+                        color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
+                        fontWeight="bold"
+                      >
+                        {record.receiptType === "CREDIT" ? "+" : "-"}
+                        {formatCurrency(record.amount)}
+                      </Typography>
+                    )}
+                  />
+                  <RATextField source="paymentMode" label="Payment Mode" />
+                  <FunctionField
+                    label="Download"
+                    render={(record) =>
+                      record.receiptType === "CREDIT" && record.receiptNo ? (
+                        <IconButton
+                          onClick={() => {
+                            window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                          }}
+                          size="small"
+                        >
+                          <DownloadIcon />
+                        </IconButton>
+                      ) : (
+                        <span>-</span>
+                      )
+                    }
+                  />
+                  <FunctionField
+                    label="Edit"
+                    render={(record) => (
+                      <IconButton
+                        onClick={() => redirect(`/miqaatNiyaazReceipts/${record.id}`)}
+                        size="small"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                  />
+                </Datagrid>
+              </List>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </>
+      )}
     </Box>
   );
-}
+};
+
+export default MiqaatNiyaazDashboard;
