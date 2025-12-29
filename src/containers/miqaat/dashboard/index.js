@@ -10,11 +10,16 @@ import {
   CircularProgress,
   MenuItem,
   IconButton,
+  Tabs,
+  Tab,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   Title,
   List,
   Datagrid,
+  SimpleList,
   TextField as RATextField,
   DateField,
   FunctionField,
@@ -27,8 +32,11 @@ import { callApi } from "../../../dataprovider/miscApis";
 
 const MiqaatNiyaazDashboard = () => {
   const redirect = useRedirect();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [loading, setLoading] = useState(true);
   const [reportData, setReportData] = useState(null);
+  const [paymentModeTab, setPaymentModeTab] = useState("CASH");
   const [financialYear, setFinancialYear] = useState(() => {
     const now = dayjs();
     const month = now.month() + 1; // 1-12
@@ -39,13 +47,15 @@ const MiqaatNiyaazDashboard = () => {
     return `${year - 1}-${year}`;
   });
 
-  const fetchLedgerReport = async () => {
+  const fetchLedgerReport = async (paymentMode) => {
     setLoading(true);
     try {
       const response = await callApi({
         location: "miqaatNiyaazReceipts",
         method: "GET",
-        id: `ledger/report${financialYear ? `?financialYear=${financialYear}` : ""}`,
+        id: `ledger/report${financialYear ? `?financialYear=${financialYear}` : ""}${
+          paymentMode ? `&paymentMode=${paymentMode}` : ""
+        }`,
       });
       if (response?.data) {
         setReportData(response.data);
@@ -58,8 +68,8 @@ const MiqaatNiyaazDashboard = () => {
   };
 
   useEffect(() => {
-    fetchLedgerReport();
-  }, [financialYear]);
+    fetchLedgerReport(paymentModeTab);
+  }, [financialYear, paymentModeTab]);
 
   const generateFinancialYearOptions = () => {
     const options = [];
@@ -103,6 +113,44 @@ const MiqaatNiyaazDashboard = () => {
 
   const fyDateRange = getFinancialYearDateRange(financialYear);
 
+  // Summary Cards Configuration
+  const summaryCardsConfig = [
+    {
+      key: "creditTotal",
+      label: "TOTAL CREDIT",
+      getValue: (data, mode) => (mode === "CASH" ? data.creditTotalCash : data.creditTotalOnline),
+      colorCondition: () => true,
+      colorPositive: "success.main",
+      colorNegative: "success.main",
+    },
+    {
+      key: "debitTotal",
+      label: "TOTAL DEBIT",
+      getValue: (data, mode) => (mode === "CASH" ? data.debitTotalCash : data.debitTotalOnline),
+      colorCondition: () => true,
+      colorPositive: "error.main",
+      colorNegative: "error.main",
+    },
+    {
+      key: "openingBalance",
+      label: "OPENING BALANCE",
+      getValue: (data, mode) =>
+        mode === "CASH" ? data.openingBalanceCash : data.openingBalanceOnline,
+      colorCondition: (value) => value >= 0,
+      colorPositive: "success.main",
+      colorNegative: "error.main",
+    },
+    {
+      key: "closingBalance",
+      label: "CLOSING BALANCE",
+      getValue: (data, mode) =>
+        mode === "CASH" ? data.closingBalanceCash : data.closingBalanceOnline,
+      colorCondition: (value) => value >= 0,
+      colorPositive: "success.main",
+      colorNegative: "error.main",
+    },
+  ];
+
   if (loading) {
     return (
       <Box
@@ -139,82 +187,60 @@ const MiqaatNiyaazDashboard = () => {
             </MenuItem>
           ))}
         </TextField>
-        <Button variant="outlined" onClick={fetchLedgerReport}>
+        <Button variant="outlined" onClick={() => fetchLedgerReport(paymentModeTab)}>
           Refresh
         </Button>
       </Box>
 
       {reportData && (
         <>
+          {/* Payment Mode Tabs */}
+          <Box sx={{ mb: 3 }}>
+            <Tabs
+              value={paymentModeTab}
+              onChange={(e, newValue) => setPaymentModeTab(newValue)}
+              sx={{ borderBottom: 1, borderColor: "divider" }}
+            >
+              <Tab label="CASH" value="CASH" sx={{ fontWeight: "bold", fontSize: "1.2rem" }} />
+              <Tab label="ONLINE" value="ONLINE" sx={{ fontWeight: "bold", fontSize: "1.2rem" }} />
+            </Tabs>
+          </Box>
+
           {/* Summary Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item size={{ xs: 6, sm: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom variant="body2">
-                    Opening Balance
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    color={reportData.openingBalance >= 0 ? "success.main" : "error.main"}
-                  >
-                    {formatCurrency(reportData.openingBalance)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item size={{ xs: 6, sm: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom variant="body2">
-                    Total CREDIT
-                  </Typography>
-                  <Typography variant="h5" color="success.main">
-                    {formatCurrency(reportData.creditTotal)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item size={{ xs: 6, sm: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom variant="body2">
-                    Total DEBIT
-                  </Typography>
-                  <Typography variant="h5" color="error.main">
-                    {formatCurrency(reportData.debitTotal)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item size={{ xs: 6, sm: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom variant="body2">
-                    Closing Balance
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    color={reportData.closingBalance >= 0 ? "success.main" : "error.main"}
-                  >
-                    {formatCurrency(reportData.closingBalance)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            {summaryCardsConfig.map((card) => {
+              const value = card.getValue(reportData, paymentModeTab);
+              const color = card.colorCondition(value) ? card.colorPositive : card.colorNegative;
+
+              return (
+                <Grid key={card.key} item size={{ xs: 6, sm: 6, md: 3 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography color="textSecondary" gutterBottom variant="body2">
+                        {card.label}
+                      </Typography>
+                      <Typography variant="h5" color={color}>
+                        {formatCurrency(value)}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
 
           {/* Ledger Entries List */}
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Ledger Entries ({reportData.entryCount})
+                Ledger Entries - {reportData.entryCount}
               </Typography>
               <List
                 resource="miqaatNiyaazReceipts"
                 filter={{
                   receiptDate_gte: fyDateRange.startDate,
                   receiptDate_lte: fyDateRange.endDate,
+                  paymentMode: paymentModeTab,
                 }}
                 sort={{ field: "receiptDate", order: "DESC" }}
                 disableSyncWithLocation
@@ -231,67 +257,132 @@ const MiqaatNiyaazDashboard = () => {
                   </Box>
                 }
               >
-                <Datagrid bulkActionButtons={false}>
-                  <DateField source="receiptDate" label="Date" />
-                  <FunctionField
-                    label="Type"
-                    render={(record) => (
-                      <Typography
-                        variant="body2"
-                        color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
-                        fontWeight="bold"
-                      >
-                        {record.receiptType}
-                      </Typography>
+                {isMobile ? (
+                  <SimpleList
+                    primaryText={(record) => record.name}
+                    secondaryText={(record) => (
+                      <Box>
+                        <Typography variant="body2">
+                          {dayjs(record.receiptDate).format("DD/MM/YYYY")} •{" "}
+                          <span
+                            style={{
+                              color: record.receiptType === "CREDIT" ? "green" : "red",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {record.receiptType}
+                          </span>
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {record.purpose}
+                          {record.paymentRef && ` • Ref: ${record.paymentRef}`}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="bold"
+                          color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
+                        >
+                          {record.receiptType === "CREDIT" ? "+" : "-"}
+                          {formatCurrency(record.amount)}
+                        </Typography>
+                      </Box>
                     )}
-                  />
-                  <RATextField source="receiptNo" label="Receipt No" />
-                  <RATextField source="name" label="Name" />
-                  <RATextField source="itsNo" label="ITS No" />
-                  <RATextField source="purpose" label="Purpose" />
-                  <FunctionField
-                    label="Amount"
-                    render={(record) => (
-                      <Typography
-                        variant="body2"
-                        color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
-                        fontWeight="bold"
+                    tertiaryText={(record) =>
+                      record.receiptType === "CREDIT" && record.receiptNo ? record.receiptNo : null
+                    }
+                    rightIcon={(record) => (
+                      <Box
+                        sx={{ display: "flex", gap: 0.5, marginTop: "3rem", alignItems: "center" }}
                       >
-                        {record.receiptType === "CREDIT" ? "+" : "-"}
-                        {formatCurrency(record.amount)}
-                      </Typography>
-                    )}
-                  />
-                  <RATextField source="paymentMode" label="Payment Mode" />
-                  <FunctionField
-                    label="Download"
-                    render={(record) =>
-                      record.receiptType === "CREDIT" && record.receiptNo ? (
+                        {record.receiptType === "CREDIT" && record.receiptNo && (
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                            }}
+                            sx={{ color: "primary.main" }}
+                          >
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                        )}
                         <IconButton
-                          onClick={() => {
-                            window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            redirect(`/miqaatNiyaazReceipts/${record.id}`);
                           }}
+                          sx={{ color: "primary.main" }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    )}
+                  />
+                ) : (
+                  <Datagrid bulkActionButtons={false}>
+                    <DateField source="receiptDate" label="Date" />
+                    <FunctionField
+                      label="Type"
+                      render={(record) => (
+                        <Typography
+                          variant="body2"
+                          color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
+                          fontWeight="bold"
+                        >
+                          {record.receiptType}
+                        </Typography>
+                      )}
+                    />
+                    <RATextField source="receiptNo" label="Receipt No" />
+                    <RATextField source="name" label="Name" />
+                    <RATextField source="itsNo" label="ITS No" />
+                    <RATextField source="purpose" label="Purpose" />
+                    <FunctionField
+                      label="Amount"
+                      render={(record) => (
+                        <Typography
+                          variant="body2"
+                          color={record.receiptType === "CREDIT" ? "success.main" : "error.main"}
+                          fontWeight="bold"
+                        >
+                          {record.receiptType === "CREDIT" ? "+" : "-"}
+                          {formatCurrency(record.amount)}
+                        </Typography>
+                      )}
+                    />
+                    <RATextField source="paymentMode" label="Payment Mode" />
+                    <RATextField source="paymentRef" label="Payment Reference" />
+                    <FunctionField
+                      label="Download"
+                      render={(record) =>
+                        record.receiptType === "CREDIT" && record.receiptNo ? (
+                          <IconButton
+                            onClick={() => {
+                              window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                            }}
+                            size="small"
+                          >
+                            <DownloadIcon />
+                          </IconButton>
+                        ) : (
+                          <span>-</span>
+                        )
+                      }
+                    />
+                    <FunctionField
+                      label="Edit"
+                      render={(record) => (
+                        <IconButton
+                          onClick={() => redirect(`/miqaatNiyaazReceipts/${record.id}`)}
                           size="small"
                         >
-                          <DownloadIcon />
+                          <EditIcon />
                         </IconButton>
-                      ) : (
-                        <span>-</span>
-                      )
-                    }
-                  />
-                  <FunctionField
-                    label="Edit"
-                    render={(record) => (
-                      <IconButton
-                        onClick={() => redirect(`/miqaatNiyaazReceipts/${record.id}`)}
-                        size="small"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                  />
-                </Datagrid>
+                      )}
+                    />
+                  </Datagrid>
+                )}
               </List>
             </CardContent>
           </Card>

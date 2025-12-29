@@ -39,7 +39,7 @@ export default (props) => {
   });
 
   return (
-    <Create {...props} transform={transform} redirect="list">
+    <Create {...props} transform={transform} redirect="/">
       <SimpleForm
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}
@@ -60,7 +60,6 @@ export default (props) => {
         <NumberInput source="amount" label="Amount" fullWidth isRequired />
         <DateInput source="receiptDate" label="Receipt Date" fullWidth isRequired />
         <PaymentModeInput />
-        <TextInput source="paymentRef" label="Payment Reference" fullWidth />
         <TextInput source="remarks" label="Remarks" fullWidth multiline rows={3} />
       </SimpleForm>
     </Create>

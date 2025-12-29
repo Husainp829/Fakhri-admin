@@ -26,7 +26,7 @@ const MiqaatNiyaazReceiptA5 = () => {
   if (!data) return <Box p={3}>Loading…</Box>;
 
   // Format payment mode text
-  const paymentText = ["ONLINE", "CHEQUE"].includes(data.paymentMode)
+  const paymentText = data.paymentMode === "ONLINE"
     ? `${data.paymentMode} (Ref: ${data.paymentRef || "-"})`
     : data.paymentMode;
 
