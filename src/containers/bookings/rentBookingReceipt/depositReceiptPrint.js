@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import { ToWords } from "to-words";
-import QRCode from "react-qr-code";
 import { useParams } from "react-router";
-import dayjs from "dayjs";
-
-import ReceiptHeader from "../../../components/ReceiptLayout/receiptHeader";
+import CommonReceiptA5 from "../../../components/CommonReceipt/CommonReceiptA5";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
 
 const DepositReceiptPrint = () => {
   const { id } = useParams();
   const [data, setData] = useState();
   const [error, setError] = useState();
+
+  const toWords = new ToWords();
 
   useEffect(() => {
     const fetchData = () => {
@@ -23,154 +23,54 @@ const DepositReceiptPrint = () => {
         });
     };
     fetchData();
-  }, []);
+  }, [id]);
 
   if (error) {
-    return <div className="main-div">No Results Found</div>;
+    return <Box p={3}>No Results Found</Box>;
   }
 
   if (!data) {
-    return <div className="main-div">...Loading</div>;
+    return <Box p={3}>...Loading</Box>;
   }
 
-  const toWords = new ToWords();
+  // Build receipt lines array
+  const receiptLines = [
+    {
+      left: "Received from",
+      right: data.organiser || "",
+      bold: true,
+    },
+    {
+      left: "ITS No.",
+      right: `${data.organiserIts || "-"} / Reference No. ${data.booking?.bookingNo || "-"}`,
+    },
+    {
+      left: "Purpose",
+      right: `${data.booking?.purpose || "-"} / Mohalla ${data.booking?.mohalla || "-"}`,
+    },
+    {
+      left: "Contribution Amount Rupees",
+      right: `${toWords.convert(data.amount || 0)} Only`,
+      bold: true,
+    },
+  ];
 
   return (
-    <div className="main-div">
-      <div style={{ boxSizing: "border-box", height: "100%" }}>
-        <div className="u-row-container" style={{ padding: 0 }}>
-          <ReceiptHeader
-            title="FAKHRI MOHALLA JAMAAT"
-            subTitle="Contribution Receipt"
-          />
-
-          <div className="u-row" style={{ margin: "0 auto" }}>
-            <div style={{ display: "flex", width: "100%" }}>
-              <div
-                className="u-col u-col-100"
-                style={{
-                  boxSizing: "border-box",
-                  padding: "0",
-                  borderTop: "5px solid #ccc",
-                }}
-              >
-                <div style={{ padding: "10px 20px" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ paddingRight: "10px" }}>Receipt No. :</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data?.receiptNo}
-                    </div>
-                    <div style={{ padding: "0 10px" }}>Date : </div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {dayjs(data.date).format("DD/MM/YYYY")}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "10px 20px" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ paddingRight: "10px" }}>Received From</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data.organiser}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "10px 20px" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ paddingRight: "10px" }}>ITS No. :</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data.organiserIts}
-                    </div>
-                    <div style={{ paddingRight: "10px" }}>Reference No. :</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data.booking?.bookingNo}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "10px 20px" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ paddingRight: "10px" }}>Purpose :</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data.booking?.purpose}
-                    </div>
-                    <div style={{ paddingRight: "10px" }}>Mohalla :</div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {data.booking?.mohalla}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ padding: "10px 20px" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <div style={{ paddingRight: "10px" }}>
-                      Contribution Amount ₹:{" "}
-                    </div>
-                    <div
-                      style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}
-                    >
-                      {toWords.convert(data.amount || 0)} Only /-
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    padding: "10px 20px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        padding: "10px 20px",
-                        border: "1px solid #afafaf",
-                        fontSize: "30px",
-                      }}
-                    >
-                      ₹ {data.amount} /-
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      alignSelf: "center",
-                      width: "180px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <QRCode value={`${data.id}|${data.createdBy}`} size={100} />
-                    <p style={{ fontSize: 14, marginTop: -5 }}>
-                      Digitally Signed.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <CommonReceiptA5
+      title="FAKHRI MOHALLA JAMAAT"
+      subTitle="Contribution Receipt"
+      receiptNo={data?.receiptNo}
+      date={data.date}
+      dateFormat="DD/MM/YYYY"
+      receiptLines={receiptLines}
+      amount={data.amount}
+      currency="₹"
+      digitalSignatureValue={`${data.id}|${data.createdBy}`}
+      qrCodeSize={100}
+      digitalSignatureText="Digitally Signed"
+      footerNote="This receipt is computer generated and does not require a physical signature."
+      showReceiptBadge
+    />
   );
 };
 

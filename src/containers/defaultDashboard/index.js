@@ -53,7 +53,7 @@ export default function DefaultDashboard() {
             "staff",
           ],
           [
-            hasPermission(permissions, "admins.view"),
+            hasPermission(permissions, "sabil.view"),
             BadgeIcon,
             "Sabil",
             "View and manage all sabil data",
@@ -67,7 +67,7 @@ export default function DefaultDashboard() {
             "fmb",
           ],
           [
-            hasPermission(permissions, "receipts.view"),
+            hasPermission(permissions, "miqaatNiyaazReceipts.view"),
             ReceiptIcon,
             "Miqaat Niyaaz Receipts",
             "View and manage all miqaat niyaaz receipts",
