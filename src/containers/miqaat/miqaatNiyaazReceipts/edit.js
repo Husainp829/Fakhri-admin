@@ -21,7 +21,7 @@ const ReceiptTypeDependentFields = () => {
 };
 
 export default (props) => (
-  <Edit {...props} mutationMode="optimistic">
+  <Edit {...props} mutationMode="optimistic" redirect="/">
     <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 700 }}>
       <SelectInput
         source="receiptType"

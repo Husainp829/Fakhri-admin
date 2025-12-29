@@ -11,7 +11,6 @@ export default () => {
         choices={[
           { id: "CASH", name: "CASH" },
           { id: "ONLINE", name: "ONLINE" },
-          { id: "CHEQUE", name: "CHEQUE" },
         ]}
         fullWidth
       />
