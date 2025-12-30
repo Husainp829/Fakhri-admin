@@ -16,13 +16,14 @@ import HomeIcon from "@mui/icons-material/Home";
 import MosqueIcon from "@mui/icons-material/Mosque";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SearchIcon from "@mui/icons-material/Search";
+import Box from "@mui/material/Box";
 
 const PostFilterSidebar = () => (
-  <Card sx={{ order: -1, mr: 2, mt: 6, width: 250, height: "fit-content" }}>
+  <Card sx={{ order: -1, mr: 2, mt: 6, width: "25%", height: "fit-content" }}>
     <CardContent>
       <FilterListSection label="Search" icon={<SearchIcon />}>
         <FilterLiveForm>
-          <SearchInput source="q" resettable helperText={false} />
+          <SearchInput source="q" resettable helperText="Search by ITS_ID or Full Name" />
         </FilterLiveForm>
       </FilterListSection>
 
@@ -31,9 +32,31 @@ const PostFilterSidebar = () => (
         <FilterListItem label="FM" value={{ HOF_FM_TYPE: "FM" }} />
       </FilterList>
 
-      <FilterListSection label="Basic Info" icon={<PersonIcon />}>
+      <FilterListSection label="Age" icon={<PersonIcon />}>
         <FilterLiveForm>
-          <TextInput source="Age" resettable helperText={false} />
+          <TextInput
+            source="Age_eq"
+            resettable
+            helperText="Exact age"
+            label="Age (Equal)"
+            type="number"
+          />
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <TextInput
+              source="Age_gte"
+              resettable
+              helperText="Minimum age"
+              label="Age (Min)"
+              type="number"
+            />
+            <TextInput
+              source="Age_lte"
+              resettable
+              helperText="Maximum age"
+              label="Age (Max)"
+              type="number"
+            />
+          </Box>
         </FilterLiveForm>
       </FilterListSection>
 
@@ -87,15 +110,30 @@ const PostFilterSidebar = () => (
           <SelectInput
             source="Sector"
             choices={[
-              { id: "Zone01-LullaNgr-to-Kubera-to-JyotiChowk", name: "Zone01-LullaNgr-to-Kubera-to-JyotiChowk" },
-              { id: "Zone02-KausarBag-BrExuberance-EishaLoreals", name: "Zone02-KausarBag-BrExuberance-EishaLoreals" },
-              { id: "Zone03-KausarBaug-HillMist-to-KumarParijat", name: "Zone03-KausarBaug-HillMist-to-KumarParijat" },
-              { id: "Zone04-Mayfair to Bakers Point Area", name: "Zone04-Mayfair to Bakers Point Area" },
+              {
+                id: "Zone01-LullaNgr-to-Kubera-to-JyotiChowk",
+                name: "Zone01-LullaNgr-to-Kubera-to-JyotiChowk",
+              },
+              {
+                id: "Zone02-KausarBag-BrExuberance-EishaLoreals",
+                name: "Zone02-KausarBag-BrExuberance-EishaLoreals",
+              },
+              {
+                id: "Zone03-KausarBaug-HillMist-to-KumarParijat",
+                name: "Zone03-KausarBaug-HillMist-to-KumarParijat",
+              },
+              {
+                id: "Zone04-Mayfair to Bakers Point Area",
+                name: "Zone04-Mayfair to Bakers Point Area",
+              },
               { id: "Zone05-Natasha Sunshree Area", name: "Zone05-Natasha Sunshree Area" },
               { id: "Zone06-AmbaVatica Area", name: "Zone06-AmbaVatica Area" },
               { id: "Zone07-Brahma Aangan Area", name: "Zone07-Brahma Aangan Area" },
               { id: "Zone08-BoradeLane-to-Hakimi Area", name: "Zone08-BoradeLane-to-Hakimi Area" },
-              { id: "Zone09-Salunke Vihar- Dorabjee Envc to ABC", name: "Zone09-Salunke Vihar- Dorabjee Envc to ABC" },
+              {
+                id: "Zone09-Salunke Vihar- Dorabjee Envc to ABC",
+                name: "Zone09-Salunke Vihar- Dorabjee Envc to ABC",
+              },
               { id: "Zone10-Salunkhe Vihar Rd Area 1", name: "Zone10-Salunkhe Vihar Rd Area 1" },
               { id: "Zone11-Salunkhe Vihar Rd Area 2", name: "Zone11-Salunkhe Vihar Rd Area 2" },
               { id: "Zone12-NIBM-Cloud9-Raheja Area", name: "Zone12-NIBM-Cloud9-Raheja Area" },
@@ -135,7 +173,10 @@ const PostFilterSidebar = () => (
               { id: "Amba & Swarna Vatika", name: "Amba & Swarna Vatika" },
               { id: "Kubera Garden", name: "Kubera Garden" },
               { id: "Nivedita Gardens", name: "Nivedita Gardens" },
-              { id: "Rest of Amba Vatika & Anandpuram Area", name: "Rest of Amba Vatika & Anandpuram Area" },
+              {
+                id: "Rest of Amba Vatika & Anandpuram Area",
+                name: "Rest of Amba Vatika & Anandpuram Area",
+              },
               { id: "Brahma Aangan A", name: "Brahma Aangan A" },
               { id: "Brahma Aangan B", name: "Brahma Aangan B" },
               { id: "Silver Estate & Parmar Residency", name: "Silver Estate & Parmar Residency" },
@@ -157,7 +198,10 @@ const PostFilterSidebar = () => (
               { id: "Oxford Premium", name: "Oxford Premium" },
               { id: "Oxford Village", name: "Oxford Village" },
               { id: "Rest SV Road SS2", name: "Rest SV Road SS2" },
-              { id: "Clover Highland Konark Indrayu Area", name: "Clover Highland Konark Indrayu Area" },
+              {
+                id: "Clover Highland Konark Indrayu Area",
+                name: "Clover Highland Konark Indrayu Area",
+              },
               { id: "Raheja Reserve", name: "Raheja Reserve" },
               { id: "Raheja Vista", name: "Raheja Vista" },
               { id: "Rest  of NIBM Bldg", name: "Rest  of NIBM Bldg" },
@@ -254,9 +298,15 @@ const PostFilterSidebar = () => (
 
       <FilterList label="Verification Status" icon={<VerifiedUserIcon />}>
         <FilterListItem label="Data - Verified" value={{ Data_Verifcation_Status: "Verified" }} />
-        <FilterListItem label="Data - Not Verified" value={{ Data_Verifcation_Status: "Not Verified" }} />
+        <FilterListItem
+          label="Data - Not Verified"
+          value={{ Data_Verifcation_Status: "Not Verified" }}
+        />
         <FilterListItem label="Photo - Verified" value={{ Photo_Verifcation_Status: "Verfied" }} />
-        <FilterListItem label="Photo - Not Verified" value={{ Photo_Verifcation_Status: "Not Verified" }} />
+        <FilterListItem
+          label="Photo - Not Verified"
+          value={{ Photo_Verifcation_Status: "Not Verified" }}
+        />
       </FilterList>
     </CardContent>
   </Card>
