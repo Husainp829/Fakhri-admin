@@ -1,4 +1,4 @@
-import Icon from "@mui/icons-material/Receipt";
+import Icon from "@mui/icons-material/TrackChanges";
 import List from "./list";
 import Create from "./create";
 import Show from "./show";

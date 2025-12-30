@@ -103,13 +103,13 @@ const MainApp = () => {
         return <DefaultDashboard />;
       }
       case "staff":
-        return hasPermission(permissions, "staff.view") ? (
+        return hasPermission(permissions, "staff.dashboard") ? (
           <StaffDashboard />
         ) : (
           <Navigate to="/employees" />
         );
       case "sabil":
-        return hasPermission(permissions, "sabil.view") ? (
+        return hasPermission(permissions, "sabil.dashboard") ? (
           <SabilDashboard />
         ) : (
           <Navigate to="/sabilData" />
@@ -216,9 +216,11 @@ const MainApp = () => {
             </>
           )}
           {hasPermission(permissions, "admins.view") && <Resource {...admin} />}
-          {hasPermission(permissions, "show.its") && <Resource {...itsdata} />}
+          {hasPermission(permissions, "itsdata.dump") && <Resource {...itsdata} />}
           {hasPermission(permissions, "admins.view") && <Resource {...whatsappBroadcasts} />}
-          {hasPermission(permissions, "cronStatus.view") && <Resource {...cronStatus} name="cronStatus" />}
+          {hasPermission(permissions, "cronStatus.view") && (
+            <Resource {...cronStatus} name="cronStatus" />
+          )}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
