@@ -26,9 +26,10 @@ const MiqaatNiyaazReceiptA5 = () => {
   if (!data) return <Box p={3}>Loading…</Box>;
 
   // Format payment mode text
-  const paymentText = data.paymentMode === "ONLINE"
-    ? `${data.paymentMode} (Ref: ${data.paymentRef || "-"})`
-    : data.paymentMode;
+  const paymentText =
+    data.paymentMode === "ONLINE"
+      ? `${data.paymentMode} (Ref: ${data.paymentRef || "-"})`
+      : data.paymentMode;
 
   // Build receipt lines array
   const receiptLines = [
@@ -43,12 +44,12 @@ const MiqaatNiyaazReceiptA5 = () => {
       bold: true,
     },
     {
-      left: "Amount",
-      right: `₹ ${data.amount} /-`,
+      left: "Received by",
+      right: paymentText,
     },
     {
-      left: "Received by / Towards",
-      right: `${paymentText} towards Niyaaz Voluntary Contribution`,
+      left: "Towards",
+      right: "towards Niyaaz Voluntary Contribution",
     },
   ];
 
