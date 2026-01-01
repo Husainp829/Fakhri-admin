@@ -55,6 +55,7 @@ import sabilReceipt from "./containers/sabil/sabilReceipt";
 import sabilChangeRequests from "./containers/sabil/sabilChangeRequest";
 import sabilLedger from "./containers/sabil/sabilLedger";
 import cronStatus from "./containers/cronStatus";
+import sequences from "./containers/sequences";
 import fmbData from "./containers/fmb/fmbData";
 import fmbReceipt from "./containers/fmb/fmbReceipt";
 import fmbTakhmeen from "./containers/fmb/fmbTakhmeen";
@@ -221,6 +222,8 @@ const MainApp = () => {
           {hasPermission(permissions, "cronStatus.view") && (
             <Resource {...cronStatus} name="cronStatus" />
           )}
+          {/* Sequences - view requires no permission, edit requires sequences.edit */}
+          <Resource {...sequences} />
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
