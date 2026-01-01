@@ -32,6 +32,11 @@ const PostFilterSidebar = () => (
         <FilterListItem label="FM" value={{ HOF_FM_TYPE: "FM" }} />
       </FilterList>
 
+      <FilterList label="First Prefix" icon={<PersonIcon />}>
+        <FilterListItem label="Shaikh" value={{ First_Prefix: "Shaikh" }} />
+        <FilterListItem label="Mulla" value={{ First_Prefix: "Mulla" }} />
+      </FilterList>
+
       <FilterListSection label="Age" icon={<PersonIcon />}>
         <FilterLiveForm>
           <TextInput
@@ -65,11 +70,10 @@ const PostFilterSidebar = () => (
         <FilterListItem label="Female" value={{ Gender: "FEMALE" }} />
       </FilterList>
 
-      <FilterListSection label="Personal Details" icon={<PersonIcon />}>
-        <FilterLiveForm>
-          <TextInput source="Misaq" resettable helperText={false} />
-        </FilterLiveForm>
-      </FilterListSection>
+      <FilterList label="Misaq" icon={<PersonIcon />}>
+        <FilterListItem label="Done" value={{ Misaq: "Done" }} />
+        <FilterListItem label="Not Done" value={{ Misaq: "Not Done" }} />
+      </FilterList>
 
       <FilterList label="Marital Status" icon={<PersonIcon />}>
         <FilterListItem label="Married" value={{ Marital_Status: "Married" }} />
