@@ -49,7 +49,7 @@ const MiqaatNiyaazReceiptA5 = () => {
     },
     {
       left: "Towards",
-      right: "Niyaaz Voluntary Contribution",
+      right: "Niyaz Voluntary Contribution",
       bold: true,
     },
   ];
