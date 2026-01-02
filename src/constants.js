@@ -31,10 +31,10 @@ export const PAYMENT_MODE_CONST = {
 export const Page404 = "Page not found, go home!";
 
 export const getType = (type) => {
-  if (type === "CHULA" || type === "MUTTAVATTEEN") {
+  if (type === "MUTTAVATTEEN") {
     return "CHULA";
   }
-  return "ESTABLISHMENT";
+  return type;
 };
 
 export const slotTimeRanges = {

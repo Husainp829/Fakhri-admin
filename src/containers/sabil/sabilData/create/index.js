@@ -14,7 +14,6 @@ export default (props) => (
         choices={[
           { id: "CHULA", name: "CHULA" },
           { id: "ESTABLISHMENT", name: "ESTABLISHMENT" },
-          { id: "PROFESSIONAL", name: "PROFESSIONAL" },
           { id: "MUTTAVATTEEN", name: "MUTTAVATTEEN" },
         ]}
         fullWidth
