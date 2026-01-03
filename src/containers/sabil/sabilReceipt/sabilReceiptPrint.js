@@ -54,15 +54,11 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
-              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
-                {itsdata?.Full_Name}
-              </div>
+              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{sabilData?.name}</div>
               <div style={{ paddingLeft: "10px" }}>حفظ الله تعالا</div>
             </div>
           </div>
-          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-            {itsdata?.Address}, {itsdata.City} - {itsdata.Pincode}, {itsdata.State}
-          </div>
+          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>{sabilData?.address}</div>
           <div style={{ textAlign: "center", padding: "10px" }}>بعد السلام الجميل</div>
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -86,9 +82,7 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: "4", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
-              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}></div>
-              <div style={{ flex: "1", paddingRight: "10px", textAlign: "center" }}>سنة الا</div>
-              <div style={{ flex: "2", borderBottom: "1px solid #cfcfcf" }}>
+              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>
                 {formatDate(receiptData.createdAt)}
               </div>
               <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
