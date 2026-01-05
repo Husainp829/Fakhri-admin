@@ -1,0 +1,143 @@
+name: Deploy Admin to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --frozen-lockfile
+
+      - name: Build application
+        run: npm run build
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          # Add other build-time environment variables as needed
+
+      - name: Create build archive
+        run: |
+          cd build
+          tar -czf ../admin-build.tar.gz .
+          cd ..
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-build
+          path: admin-build.tar.gz
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}/../api  # Admin build goes to API repo
+            
+            # Create backup of current build
+            if [ -d "admin-build" ]; then
+              BACKUP_DIR="admin-build-backup-$(date +%Y%m%d-%H%M%S)"
+              mv admin-build "$BACKUP_DIR"
+              echo "Backed up existing build to $BACKUP_DIR"
+            fi
+            
+            # Extract new build
+            echo "Extracting new admin build..."
+            mkdir -p admin-build
+            tar -xzf admin-build.tar.gz -C admin-build
+            
+            # Verify build was extracted
+            if [ ! -f "admin-build/index.html" ]; then
+              echo "ERROR: index.html not found in build. Rolling back..."
+              if [ -d "$BACKUP_DIR" ]; then
+                rm -rf admin-build
+                mv "$BACKUP_DIR" admin-build
+              fi
+              exit 1
+            fi
+            
+            # Restart API container to pick up new static files
+            # The API container serves both API and Admin UI
+            cd ../deployment
+            echo "Restarting API container to serve new admin build..."
+            docker compose restart api
+            
+            # Wait for container to be ready
+            sleep 5
+            
+            # Clean up old backups (keep last 3)
+            cd ../api
+            ls -dt admin-build-backup-* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
+            
+            # Clean up
+            rm -f admin-build.tar.gz
+            
+            echo "Admin build deployed successfully!"
+          EOF
+
+      - name: Verify deployment
+        run: |
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+            cd ${{ secrets.DEPLOY_PATH }}/../api
+            
+            # Check container status
+            echo "=== Container Status ==="
+            cd ../deployment
+            docker compose ps api
+            
+            # Verify admin build exists
+            echo ""
+            echo "=== Admin Build Verification ==="
+            cd ../api
+            if [ -f "admin-build/index.html" ]; then
+              echo "✓ Admin build files present"
+              ls -lh admin-build/ | head -10
+            else
+              echo "✗ ERROR: Admin build files not found!"
+              exit 1
+            fi
+            
+            # Check API logs for any errors
+            echo ""
+            echo "=== Recent API Logs ==="
+            cd ../deployment
+            docker compose logs --tail=30 api | grep -i "static\|admin\|error" || echo "No relevant log entries"
+            
+            echo ""
+            echo "=== Deployment Complete ==="
+            echo "Admin UI is now served from the API container at https://jms.rapid-events.com"
+          EOF
