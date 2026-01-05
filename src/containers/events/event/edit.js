@@ -10,9 +10,7 @@ import {
   useNotify,
   useUpdate,
 } from "react-admin";
-import DateTimeInput from "../../../components/DateTimeInput";
 import { uploadMedia } from "../../../dataprovider/uploadProps";
-import { formatDateTime, parseDateTime } from "../../../utils";
 
 export default (props) => {
   const EventTitle = () => "Event Details";
@@ -47,20 +45,6 @@ export default (props) => {
       <Edit {...props} redirect="" mutationMode="optimistic" title={<EventTitle />}>
         <SimpleForm onSubmit={save} sx={{ maxWidth: 500 }}>
           <TextInput source="name" fullWidth helperText={false} />
-          <DateTimeInput
-            source="fromDate"
-            label="From"
-            parse={parseDateTime}
-            format={formatDateTime}
-            options={{ ampmInClock: false, clearable: true }}
-          />
-          <DateTimeInput
-            source="toDate"
-            label="To"
-            parse={parseDateTime}
-            format={formatDateTime}
-            options={{ ampmInClock: false, clearable: true }}
-          />
           <FileInput
             source="image"
             label="image"

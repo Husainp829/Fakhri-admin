@@ -13,7 +13,6 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 
-import Logo from "../assets/logo.png";
 import background from "../assets/LoginPage.png";
 
 function Copyright(props) {
@@ -70,12 +69,7 @@ export default function SignInSide() {
             textAlign: "center",
             padding: "35px",
           }}
-        >
-          {/* <Typography color="primary" variant="body1">
-            Powered By
-          </Typography>
-          <img src={Logo} alt="logo" style={{ maxWidth: "90px" }} /> */}
-        </div>
+        ></div>
       </Grid>
       <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6}>
         <Box
@@ -89,7 +83,7 @@ export default function SignInSide() {
           }}
         >
           <Box>
-            <img src={Logo} alt="logo" style={{ maxWidth: "100px", marginBottom: "100px" }} />
+            <img src="/logo.png" alt="logo" style={{ maxWidth: "100px", marginBottom: "100px" }} />
           </Box>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 0 }}>
             <TextField

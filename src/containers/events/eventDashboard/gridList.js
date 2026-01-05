@@ -6,8 +6,8 @@ import { Button, downloadCSV, usePermissions } from "react-admin";
 import jsonExport from "jsonexport/dist";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import LoadingGridList from "../../../components/LoadingWidget";
-
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
 import { receiptGroupBy } from "../../../utils";
@@ -18,17 +18,15 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const receiptMap = receiptGroupBy(receiptReport);
 
   const exporter = () => {
-    const dailyReport = Object.entries(receiptMap?.[selectedMarkaz] || {}).map(
-      ([key, value]) => {
-        const { CASH, CHEQUE, ONLINE } = value;
-        return {
-          DAY: key,
-          CASH: CASH || 0,
-          CHEQUE: CHEQUE || 0,
-          ONLINE: ONLINE || 0,
-        };
-      }
-    );
+    const dailyReport = Object.entries(receiptMap?.[selectedMarkaz] || {}).map(([key, value]) => {
+      const { CASH, CHEQUE, ONLINE } = value;
+      return {
+        DAY: key,
+        CASH: CASH || 0,
+        CHEQUE: CHEQUE || 0,
+        ONLINE: ONLINE || 0,
+      };
+    });
     jsonExport(
       dailyReport,
       {
@@ -45,10 +43,7 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
       <Grid container spacing={1} sx={{ mt: 3 }}>
         {hasPermission(permissions, "dashboard.markaz") && (
           <Grid item xs={12} sx={{ mb: 5 }}>
-            <MarkazStats
-              niyaazCounts={niyaazCounts}
-              selectedMarkaz={selectedMarkaz}
-            />
+            <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
           </Grid>
         )}
         {hasPermission(permissions, "dashboard.daywiseReceipt") && (
@@ -61,10 +56,7 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
                 </Button>
               </Typography>
             </Grid>
-            <ReceiptDayWise
-              receiptMap={receiptMap}
-              selectedMarkaz={selectedMarkaz}
-            />
+            <ReceiptDayWise receiptMap={receiptMap} selectedMarkaz={selectedMarkaz} />
           </>
         )}
       </Grid>
@@ -73,6 +65,12 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
 };
 
 const GridList = ({ isLoading, ...props }) =>
-  isLoading ? <LoadingGridList /> : <LoadedGridList {...props} />;
+  isLoading ? (
+    <Backdrop sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })} open>
+      <CircularProgress color="inherit" />
+    </Backdrop>
+  ) : (
+    <LoadedGridList {...props} />
+  );
 
 export default GridList;

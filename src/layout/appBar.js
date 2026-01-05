@@ -8,7 +8,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Button } from "@mui/material";
 
-import Logo from "../assets/logo.png";
 import { navigateToBaseRoute } from "../utils/routeUtility";
 
 export default (props) => {
@@ -36,7 +35,7 @@ export default (props) => {
       {...props}
     >
       <Button onClick={() => navigateToBaseRoute()}>
-        <img src={Logo} alt="logo" width="50px" />
+        <img src="/logo.png" alt="logo" width="50px" />
       </Button>
       <TitlePortal />
       <Box>

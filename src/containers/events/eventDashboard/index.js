@@ -6,7 +6,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import GridList from "./gridList";
 import { callApi } from "../../../dataprovider/miscApis";
-import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../../constants";
+import { MARKAZ_LIST } from "../../../constants";
 import NamaazStats from "./namaazStats";
 import { useRouteId } from "../../../utils/routeUtility";
 
@@ -85,9 +85,9 @@ const EventDashboard = () => {
         </Typography>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs value={namaazValue} onChange={handleNamaazVenueChange} aria-label="Markaz Tabs">
-            {Object.keys(NAMAAZ_VENUE).map((namaazVenue) => (
+            {Object.keys(MARKAZ_LIST).map((namaazVenue) => (
               <Tab
-                label={NAMAAZ_VENUE[namaazVenue]}
+                label={MARKAZ_LIST[namaazVenue]}
                 {...a11yProps(0)}
                 key={namaazVenue}
                 value={namaazVenue}

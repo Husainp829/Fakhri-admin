@@ -16,7 +16,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
-import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
+import { MARKAZ_LIST } from "../../constants";
 import { hasPermission } from "../../utils/permissionUtils";
 
 export default () => {
@@ -75,19 +75,8 @@ export default () => {
   };
 
   const ReceiptFilters = [
-    <TextInput
-      label="Search By HOF ITS"
-      source="HOFId"
-      alwaysOn
-      key={0}
-      sx={{ minWidth: 300 }}
-    />,
-    <TextInput
-      label="Search By Receipt No"
-      source="receiptNo"
-      key={0}
-      sx={{ minWidth: 300 }}
-    />,
+    <TextInput label="Search By HOF ITS" source="HOFId" alwaysOn key={0} sx={{ minWidth: 300 }} />,
+    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
     <SelectInput
       label="Jaman Venue"
       source="markaz"
@@ -99,7 +88,7 @@ export default () => {
       label="Namaaz Venue"
       source="namaazVenue"
       key={1}
-      choices={Object.entries(NAMAAZ_VENUE).map(([id, name]) => ({ id, name }))}
+      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
       sx={{ marginBottom: 0 }}
     />,
   ];
@@ -125,9 +114,7 @@ export default () => {
         <FunctionField
           label="Created By"
           source="createdBy"
-          render={(record) => (
-            <span>{record?.admin?.name || record.createdBy}</span>
-          )}
+          render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
         />
         <FunctionField
           label="Download"
@@ -135,10 +122,7 @@ export default () => {
           render={(record) => (
             <Button
               onClick={() => {
-                window.open(
-                  `#/niyaaz-receipt?receiptId=${record.id}`,
-                  "_blank"
-                );
+                window.open(`#/niyaaz-receipt?receiptId=${record.id}`, "_blank");
               }}
             >
               <DownloadIcon />

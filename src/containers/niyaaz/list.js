@@ -28,7 +28,7 @@ import {
   calcTotalPayable,
   downLoadPasses,
 } from "../../utils";
-import { MARKAZ_LIST, NAMAAZ_VENUE } from "../../constants";
+import { MARKAZ_LIST } from "../../constants";
 import { hasPermission } from "../../utils/permissionUtils";
 
 export default () => {
@@ -51,7 +51,7 @@ export default () => {
       label="Namaaz Venue"
       source="namaazVenue"
       key={1}
-      choices={Object.entries(NAMAAZ_VENUE).map(([id, name]) => ({ id, name }))}
+      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
       alwaysOn
     />,
   ];

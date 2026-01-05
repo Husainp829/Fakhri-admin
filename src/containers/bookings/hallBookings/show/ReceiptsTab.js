@@ -27,6 +27,7 @@ const ReceiptsTab = () => {
       <Datagrid rowClick={false} bulkActionButtons={false}>
         <TextField source="type" />
         <TextField source="receiptNo" label="Receipt No" />
+        <TextField source="organiserIts" label="Organiser ITS" />
         <TextField source="organiser" />
         <DateField source="date" />
         <NumberField source="amount" />
@@ -35,7 +36,6 @@ const ReceiptsTab = () => {
           <TextField source="name" />
         </ReferenceField>
         <TextField source="ref" />
-        <TextField source="organiserIts" label="Organiser ITS" />
         <FunctionField
           label="Download"
           source="formNo"

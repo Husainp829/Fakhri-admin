@@ -6,7 +6,6 @@ export const getApiUrl = () => apiUrl;
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",
   BH: "Burhani Hall",
-  ZM: "Zainy Masjid Sehen",
 };
 
 export const EMPLOYEE_TYPE = {
@@ -15,12 +14,6 @@ export const EMPLOYEE_TYPE = {
   FMB_STAFF: "FMB STAFF",
   ROTI_STAFF: "ROTI STAFF",
   ADMIN: "ADMIN",
-};
-
-export const NAMAAZ_VENUE = {
-  FM: "Fakhri Manzil",
-  BH: "Burhani Hall",
-  ZM: "Zainy Masjid",
 };
 
 export const PAYMENT_MODE_CONST = {
