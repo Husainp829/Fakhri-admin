@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,13 +71,13 @@ jobs:
           echo "Extracting admin build locally..."
           mkdir -p admin-build
           tar -xzf admin-build.tar.gz -C admin-build
-          
+
           # Verify extraction locally
           if [ ! -f "admin-build/index.html" ]; then
             echo "ERROR: index.html not found in extracted build"
             exit 1
           fi
-          
+
           # SSH to create backup before syncing
           echo "Creating backup on server..."
           ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'BACKUP_EOF'
@@ -89,11 +89,11 @@ jobs:
               echo "Backed up existing build to $BACKUP_DIR"
             fi
           BACKUP_EOF
-          
+
           # Use rsync to sync the extracted files to the server
           echo "Syncing admin build to server..."
           rsync -avz --delete admin-build/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.DEPLOY_PATH }}/../api/admin-build/
-          
+
           # Verify and restart
           ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'DEPLOY_EOF'
             set -e
@@ -110,12 +110,12 @@ jobs:
               exit 1
             fi
             
-            # Restart API container to pick up new static files
+            # Restart nginx container to pick up new static files and clear cache
             cd ../deployment
-            echo "Restarting API container to serve new admin build..."
-            docker compose restart api
+            echo "Restarting nginx container to serve new admin build..."
+            docker compose restart nginx
             
-            # Wait for container to be ready
+            # Wait for containers to be ready
             sleep 5
             
             # Clean up old backups (keep last 3)
