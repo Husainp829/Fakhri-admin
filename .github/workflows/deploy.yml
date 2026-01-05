@@ -67,25 +67,42 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+          # Extract locally first
+          echo "Extracting admin build locally..."
+          mkdir -p admin-build
+          tar -xzf admin-build.tar.gz -C admin-build
+          
+          # Verify extraction locally
+          if [ ! -f "admin-build/index.html" ]; then
+            echo "ERROR: index.html not found in extracted build"
+            exit 1
+          fi
+          
+          # SSH to create backup before syncing
+          echo "Creating backup on server..."
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'BACKUP_EOF'
             set -e
-            cd ${{ secrets.DEPLOY_PATH }}/../api  # Admin build goes to API repo
-            
-            # Create backup of current build
+            cd ${{ secrets.DEPLOY_PATH }}/../api
             if [ -d "admin-build" ]; then
               BACKUP_DIR="admin-build-backup-$(date +%Y%m%d-%H%M%S)"
               mv admin-build "$BACKUP_DIR"
               echo "Backed up existing build to $BACKUP_DIR"
             fi
+          BACKUP_EOF
+          
+          # Use rsync to sync the extracted files to the server
+          echo "Syncing admin build to server..."
+          rsync -avz --delete admin-build/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.DEPLOY_PATH }}/../api/admin-build/
+          
+          # Verify and restart
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'DEPLOY_EOF'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}/../api
             
-            # Extract new build
-            echo "Extracting new admin build..."
-            mkdir -p admin-build
-            tar -xzf admin-build.tar.gz -C admin-build
-            
-            # Verify build was extracted
+            # Verify build was synced correctly
             if [ ! -f "admin-build/index.html" ]; then
               echo "ERROR: index.html not found in build. Rolling back..."
+              BACKUP_DIR=$(ls -dt admin-build-backup-* 2>/dev/null | head -1)
               if [ -d "$BACKUP_DIR" ]; then
                 rm -rf admin-build
                 mv "$BACKUP_DIR" admin-build
@@ -94,7 +111,6 @@ jobs:
             fi
             
             # Restart API container to pick up new static files
-            # The API container serves both API and Admin UI
             cd ../deployment
             echo "Restarting API container to serve new admin build..."
             docker compose restart api
@@ -106,11 +122,8 @@ jobs:
             cd ../api
             ls -dt admin-build-backup-* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
             
-            # Clean up
-            rm -f admin-build.tar.gz
-            
             echo "Admin build deployed successfully!"
-          EOF
+          DEPLOY_EOF
 
       - name: Verify deployment
         run: |
