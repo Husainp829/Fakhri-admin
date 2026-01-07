@@ -4,13 +4,11 @@
 const CACHE_NAME = "jms-admin-v1";
 const RUNTIME_CACHE = "jms-admin-runtime-v1";
 
-// Assets to cache on install
+// Assets to cache on install (only essential files that should exist)
 const PRECACHE_URLS = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/static/css/main.css",
-  "/static/js/main.js",
   "/favicon.png",
   "/logo192.png",
   "/logo512.png"
@@ -22,10 +20,24 @@ self.addEventListener("install", (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log("[Service Worker] Caching app shell");
-        return cache.addAll(PRECACHE_URLS);
+        // Cache each URL individually to handle missing files gracefully
+        return Promise.allSettled(
+          PRECACHE_URLS.map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn(`[Service Worker] Failed to cache ${url}:`, err);
+              // Return undefined so Promise.allSettled doesn't fail
+              return undefined;
+            })
+          )
+        );
+      })
+      .then((results) => {
+        const successful = results.filter((r) => r.status === "fulfilled").length;
+        const failed = results.filter((r) => r.status === "rejected").length;
+        console.log(`[Service Worker] Cached ${successful} files, ${failed} failed`);
       })
       .catch((err) => {
-        console.error("[Service Worker] Cache failed:", err);
+        console.error("[Service Worker] Cache initialization failed:", err);
       })
   );
   // Force the waiting service worker to become the active service worker
