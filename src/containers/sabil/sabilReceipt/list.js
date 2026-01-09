@@ -7,15 +7,16 @@ import {
   DateField,
   FunctionField,
   Button,
-  ReferenceField,
   DateInput,
   SelectInput,
   useListContext,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, Typography, Link } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl, SABIL_TYPE_OPTIONS } from "../../../constants";
+import CommonTabs from "../../../components/CommonTabs";
 
 const SUMMARY_CONFIG = [
   {
@@ -62,6 +63,7 @@ const PaymentSummary = () => {
       if (filterValues.endDate) queryParams.append("endDate", filterValues.endDate);
       if (filterValues.paymentMode) queryParams.append("paymentMode", filterValues.paymentMode);
       if (filterValues.sabilId) queryParams.append("sabilId", filterValues.sabilId);
+      if (filterValues.sabilType) queryParams.append("sabilType", filterValues.sabilType);
 
       const url = `${getApiUrl(
         "sabilReceipt"
@@ -84,6 +86,7 @@ const PaymentSummary = () => {
     filterValues?.endDate,
     filterValues?.paymentMode,
     filterValues?.sabilId,
+    filterValues?.sabilType,
   ]);
 
   if (!summary || loading) {
@@ -138,10 +141,106 @@ const PaymentSummary = () => {
   );
 };
 
-export default () => {
+const getTabIdFromFilters = (filters) => {
+  const t = SABIL_TYPE_OPTIONS.findIndex((s) => s.id === filters?.sabilType);
+  if (t !== -1) {
+    return t;
+  }
+  return 0; // Default to CHULA
+};
+
+const SabilTypeTabs = () => {
+  const listContext = useListContext();
+  const { filterValues, setFilters } = listContext;
+
+  const [tabValue, setTabValue] = useState(getTabIdFromFilters(filterValues));
+
+  const handleChange = (event, value) => {
+    const newFilterValues = getFilterValues(value);
+    setFilters({ ...filterValues, ...newFilterValues });
+  };
+
+  const getFilterValues = (tabId) => {
+    const valueObj = SABIL_TYPE_OPTIONS[tabId] || SABIL_TYPE_OPTIONS[0];
+    return {
+      sabilType: valueObj.id,
+    };
+  };
+
+  useEffect(() => {
+    const t = getTabIdFromFilters(filterValues);
+    setTabValue(t);
+  }, [filterValues]);
+
+  return (
+    <CommonTabs
+      options={SABIL_TYPE_OPTIONS.map((option, index) => ({
+        id: index,
+        name: option.name,
+      }))}
+      value={tabValue}
+      onChange={handleChange}
+      showDivider
+      sx={{ indicatorColor: "primary" }}
+    />
+  );
+};
+
+const ReceiptDatagrid = () => {
   const printReceipt = (id) => {
     window.open(`#/sabil-receipt?receiptId=${id}`, "_blank");
   };
+
+  return (
+    <Datagrid rowClick="show">
+      <TextField source="receiptNo" />
+      <FunctionField
+        label="Sabil No"
+        render={(record) => (
+          <Link
+            component={RouterLink}
+            to={`/sabilData/${record.sabilData.id}/show`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {record.sabilData.sabilNo}
+          </Link>
+        )}
+      />
+      <FunctionField
+        label="HOF ITS"
+        render={(record) => (
+          <Link
+            component={RouterLink}
+            to={`/sabilData/${record.sabilData.id}/show`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {record.sabilData.itsNo}
+          </Link>
+        )}
+      />
+      <FunctionField
+        label="Name"
+        source="sabilData.name"
+        render={(record) => record.sabilData.name || record.sabilData.itsdata?.Full_Name || "-"}
+      />
+      <TextField source="amount" />
+      <DateField source="receiptDate" />
+      <TextField source="paymentMode" />
+      <FunctionField
+        label="Download"
+        source="formNo"
+        render={(record) => (
+          <Button onClick={() => printReceipt(record.id)}>
+            <DownloadIcon />
+          </Button>
+        )}
+        key="name"
+      />
+    </Datagrid>
+  );
+};
+
+export default () => {
   const ReceiptFilters = [
     <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
     <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
@@ -157,32 +256,36 @@ export default () => {
       alwaysOn
     />,
   ];
+
+  // Get filter from URL or default to CHULA
+  const getFilterFromURL = () => {
+    if (typeof window === "undefined") return { sabilType: "CHULA" };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get("filter");
+
+    if (filterParam) {
+      try {
+        const parsed = JSON.parse(filterParam);
+        return { ...parsed, sabilType: parsed.sabilType || "CHULA" };
+      } catch (e) {
+        console.error("Error parsing filter from URL:", e);
+      }
+    }
+
+    return { sabilType: "CHULA" };
+  };
+
   return (
     <>
-      <List sort={{ field: "receiptNo", order: "DESC" }} filters={ReceiptFilters}>
+      <List
+        sort={{ field: "receiptNo", order: "DESC" }}
+        filters={ReceiptFilters}
+        filterDefaultValues={getFilterFromURL()}
+      >
+        <SabilTypeTabs />
         <PaymentSummary />
-        <Datagrid rowClick="show">
-          <TextField source="receiptNo" />
-          <ReferenceField source="sabilId" reference="sabilData" link="show">
-            <TextField source="sabilNo" />
-          </ReferenceField>
-          <ReferenceField source="sabilId" label="HOF ITS" reference="sabilData" link="show">
-            <TextField source="itsNo" />
-          </ReferenceField>
-          <TextField source="amount" />
-          <DateField source="receiptDate" />
-          <TextField source="paymentMode" />
-          <FunctionField
-            label="Download"
-            source="formNo"
-            render={(record) => (
-              <Button onClick={() => printReceipt(record.id)}>
-                <DownloadIcon />
-              </Button>
-            )}
-            key="name"
-          />
-        </Datagrid>
+        <ReceiptDatagrid />
       </List>
     </>
   );

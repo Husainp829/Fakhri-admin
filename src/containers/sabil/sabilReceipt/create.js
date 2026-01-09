@@ -30,7 +30,11 @@ export default (props) => {
 
   const receiptDefaultValues = () => ({ sabilId });
   return (
-    <Create {...props} transform={transform}>
+    <Create
+      {...props}
+      transform={transform}
+      redirect={(_, id, data) => `/sabilData/${data.sabilId}/show`}
+    >
       <SimpleForm
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}

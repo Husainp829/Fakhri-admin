@@ -30,6 +30,12 @@ export const getType = (type) => {
   return type;
 };
 
+export const SABIL_TYPE_OPTIONS = [
+  { id: "CHULA", name: "CHULA" },
+  { id: "ESTABLISHMENT", name: "ESTABLISHMENT" },
+  { id: "MUTTAVATTEEN", name: "MUTTAVATTEEN" },
+];
+
 export const slotTimeRanges = {
   morning: [7, 10],
   afternoon: [12, 15],

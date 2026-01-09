@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 /**
  * Reusable Receipt Line Component
  */
-const ReceiptLine = ({ left, right, bold = false }) => (
+const ReceiptLine = ({ left, right, bold = false, capitalize = false }) => (
   <Box display="grid" gridTemplateColumns="280px 1fr" py={0.8}>
     <Typography fontSize={16} color="text.secondary">
       {left}
@@ -14,7 +14,7 @@ const ReceiptLine = ({ left, right, bold = false }) => (
     <Typography
       fontSize={16}
       fontWeight={bold ? 600 : 400}
-      sx={{ borderBottom: "1px dotted #999" }}
+      sx={{ borderBottom: "1px dotted #999", textTransform: capitalize ? "capitalize" : "none" }}
     >
       {right || "-"}
     </Typography>
@@ -55,6 +55,7 @@ const CommonReceiptA5 = ({
   digitalSignatureText = "Digitally Verified",
   footerNote = "This receipt is computer generated and does not require a physical signature.",
   showReceiptBadge = true,
+  receiptHeaderText = "RECEIPT",
 }) => {
   // Format date if it's a Date object or string
   const formattedDate = date ? dayjs(date).format(dateFormat) : date || "-";
@@ -85,7 +86,7 @@ const CommonReceiptA5 = ({
 
         {showReceiptBadge && (
           <Box px={2} py={1} border="1px solid #000" fontSize={14} letterSpacing={2}>
-            RECEIPT
+            {receiptHeaderText || "RECEIPT"}
           </Box>
         )}
       </Stack>
@@ -109,7 +110,13 @@ const CommonReceiptA5 = ({
       {/* Content - Receipt Lines */}
       <Box>
         {receiptLines.map((line, index) => (
-          <ReceiptLine key={index} left={line.left} right={line.right} bold={line.bold} />
+          <ReceiptLine
+            key={index}
+            left={line.left}
+            right={line.right}
+            bold={line.bold}
+            capitalize={line.capitalize}
+          />
         ))}
       </Box>
 

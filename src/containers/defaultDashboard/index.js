@@ -6,7 +6,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FestivalIcon from "@mui/icons-material/Festival";
 import TableRowsIcon from "@mui/icons-material/TableRows";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import { navigateToBaseRoute } from "../../utils/routeUtility";
 import { hasPermission } from "../../utils/permissionUtils";
 
@@ -72,6 +72,13 @@ export default function DefaultDashboard() {
             "Miqaat Niyaaz Receipts",
             "View and manage all miqaat niyaaz receipts",
             "miqaat",
+          ],
+          [
+            hasPermission(permissions, "accounts.view"),
+            AccountBalanceIcon,
+            "Accounts",
+            "View and manage all accounts",
+            "accounts",
           ],
         ].map(
           ([perm, icon, title, description, path]) =>

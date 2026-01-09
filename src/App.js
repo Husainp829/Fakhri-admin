@@ -64,6 +64,7 @@ import blockedHallDates from "./containers/bookings/blockedHallDates";
 import miqaatNiyaazReceipts from "./containers/miqaat/miqaatNiyaazReceipts";
 import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrintA5";
 import MiqaatDashboard from "./containers/miqaat/dashboard";
+import AccountsDashboard from "./containers/accounts/dashboard";
 
 dayjs.extend(utc);
 
@@ -127,6 +128,12 @@ const MainApp = () => {
         ) : (
           <Navigate to="/miqaatNiyaazReceipts" />
         );
+      case "accounts":
+        return hasPermission(permissions, "accounts.view") ? (
+          <AccountsDashboard />
+        ) : (
+          <DefaultDashboard />
+        );
       default:
         return <DefaultDashboard />;
     }
@@ -149,9 +156,25 @@ const MainApp = () => {
               {hasPermission(permissions, "bookings.view") && <Resource {...bookings} />}
               {hasPermission(permissions, "bookings.view") && <Resource {...hallBookings} />}
               {hasPermission(permissions, "bookingReceipts.view") && (
-                <Resource {...rentBookingReceipt} />
+                <Resource
+                  {...rentBookingReceipt}
+                  create={
+                    hasPermission(permissions, "bookingReceipts.create")
+                      ? rentBookingReceipt.create
+                      : null
+                  }
+                />
               )}
-              {hasPermission(permissions, "bookingReceipts.view") && <Resource {...lagatReceipt} />}
+              {hasPermission(permissions, "lagatReceipts.view") && (
+                <Resource
+                  {...lagatReceipt}
+                  create={
+                    hasPermission(permissions, "bookingReceipts.create")
+                      ? lagatReceipt.create
+                      : null
+                  }
+                />
+              )}
               {hasPermission(permissions, "halls.view") && <Resource {...bookingPurpose} />}
               {hasPermission(permissions, "halls.view") && <Resource {...halls} />}
               {hasPermission(permissions, "bookings.view") && <Resource {...blockedHallDates} />}
@@ -196,7 +219,14 @@ const MainApp = () => {
           {baseRoute === "sabil" && (
             <>
               {hasPermission(permissions, "sabil.view") && <Resource {...sabilData} />}
-              {hasPermission(permissions, "sabilReceipts.view") && <Resource {...sabilReceipt} />}
+              {hasPermission(permissions, "sabilReceipts.view") && (
+                <Resource
+                  {...sabilReceipt}
+                  create={
+                    hasPermission(permissions, "sabilReceipts.create") ? sabilReceipt.create : null
+                  }
+                />
+              )}
               {hasPermission(permissions, "sabil.view") && <Resource {...sabilTakhmeen} />}
               {hasPermission(permissions, "sabil.view") && <Resource {...sabilChangeRequests} />}
               {hasPermission(permissions, "sabil.view") && <Resource {...sabilLedger} />}
@@ -216,14 +246,43 @@ const MainApp = () => {
               )}
             </>
           )}
+          {baseRoute === "accounts" && (
+            <>
+              {hasPermission(permissions, "sabilReceipts.view") && (
+                <Resource
+                  {...sabilReceipt}
+                  create={
+                    hasPermission(permissions, "sabilReceipts.create") ? sabilReceipt.create : null
+                  }
+                />
+              )}
+              {hasPermission(permissions, "lagatReceipts.view") && (
+                <Resource
+                  {...lagatReceipt}
+                  create={
+                    hasPermission(permissions, "lagatReceipts.create") ? lagatReceipt.create : null
+                  }
+                />
+              )}
+              {hasPermission(permissions, "bookingReceipts.view") && (
+                <Resource
+                  {...rentBookingReceipt}
+                  create={
+                    hasPermission(permissions, "bookingReceipts.create")
+                      ? rentBookingReceipt.create
+                      : null
+                  }
+                />
+              )}
+            </>
+          )}
           {hasPermission(permissions, "admins.view") && <Resource {...admin} />}
           {hasPermission(permissions, "itsdata.dump") && <Resource {...itsdata} />}
           {hasPermission(permissions, "admins.view") && <Resource {...whatsappBroadcasts} />}
           {hasPermission(permissions, "cronStatus.view") && (
             <Resource {...cronStatus} name="cronStatus" />
           )}
-          {/* Sequences - view requires no permission, edit requires sequences.edit */}
-          <Resource {...sequences} />
+          {hasPermission(permissions, "sequences.view") && <Resource {...sequences} />}
           {/* auth-less routes */}
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
@@ -237,15 +296,14 @@ const MainApp = () => {
           <CustomRoutes noLayout>
             <Route path="/forgot-password" element={<ForgotPassword />} />
           </CustomRoutes>
+          <CustomRoutes noLayout>
+            <Route path="/sabil-receipt" element={<SabilReceipt />} />
+          </CustomRoutes>
+          <CustomRoutes noLayout>
+            <Route path="/fmb-receipt" element={<FmbReceipt />} />
+          </CustomRoutes>
         </>
       )}
-
-      <CustomRoutes noLayout>
-        <Route path="/sabil-receipt" element={<SabilReceipt />} />
-      </CustomRoutes>
-      <CustomRoutes noLayout>
-        <Route path="/fmb-receipt" element={<FmbReceipt />} />
-      </CustomRoutes>
     </Admin>
   );
 };

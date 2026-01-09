@@ -10,8 +10,6 @@ import {
   CircularProgress,
   MenuItem,
   IconButton,
-  Tabs,
-  Tab,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -29,6 +27,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { callApi } from "../../../dataprovider/miscApis";
+import CommonTabs from "../../../components/CommonTabs";
 
 const MiqaatNiyaazDashboard = () => {
   const redirect = useRedirect();
@@ -195,16 +194,14 @@ const MiqaatNiyaazDashboard = () => {
       {reportData && (
         <>
           {/* Payment Mode Tabs */}
-          <Box sx={{ mb: 3 }}>
-            <Tabs
-              value={paymentModeTab}
-              onChange={(e, newValue) => setPaymentModeTab(newValue)}
-              sx={{ borderBottom: 1, borderColor: "divider" }}
-            >
-              <Tab label="CASH" value="CASH" sx={{ fontWeight: "bold", fontSize: "1.2rem" }} />
-              <Tab label="ONLINE" value="ONLINE" sx={{ fontWeight: "bold", fontSize: "1.2rem" }} />
-            </Tabs>
-          </Box>
+          <CommonTabs
+            options={[
+              { id: "CASH", name: "CASH" },
+              { id: "ONLINE", name: "ONLINE" },
+            ]}
+            value={paymentModeTab}
+            onChange={(e, newValue) => setPaymentModeTab(newValue)}
+          />
 
           {/* Summary Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
