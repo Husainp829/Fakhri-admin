@@ -25,7 +25,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Link,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { hasPermission } from "../../../utils/permissionUtils";
 import CommonTabs from "../../../components/CommonTabs";
@@ -227,102 +229,82 @@ const ReceiptTypeTabs = () => {
   );
 };
 
-const ReceiptDatagrid = () => (
-  <Datagrid rowClick="edit" bulkActionButtons={false}>
-    <TextField source="receiptNo" />
-    <TextField source="organiserIts" label="ITS No." />
-    <TextField source="organiser" label="Organiser" />
-    <DateField source="date" />
-    <NumberField source="amount" />
-    <FunctionField
-      label="Created By"
-      source="createdBy"
-      render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
-    />
-    <FunctionField
-      label="Download"
-      source="formNo"
-      render={(record) => (
-        <Button
-          onClick={() => {
-            window.open(`#/cont-rcpt/${record.id}`, "_blank");
+const ReceiptDatagrid = () => {
+  const { filterValues } = useListContext();
+  const { permissions } = usePermissions();
+  const isDeposit = filterValues?.type === "DEPOSIT";
+
+  return (
+    <Datagrid rowClick="edit" bulkActionButtons={false}>
+      <TextField source="receiptNo" />
+      <FunctionField
+        label="Booking"
+        source="bookingId"
+        render={(record) => {
+          const bookingId = record?.booking?.id || record?.bookingId;
+          const bookingNo = record?.booking?.bookingNo || record?.bookingId;
+          if (!bookingId) return <span>-</span>;
+          if (hasPermission(permissions, "bookings.view")) {
+            return (
+              <Link
+                component={RouterLink}
+                to={`/bookings/${bookingId}/show`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {bookingNo}
+              </Link>
+            );
+          }
+          return <span>{bookingNo}</span>;
+        }}
+      />
+      <TextField source="organiserIts" label="ITS No." />
+      <TextField source="organiser" label="Organiser" />
+      <DateField source="date" />
+      <NumberField source="amount" />
+      {isDeposit && (
+        <FunctionField
+          label="Refund Amount"
+          source="refundAmount"
+          render={(record) => {
+            if (record?.refundAmount) {
+              return new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              }).format(record.refundAmount);
+            }
+            return <span>-</span>;
           }}
-        >
-          <DownloadIcon />
-        </Button>
+        />
       )}
-      key="name"
-    />
-  </Datagrid>
-);
+      <FunctionField
+        label="Created By"
+        source="createdBy"
+        render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
+      />
+      <FunctionField
+        label="Download"
+        source="formNo"
+        render={(record) => (
+          <Button
+            onClick={() => {
+              window.open(`#/cont-rcpt/${record.id}`, "_blank");
+            }}
+          >
+            <DownloadIcon />
+          </Button>
+        )}
+        key="name"
+      />
+    </Datagrid>
+  );
+};
 
 export default () => {
   const { permissions } = usePermissions();
+  const filterRef = React.useRef({ type: "DEPOSIT", mode: "CASH" });
 
-  const receiptColumns = [
-    {
-      header: "Receipt No",
-      field: "receiptNo",
-      width: 15,
-    },
-    {
-      header: "ITS No.",
-      field: "organiserIts",
-      width: 12,
-    },
-    {
-      header: "Organiser",
-      field: "organiser",
-      width: 25,
-    },
-    {
-      header: "Date",
-      field: "date",
-      width: 15,
-      formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
-    },
-    {
-      header: "Amount",
-      field: "amount",
-      width: 12,
-    },
-    {
-      header: "Mode",
-      field: "mode",
-      width: 15,
-    },
-    {
-      header: "Type",
-      field: "type",
-      width: 15,
-    },
-    {
-      header: "Created By",
-      width: 20,
-      field: (rec) => rec?.admin?.name || rec.createdBy || "",
-    },
-    // 🚫 Do NOT export the "Download" button — not relevant in Excel
-  ];
-  const exporter = (records) =>
-    exportToExcel(receiptColumns, records, {
-      filenamePrefix: "receipts",
-      sheetName: "Receipts",
-    });
-
-  const ReceiptFilters = [
-    <TextInput
-      label="Search By Organiser ITS"
-      source="organiserIts"
-      alwaysOn
-      key={0}
-      sx={{ minWidth: 300 }}
-    />,
-    <DateInput source="start" label="from" alwaysOn key={1} />,
-    <DateInput source="end" label="to" alwaysOn key={2} />,
-    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
-  ];
-
-  // Get filter from URL or default to DEPOSIT - CASH
   const getFilterFromURL = () => {
     if (typeof window === "undefined") return { type: "DEPOSIT", mode: "CASH" };
 
@@ -345,15 +327,134 @@ export default () => {
     return { type: "DEPOSIT", mode: "CASH" };
   };
 
+  // Create exporter that uses current filter from ref (updated by FilterSync component)
+  const exporter = (records) => {
+    // Get current filter from ref
+    const currentFilter = filterRef.current;
+
+    const isDeposit = currentFilter?.type === "DEPOSIT";
+
+    // Get tab name for filename
+    const currentTab = TAB_OPTIONS.find(
+      (tab) => tab.type === currentFilter?.type && tab.mode === currentFilter?.mode
+    );
+
+    let tabNameForFile = "receipts";
+    if (currentTab && currentTab.name) {
+      // Remove all spaces and hyphens, convert to lowercase
+      tabNameForFile = currentTab.name
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/-/g, "");
+    } else if (currentFilter?.type && currentFilter?.mode) {
+      // Fallback: construct from filter values if tab not found
+      // Normalize the type value (handle case where it might be "RENT" but we want "CONT")
+      let typePart = currentFilter.type.toLowerCase();
+      if (typePart === "rent") {
+        typePart = "contributions";
+      }
+      const modePart = currentFilter.mode.toLowerCase();
+      tabNameForFile = `${typePart}${modePart}`;
+    }
+
+    const receiptColumns = [
+      {
+        header: "Receipt No",
+        field: "receiptNo",
+        width: 15,
+      },
+      {
+        header: "Booking No",
+        field: (rec) => rec?.booking?.bookingNo || rec?.bookingId || "",
+        width: 20,
+      },
+      {
+        header: "ITS No.",
+        field: "organiserIts",
+        width: 12,
+      },
+      {
+        header: "Organiser",
+        field: "organiser",
+        width: 25,
+      },
+      {
+        header: "Date",
+        field: "date",
+        width: 15,
+        formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
+      },
+      {
+        header: "Amount",
+        field: "amount",
+        width: 12,
+      },
+      ...(isDeposit
+        ? [
+            {
+              header: "Refund Amount",
+              field: (rec) => rec?.refundAmount || 0,
+              width: 15,
+            },
+          ]
+        : []),
+      {
+        header: "Mode",
+        field: "mode",
+        width: 15,
+      },
+      {
+        header: "Type",
+        field: (rec) => (rec?.type === "RENT" ? "CONT" : rec?.type || ""),
+        width: 15,
+      },
+      {
+        header: "Created By",
+        width: 20,
+        field: (rec) => rec?.admin?.name || rec.createdBy || "",
+      },
+    ];
+
+    return exportToExcel(receiptColumns, records, {
+      filenamePrefix: `receipts-${tabNameForFile}`,
+      sheetName: "Receipts",
+    });
+  };
+
+  // Component to sync filter values to ref
+  const FilterSync = () => {
+    const { filterValues } = useListContext();
+    useEffect(() => {
+      if (filterValues?.type && filterValues?.mode) {
+        filterRef.current = { type: filterValues.type, mode: filterValues.mode };
+      }
+    }, [filterValues]);
+    return null;
+  };
+
+  const ReceiptFilters = [
+    <TextInput
+      label="Search By Organiser ITS"
+      source="organiserIts"
+      alwaysOn
+      key={0}
+      sx={{ minWidth: 300 }}
+    />,
+    <DateInput source="start" label="from" alwaysOn key={1} />,
+    <DateInput source="end" label="to" alwaysOn key={2} />,
+    <TextInput label="Search By Receipt No" source="receiptNo" key={0} sx={{ minWidth: 300 }} />,
+  ];
+
   return (
     <List
       hasCreate={false}
-      exporter={hasPermission(permissions, "receipts.export") && exporter}
+      exporter={hasPermission(permissions, "bookingReceipts.view") && exporter}
       pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
       sort={{ field: "date", order: "DESC" }}
       filters={ReceiptFilters}
       filterDefaultValues={getFilterFromURL()}
     >
+      <FilterSync />
       <ReceiptTypeTabs />
       <PaymentSummary />
       <ReceiptDatagrid />

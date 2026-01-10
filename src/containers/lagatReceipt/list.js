@@ -8,8 +8,11 @@ import {
   Button,
   DateInput,
   useListContext,
+  usePermissions,
+  Pagination,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import dayjs from "dayjs";
 import {
   Box,
   Typography,
@@ -21,6 +24,8 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import { exportToExcel } from "../../utils/exportToExcel";
+import { hasPermission } from "../../utils/permissionUtils";
 import httpClient from "../../dataprovider/httpClient";
 import { getApiUrl } from "../../constants";
 import CommonTabs from "../../components/CommonTabs";
@@ -258,12 +263,9 @@ const ReceiptDatagrid = () => {
 };
 
 export default () => {
-  const LagatFilters = [
-    <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
-    <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
-  ];
+  const { permissions } = usePermissions();
+  const filterRef = React.useRef({ paymentMode: "CASH" });
 
-  // Get filter from URL or default to CASH
   const getFilterFromURL = () => {
     if (typeof window === "undefined") return { paymentMode: "CASH" };
 
@@ -285,13 +287,99 @@ export default () => {
     return { paymentMode: "CASH" };
   };
 
+  // Create exporter that uses current filter from ref (updated by FilterSync component)
+  const exporter = (records) => {
+    // Get current filter from ref
+    const currentFilter = filterRef.current;
+
+    // Get tab name for filename
+    const currentTab = TAB_OPTIONS.find((tab) => tab.mode === currentFilter?.paymentMode);
+
+    let tabNameForFile = "lagatreceipts";
+    if (currentTab && currentTab.name) {
+      // Remove all spaces and hyphens, convert to lowercase
+      tabNameForFile = currentTab.name.toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
+    } else if (currentFilter?.paymentMode) {
+      // Fallback: use payment mode if tab not found
+      tabNameForFile = currentFilter.paymentMode.toLowerCase();
+    }
+
+    const receiptColumns = [
+      {
+        header: "Receipt No",
+        field: "receiptNo",
+        width: 15,
+      },
+      {
+        header: "Name",
+        field: "name",
+        width: 30,
+      },
+      {
+        header: "ITS No.",
+        field: "itsNo",
+        width: 12,
+      },
+      {
+        header: "Amount",
+        field: "amount",
+        width: 12,
+      },
+      {
+        header: "Purpose",
+        field: "purpose",
+        width: 25,
+      },
+      {
+        header: "Payment Mode",
+        field: "paymentMode",
+        width: 15,
+      },
+      {
+        header: "Payment Ref",
+        field: "paymentRef",
+        width: 20,
+      },
+      {
+        header: "Receipt Date",
+        field: "receiptDate",
+        width: 15,
+        formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
+      },
+    ];
+
+    return exportToExcel(receiptColumns, records, {
+      filenamePrefix: `lagatreceipts-${tabNameForFile}`,
+      sheetName: "Lagat Receipts",
+    });
+  };
+
+  // Component to sync filter values to ref
+  const FilterSync = () => {
+    const { filterValues } = useListContext();
+    useEffect(() => {
+      if (filterValues?.paymentMode) {
+        filterRef.current = { paymentMode: filterValues.paymentMode };
+      }
+    }, [filterValues]);
+    return null;
+  };
+
+  const LagatFilters = [
+    <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
+    <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
+  ];
+
   return (
     <>
       <List
         sort={{ field: "receiptNo", order: "DESC" }}
         filters={LagatFilters}
         filterDefaultValues={getFilterFromURL()}
+        exporter={hasPermission(permissions, "lagatReceipts.view") && exporter}
+        pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
       >
+        <FilterSync />
         <PaymentModeTabs />
         <PaymentSummary />
         <ReceiptDatagrid />

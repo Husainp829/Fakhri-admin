@@ -10,13 +10,18 @@ import {
   DateInput,
   SelectInput,
   useListContext,
+  usePermissions,
+  Pagination,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import dayjs from "dayjs";
 import { Box, Card, CardContent, Grid, Typography, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import httpClient from "../../../dataprovider/httpClient";
 import { getApiUrl, SABIL_TYPE_OPTIONS } from "../../../constants";
 import CommonTabs from "../../../components/CommonTabs";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 const SUMMARY_CONFIG = [
   {
@@ -241,21 +246,8 @@ const ReceiptDatagrid = () => {
 };
 
 export default () => {
-  const ReceiptFilters = [
-    <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
-    <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
-    <SelectInput
-      source="paymentMode"
-      label="Payment Mode"
-      choices={[
-        { id: "CASH", name: "CASH" },
-        { id: "ONLINE", name: "ONLINE" },
-        { id: "CHEQUE", name: "CHEQUE" },
-      ]}
-      key="paymentMode"
-      alwaysOn
-    />,
-  ];
+  const { permissions } = usePermissions();
+  const filterRef = React.useRef({ sabilType: "CHULA" });
 
   // Get filter from URL or default to CHULA
   const getFilterFromURL = () => {
@@ -276,13 +268,108 @@ export default () => {
     return { sabilType: "CHULA" };
   };
 
+  // Create exporter that uses current filter from ref (updated by FilterSync component)
+  const exporter = (records) => {
+    // Get current filter from ref
+    const currentFilter = filterRef.current;
+
+    // Get tab name for filename
+    const currentTab = SABIL_TYPE_OPTIONS.find(
+      (tab) => tab.id === currentFilter?.sabilType
+    );
+
+    let tabNameForFile = "sabilreceipts";
+    if (currentTab && currentTab.name) {
+      // Remove all spaces and hyphens, convert to lowercase
+      tabNameForFile = currentTab.name.toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
+    } else if (currentFilter?.sabilType) {
+      // Fallback: use sabilType if tab not found
+      tabNameForFile = currentFilter.sabilType.toLowerCase();
+    }
+
+    const receiptColumns = [
+      {
+        header: "Receipt No",
+        field: "receiptNo",
+        width: 15,
+      },
+      {
+        header: "Sabil No",
+        field: (rec) => rec?.sabilData?.sabilNo || "",
+        width: 15,
+      },
+      {
+        header: "HOF ITS",
+        field: (rec) => rec?.sabilData?.itsNo || "",
+        width: 12,
+      },
+      {
+        header: "Name",
+        field: (rec) =>
+          rec?.sabilData?.name || rec?.sabilData?.itsdata?.Full_Name || "",
+        width: 30,
+      },
+      {
+        header: "Amount",
+        field: "amount",
+        width: 12,
+      },
+      {
+        header: "Receipt Date",
+        field: "receiptDate",
+        width: 15,
+        formatter: (rec, v) => (v ? dayjs(v).format("DD-MMM-YYYY") : ""),
+      },
+      {
+        header: "Payment Mode",
+        field: "paymentMode",
+        width: 15,
+      },
+    ];
+
+    return exportToExcel(receiptColumns, records, {
+      filenamePrefix: `sabilreceipts-${tabNameForFile}`,
+      sheetName: "Sabil Receipts",
+    });
+  };
+
+  // Component to sync filter values to ref
+  const FilterSync = () => {
+    const { filterValues } = useListContext();
+    useEffect(() => {
+      if (filterValues?.sabilType) {
+        filterRef.current = { sabilType: filterValues.sabilType };
+      }
+    }, [filterValues]);
+    return null;
+  };
+
+  const ReceiptFilters = [
+    <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
+    <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
+    <SelectInput
+      source="paymentMode"
+      label="Payment Mode"
+      choices={[
+        { id: "CASH", name: "CASH" },
+        { id: "ONLINE", name: "ONLINE" },
+        { id: "CHEQUE", name: "CHEQUE" },
+      ]}
+      key="paymentMode"
+      alwaysOn
+    />,
+  ];
+
   return (
     <>
       <List
         sort={{ field: "receiptNo", order: "DESC" }}
         filters={ReceiptFilters}
         filterDefaultValues={getFilterFromURL()}
+        exporter={hasPermission(permissions, "sabilReceipts.view") && exporter}
+        pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
       >
+        <FilterSync />
         <SabilTypeTabs />
         <PaymentSummary />
         <ReceiptDatagrid />
