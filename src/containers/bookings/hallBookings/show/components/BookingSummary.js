@@ -72,6 +72,7 @@ const BookingSummary = () => {
     { label: "Phone", value: record.phone },
     { label: "Mohalla", value: record.mohalla },
     { label: "Sadarat", value: record.sadarat || "-" },
+    { label: "PAN Card", value: record.pancard || "-" },
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },
     {
       label: "Booked On",

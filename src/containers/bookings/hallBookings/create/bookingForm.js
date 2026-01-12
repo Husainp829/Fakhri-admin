@@ -85,6 +85,7 @@ export default function HallBookingForm() {
 
         <TextInput source="mohalla" label="Mohalla" defaultValue="Fakhri Mohalla" fullWidth />
         <TextInput source="sadarat" label="Sadarat" fullWidth />
+        <TextInput source="pancard" label="PAN Card" fullWidth />
       </Grid>
 
       <Grid item size={{ md: 7, xs: 12 }} sx={{ pr: 1, mt: -1, textAlign: "right" }}>
