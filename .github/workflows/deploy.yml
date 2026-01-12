@@ -83,6 +83,8 @@ jobs:
           ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'BACKUP_EOF'
             set -e
             cd ${{ secrets.DEPLOY_PATH }}/../api
+            # Delete all old backups first (keep only 1 backup at a time)
+            rm -rf admin-build-backup-* 2>/dev/null || true
             if [ -d "admin-build" ]; then
               BACKUP_DIR="admin-build-backup-$(date +%Y%m%d-%H%M%S)"
               mv admin-build "$BACKUP_DIR"
@@ -117,10 +119,6 @@ jobs:
             
             # Wait for containers to be ready
             sleep 5
-            
-            # Clean up old backups (keep last 3)
-            cd ../api
-            ls -dt admin-build-backup-* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
             
             echo "Admin build deployed successfully!"
           DEPLOY_EOF
