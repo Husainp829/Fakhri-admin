@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { Edit, SimpleForm, TextInput, NumberInput, DateInput, SelectInput } from "react-admin";
 import MiqaatNiyaazITSLookup from "./common/ITSLookup";
 import PaymentModeInput from "./common/PaymentModeInput";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 const ReceiptTypeDependentFields = () => {
   const { watch } = useFormContext();
@@ -35,7 +36,7 @@ export default (props) => (
       />
       <ReceiptTypeDependentFields />
       <TextInput source="purpose" label="Purpose" fullWidth isRequired />
-      <NumberInput source="amount" label="Amount" fullWidth isRequired />
+      <NoArrowKeyNumberInput source="amount" label="Amount" fullWidth isRequired />
       <DateInput source="receiptDate" label="Receipt Date" fullWidth isRequired />
       <PaymentModeInput />
       <TextInput source="paymentRef" label="Payment Reference" fullWidth />
