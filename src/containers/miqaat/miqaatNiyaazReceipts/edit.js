@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { Edit, SimpleForm, TextInput, NumberInput, DateInput, SelectInput } from "react-admin";
+import { Edit, SimpleForm, TextInput, DateInput, SelectInput } from "react-admin";
 import MiqaatNiyaazITSLookup from "./common/ITSLookup";
 import PaymentModeInput from "./common/PaymentModeInput";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
