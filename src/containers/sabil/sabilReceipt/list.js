@@ -9,6 +9,7 @@ import {
   Button,
   DateInput,
   SelectInput,
+  TextInput,
   useListContext,
   usePermissions,
   Pagination,
@@ -69,6 +70,7 @@ const PaymentSummary = () => {
       if (filterValues.paymentMode) queryParams.append("paymentMode", filterValues.paymentMode);
       if (filterValues.sabilId) queryParams.append("sabilId", filterValues.sabilId);
       if (filterValues.sabilType) queryParams.append("sabilType", filterValues.sabilType);
+      if (filterValues.itsNo) queryParams.append("itsNo", filterValues.itsNo);
 
       const url = `${getApiUrl(
         "sabilReceipt"
@@ -92,6 +94,7 @@ const PaymentSummary = () => {
     filterValues?.paymentMode,
     filterValues?.sabilId,
     filterValues?.sabilType,
+    filterValues?.itsNo,
   ]);
 
   if (!summary || loading) {
@@ -358,6 +361,7 @@ export default () => {
       key="paymentMode"
       alwaysOn
     />,
+    <TextInput source="itsNo" label="ITS No" key="itsNo" alwaysOn />
   ];
 
   return (

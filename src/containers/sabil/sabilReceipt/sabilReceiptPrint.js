@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import React from "react";
+import dayjs from "dayjs";
 import { ToWords } from "to-words";
 import { useGetOne } from "react-admin";
 import ReceiptPrint from "../../../components/ReceiptLayout";
@@ -19,6 +20,14 @@ const SabilReceipt = ({ ...props }) => {
   const receiptData = data || {};
   const sabilData = data?.sabilData || {};
   const itsdata = sabilData.itsdata || {};
+  const isEstablishment = sabilData?.sabilType === "ESTABLISHMENT";
+  const displayName = isEstablishment ? sabilData?.firmName || sabilData?.name : sabilData?.name;
+  const displayAddress = isEstablishment
+    ? sabilData?.firmAddress || sabilData?.address
+    : sabilData?.address;
+  const formatMonthYear = (value) => (value ? dayjs(value).format("MMM-YYYY") : null);
+  const periodStart = formatMonthYear(receiptData.periodStart);
+  const periodEnd = formatMonthYear(receiptData.periodEnd);
 
   const toWords = new ToWords();
 
@@ -54,11 +63,12 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
-              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{sabilData?.name}</div>
+              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{displayName}</div>
               <div style={{ paddingLeft: "10px" }}>حفظ الله تعالا</div>
             </div>
           </div>
-          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>{sabilData?.address}</div>
+          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>{displayAddress}</div>
+
           <div style={{ textAlign: "center", padding: "10px" }}>بعد السلام الجميل</div>
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -81,10 +91,20 @@ const SabilReceipt = ({ ...props }) => {
 
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ flex: "4", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
-              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>
-                {formatDate(receiptData.createdAt)}
+              <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
+              {periodEnd && (
+                <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                  {periodEnd}
+                </div>
+              )}
+              <div style={{ flex: "1", textAlign: "center" }}>
+                إلى
               </div>
+              {periodStart && (
+                <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                  {periodStart}
+                </div>
+              )}
               <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
             </div>
           </div>
@@ -98,7 +118,7 @@ const SabilReceipt = ({ ...props }) => {
             borderLeft: "5px solid #ccc",
           }}
         >
-          <LabelValue label="تاريخ" value={formatDate(receiptData.createdAt)} />
+          <LabelValue label="تاريخ" value={formatDate(receiptData.receiptDate)} />
           <LabelValue label="رسيد نمبر" value={receiptData.receiptNo} />
           <LabelValue label="سبيل نمبر" value={sabilData.sabilNo} />
           <LabelValue label="HOF ITS" value={itsdata.ITS_ID} noBorder />
