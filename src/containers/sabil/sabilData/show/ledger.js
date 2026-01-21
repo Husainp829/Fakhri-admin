@@ -125,7 +125,6 @@ export default () => {
           reference="sabilLedger"
           target="sabilId"
           label={false}
-          sort={{ field: "year", order: "DESC" }}
           filter={{ sabilId: record?.id }}
         >
           <Datagrid
