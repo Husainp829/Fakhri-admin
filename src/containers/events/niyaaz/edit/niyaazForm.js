@@ -5,42 +5,48 @@ import {
   ArrayInput,
   SimpleFormIterator,
   FormDataConsumer,
-  RadioButtonGroupInput,
-  ArrayField,
   SelectInput,
   BooleanInput,
   useStore,
 } from "react-admin";
 import Grid from "@mui/material/Grid";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useWatch, useFormContext } from "react-hook-form";
 
 import HofLookup from "../common/hofLookup";
-import NiyaazDataGrid from "../common/niyaazDataGrid";
-import { calcTotalPayable } from "../../../utils";
-import { MARKAZ_LIST } from "../../../constants";
-import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
+import { calcTotalPayable } from "../../../../utils";
+import { MARKAZ_LIST } from "../../../../constants";
 
 export default () => {
   const { setValue } = useFormContext();
+
   const [currentEvent] = useStore("currentEvent");
   const takhmeenAmount = useWatch({ name: "takhmeenAmount" });
   const iftaari = useWatch({ name: "iftaari" });
   const chairs = useWatch({ name: "chairs" });
   const zabihat = useWatch({ name: "zabihat" });
-  const previousHistory = useWatch({ name: "previousHistory" });
+  const paidAmount = useWatch({ name: "paidAmount" });
   const familyMembers = useWatch({ name: "familyMembers" });
 
-  useEffect(() => {
-    setValue("total", calcTotalPayable(currentEvent, { takhmeenAmount, iftaari, chairs, zabihat }));
-  }, [takhmeenAmount, iftaari, chairs, zabihat]);
+  const payable = calcTotalPayable(currentEvent, {
+    takhmeenAmount,
+    iftaari,
+    chairs,
+    zabihat,
+  });
 
   useEffect(() => {
     const chairCount = familyMembers?.filter((member) => member.hasChair).length || 0;
     setValue("chairs", chairCount);
   }, [familyMembers]);
   return (
-    <Grid container sx={{ mt: 3 }}>
+    <Grid container spacing={1} sx={{ mt: 3 }}>
       <Grid item size={{ md: 6, xs: 12 }} sx={{ pr: 1 }}>
         <Grid container>
           <Grid item size={{ xs: 12 }}>
@@ -48,7 +54,7 @@ export default () => {
               HOF Details <HofLookup change={() => {}} />
             </Typography>
           </Grid>
-          <Grid item size={{ xs: 6 }} pr={1}>
+          <Grid item size={{ xs: 6 }}>
             <SelectInput
               source="markaz"
               label="Jaman Venue"
@@ -76,7 +82,7 @@ export default () => {
               sx={{ mb: 3 }}
             />
           </Grid>
-          <Grid item size={{ lg: 6, xs: 6 }} pr={1}>
+          <Grid item size={{ lg: 6, xs: 6 }}>
             <TextInput source="HOFId" label="HOF ITS" fullWidth isRequired />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
@@ -93,15 +99,14 @@ export default () => {
           <Grid item size={{ xs: 12 }} sx={{ mb: 3 }}>
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
-          <Grid item size={{ lg: 6, xs: 6 }} pr={1}>
-            <NoArrowKeyNumberInput source="takhmeenAmount" fullWidth defaultValue={0} />
+          <Grid item size={{ lg: 6, xs: 6 }}>
+            <NumberInput source="takhmeenAmount" fullWidth defaultValue={0} min={0} />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NoArrowKeyNumberInput source="iftaari" fullWidth defaultValue={0} />
+            <NumberInput source="iftaari" fullWidth defaultValue={0} min={0} />
           </Grid>
-
-          <Grid item size={{ lg: 6, xs: 6 }} pr={1}>
-            <NoArrowKeyNumberInput
+          <Grid item size={{ lg: 6, xs: 6 }}>
+            <NumberInput
               source="zabihat"
               fullWidth
               defaultValue={0}
@@ -116,55 +121,48 @@ export default () => {
               source="chairs"
               fullWidth
               defaultValue={0}
-              helperText={`Toggle the chair selection per family member to add here. \n${chairs} X ₹${
-                currentEvent.chairs
-              } = ₹${chairs * currentEvent.chairs}`}
+              helperText={`${chairs} X ₹${currentEvent.chairs} = ₹${chairs * currentEvent.chairs}`}
               min={0}
               sx={{ mb: 2 }}
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
+              disabled
             />
           </Grid>
-          <Grid item size={{ lg: 12, xs: 12 }}>
-            <NumberInput
-              label="Total Payable"
-              source="total"
-              fullWidth
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
-              defaultValue={0}
-            />
+          <Grid item size={{ lg: 12, xs: 12 }} sx={{ mb: 3 }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 500 }} aria-label="simple table">
+                <TableBody>
+                  {[
+                    {
+                      title: "Total Payable",
+                      amount: payable,
+                    },
+                    {
+                      title: "Total Paid",
+                      amount: paidAmount,
+                    },
+                    {
+                      title: "Balance",
+                      amount: payable - paidAmount,
+                    },
+                  ].map((row) => (
+                    <TableRow
+                      key={row.title}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.title}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle1">
+                          <b>₹{row.amount}</b>
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-
-          <Grid item size={{ lg: 12, xs: 12 }}>
-            <NoArrowKeyNumberInput
-              label="Paid Amount"
-              source="paidAmount"
-              fullWidth
-              defaultValue={0}
-            />
-          </Grid>
-          <Grid item size={{ lg: 6, xs: 6 }}>
-            <RadioButtonGroupInput
-              source="mode"
-              choices={[
-                { id: "CASH", name: "CASH" },
-                { id: "ONLINE", name: "ONLINE" },
-                { id: "CHEQUE", name: "CHEQUE" },
-              ]}
-              fullWidth
-            />
-          </Grid>
-          <Grid item size={{ lg: 6, xs: 6 }}>
-            <TextInput source="details" label="Payment Details" fullWidth />
-          </Grid>
-
           <Grid item size={{ lg: 12, xs: 12 }}>
             <TextInput source="comments" fullWidth />
           </Grid>
@@ -172,20 +170,6 @@ export default () => {
       </Grid>
       <Grid item size={{ md: 6, xs: 12 }} sx={{ borderLeft: "1px solid #cccccc", pl: 1 }}>
         <Grid container>
-          {previousHistory && (
-            <Grid item size={{ xs: 12 }} sx={{ mb: 4 }}>
-              <Typography variant="body1" sx={{ mb: 3 }}>
-                Previous Takhmeen History
-              </Typography>
-              <ArrayField
-                record={previousHistory || {}}
-                source="rows"
-                emptyText="No Previous Records Found"
-              >
-                <NiyaazDataGrid />
-              </ArrayField>
-            </Grid>
-          )}
           <Grid item size={{ xs: 12 }}>
             <Typography variant="body1">Family Members</Typography>
             <ArrayInput source="familyMembers" fullWidth label="">

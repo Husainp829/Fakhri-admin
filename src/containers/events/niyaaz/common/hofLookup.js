@@ -18,7 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "../../../../dataprovider/miscApis";
 
 const useStyles = makeStyles(() => ({
   input: {

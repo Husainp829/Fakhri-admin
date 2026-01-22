@@ -2,7 +2,7 @@
 import React from "react";
 import { Create, useNotify, SimpleForm, useRedirect, useStore } from "react-admin";
 import NiyaazForm from "./niyaazForm";
-import { calcTotalPayable } from "../../../utils";
+import { calcTotalPayable } from "../../../../utils";
 
 export default (props) => {
   const notify = useNotify();

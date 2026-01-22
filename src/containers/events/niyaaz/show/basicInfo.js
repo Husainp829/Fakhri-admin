@@ -9,7 +9,7 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
-import { calcTotalPayable } from "../../../utils";
+import { calcTotalPayable } from "../../../../utils";
 
 export default () => {
   const [currentEvent] = useStore("currentEvent");

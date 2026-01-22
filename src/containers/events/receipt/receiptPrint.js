@@ -1,9 +1,9 @@
 import React from "react";
 import { ToWords } from "to-words";
 import { useGetOne, useStore } from "react-admin";
-import ReceiptPrint from "../../components/ReceiptLayout";
-import { formatDate } from "../../utils";
-import { MARKAZ_LIST } from "../../constants";
+import ReceiptPrint from "../../../components/ReceiptLayout";
+import { formatDate } from "../../../utils";
+import { MARKAZ_LIST } from "../../../constants";
 
 const Receipt = () => {
   const { href } = window.location;

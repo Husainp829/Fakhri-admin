@@ -12,8 +12,8 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { useWatch, useFormContext } from "react-hook-form";
-import { callApi } from "../../../dataprovider/miscApis";
-import { calcTotalPayable } from "../../../utils";
+import { callApi } from "../../../../dataprovider/miscApis";
+import { calcTotalPayable } from "../../../../utils";
 
 export default ({ niyaazId }) => {
   const notify = useNotify();

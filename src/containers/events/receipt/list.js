@@ -16,8 +16,8 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
-import { MARKAZ_LIST } from "../../constants";
-import { hasPermission } from "../../utils/permissionUtils";
+import { MARKAZ_LIST } from "../../../constants";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 export default () => {
   const { permissions } = usePermissions();

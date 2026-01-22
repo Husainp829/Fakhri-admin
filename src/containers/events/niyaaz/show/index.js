@@ -20,8 +20,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
-import { downLoadPasses } from "../../../utils";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { downLoadPasses } from "../../../../utils";
+import { hasPermission } from "../../../../utils/permissionUtils";
 const NiyaazActions = () => {
   const redirect = useRedirect();
   const {

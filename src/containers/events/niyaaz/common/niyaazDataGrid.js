@@ -3,7 +3,7 @@ import { Datagrid, TextField, NumberField, FunctionField } from "react-admin";
 
 export default () => (
   <Datagrid bulkActionButtons={false}>
-    <TextField source="event.slug" label="Event Name" />
+    <TextField source="Event.name" label="Event Name" />
     <TextField source="formNo" />
     <TextField source="HOFId" label="HOF ID" />
     <NumberField source="takhmeenAmount" />

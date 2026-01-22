@@ -27,9 +27,9 @@ import {
   calcTotalBalance,
   calcTotalPayable,
   downLoadPasses,
-} from "../../utils";
-import { MARKAZ_LIST } from "../../constants";
-import { hasPermission } from "../../utils/permissionUtils";
+} from "../../../utils";
+import { MARKAZ_LIST } from "../../../constants";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 export default () => {
   const NiyaazFilters = [
