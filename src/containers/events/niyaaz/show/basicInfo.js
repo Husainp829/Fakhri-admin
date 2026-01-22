@@ -5,15 +5,11 @@ import {
   NumberField,
   SimpleShowLayout,
   TextField,
-  useStore,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
-import { calcTotalPayable } from "../../../../utils";
 
-export default () => {
-  const [currentEvent] = useStore("currentEvent");
-  return (
+export default () => (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={3}>
         <SimpleShowLayout>
@@ -33,21 +29,19 @@ export default () => {
       <Grid item xs={12} sm={4}>
         <SimpleShowLayout>
           <FunctionField
-            source="total"
+            source="totalPayable"
             label="Total Payable"
-            render={(record) => <h2>₹ {calcTotalPayable(currentEvent, record)}</h2>}
+            render={(record) => <h2>₹ {record.totalPayable || 0}</h2>}
           />
           <FunctionField
             source="paidAmount"
             label="Paid Amount"
-            render={(record) => <h2>₹ {record.paidAmount}</h2>}
+            render={(record) => <h2>₹ {record.paidAmount || 0}</h2>}
           />
           <FunctionField
-            source="pending"
+            source="balance"
             label="Pending Balance"
-            render={(record) => (
-              <h2>₹ {calcTotalPayable(currentEvent, record) - record.paidAmount}</h2>
-            )}
+            render={(record) => <h2>₹ {record.balance || 0}</h2>}
           />
         </SimpleShowLayout>
       </Grid>
@@ -59,5 +53,4 @@ export default () => {
         </SimpleShowLayout>
       </Grid>
     </Grid>
-  );
-};
+);

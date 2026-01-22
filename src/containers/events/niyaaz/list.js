@@ -23,11 +23,7 @@ import {
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
-import {
-  calcTotalBalance,
-  calcTotalPayable,
-  downLoadPasses,
-} from "../../../utils";
+import { downLoadPasses } from "../../../utils";
 import { MARKAZ_LIST } from "../../../constants";
 import { hasPermission } from "../../../utils/permissionUtils";
 
@@ -96,9 +92,9 @@ export default () => {
         chairs,
         zabihat,
         iftaari,
-        totalPayable: calcTotalPayable(currentEvent, niy),
+        totalPayable: niy.totalPayable,
         paidAmount,
-        balance: calcTotalBalance(currentEvent, niy),
+        balance: niy.balance,
         markaz,
         namaazVenue,
         comments,
@@ -144,19 +140,9 @@ export default () => {
           <TextField source="HOFId" label="HOF ID" />
           <TextField source="HOFName" label="HOF Name" />
           <TextField source="HOFPhone" label="HOF Phone" />
-          <FunctionField
-            label="Total Payable"
-            source="totalPayable"
-            render={(record) => calcTotalPayable(currentEvent, record)}
-            key="name"
-          />
+          <NumberField source="totalPayable" label="Total Payable" textAlign="left" />
           <NumberField source="paidAmount" textAlign="left" />
-          <FunctionField
-            label="Balance"
-            source="balance"
-            render={(record) => calcTotalBalance(currentEvent, record)}
-            key="name"
-          />
+          <NumberField source="balance" label="Balance" textAlign="left" />
           <FunctionField
             label="Submitter"
             source="submitter"
