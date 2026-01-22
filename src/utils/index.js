@@ -49,7 +49,7 @@ export const receiptGroupBy = (array) =>
       ...curMarkaz,
       [curr.day]: {
         ...curDay,
-        [curr.mode]: curr.total_amount,
+        [curr.mode]: curr.totalAmount,
       },
     };
     return acc;
