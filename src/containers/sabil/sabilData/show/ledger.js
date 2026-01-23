@@ -126,6 +126,7 @@ export default () => {
           target="sabilId"
           label={false}
           filter={{ sabilId: record?.id }}
+          sort={{ field: "year", order: "DESC" }}
         >
           <Datagrid
             rowClick={false}

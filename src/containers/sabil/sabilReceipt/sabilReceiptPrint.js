@@ -94,7 +94,7 @@ const SabilReceipt = ({ ...props }) => {
               <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
               {periodEnd && (
                 <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                  {periodEnd}
+                  {isEstablishment ? "" : periodEnd}
                 </div>
               )}
               <div style={{ flex: "1", textAlign: "center" }}>
@@ -102,7 +102,7 @@ const SabilReceipt = ({ ...props }) => {
               </div>
               {periodStart && (
                 <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                  {periodStart}
+                  {isEstablishment ? "" : periodStart}
                 </div>
               )}
               <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
