@@ -16,16 +16,14 @@ import {
   TextInput,
   TopToolbar,
   WrapperField,
-  downloadCSV,
   usePermissions,
   useStore,
 } from "react-admin";
-import jsonExport from "jsonexport/dist";
-import dayjs from "dayjs";
 import DownloadIcon from "@mui/icons-material/Download";
 import { downLoadPasses } from "../../../utils";
 import { MARKAZ_LIST } from "../../../constants";
 import { hasPermission } from "../../../utils/permissionUtils";
+import { exportToExcel } from "../../../utils/exportToExcel";
 
 export default () => {
   const NiyaazFilters = [
@@ -65,60 +63,63 @@ export default () => {
   const [currentEvent] = useStore("currentEvent", null);
 
   const exporter = (niyaaz) => {
-    const niyaazForExport = niyaaz.map((niy) => {
-      const {
-        formNo,
-        HOFId,
-        HOFName,
-        HOFPhone,
-        takhmeenAmount,
-        chairs,
-        zabihat,
-        iftaari,
-        paidAmount,
-        markaz,
-        namaazVenue,
-        comments,
-        admin,
-        submitter,
-        createdAt,
-      } = niy;
-      return {
-        formNo,
-        HOFId,
-        HOFName,
-        HOFPhone,
-        takhmeenAmount,
-        chairs,
-        zabihat,
-        iftaari,
-        totalPayable: niy.totalPayable,
-        paidAmount,
-        balance: niy.balance,
-        markaz,
-        namaazVenue,
-        comments,
-        submitter: admin?.name || submitter,
-        createdAt: dayjs(createdAt).format("DD/MM/YYYY"),
-      };
-    });
-    const columnOrder = JSON.parse(
-      localStorage.getItem(
-        "RaStore.preferences.niyaaz.datagrid.availableColumns"
-      ) || "[]"
-    );
-
-    jsonExport(
-      niyaazForExport,
+    const niyaazColumns = [
       {
-        headers: columnOrder
-          .filter((c) => c.source !== "EDIT")
-          .map((c) => c.source), // order fields in the export
+        header: "Form No",
+        field: "formNo",
+        width: 15,
       },
-      (err, csv) => {
-        downloadCSV(csv, "NiyaazTakhmeen");
-      }
-    );
+      {
+        header: "Markaz",
+        field: "markaz",
+        width: 15,
+      },
+      {
+        header: "Namaaz Venue",
+        field: "namaazVenue",
+        width: 15,
+      },
+      {
+        header: "HOF ID",
+        field: "HOFId",
+        width: 15,
+      },
+      {
+        header: "HOF Name",
+        field: "HOFName",
+        width: 30,
+      },
+      {
+        header: "Mobile",
+        field: "HOFPhone",
+        width: 15,
+      },
+      {
+        header: "Total Payable",
+        field: "totalPayable",
+        width: 15,
+      },
+      {
+        header: "Paid Amount",
+        field: "paidAmount",
+        width: 15,
+      },
+      {
+        header: "Balance",
+        field: "balance",
+        width: 15,
+      },
+      {
+        header: "Submitter",
+        field: (rec) => rec?.admin?.name || rec.submitter || "",
+        width: 20,
+      },
+    ];
+
+    return exportToExcel(niyaazColumns, niyaaz, {
+      filenamePrefix: "niyaaz",
+      sheetName: "Niyaaz",
+    });
   };
 
   return (
