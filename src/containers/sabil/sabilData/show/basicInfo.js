@@ -53,6 +53,16 @@ const InfoField = ({ source, label, record }) => {
 const DateInfoField = ({ source, label, emptyText = "-", record }) => {
   const dateValue = source.split(".").reduce((obj, key) => obj?.[key], record);
 
+  const formatUTCDate = (date) => {
+    if (!date) return emptyText;
+    const d = new Date(date);
+    // Format as UTC without timezone conversion
+    const year = d.getUTCFullYear();
+    const month = d.toLocaleString("en-US", { month: "long", timeZone: "UTC" });
+    const day = d.getUTCDate();
+    return `${month} ${day}, ${year}`;
+  };
+
   return (
     <Box>
       <Typography
@@ -63,13 +73,7 @@ const DateInfoField = ({ source, label, emptyText = "-", record }) => {
         {label || source}
       </Typography>
       <Typography variant="body2" sx={{ mt: 0.25 }}>
-        {dateValue
-          ? new Date(dateValue).toLocaleDateString("en-IN", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          : emptyText}
+        {formatUTCDate(dateValue)}
       </Typography>
     </Box>
   );
