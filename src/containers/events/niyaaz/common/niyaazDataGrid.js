@@ -3,7 +3,11 @@ import { Datagrid, TextField, NumberField, FunctionField } from "react-admin";
 
 export default () => (
   <Datagrid bulkActionButtons={false}>
-    <TextField source="Event.name" label="Event Name" />
+    <FunctionField
+      label="Event Name"
+      source="event"
+      render={(record) => <span>{record?.event?.name || "-"}</span>}
+    />
     <TextField source="formNo" />
     <TextField source="HOFId" label="HOF ID" />
     <NumberField source="takhmeenAmount" />
@@ -16,7 +20,7 @@ export default () => (
     <FunctionField
       label="Submitter"
       source="submitter"
-      render={(record) => <span>{record?.admin?.name || record.submitter}</span>}
+      render={(record) => <span>{record?.admin?.name || record.submitter || "-"}</span>}
     />
   </Datagrid>
 );
