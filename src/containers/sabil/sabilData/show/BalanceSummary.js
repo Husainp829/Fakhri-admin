@@ -15,7 +15,7 @@ const SUMMARY_ITEMS = [
     key: "lastPaidMonth",
     label: "Last Paid Month",
     color: "text.primary",
-    format: (value) => {
+    format: (value, record) => {
       if (!value) return "N/A";
       const monthNames = [
         "Jan",
@@ -31,6 +31,29 @@ const SUMMARY_ITEMS = [
         "Nov",
         "Dec",
       ];
+      const fullMonthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      
+      // Check if it's an establishment sabil
+      const isEstablishment = record?.sabilType === "ESTABLISHMENT";
+      
+      // For establishment, if month is April (4), show range April {year} to March {year+1}
+      if (isEstablishment && value.month === 4) {
+        return `${fullMonthNames[3]} ${value.year} to ${fullMonthNames[2]} ${value.year + 1}`;
+      }
+      
       const monthName = monthNames[value.month - 1] || value.month;
       return `${monthName} - ${value.year}`;
     },
@@ -139,7 +162,7 @@ const BalanceSummary = forwardRef((props, ref) => {
             label={item.label}
             value={balanceSummary[item.key]}
             color={item.color}
-            format={item.format}
+            format={(value) => item.format(value, record)}
           />
         ))}
       </Grid>

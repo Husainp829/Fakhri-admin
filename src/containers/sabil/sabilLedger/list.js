@@ -28,9 +28,52 @@ const RegistrationFilters = [
 ];
 
 function SabilLedgerDatagrid() {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const fullMonthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   const fields = [
     <TextField source="sabilData.sabilNo" label="Sabil No." key="sabilNo" />,
     <TextField source="sabilData.sabilType" label="Type" key="sabilType" />,
+    <FunctionField
+      label="Period"
+      key="period"
+      render={(record) => {
+        const isEstablishment = record?.sabilData?.sabilType === "ESTABLISHMENT";
+        
+        // For establishment, if month is April (4), show range April {year} to March {year+1}
+        if (isEstablishment && record.month === 4) {
+          return `${fullMonthNames[3]} ${record.year} to ${fullMonthNames[2]} ${record.year + 1}`;
+        }
+        
+        return `${monthNames[record.month - 1]} ${record.year}`;
+      }}
+    />,
     <TextField source="month" label="Month" key="month" />,
     <TextField source="year" label="Year" key="year" />,
     <TextField source="financialYear" label="Financial Year" key="financialYear" />,

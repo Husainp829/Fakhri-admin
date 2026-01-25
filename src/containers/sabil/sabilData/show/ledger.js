@@ -97,6 +97,33 @@ const MonthYearField = ({ record }) => {
     "Nov",
     "Dec",
   ];
+  const fullMonthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // Check if it's an establishment sabil
+  const isEstablishment = record?.sabilData?.sabilType === "ESTABLISHMENT";
+
+  // For establishment, if month is April (4), show range April {year} to March {year+1}
+  if (isEstablishment && record.month === 4) {
+    return (
+      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+        {fullMonthNames[3]} {record.year} to {fullMonthNames[2]} {record.year + 1}
+      </Typography>
+    );
+  }
+
   return (
     <Typography variant="body2" sx={{ fontWeight: 500 }}>
       {monthNames[record.month - 1]} {record.year}

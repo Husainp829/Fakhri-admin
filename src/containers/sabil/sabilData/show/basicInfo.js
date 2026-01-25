@@ -63,6 +63,22 @@ const DateInfoField = ({ source, label, emptyText = "-", record }) => {
     return `${month} ${day}, ${year}`;
   };
 
+  // For establishment sabils, if lastPaidDate is in April, show range
+  const isEstablishment = record?.sabilType === "ESTABLISHMENT";
+  const isLastPaidDate = source === "lastPaidDate";
+
+  let displayValue = formatUTCDate(dateValue);
+  if (isEstablishment && isLastPaidDate && dateValue) {
+    const d = new Date(dateValue);
+    const month = d.getUTCMonth() + 1; // getUTCMonth() returns 0-11
+    const year = d.getUTCFullYear();
+
+    // If the last paid date is in April, show range
+    if (month === 4) {
+      displayValue = `April ${year} to March ${year + 1}`;
+    }
+  }
+
   return (
     <Box>
       <Typography
@@ -73,7 +89,7 @@ const DateInfoField = ({ source, label, emptyText = "-", record }) => {
         {label || source}
       </Typography>
       <Typography variant="body2" sx={{ mt: 0.25 }}>
-        {formatUTCDate(dateValue)}
+        {displayValue}
       </Typography>
     </Box>
   );

@@ -26,8 +26,19 @@ const SabilReceipt = ({ ...props }) => {
     ? sabilData?.firmAddress || sabilData?.address
     : sabilData?.address;
   const formatMonthYear = (value) => (value ? dayjs(value).format("MMM-YYYY") : null);
-  const periodStart = formatMonthYear(receiptData.periodStart);
-  const periodEnd = formatMonthYear(receiptData.periodEnd);
+  let periodStart = formatMonthYear(receiptData.periodStart);
+  let periodEnd = formatMonthYear(receiptData.periodEnd);
+
+  // For establishment, if periodStart is April, show range "April YYYY to March YYYY+1"
+  if (isEstablishment && receiptData.periodStart) {
+    const startDate = dayjs(receiptData.periodStart);
+    if (startDate.month() === 3) { // April is month 3 (0-indexed)
+      const startYear = startDate.year();
+      const endYear = startYear + 1;
+      periodStart = `April ${startYear} to March ${endYear}`;
+      periodEnd = null; // Don't show periodEnd for establishment
+    }
+  }
 
   const toWords = new ToWords();
 
@@ -92,20 +103,20 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
-              {periodEnd && (
+              {periodEnd && !isEstablishment && (
                 <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                  {isEstablishment ? "" : periodEnd}
+                  {periodEnd}
                 </div>
               )}
-              <div style={{ flex: "1", textAlign: "center" }}>
-                إلى
-              </div>
+              {!isEstablishment && <div style={{ flex: "1", textAlign: "center" }}>إلى</div>}
               {periodStart && (
-                <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                  {isEstablishment ? "" : periodStart}
+                <div style={{ flex: isEstablishment ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                  {periodStart}
                 </div>
               )}
-              <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
+              {!isEstablishment && (
+                <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
+              )}
             </div>
           </div>
         </div>
