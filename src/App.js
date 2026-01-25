@@ -21,6 +21,7 @@ import admin from "./containers/admin";
 import itsdata from "./containers/itsdata";
 import whatsappBroadcasts from "./containers/whatsappBroadcasts";
 import niyaaz from "./containers/events/niyaaz";
+import niyaazBookedSlots from "./containers/events/niyaazBookedSlots";
 import MyLoginPage from "./layout/login";
 import ForgotPassword from "./layout/forgotPassword";
 import receipt from "./containers/events/receipt";
@@ -196,6 +197,9 @@ const MainApp = () => {
               {routeId && (
                 <>
                   {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaaz} />}
+                  {hasPermission(permissions, "niyaaz.view") && (
+                    <Resource {...niyaazBookedSlots} />
+                  )}
                   {hasPermission(permissions, "receipts.view") && <Resource {...receipt} />}
                   {hasPermission(permissions, "vendorLedger.edit") && (
                     <Resource {...vendorLedger} />

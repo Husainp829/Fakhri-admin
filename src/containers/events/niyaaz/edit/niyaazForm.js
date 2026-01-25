@@ -20,6 +20,7 @@ import Typography from "@mui/material/Typography";
 import { useWatch, useFormContext } from "react-hook-form";
 
 import HofLookup from "../common/hofLookup";
+import BookedSlotsInput from "../common/BookedSlotsInput";
 import { calcTotalPayable } from "../../../../utils";
 import { MARKAZ_LIST } from "../../../../constants";
 
@@ -165,6 +166,10 @@ export default () => {
           </Grid>
           <Grid item size={{ lg: 12, xs: 12 }}>
             <TextInput source="comments" fullWidth />
+          </Grid>
+
+          <Grid item size={{ lg: 12, xs: 12 }} sx={{ mt: 3 }}>
+            <BookedSlotsInput />
           </Grid>
         </Grid>
       </Grid>
