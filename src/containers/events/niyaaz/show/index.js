@@ -49,10 +49,9 @@ const NiyaazActions = () => {
             redirect(`/receipts/create?niyaazId=${record?.id}`);
           }}
           sx={{ py: 1, my: 1 }}
-        >
-          <ReceiptLongIcon sx={{ mr: 1 }} />
-          Add Receipt
-        </Button>
+          startIcon={<ReceiptLongIcon />}
+          label="Add Receipt"
+        />
       )}
 
       <Button
@@ -62,10 +61,9 @@ const NiyaazActions = () => {
           downLoadPasses(record);
         }}
         sx={{ py: 1, my: 1 }}
-      >
-        <PrintIcon sx={{ mr: 1 }} />
-        Print Passes
-      </Button>
+        startIcon={<PrintIcon />}
+        label="Print Passes"
+      />
       {hasPermission(permissions, "niyaaz.edit") && (
         <>
           <Button
@@ -75,10 +73,9 @@ const NiyaazActions = () => {
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
             sx={{ py: 1, my: 1 }}
-          >
-            <EditNoteIcon sx={{ mr: 1 }} />
-            Actions
-          </Button>
+            startIcon={<EditNoteIcon />}
+            label="Actions"
+          />
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}

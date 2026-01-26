@@ -54,7 +54,14 @@ const waitForAuthState = () => {
 const clearSession = async () => {
   await signOut(authObj);
   localStorage.clear();
-  goToLogin();
+  sessionStorage.clear();
+  // Clear in-memory cache
+  cache.clear();
+  // Force hard reload to refresh all caches (browser cache, service worker cache, etc.)
+  // Use replace to avoid adding to history and force cache bypass
+  const { href } = window.location;
+  const url = new URL(href);
+  window.location.replace(`${url.origin}/#/login?reload=${Date.now()}`);
 };
 
 // --------------------

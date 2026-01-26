@@ -204,9 +204,7 @@ const MainApp = () => {
                   {hasPermission(permissions, "vendorLedger.edit") && (
                     <Resource {...vendorLedger} />
                   )}
-                  <CustomRoutes noLayout>
-                    <Route path="/niyaaz-receipt" element={<Receipt />} />
-                  </CustomRoutes>
+
                 </>
               )}
               {hasPermission(permissions, "vendors.edit") && <Resource {...vendor} />}
@@ -288,6 +286,9 @@ const MainApp = () => {
           )}
           {hasPermission(permissions, "sequences.view") && <Resource {...sequences} />}
           {/* auth-less routes */}
+          <CustomRoutes noLayout>
+            <Route path="/niyaaz-receipt" element={<Receipt />} />
+          </CustomRoutes>
           <CustomRoutes noLayout>
             <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
           </CustomRoutes>

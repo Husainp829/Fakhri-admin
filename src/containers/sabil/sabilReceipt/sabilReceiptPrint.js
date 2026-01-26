@@ -2,10 +2,58 @@
 /* eslint-disable no-console */
 import React from "react";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { ToWords } from "to-words";
 import { useGetOne } from "react-admin";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "../../../utils";
+
+dayjs.extend(utc);
+
+/**
+ * Format period for monthly sabils (CHULA, MUTTAVATTEEN)
+ * Returns formatted periodStart and periodEnd as "MMM-YYYY"
+ */
+const formatMonthlyPeriod = (periodStart, periodEnd) => {
+  const formatMonthYear = (value) => (value ? dayjs.utc(value).format("MMM-YYYY") : null);
+  return {
+    periodStart: formatMonthYear(periodStart),
+    periodEnd: formatMonthYear(periodEnd),
+  };
+};
+
+/**
+ * Format period for yearly sabils (ESTABLISHMENT, PROFESSIONAL)
+ * If periodStart is April, show "April YYYY to March YYYY+1"
+ * Otherwise, format as "MMM-YYYY"
+ */
+const formatYearlyPeriod = (periodStart, periodEnd) => {
+  if (!periodStart) {
+    return {
+      periodStart: null,
+      periodEnd: null,
+    };
+  }
+
+  const startDate = dayjs.utc(periodStart);
+  // If periodStart is April (month 3 in 0-indexed), show full financial year format
+  if (startDate.month() === 3) {
+    // April is month 3 (0-indexed)
+    const startYear = startDate.year();
+    const endYear = startYear + 1;
+    return {
+      periodStart: `April ${startYear}`,
+      periodEnd: `March ${endYear}`,
+    };
+  }
+
+  // Otherwise, format normally
+  const formatMonthYear = (value) => (value ? dayjs.utc(value).format("MMM-YYYY") : null);
+  return {
+    periodStart: formatMonthYear(periodStart),
+    periodEnd: formatMonthYear(periodEnd),
+  };
+};
 
 const SabilReceipt = ({ ...props }) => {
   const { href } = window.location;
@@ -20,25 +68,19 @@ const SabilReceipt = ({ ...props }) => {
   const receiptData = data || {};
   const sabilData = data?.sabilData || {};
   const itsdata = sabilData.itsdata || {};
-  const isEstablishment = sabilData?.sabilType === "ESTABLISHMENT";
+  const sabilType = sabilData?.sabilType;
+  const isYearlySabil = sabilType === "ESTABLISHMENT" || sabilType === "PROFESSIONAL";
+  const isEstablishment = sabilType === "ESTABLISHMENT";
   const displayName = isEstablishment ? sabilData?.firmName || sabilData?.name : sabilData?.name;
   const displayAddress = isEstablishment
     ? sabilData?.firmAddress || sabilData?.address
     : sabilData?.address;
-  const formatMonthYear = (value) => (value ? dayjs(value).format("MMM-YYYY") : null);
-  let periodStart = formatMonthYear(receiptData.periodStart);
-  let periodEnd = formatMonthYear(receiptData.periodEnd);
 
-  // For establishment, if periodStart is April, show range "April YYYY to March YYYY+1"
-  if (isEstablishment && receiptData.periodStart) {
-    const startDate = dayjs(receiptData.periodStart);
-    if (startDate.month() === 3) { // April is month 3 (0-indexed)
-      const startYear = startDate.year();
-      const endYear = startYear + 1;
-      periodStart = `April ${startYear} to March ${endYear}`;
-      periodEnd = null; // Don't show periodEnd for establishment
-    }
-  }
+  // Format period based on sabil type
+  const period = isYearlySabil
+    ? formatYearlyPeriod(receiptData.periodStart, receiptData.periodEnd)
+    : formatMonthlyPeriod(receiptData.periodStart, receiptData.periodEnd);
+  const { periodStart, periodEnd } = period;
 
   const toWords = new ToWords();
 
@@ -103,20 +145,21 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
-              {periodEnd && !isEstablishment && (
-                <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                  {periodEnd}
-                </div>
+              {periodEnd && (
+                <>
+                  <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                    {periodEnd}
+                  </div>
+                  <div style={{ flex: "1", textAlign: "center" }}>إلى</div>
+                </>
               )}
-              {!isEstablishment && <div style={{ flex: "1", textAlign: "center" }}>إلى</div>}
               {periodStart && (
-                <div style={{ flex: isEstablishment ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                <div style={{ flex: isYearlySabil ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}>
                   {periodStart}
                 </div>
               )}
-              {!isEstablishment && (
-                <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
-              )}
+              <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
+
             </div>
           </div>
         </div>

@@ -83,7 +83,7 @@ const BookingDetailsModal = ({ open, onClose, day, slot, type, bookings }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                Bookings - Day {day}, {slot} ({type})
+                Bookings - Raat {day}, {slot} ({type})
             </DialogTitle>
             <DialogContent>
                 {bookings.length > 0 ? (
@@ -216,7 +216,7 @@ export default function NiyaazBookedSlotsList() {
                                     <Grid item size={{ xs: 12, sm: 6, md: 12 / 7 }} key={dayData.day} sx={{ display: "flex" }}>
                                         <Paper sx={{ p: 1, bgcolor: "#f5f5f5", minHeight: 150, width: "100%" }}>
                                             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
-                                                {dayData.day === 31 ? "EID Ul Fitr" : `Day ${dayData.day}`}
+                                                {dayData.day === 31 ? "EID Ul Fitr" : `Raat ${dayData.day}`}
                                             </Typography>
                                             {bookedSlots.length > 0 ? (
                                                 <Grid container spacing={0.5}>
@@ -236,7 +236,7 @@ export default function NiyaazBookedSlotsList() {
                                                 </Grid>
                                             ) : (
                                                 <Typography variant="caption" color="text.secondary" sx={{ fontStyle: "italic" }}>
-                                                    No bookings
+                                                    No Niyaaz Yet
                                                 </Typography>
                                             )}
                                         </Paper>

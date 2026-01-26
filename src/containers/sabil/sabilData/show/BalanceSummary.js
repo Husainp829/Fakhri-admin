@@ -13,7 +13,7 @@ const SUMMARY_ITEMS = [
   },
   {
     key: "lastPaidMonth",
-    label: "Last Paid Month",
+    label: "Last Paid",
     color: "text.primary",
     format: (value, record) => {
       if (!value) return "N/A";

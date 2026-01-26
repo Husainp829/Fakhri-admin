@@ -208,7 +208,7 @@ const BalanceSummary = ({ sabilId }) => {
               color="text.secondary"
               sx={{ fontWeight: 600, fontSize: "0.75rem" }}
             >
-              Last Paid Month
+              Last Paid
             </Typography>
             <Typography variant="h6" sx={{ mt: 0.5, fontWeight: 500 }}>
               {balanceSummary.lastPaidMonth

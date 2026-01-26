@@ -51,7 +51,7 @@ const ExistingBookingsModal = ({ open, onClose, eventId, day, slot, onAddAnyway 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                Existing Bookings - {day === 31 ? "EID Ul Fitr" : `Day ${day}`}, {slot}
+                Existing Bookings - {day === 31 ? "EID Ul Fitr" : `Raat ${day}`}, {slot}
             </DialogTitle>
             <DialogContent>
                 {loading && <Typography>Loading...</Typography>}
@@ -149,7 +149,7 @@ const SlotDaySelector = ({ onSelect, eventId }) => {
         <>
             <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                    Select Day (1-30 for Ramadaan) and Slot
+                    Select Raat (1-30 for Ramadaan) and Slot
                 </Typography>
                 <Grid container spacing={1}>
                     {weeks.map((week, weekIdx) => (
@@ -180,7 +180,7 @@ const SlotDaySelector = ({ onSelect, eventId }) => {
             {selectedDay && (
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                        Selected Day: {selectedDay === 31 ? "EID Ul Fitr" : `Day ${selectedDay}`} - Choose Slot
+                        Selected Raat: {selectedDay === 31 ? "EID Ul Fitr" : `Raat ${selectedDay}`} - Choose Slot
                     </Typography>
                     <Grid container spacing={1}>
                         {SLOTS.map((slot) => (
@@ -260,7 +260,7 @@ export default function BookedSlotsInput() {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Day</TableCell>
+                                    <TableCell>Raat</TableCell>
                                     <TableCell>Slot</TableCell>
                                     <TableCell>Type</TableCell>
                                     <TableCell>Actions</TableCell>
@@ -269,7 +269,7 @@ export default function BookedSlotsInput() {
                             <TableBody>
                                 {bookedSlots.map((slot, index) => (
                                     <TableRow key={index}>
-                                        <TableCell>{slot.day === 31 ? "EID Ul Fitr" : `Day ${slot.day}`}</TableCell>
+                                        <TableCell>{slot.day === 31 ? "EID Ul Fitr" : `Raat ${slot.day}`}</TableCell>
                                         <TableCell>
                                             <Chip label={slot.slot} size="small" />
                                         </TableCell>
