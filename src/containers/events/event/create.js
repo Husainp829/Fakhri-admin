@@ -4,9 +4,9 @@ import {
   SimpleForm,
   TextInput,
   DateInput,
-  NumberInput,
   required,
 } from "react-admin";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default (props) => (
   <Create {...props} redirect="/events">
@@ -21,8 +21,8 @@ export default (props) => (
         validate={required()}
         helperText="URL-friendly identifier (e.g., ashara-mubaraka-1445)"
       />
-      <NumberInput source="zabihat" fullWidth helperText="Number of zabihat (optional)" />
-      <NumberInput source="chairs" fullWidth helperText="Number of chairs (optional)" />
+      <NoArrowKeyNumberInput source="zabihat" fullWidth helperText="Number of zabihat (optional)" />
+      <NoArrowKeyNumberInput source="chairs" fullWidth helperText="Number of chairs (optional)" />
     </SimpleForm>
   </Create>
 );

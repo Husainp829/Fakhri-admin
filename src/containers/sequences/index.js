@@ -6,11 +6,11 @@ import {
   Datagrid,
   TextField,
   List,
-  NumberInput,
   usePermissions,
 } from "react-admin";
 import Icon from "@mui/icons-material/Filter9Plus";
 import { hasPermission } from "../../utils/permissionUtils";
+import NoArrowKeyNumberInput from "../../components/NoArrowKeyNumberInput";
 
 const ListSequences = () => {
   const { permissions } = usePermissions();
@@ -40,7 +40,7 @@ const EditSequence = () => {
       <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 700 }}>
         <TextInput source="name" label="Name" disabled fullWidth />
         <TextInput source="prefix" label="Prefix" fullWidth />
-        <NumberInput source="currentValue" label="Current Value" fullWidth />
+        <NoArrowKeyNumberInput source="currentValue" label="Current Value" fullWidth />
       </SimpleForm>
     </Edit>
   );

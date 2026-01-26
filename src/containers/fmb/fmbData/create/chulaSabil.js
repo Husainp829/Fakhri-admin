@@ -1,6 +1,7 @@
 import React from "react";
-import { TextInput, ReferenceInput, DateInput, NumberInput } from "react-admin";
+import { TextInput, ReferenceInput, DateInput } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 import { ITSInput } from "../common/itsInput";
 
@@ -33,7 +34,7 @@ export default () => (
       <DateInput source="lastPaidDate" fullWidth />
     </Grid>
     <Grid item lg={6} xs={6}>
-      <NumberInput source="takhmeen" label="Monthly Chula Sabil" fullWidth />
+      <NoArrowKeyNumberInput source="takhmeen" label="Monthly Chula Sabil" fullWidth />
     </Grid>
     <Grid item lg={6} xs={6}>
       <TextInput source="Remarks" fullWidth />

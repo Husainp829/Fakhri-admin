@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import {
   TextInput,
-  NumberInput,
   ArrayInput,
   SimpleFormIterator,
   FormDataConsumer,
@@ -18,6 +17,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useWatch, useFormContext } from "react-hook-form";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 import HofLookup from "../common/hofLookup";
 import BookedSlotsInput from "../common/BookedSlotsInput";
@@ -101,13 +101,13 @@ export default () => {
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NumberInput source="takhmeenAmount" fullWidth defaultValue={0} min={0} />
+            <NoArrowKeyNumberInput source="takhmeenAmount" fullWidth defaultValue={0} min={0} />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NumberInput source="iftaari" fullWidth defaultValue={0} min={0} />
+            <NoArrowKeyNumberInput source="iftaari" fullWidth defaultValue={0} min={0} />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               source="zabihat"
               fullWidth
               defaultValue={0}
@@ -118,7 +118,7 @@ export default () => {
             />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               source="chairs"
               fullWidth
               defaultValue={0}

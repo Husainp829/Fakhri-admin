@@ -3,11 +3,11 @@ import {
   TextInput,
   Edit,
   SimpleForm,
-  NumberInput,
   DateInput,
   RadioButtonGroupInput,
   useRecordContext,
 } from "react-admin";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import CustomReferenceInput from "../../../components/CustomReferenceInput";
 
 const PostTitle = () => {
@@ -39,7 +39,7 @@ export default (props) => (
         defaultKey="id"
         title="Type"
       />
-      <NumberInput source="paid" fullWidth />
+      <NoArrowKeyNumberInput source="paid" fullWidth label="Paid Amount" />
       <DateInput source="paidDate" fullWidth />
       <RadioButtonGroupInput
         sx={{ mt: 0 }}

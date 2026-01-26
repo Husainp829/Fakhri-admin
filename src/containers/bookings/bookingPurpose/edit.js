@@ -7,12 +7,12 @@ import {
   SimpleFormIterator,
   ReferenceInput,
   SelectInput,
-  NumberInput,
   BooleanInput,
   useNotify,
   useRedirect,
 } from "react-admin";
 import { Grid } from "@mui/material";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 const BookingPurposeEdit = () => {
   const notify = useNotify();
@@ -39,16 +39,16 @@ const BookingPurposeEdit = () => {
                 </ReferenceInput>
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                <NumberInput source="rent" label="Rent (₹)" min={0} defaultValue={0} />
+                <NoArrowKeyNumberInput source="rent" label="Rent (₹)" min={0} defaultValue={0} />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                <NumberInput source="deposit" label="Deposit (₹)" min={0} defaultValue={0} />
+                <NoArrowKeyNumberInput source="deposit" label="Deposit (₹)" min={0} defaultValue={0} />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 2 }}>
-                <NumberInput source="acCharges" label="AC Charges (₹)" min={0} defaultValue={0} />
+                <NoArrowKeyNumberInput source="acCharges" label="AC Charges (₹)" min={0} defaultValue={0} />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 2 }}>
-                <NumberInput
+                <NoArrowKeyNumberInput
                   source="kitchenCleaning"
                   label="Kitchen Cleaning (₹)"
                   min={0}

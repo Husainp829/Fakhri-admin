@@ -1,6 +1,7 @@
 import React from "react";
-import { TextInput, NumberInput } from "react-admin";
+import { TextInput } from "react-admin";
 import Grid from "@mui/material/Grid";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 import { ManualITSInput } from "./common/manualItsInput";
 
@@ -19,7 +20,7 @@ export default () => (
       <TextInput source="pan" label="PAN" fullWidth />
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
-      <NumberInput source="takhmeen" label="Monthly Chula Sabil" fullWidth />
+      <NoArrowKeyNumberInput source="takhmeen" label="Monthly Chula Sabil" fullWidth />
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
       <TextInput source="remarks" label="Remarks" fullWidth />

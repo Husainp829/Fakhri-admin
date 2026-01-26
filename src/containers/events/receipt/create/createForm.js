@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import {
   TextInput,
-  NumberInput,
   DateInput,
   RadioButtonGroupInput,
   useNotify,
@@ -12,6 +11,7 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { useWatch, useFormContext } from "react-hook-form";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 import { callApi } from "../../../../dataprovider/miscApis";
 import { calcTotalPayable } from "../../../../utils";
 
@@ -131,7 +131,7 @@ export default ({ niyaazId }) => {
               },
             }}
           />
-          <NumberInput
+          <NoArrowKeyNumberInput
             source="totalPayable"
             fullWidth
             slotProps={{
@@ -140,7 +140,7 @@ export default ({ niyaazId }) => {
               },
             }}
           />
-          <NumberInput source="amount" fullWidth validate={validateAmount} />
+          <NoArrowKeyNumberInput source="amount" fullWidth validate={validateAmount} />
         </Grid>
         <Grid item lg={6} xs={6}>
           <DateInput
@@ -153,7 +153,7 @@ export default ({ niyaazId }) => {
               },
             }}
           />
-          <NumberInput
+          <NoArrowKeyNumberInput
             source="balancePending"
             fullWidth
             slotProps={{

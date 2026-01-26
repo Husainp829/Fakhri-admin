@@ -1,7 +1,8 @@
 import React from "react";
-import { Edit, SimpleForm, TextInput, ReferenceInput, DateInput, NumberInput } from "react-admin";
+import { Edit, SimpleForm, TextInput, ReferenceInput, DateInput } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "../common/itsInput";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 export default (props) => (
   <Edit {...props}>
@@ -41,7 +42,7 @@ export default (props) => (
           <DateInput source="lastPaidDate" fullWidth disabled />
         </Grid>
         <Grid item lg={6} xs={6}>
-          <NumberInput
+          <NoArrowKeyNumberInput
             source="fmbTakhmeenCurrent.takhmeenAmount"
             label="Current Takhmeen"
             fullWidth

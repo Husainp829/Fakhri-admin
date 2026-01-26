@@ -13,7 +13,7 @@ const NoArrowKeyNumberInput = (props) => (
       e.target.value = e.target.value.replace(/[^0-9]/g, "");
     }}
     parse={(v) => {
-      if (v === "" || v === undefined || v === null) return null;
+      if (v === "" || v === undefined || v === null) return 0;
       return Number(v);
     }}
     format={(v) => (v == null ? "" : String(v))}

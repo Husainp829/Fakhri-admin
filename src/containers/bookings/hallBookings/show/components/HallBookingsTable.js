@@ -5,7 +5,6 @@ import {
   Edit,
   SimpleForm,
   TextInput,
-  NumberInput,
   DateInput,
   SelectInput,
   BooleanInput,
@@ -39,6 +38,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { slotNameMap } from "../../../../../constants";
 import { hasPermission } from "../../../../../utils/permissionUtils";
+import NoArrowKeyNumberInput from "../../../../../components/NoArrowKeyNumberInput";
 
 const CustomToolbar = ({ onClose, ...props }) => {
   const refresh = useRefresh();
@@ -99,7 +99,7 @@ const HallBookingEditModal = ({ id, open, onClose }) => {
         >
           <SimpleForm toolbar={<CustomToolbar onClose={onClose} />}>
             <TextInput source="hall.name" label="Hall" disabled fullWidth />
-            <NumberInput source="thaals" label="Thaals" fullWidth />
+            <NoArrowKeyNumberInput source="thaals" label="Thaals" fullWidth />
             <ReferenceInput
               source="purpose"
               reference="bookingPurpose"
@@ -167,7 +167,7 @@ const HallBookingCreateModal = ({ open, onClose, bookingId }) => {
             >
               <SelectInput optionText="name" fullWidth />
             </ReferenceInput>
-            <NumberInput source="thaals" label="Thaals" fullWidth />
+            <NoArrowKeyNumberInput source="thaals" label="Thaals" fullWidth />
             <DateInput source="date" label="Date" fullWidth />
             <SelectInput
               source="slot"

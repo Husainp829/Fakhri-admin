@@ -1,9 +1,10 @@
 import React from "react";
-import { TextInput, ReferenceInput, DateInput, NumberInput } from "react-admin";
+import { TextInput, ReferenceInput, DateInput } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 
 import { ITSInput } from "../common/itsInput";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 export default () => (
   <Grid container spacing={1} sx={{ mt: 3 }}>
@@ -53,7 +54,7 @@ export default () => (
       <DateInput source="lastPaidDate" fullWidth />
     </Grid>
     <Grid item lg={6} xs={6}>
-      <NumberInput label="Yearly Chula Sabil" source="takhmeen" fullWidth />
+      <NoArrowKeyNumberInput label="Yearly Chula Sabil" source="takhmeen" fullWidth />
     </Grid>
     <Grid item lg={6} xs={6}>
       <TextInput source="Remarks" fullWidth />

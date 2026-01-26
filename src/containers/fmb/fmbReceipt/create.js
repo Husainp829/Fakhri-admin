@@ -4,12 +4,12 @@ import {
   Create,
   SimpleForm,
   ReferenceInput,
-  NumberInput,
   DateInput,
   RadioButtonGroupInput,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default (props) => {
   const optionRenderer = (choice) => `${choice.itsNo}`;
@@ -51,8 +51,8 @@ export default (props) => {
             </ReferenceInput>
             <TextInput source="fmbNo" fullWidth disabled />
             <TextInput source="takhmeenAmount" fullWidth disabled />
-            <NumberInput source="amount" fullWidth />
-            <NumberInput source="balancePending" fullWidth disabled />
+            <NoArrowKeyNumberInput source="amount" fullWidth />
+            <NoArrowKeyNumberInput source="balancePending" fullWidth disabled />
           </Grid>
           <Grid item lg={6} xs={6}>
             <TextInput source="name" label="FMB Account Holder Name" fullWidth disabled />

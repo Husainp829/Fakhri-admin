@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState } from "react";
-import { Button, NumberInput, useDataProvider, useNotify } from "react-admin";
+import { Button, useDataProvider, useNotify } from "react-admin";
 import CircularProgress from "@mui/material/CircularProgress";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -19,6 +19,7 @@ import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 import { callApi } from "../../../../dataprovider/miscApis";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -125,7 +126,7 @@ function HofLookup() {
 
         <DialogContent>
           <Box sx={{ display: "flex" }}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               source="HofITsNo"
               label="HOF ITS"
               onChange={(e) => onChangeDetails(e)}

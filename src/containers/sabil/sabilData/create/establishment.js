@@ -1,9 +1,10 @@
 import React from "react";
-import { TextInput, NumberInput } from "react-admin";
+import { TextInput } from "react-admin";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 
 import { ManualITSInput } from "./common/manualItsInput";
+import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 export default () => (
   <Grid container spacing={1} sx={{ mt: 3 }}>
@@ -35,7 +36,7 @@ export default () => (
       <Typography variant="body1">Sabil Details</Typography>
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
-      <NumberInput source="takhmeen" label="Yearly Takhmeen" fullWidth />
+      <NoArrowKeyNumberInput source="takhmeen" label="Yearly Takhmeen" fullWidth />
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
       <TextInput source="remarks" label="Remarks" fullWidth />

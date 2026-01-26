@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import {
   TextInput,
-  NumberInput,
   ArrayInput,
   SimpleFormIterator,
   FormDataConsumer,
@@ -112,7 +111,7 @@ export default () => {
             />
           </Grid>
           <Grid item size={{ lg: 6, xs: 6 }}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               source="chairs"
               fullWidth
               defaultValue={0}
@@ -123,18 +122,34 @@ export default () => {
               slotProps={{
                 input: {
                   readOnly: true,
+                  sx: {
+                    opacity: 0.4,
+                    pointerEvents: "none",
+                    cursor: "default",
+                    "&:hover": {
+                      opacity: 0.4,
+                    },
+                  },
                 },
               }}
             />
           </Grid>
           <Grid item size={{ lg: 12, xs: 12 }}>
-            <NumberInput
+            <NoArrowKeyNumberInput
               label="Total Payable"
               source="total"
               fullWidth
               slotProps={{
                 input: {
                   readOnly: true,
+                  sx: {
+                    opacity: 0.4,
+                    pointerEvents: "none",
+                    cursor: "default",
+                    "&:hover": {
+                      opacity: 0.4,
+                    },
+                  },
                 },
               }}
               defaultValue={0}
