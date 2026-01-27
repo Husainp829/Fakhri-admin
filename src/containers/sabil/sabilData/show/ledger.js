@@ -10,15 +10,123 @@ import {
   Button,
   useUnselectAll,
   useListContext,
+  useNotify,
+  useRefresh,
 } from "react-admin";
-import { Paper, Typography, Box, Chip } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Box,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+} from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
+import UpdateIcon from "@mui/icons-material/Update";
 import WriteoffDialog from "../../sabilLedger/writeoffDialog";
 import BalanceSummary from "./BalanceSummary";
+import { callApi } from "../../../../dataprovider/miscApis";
 
-const LedgerBulkActionButtons = ({ onWriteoffSuccess }) => {
+const UpdateTakhmeenDialog = ({ open, onClose, selectedIds, sabilId, onSuccess }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const notify = useNotify();
+  const refresh = useRefresh();
+
+  const handleClose = () => {
+    if (!loading) {
+      setError(null);
+      onClose();
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedIds || selectedIds.length === 0 || !sabilId) {
+      setError("Please select at least one ledger entry");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await callApi({
+        location: "sabilLedger",
+        method: "POST",
+        id: "update-takhmeen",
+        data: {
+          sabilId,
+          ledgerEntryIds: selectedIds,
+        },
+      });
+
+      if (response?.data) {
+        notify(
+          `Successfully updated ${response.data.count || selectedIds.length} ledger entry/entries`,
+          {
+            type: "success",
+          }
+        );
+        refresh();
+        if (onSuccess) {
+          onSuccess();
+        }
+        handleClose();
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (err) {
+      const errorMessage =
+        err?.response?.data?.message || err?.message || "Failed to update takhmeen";
+      setError(errorMessage);
+      notify(errorMessage, { type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Update Takhmeen</DialogTitle>
+      <DialogContent>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Are you sure you want to update the due amount for {selectedIds?.length || 0} ledger
+            entry/entries to the current takhmeen?
+          </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} disabled={loading}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : null}
+          label="Update Takhmeen"
+        />
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const LedgerBulkActionButtons = ({ onWriteoffSuccess, sabilId }) => {
   const { selectedIds, resource } = useListContext();
   const [writeoffOpen, setWriteoffOpen] = useState(false);
+  const [updateTakhmeenOpen, setUpdateTakhmeenOpen] = useState(false);
   const unselectAll = useUnselectAll(resource);
 
   const handleWriteoffClick = () => {
@@ -35,12 +143,34 @@ const LedgerBulkActionButtons = ({ onWriteoffSuccess }) => {
     }
   };
 
+  const handleUpdateTakhmeenClick = () => {
+    if (selectedIds && selectedIds.length > 0) {
+      setUpdateTakhmeenOpen(true);
+    }
+  };
+
+  const handleUpdateTakhmeenClose = () => {
+    setUpdateTakhmeenOpen(false);
+    unselectAll();
+    if (onWriteoffSuccess) {
+      onWriteoffSuccess();
+    }
+  };
+
   if (!selectedIds || selectedIds.length === 0) {
     return <div style={{ marginLeft: "25px" }}></div>;
   }
 
   return (
     <>
+      <Button
+        label="Update Takhmeen"
+        onClick={handleUpdateTakhmeenClick}
+        startIcon={<UpdateIcon />}
+        sx={{ ml: 1 }}
+      >
+        Update Takhmeen ({selectedIds.length})
+      </Button>
       <Button
         label="Write Off"
         onClick={handleWriteoffClick}
@@ -49,6 +179,13 @@ const LedgerBulkActionButtons = ({ onWriteoffSuccess }) => {
       >
         Write Off ({selectedIds.length})
       </Button>
+      <UpdateTakhmeenDialog
+        open={updateTakhmeenOpen}
+        onClose={handleUpdateTakhmeenClose}
+        selectedIds={selectedIds}
+        sabilId={sabilId}
+        onSuccess={handleUpdateTakhmeenClose}
+      />
       <WriteoffDialog
         open={writeoffOpen}
         onClose={handleWriteoffClose}
@@ -161,6 +298,7 @@ export default () => {
               <LedgerBulkActionButtons
                 resource="sabilLedger"
                 onWriteoffSuccess={handleWriteoffSuccess}
+                sabilId={record?.id}
               />
             }
             isRowSelectable={(ledgerEntry) => ledgerEntry.status !== "WRITTEN_OFF"}
