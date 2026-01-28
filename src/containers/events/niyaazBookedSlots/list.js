@@ -255,9 +255,11 @@ export default function NiyaazBookedSlotsList() {
                 const hasAnyBookings = bookedSlots.length > 0;
                 const isFull = isDayFull(dayData);
                 let paperBgcolor = "#fff8e1"; // default: not full (amber)
-                if (!hasAnyBookings)
+                if (!hasAnyBookings) {
                   paperBgcolor = "#ffcdd2"; // empty (red)
-                else if (isFull) paperBgcolor = "#c8e6c9"; // full (green)
+                } else if (isFull) {
+                  paperBgcolor = "#c8e6c9"; // full (green)
+                }
 
                 return (
                   <Grid
