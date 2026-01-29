@@ -197,14 +197,11 @@ const MainApp = () => {
               {routeId && (
                 <>
                   {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaaz} />}
-                  {hasPermission(permissions, "niyaaz.view") && (
-                    <Resource {...niyaazBookedSlots} />
-                  )}
+                  {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaazBookedSlots} />}
                   {hasPermission(permissions, "receipts.view") && <Resource {...receipt} />}
                   {hasPermission(permissions, "vendorLedger.edit") && (
                     <Resource {...vendorLedger} />
                   )}
-
                 </>
               )}
               {hasPermission(permissions, "vendors.edit") && <Resource {...vendor} />}
@@ -285,10 +282,9 @@ const MainApp = () => {
             <Resource {...cronStatus} name="cronStatus" />
           )}
           {hasPermission(permissions, "sequences.view") && <Resource {...sequences} />}
-          {/* auth-less routes */}
-
         </>
       )}
+      {/* auth-less routes */}
       <CustomRoutes noLayout>
         <Route path="/niyaaz-receipt" element={<Receipt />} />
       </CustomRoutes>
