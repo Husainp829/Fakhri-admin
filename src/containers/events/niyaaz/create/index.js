@@ -60,7 +60,7 @@ export default (props) => {
   };
 
   const onSuccess = (data) => {
-    notify(`Niyaaz form created - ${data.id}`, { autoHideDuration: 5000, type: "success" });
+    notify(`Niyaaz form created - ${data.formNo}`, { autoHideDuration: 5000, type: "success" });
     redirect("/niyaaz");
   };
   return (

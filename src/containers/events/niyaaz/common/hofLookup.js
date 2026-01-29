@@ -58,6 +58,12 @@ function HofLookup() {
     setIts(e.target.value);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !loading && itsNo) {
+      searchITS();
+    }
+  };
+
   const searchITS = () => {
     setNoResult(false);
     setLoading(true);
@@ -130,6 +136,7 @@ function HofLookup() {
               source="HofITsNo"
               label="HOF ITS"
               onChange={(e) => onChangeDetails(e)}
+              onKeyPress={handleKeyPress}
               className={classes.input}
               helperText={false}
             />
