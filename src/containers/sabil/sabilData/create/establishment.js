@@ -43,7 +43,7 @@ export default () => (
         source="lastPaidDate"
         label="Last Paid Date"
         fullWidth
-        helperText="Cannot be beyond current month. If backdated and takhmeen exists, ledger entries will be created."
+        helperText="Future dates allowed for establishment sabils. If backdated and takhmeen exists, ledger entries will be created."
       />
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
