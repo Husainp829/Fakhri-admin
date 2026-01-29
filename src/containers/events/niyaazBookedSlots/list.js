@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useStore, useNotify, Title, Button, Link } from "react-admin";
 import {
   Box,
@@ -19,6 +19,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import httpClient from "../../../dataprovider/httpClient";
@@ -26,6 +28,21 @@ import { getApiUrl } from "../../../constants";
 
 // Capacity per booking type: QUARTER = 0.25, HALF = 0.5, FULL = 1 (used to sum slot usage).
 const TYPE_MULTIPLIER = { QUARTER: 0.25, HALF: 0.5, FULL: 1 };
+
+// Day status colors and legend (single source of truth).
+const DAY_COLORS = {
+  empty: "#ffcdd2",
+  full: "#c8e6c9",
+  notFull: "#fff8e1",
+};
+
+const LEGEND_ITEMS = [
+  { color: DAY_COLORS.empty, label: "Empty" },
+  { color: DAY_COLORS.full, label: "Full (niyaaz ≥1 e.g. 1 full / 2 half / 4 quarter + 1 iftari)" },
+  { color: DAY_COLORS.notFull, label: "Not full" },
+];
+
+const getDayLabel = (day) => (day === 31 ? "EID Ul Fitr" : `Raat ${day}`);
 
 /**
  * Returns used capacity for a single slot (e.g. NIYAAZ_FULL, IFTAARI_HALF).
@@ -38,9 +55,10 @@ const getSlotUsedCapacity = (slotData) => {
 
 /**
  * A day is considered "full" only when BOTH conditions hold:
- * - Niyaaz: total capacity >= 1 (e.g. 1 full niyaaz or 2 half niyaaz).
+ * - Niyaaz: total capacity >= 1 (any mix of QUARTER/HALF/FULL that sums to 1).
  * - Iftari: total capacity >= 1 (1 iftari).
- * Valid combinations: 1 full niyaaz + 1 iftari, or 2 half niyaaz + 1 iftari.
+ * Valid niyaaz examples: 1 full; 2 half; 4 quarter; 1 half + 2 quarter; etc.
+ * Valid combinations: (niyaaz >= 1) + (iftari >= 1), e.g. 1 full + 1 iftari, 2 half + 1 iftari, 4 quarter + 1 iftari.
  */
 const isDayFull = (dayData) => {
   const slots = dayData.slots || [];
@@ -53,9 +71,28 @@ const isDayFull = (dayData) => {
   return niyaazUsed >= 1 && iftariUsed >= 1;
 };
 
-const SlotCell = ({ day, slot, type, bookings, onEdit }) => {
+/** Returns day color, status label, and booked slots for calendar/table views. */
+const getDayColor = (dayData) => {
+  const slots = dayData.slots || [];
+  const bookedSlots = slots.filter((s) => s.bookings.length > 0);
+  const hasAnyBookings = bookedSlots.length > 0;
+  const full = isDayFull(dayData);
+  let paperBgcolor = DAY_COLORS.notFull;
+  let statusLabel = "Not full";
+  if (!hasAnyBookings) {
+    paperBgcolor = DAY_COLORS.empty;
+    statusLabel = "Empty";
+  } else if (full) {
+    paperBgcolor = DAY_COLORS.full;
+    statusLabel = "Full";
+  }
+  return { paperBgcolor, statusLabel, bookedSlots };
+};
+
+const SlotCell = React.memo(({ day, slot, type, bookings, onEdit }) => {
   const count = bookings.length;
   const hasBookings = count > 0;
+  const handleClick = () => hasBookings && onEdit(day, slot, type, bookings);
 
   return (
     <Box
@@ -68,7 +105,7 @@ const SlotCell = ({ day, slot, type, bookings, onEdit }) => {
         bgcolor: hasBookings ? "#e3f2fd" : "transparent",
         "&:hover": hasBookings ? { bgcolor: "#bbdefb" } : {},
       }}
-      onClick={() => hasBookings && onEdit(day, slot, type, bookings)}
+      onClick={handleClick}
     >
       {hasBookings ? (
         <Box>
@@ -84,20 +121,22 @@ const SlotCell = ({ day, slot, type, bookings, onEdit }) => {
       )}
     </Box>
   );
-};
+});
 
-const BookingDetailsModal = ({ open, onClose, day, slot, type, bookings }) => {
+const deleteBookingApi = (bookingId) =>
+  httpClient(`${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/${bookingId}`, {
+    method: "DELETE",
+  });
+
+const BookingDetailsModal = ({ open, onClose, day, slot, type, bookings, onDeleteSuccess }) => {
   const notify = useNotify();
 
   const handleDelete = async (bookingId) => {
     try {
-      await httpClient(`${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/${bookingId}`, {
-        method: "DELETE",
-      });
+      await deleteBookingApi(bookingId);
       notify("Booking deleted successfully", { type: "success" });
       onClose();
-      // Refresh the page data
-      window.location.reload();
+      onDeleteSuccess?.();
     } catch (error) {
       notify("Error deleting booking", { type: "error" });
     }
@@ -155,27 +194,27 @@ const BookingDetailsModal = ({ open, onClose, day, slot, type, bookings }) => {
   );
 };
 
-const RaatBookingsModal = ({ open, onClose, day, dayData }) => {
+const RaatBookingsModal = ({ open, onClose, day, dayData, onDeleteSuccess }) => {
   const notify = useNotify();
 
-  // Collect all bookings from all slots for this day
-  const allBookings = (dayData?.slots || []).flatMap((slotData) =>
-    (slotData.bookings || []).map((booking) => ({
-      ...booking,
-      slot: slotData.slot,
-      slotType: slotData.type,
-    }))
+  const allBookings = useMemo(
+    () =>
+      (dayData?.slots || []).flatMap((slotData) =>
+        (slotData.bookings || []).map((booking) => ({
+          ...booking,
+          slot: slotData.slot,
+          slotType: slotData.type,
+        })),
+      ),
+    [dayData?.slots],
   );
 
   const handleDelete = async (bookingId) => {
     try {
-      await httpClient(`${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/${bookingId}`, {
-        method: "DELETE",
-      });
+      await deleteBookingApi(bookingId);
       notify("Booking deleted successfully", { type: "success" });
       onClose();
-      // Refresh the page data
-      window.location.reload();
+      onDeleteSuccess?.();
     } catch (error) {
       notify("Error deleting booking", { type: "error" });
     }
@@ -183,9 +222,7 @@ const RaatBookingsModal = ({ open, onClose, day, dayData }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>
-        All Bookings - {day === 31 ? "EID Ul Fitr" : `Raat ${day}`}
-      </DialogTitle>
+      <DialogTitle>All Bookings - {getDayLabel(day)}</DialogTitle>
       <DialogContent>
         {allBookings.length > 0 ? (
           <TableContainer>
@@ -241,22 +278,16 @@ export default function NiyaazBookedSlotsList() {
   const [currentEvent] = useStore("currentEvent");
   const [calendarData, setCalendarData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState("calendar"); // "calendar" | "table"
   const [selectedCell, setSelectedCell] = useState(null);
   const [selectedRaat, setSelectedRaat] = useState(null);
   const notify = useNotify();
 
-  useEffect(() => {
-    if (currentEvent?.id) {
-      loadCalendarData();
-    }
-  }, [currentEvent]);
-
-  const loadCalendarData = async () => {
+  const loadCalendarData = useCallback(async () => {
     if (!currentEvent?.id) {
       notify("Please select an event first", { type: "warning" });
       return;
     }
-
     setLoading(true);
     try {
       const { json } = await httpClient(
@@ -268,7 +299,20 @@ export default function NiyaazBookedSlotsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentEvent?.id, notify]);
+
+  useEffect(() => {
+    if (currentEvent?.id) loadCalendarData();
+  }, [currentEvent?.id, loadCalendarData]);
+
+  const weeks = useMemo(() => {
+    const days = calendarData?.days ?? [];
+    const result = [];
+    for (let i = 0; i < days.length; i += 7) {
+      result.push(days.slice(i, i + 7));
+    }
+    return result;
+  }, [calendarData?.days]);
 
   if (!currentEvent) {
     return (
@@ -286,15 +330,7 @@ export default function NiyaazBookedSlotsList() {
     );
   }
 
-  if (!calendarData) {
-    return null;
-  }
-
-  // Group all days by week (7 days per row) - 31 days (30 Ramadaan + 1st Shawwal)
-  const weeks = [];
-  for (let i = 0; i < calendarData.days.length; i += 7) {
-    weeks.push(calendarData.days.slice(i, i + 7));
-  }
+  if (!calendarData) return null;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -306,102 +342,140 @@ export default function NiyaazBookedSlotsList() {
         </Button>
       </Box>
 
+      <Tabs value={viewMode} onChange={(_, v) => setViewMode(v)} sx={{ mb: 2 }}>
+        <Tab label="Calendar" value="calendar" />
+        <Tab label="Table" value="table" />
+      </Tabs>
+
       <Box sx={{ mb: 2, display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
         <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
           Legend:
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Box sx={{ width: 16, height: 16, borderRadius: 0.5, bgcolor: "#ffcdd2" }} />
-          <Typography variant="body2">Empty</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Box sx={{ width: 16, height: 16, borderRadius: 0.5, bgcolor: "#c8e6c9" }} />
-          <Typography variant="body2">Full (1 full/2 half niyaaz + 1 iftari)</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Box sx={{ width: 16, height: 16, borderRadius: 0.5, bgcolor: "#fff8e1" }} />
-          <Typography variant="body2">Not full</Typography>
-        </Box>
+        {LEGEND_ITEMS.map(({ color, label }) => (
+          <Box key={label} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ width: 16, height: 16, borderRadius: 0.5, bgcolor: color }} />
+            <Typography variant="body2">{label}</Typography>
+          </Box>
+        ))}
       </Box>
 
-      {weeks.map((week, weekIdx) => (
-        <Card key={weekIdx} sx={{ mb: 2 }}>
-          <CardContent>
-            <Grid container spacing={1}>
-              {week.map((dayData) => {
-                // Only show slots that have at least one booking in the day column.
-                const bookedSlots = dayData.slots.filter(
-                  (slotData) => slotData.bookings.length > 0,
-                );
-                // Day color: Empty (red) | Full (green) | Not full (amber).
-                // Empty = no bookings; Full = niyaaz >= 1 and iftari >= 1; else Not full.
-                const hasAnyBookings = bookedSlots.length > 0;
-                const isFull = isDayFull(dayData);
-                let paperBgcolor = "#fff8e1"; // default: not full (amber)
-                if (!hasAnyBookings) {
-                  paperBgcolor = "#ffcdd2"; // empty (red)
-                } else if (isFull) {
-                  paperBgcolor = "#c8e6c9"; // full (green)
-                }
-
+      {viewMode === "table" ? (
+        <TableContainer component={Paper} sx={{ mb: 2 }}>
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold", minWidth: 100 }}>Day</TableCell>
+                <TableCell sx={{ fontWeight: "bold", width: 100 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Slots (click to view bookings)</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {calendarData.days.map((dayData) => {
+                const { paperBgcolor, statusLabel, bookedSlots } = getDayColor(dayData);
                 return (
-                  <Grid
-                    item
-                    size={{ xs: 12, sm: 6, md: 12 / 7 }}
-                    key={dayData.day}
-                    sx={{ display: "flex" }}
-                  >
-                    <Paper sx={{ p: 1, bgcolor: paperBgcolor, minHeight: 150, width: "100%" }}>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{
-                          mb: 1,
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                          "&:hover": { textDecoration: "underline" },
-                        }}
-                        onClick={() => setSelectedRaat({ day: dayData.day, dayData })}
-                      >
-                        {dayData.day === 31 ? "EID Ul Fitr" : `Raat ${dayData.day}`}
-                      </Typography>
+                  <TableRow key={dayData.day} sx={{ bgcolor: paperBgcolor }}>
+                    <TableCell sx={{ fontWeight: 500 }}>{getDayLabel(dayData.day)}</TableCell>
+                    <TableCell>{statusLabel}</TableCell>
+                    <TableCell>
                       {bookedSlots.length > 0 ? (
-                        <Grid container spacing={0.5}>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                           {bookedSlots.map((slotData, idx) => (
-                            <Grid item size={{ xs: 12 }} key={idx}>
-                              <SlotCell
-                                day={dayData.day}
-                                slot={slotData.slot}
-                                type={slotData.type}
-                                bookings={slotData.bookings}
-                                onEdit={(day, slot, type, bookings) =>
-                                  setSelectedCell({ day, slot, type, bookings })
-                                }
-                              />
-                            </Grid>
+                            <Chip
+                              key={idx}
+                              label={`${slotData.slot} ${slotData.type} (${slotData.bookings.length})`}
+                              size="small"
+                              onClick={() =>
+                                setSelectedCell({
+                                  day: dayData.day,
+                                  slot: slotData.slot,
+                                  type: slotData.type,
+                                  bookings: slotData.bookings,
+                                })
+                              }
+                              sx={{ cursor: "pointer" }}
+                            />
                           ))}
-                        </Grid>
+                        </Box>
                       ) : (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ fontStyle: "italic" }}
-                        >
+                        <Typography variant="caption" color="text.secondary" fontStyle="italic">
                           No Niyaaz Yet
                         </Typography>
                       )}
-                    </Paper>
-                  </Grid>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-              {/* Fill remaining cells if week has less than 7 days */}
-              {week.length < 7 &&
-                Array.from({ length: 7 - week.length }).map((_, idx) => (
-                  <Grid item size={{ xs: 12, sm: 6, md: 12 / 7 }} key={`empty-${idx}`} />
-                ))}
-            </Grid>
-          </CardContent>
-        </Card>
-      ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <>
+          {weeks.map((week, weekIdx) => (
+            <Card key={weekIdx} sx={{ mb: 2 }}>
+              <CardContent>
+                <Grid container spacing={1}>
+                  {week.map((dayData) => {
+                    const { paperBgcolor, bookedSlots } = getDayColor(dayData);
+                    return (
+                      <Grid
+                        item
+                        size={{ xs: 12, sm: 6, md: 12 / 7 }}
+                        key={dayData.day}
+                        sx={{ display: "flex" }}
+                      >
+                        <Paper sx={{ p: 1, bgcolor: paperBgcolor, minHeight: 150, width: "100%" }}>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              mb: 1,
+                              fontWeight: "bold",
+                              cursor: "pointer",
+                              "&:hover": { textDecoration: "underline" },
+                            }}
+                            onClick={() => setSelectedRaat({ day: dayData.day, dayData })}
+                          >
+                            {getDayLabel(dayData.day)}
+                          </Typography>
+                          {bookedSlots.length > 0 ? (
+                            <Grid container spacing={0.5}>
+                              {bookedSlots.map((slotData, idx) => (
+                                <Grid item size={{ xs: 12 }} key={idx}>
+                                  <SlotCell
+                                    day={dayData.day}
+                                    slot={slotData.slot}
+                                    type={slotData.type}
+                                    bookings={slotData.bookings}
+                                    onEdit={(day, slot, type, bookings) =>
+                                      setSelectedCell({ day, slot, type, bookings })
+                                    }
+                                  />
+                                </Grid>
+                              ))}
+                            </Grid>
+                          ) : (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ fontStyle: "italic" }}
+                            >
+                              No Niyaaz Yet
+                            </Typography>
+                          )}
+                        </Paper>
+                      </Grid>
+                    );
+                  })}
+                  {/* Fill remaining cells if week has less than 7 days */}
+                  {week.length < 7 &&
+                    Array.from({ length: 7 - week.length }).map((_, idx) => (
+                      <Grid item size={{ xs: 12, sm: 6, md: 12 / 7 }} key={`empty-${idx}`} />
+                    ))}
+                </Grid>
+              </CardContent>
+            </Card>
+          ))}
+        </>
+      )}
 
       {selectedCell && (
         <BookingDetailsModal
@@ -411,6 +485,7 @@ export default function NiyaazBookedSlotsList() {
           slot={selectedCell.slot}
           type={selectedCell.type}
           bookings={selectedCell.bookings}
+          onDeleteSuccess={loadCalendarData}
         />
       )}
 
@@ -420,6 +495,7 @@ export default function NiyaazBookedSlotsList() {
           onClose={() => setSelectedRaat(null)}
           day={selectedRaat.day}
           dayData={selectedRaat.dayData}
+          onDeleteSuccess={loadCalendarData}
         />
       )}
     </Box>
