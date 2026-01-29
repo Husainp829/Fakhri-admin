@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput } from "react-admin";
+import { TextInput, DateInput } from "react-admin";
 import Grid from "@mui/material/Grid";
 import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
@@ -21,6 +21,14 @@ export default () => (
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
       <NoArrowKeyNumberInput source="takhmeen" label="Monthly Chula Sabil" fullWidth />
+    </Grid>
+    <Grid item size={{ xs: 12, lg: 6 }}>
+      <DateInput
+        source="lastPaidDate"
+        label="Last Paid Date"
+        fullWidth
+        helperText="Cannot be beyond current month. If backdated and takhmeen exists, ledger entries will be created."
+      />
     </Grid>
     <Grid item size={{ xs: 12, lg: 6 }}>
       <TextInput source="remarks" label="Remarks" fullWidth />
