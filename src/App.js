@@ -286,29 +286,30 @@ const MainApp = () => {
           )}
           {hasPermission(permissions, "sequences.view") && <Resource {...sequences} />}
           {/* auth-less routes */}
-          <CustomRoutes noLayout>
-            <Route path="/niyaaz-receipt" element={<Receipt />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/sabil-receipt" element={<SabilReceipt />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/fmb-receipt" element={<FmbReceipt />} />
-          </CustomRoutes>
+
         </>
       )}
+      <CustomRoutes noLayout>
+        <Route path="/niyaaz-receipt" element={<Receipt />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/sabil-receipt" element={<SabilReceipt />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/fmb-receipt" element={<FmbReceipt />} />
+      </CustomRoutes>
     </Admin>
   );
 };

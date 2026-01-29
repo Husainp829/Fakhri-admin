@@ -1,20 +1,54 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ToWords } from "to-words";
-import { useGetOne } from "react-admin";
+import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "../../../utils";
+import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
 
 const FmbReceipt = () => {
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
   const receiptId = searchParams.get("receiptId");
-  const { data } = useGetOne("fmbReceipt", { id: receiptId });
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!receiptId) {
+      setError(true);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const response = await callApiWithoutAuth({
+          location: "fmbReceipt",
+          method: "GET",
+          id: receiptId,
+        });
+        if (response?.data) {
+          setData(response.data);
+        } else if (response?.data?.rows?.[0]) {
+          setData(response.data.rows[0]);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        setError(true);
+      }
+    };
+
+    fetchData();
+  }, [receiptId]);
+
+  if (error) {
+    return <Box p={3}>No Results Found</Box>;
+  }
 
   if (!data) {
-    return null;
+    return <Box p={3}>...Loading</Box>;
   }
   const receiptData = data || {};
   const fmbData = data?.fmbData || {};
