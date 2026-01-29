@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ToWords } from "to-words";
-import { useStore } from "react-admin";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "../../../utils";
 import { MARKAZ_LIST } from "../../../constants";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
+import { getHijriYear } from "../../../utils/hijriDateUtils";
 
 const Receipt = () => {
   const { href } = window.location;
@@ -14,7 +14,6 @@ const Receipt = () => {
   const receiptId = searchParams.get("receiptId");
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
-  const [currentEvent] = useStore("currentEvent");
 
   useEffect(() => {
     if (!receiptId) {
@@ -91,7 +90,7 @@ const Receipt = () => {
           </div>
 
           <div style={{ textAlign: "center", padding: "10px" }}>
-            ما &ldquo;<strong>{currentEvent.name}</strong>&rdquo;
+            ما &ldquo;<strong>Shehrullah-il-Moazzam {getHijriYear()}</strong>&rdquo;
           </div>
 
           <div style={{ padding: "10px" }}>

@@ -124,3 +124,9 @@ export const fromGregorian = (gregorianDate, format = "short") => {
   }
   return `${day} ${monthName} ${year}`;
 };
+
+export const getHijriYear = (gregorianDate = new Date()) => {
+  const ajd = gregorianToAJD(gregorianDate);
+  const { year } = fromAJD(ajd);
+  return year;
+};
