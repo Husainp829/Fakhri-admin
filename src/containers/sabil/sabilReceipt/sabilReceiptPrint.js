@@ -77,9 +77,8 @@ const SabilReceipt = ({ ...props }) => {
           method: "GET",
           id: receiptId,
         });
-        if (response?.data) {
-          setData(response.data);
-        } else if (response?.data?.rows?.[0]) {
+
+        if (response?.data?.rows?.[0]) {
           setData(response.data.rows[0]);
         } else {
           setError(true);
@@ -160,7 +159,7 @@ const SabilReceipt = ({ ...props }) => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: "3", paddingRight: "10px", borderBottom: "1px solid #cfcfcf" }}>
-                {toWords.convert(receiptData.amount)} Only
+                {toWords.convert(receiptData.amount || 0)} Only
               </div>
               <div style={{ flex: "0.5", paddingRight: "10px", textAlign: "center" }}>انكه</div>
               <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>

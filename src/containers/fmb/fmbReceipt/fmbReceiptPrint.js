@@ -28,9 +28,7 @@ const FmbReceipt = () => {
           method: "GET",
           id: receiptId,
         });
-        if (response?.data) {
-          setData(response.data);
-        } else if (response?.data?.rows?.[0]) {
+        if (response?.data?.rows?.[0]) {
           setData(response.data.rows[0]);
         } else {
           setError(true);
