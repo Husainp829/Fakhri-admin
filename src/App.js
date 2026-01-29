@@ -197,14 +197,11 @@ const MainApp = () => {
               {routeId && (
                 <>
                   {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaaz} />}
-                  {hasPermission(permissions, "niyaaz.view") && (
-                    <Resource {...niyaazBookedSlots} />
-                  )}
+                  {hasPermission(permissions, "niyaaz.view") && <Resource {...niyaazBookedSlots} />}
                   {hasPermission(permissions, "receipts.view") && <Resource {...receipt} />}
                   {hasPermission(permissions, "vendorLedger.edit") && (
                     <Resource {...vendorLedger} />
                   )}
-
                 </>
               )}
               {hasPermission(permissions, "vendors.edit") && <Resource {...vendor} />}
@@ -285,30 +282,30 @@ const MainApp = () => {
             <Resource {...cronStatus} name="cronStatus" />
           )}
           {hasPermission(permissions, "sequences.view") && <Resource {...sequences} />}
-          {/* auth-less routes */}
-          <CustomRoutes noLayout>
-            <Route path="/niyaaz-receipt" element={<Receipt />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/sabil-receipt" element={<SabilReceipt />} />
-          </CustomRoutes>
-          <CustomRoutes noLayout>
-            <Route path="/fmb-receipt" element={<FmbReceipt />} />
-          </CustomRoutes>
         </>
       )}
+      {/* auth-less routes */}
+      <CustomRoutes noLayout>
+        <Route path="/niyaaz-receipt" element={<Receipt />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/cont-rcpt/:id" element={<RentReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/lagat-rcpt/:id" element={<LagatReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/mqt-rcpt/:id" element={<MiqaatNiyaazReceiptPrint />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/sabil-receipt" element={<SabilReceipt />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/fmb-receipt" element={<FmbReceipt />} />
+      </CustomRoutes>
     </Admin>
   );
 };
