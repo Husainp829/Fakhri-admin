@@ -155,11 +155,94 @@ const BookingDetailsModal = ({ open, onClose, day, slot, type, bookings }) => {
   );
 };
 
+const RaatBookingsModal = ({ open, onClose, day, dayData }) => {
+  const notify = useNotify();
+
+  // Collect all bookings from all slots for this day
+  const allBookings = (dayData?.slots || []).flatMap((slotData) =>
+    (slotData.bookings || []).map((booking) => ({
+      ...booking,
+      slot: slotData.slot,
+      slotType: slotData.type,
+    }))
+  );
+
+  const handleDelete = async (bookingId) => {
+    try {
+      await httpClient(`${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/${bookingId}`, {
+        method: "DELETE",
+      });
+      notify("Booking deleted successfully", { type: "success" });
+      onClose();
+      // Refresh the page data
+      window.location.reload();
+    } catch (error) {
+      notify("Error deleting booking", { type: "error" });
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>
+        All Bookings - {day === 31 ? "EID Ul Fitr" : `Raat ${day}`}
+      </DialogTitle>
+      <DialogContent>
+        {allBookings.length > 0 ? (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Form No</TableCell>
+                  <TableCell>HOF Name</TableCell>
+                  <TableCell>Slot</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {allBookings.map((booking) => (
+                  <TableRow key={booking.id}>
+                    <TableCell>
+                      <Link to={`/niyaaz/${booking.niyaazId}/show`}>{booking.niyaazFormNo}</Link>
+                    </TableCell>
+                    <TableCell>{booking.niyaazHOFName}</TableCell>
+                    <TableCell>
+                      <Chip label={`${booking.slot} - ${booking.slotType}`} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={booking.type} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(booking.id)}
+                        color="error"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Typography>No bookings found for this raat.</Typography>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 export default function NiyaazBookedSlotsList() {
   const [currentEvent] = useStore("currentEvent");
   const [calendarData, setCalendarData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedCell, setSelectedCell] = useState(null);
+  const [selectedRaat, setSelectedRaat] = useState(null);
   const notify = useNotify();
 
   useEffect(() => {
@@ -269,7 +352,16 @@ export default function NiyaazBookedSlotsList() {
                     sx={{ display: "flex" }}
                   >
                     <Paper sx={{ p: 1, bgcolor: paperBgcolor, minHeight: 150, width: "100%" }}>
-                      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          mb: 1,
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                        onClick={() => setSelectedRaat({ day: dayData.day, dayData })}
+                      >
                         {dayData.day === 31 ? "EID Ul Fitr" : `Raat ${dayData.day}`}
                       </Typography>
                       {bookedSlots.length > 0 ? (
@@ -319,6 +411,15 @@ export default function NiyaazBookedSlotsList() {
           slot={selectedCell.slot}
           type={selectedCell.type}
           bookings={selectedCell.bookings}
+        />
+      )}
+
+      {selectedRaat && (
+        <RaatBookingsModal
+          open={!!selectedRaat}
+          onClose={() => setSelectedRaat(null)}
+          day={selectedRaat.day}
+          dayData={selectedRaat.dayData}
         />
       )}
     </Box>
