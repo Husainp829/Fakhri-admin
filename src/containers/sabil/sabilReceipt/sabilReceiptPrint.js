@@ -25,7 +25,8 @@ const formatMonthlyPeriod = (periodStart, periodEnd) => {
 
 /**
  * Format period for yearly sabils (ESTABLISHMENT, PROFESSIONAL)
- * If periodStart is April, show "April YYYY to March YYYY+1"
+ * If periodStart is April and periodEnd is March, show "April YYYY to March YYYY+N"
+ * where N is the number of years spanned (can be 1 or more for multiple financial years)
  * Otherwise, format as "MMM-YYYY"
  */
 const formatYearlyPeriod = (periodStart, periodEnd) => {
@@ -37,11 +38,14 @@ const formatYearlyPeriod = (periodStart, periodEnd) => {
   }
 
   const startDate = dayjs.utc(periodStart);
-  // If periodStart is April (month 3 in 0-indexed), show full financial year format
-  if (startDate.month() === 3) {
-    // April is month 3 (0-indexed)
+  const endDate = periodEnd ? dayjs.utc(periodEnd) : null;
+
+  // If periodStart is April (month 3 in 0-indexed) and periodEnd is March (month 2 in 0-indexed)
+  // show full financial year format spanning multiple years if needed
+  if (startDate.month() === 3 && endDate && endDate.month() === 2) {
+    // April is month 3 (0-indexed), March is month 2 (0-indexed)
     const startYear = startDate.year();
-    const endYear = startYear + 1;
+    const endYear = endDate.year();
     return {
       periodStart: `April ${startYear}`,
       periodEnd: `March ${endYear}`,
