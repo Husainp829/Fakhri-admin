@@ -18,8 +18,18 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 
-const PostFilterSidebar = () => (
-  <Card sx={{ order: -1, mr: 2, mt: 6, width: "25%", height: "fit-content" }}>
+const PostFilterSidebar = ({ inDrawer = false }) => (
+  <Card
+    sx={{
+      order: inDrawer ? 0 : -1,
+      mr: inDrawer ? 0 : { xs: 0, md: 2 },
+      mt: inDrawer ? 0 : 6,
+      width: inDrawer ? "100%" : { xs: "100%", md: "25%" },
+      minWidth: inDrawer ? undefined : { md: 260 },
+      maxWidth: inDrawer ? "100%" : { md: 360 },
+      height: "fit-content",
+    }}
+  >
     <CardContent>
       <FilterListSection label="Search" icon={<SearchIcon />}>
         <FilterLiveForm>
