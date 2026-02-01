@@ -12,7 +12,9 @@ import {
   Pagination,
   SelectInput,
   TextInput,
+  SimpleList,
 } from "react-admin";
+import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
@@ -21,6 +23,7 @@ import { hasPermission } from "../../../utils/permissionUtils";
 
 export default () => {
   const { permissions } = usePermissions();
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
   const exporter = (receipts) => {
     const receiptsForExport = receipts.map((receipt) => {
       const {
@@ -101,36 +104,55 @@ export default () => {
       sort={{ field: "date", order: "DESC" }}
       filters={ReceiptFilters}
     >
-      <Datagrid rowClick="edit" bulkActionButtons={false}>
-        <TextField source="receiptNo" />
-        <TextField source="formNo" />
-        <TextField source="HOFId" label="HOF ID" />
-        <TextField source="HOFName" label="HOF NAME" />
-        <DateField source="date" />
-        <NumberField source="amount" />
-        <TextField source="mode" />
-        <TextField source="markaz" />
-        <TextField source="namaazVenue" />
-        <FunctionField
-          label="Created By"
-          source="createdBy"
-          render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
-        />
-        <FunctionField
-          label="Download"
-          source="formNo"
-          render={(record) => (
-            <Button
-              onClick={() => {
-                window.open(`#/niyaaz-receipt?receiptId=${record.id}`, "_blank");
-              }}
-            >
-              <DownloadIcon />
-            </Button>
+      {isSmall ? (
+        <SimpleList
+          primaryText={(record) => record.receiptNo}
+          secondaryText={(record) => (
+            <>
+              {record.HOFName} · {record.HOFId}
+              <br />
+              {dayjs(record.date).format("DD/MM/YYYY")} · ₹
+              {Number(record.amount).toLocaleString("en-IN")} · {record.mode}
+            </>
           )}
-          key="name"
+          tertiaryText={(record) => record.markaz || "—"}
+          linkType="edit"
+          rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
         />
-      </Datagrid>
+      ) : (
+        <Box sx={{ overflowX: "auto", width: "100%" }}>
+          <Datagrid rowClick="edit" bulkActionButtons={false} sx={{ minWidth: 960 }}>
+            <TextField source="receiptNo" />
+            <TextField source="formNo" />
+            <TextField source="HOFId" label="HOF ID" />
+            <TextField source="HOFName" label="HOF NAME" />
+            <DateField source="date" />
+            <NumberField source="amount" />
+            <TextField source="mode" />
+            <TextField source="markaz" />
+            <TextField source="namaazVenue" />
+            <FunctionField
+              label="Created By"
+              source="createdBy"
+              render={(record) => <span>{record?.admin?.name || record.createdBy}</span>}
+            />
+            <FunctionField
+              label="Download"
+              source="formNo"
+              render={(record) => (
+                <Button
+                  onClick={() => {
+                    window.open(`#/niyaaz-receipt?receiptId=${record.id}`, "_blank");
+                  }}
+                >
+                  <DownloadIcon />
+                </Button>
+              )}
+              key="name"
+            />
+          </Datagrid>
+        </Box>
+      )}
     </List>
   );
 };

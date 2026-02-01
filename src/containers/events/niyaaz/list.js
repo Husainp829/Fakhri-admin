@@ -12,6 +12,7 @@ import {
   Pagination,
   SelectColumnsButton,
   SelectInput,
+  SimpleList,
   TextField,
   TextInput,
   TopToolbar,
@@ -19,6 +20,7 @@ import {
   usePermissions,
   useStore,
 } from "react-admin";
+import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { downLoadPasses } from "../../../utils";
 import { MARKAZ_LIST } from "../../../constants";
@@ -26,6 +28,7 @@ import { hasPermission } from "../../../utils/permissionUtils";
 import { exportToExcel } from "../../../utils/exportToExcel";
 
 export default () => {
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
   const NiyaazFilters = [
     <TextInput
       label="Search By HOF Name, HOF ITS, Form No"
@@ -131,41 +134,54 @@ export default () => {
         sort={{ field: "updatedAt", order: "DESC" }}
         exporter={exporter}
       >
-        <Datagrid rowClick="show" bulkActionButtons={false}>
-          <WrapperField source="EDIT">
-            <EditButton />
-          </WrapperField>
-          <TextField source="formNo" />
-          <TextField source="markaz" />
-          <TextField source="namaazVenue" />
-          <TextField source="HOFId" label="HOF ID" />
-          <TextField source="HOFName" label="HOF Name" />
-          <TextField source="HOFPhone" label="HOF Phone" />
-          <NumberField source="totalPayable" label="Total Payable" textAlign="left" />
-          <NumberField source="paidAmount" textAlign="left" />
-          <NumberField source="balance" label="Balance" textAlign="left" />
-          <FunctionField
-            label="Submitter"
-            source="submitter"
-            render={(record) => (
-              <span>{record?.admin?.name || record.submitter}</span>
+        {isSmall ? (
+          <SimpleList
+            primaryText={(record) => record.formNo}
+            secondaryText={(record) => (
+              <>
+                {record.HOFName} · {record.HOFId}
+                <br />₹{Number(record.totalPayable || 0).toLocaleString("en-IN")} · Paid ₹
+                {Number(record.paidAmount || 0).toLocaleString("en-IN")} · Bal ₹
+                {Number(record.balance || 0).toLocaleString("en-IN")}
+              </>
             )}
+            tertiaryText={(record) => record.markaz || "—"}
+            linkType="show"
+            rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
           />
-          <FunctionField
-            label="Download"
-            source="updatedAt"
-            render={(record) => (
-              <Button
-                onClick={() =>
-                  downLoadPasses({ ...record, event: currentEvent })
-                }
-              >
-                <DownloadIcon />
-              </Button>
-            )}
-            key="name"
-          />
-        </Datagrid>
+        ) : (
+          <Box sx={{ overflowX: "auto", width: "100%" }}>
+            <Datagrid rowClick="show" bulkActionButtons={false} sx={{ minWidth: 1000 }}>
+              <WrapperField source="EDIT">
+                <EditButton />
+              </WrapperField>
+              <TextField source="formNo" />
+              <TextField source="markaz" />
+              <TextField source="namaazVenue" />
+              <TextField source="HOFId" label="HOF ID" />
+              <TextField source="HOFName" label="HOF Name" />
+              <TextField source="HOFPhone" label="HOF Phone" />
+              <NumberField source="totalPayable" label="Total Payable" textAlign="left" />
+              <NumberField source="paidAmount" textAlign="left" />
+              <NumberField source="balance" label="Balance" textAlign="left" />
+              <FunctionField
+                label="Submitter"
+                source="submitter"
+                render={(record) => <span>{record?.admin?.name || record.submitter}</span>}
+              />
+              <FunctionField
+                label="Download"
+                source="updatedAt"
+                render={(record) => (
+                  <Button onClick={() => downLoadPasses({ ...record, event: currentEvent })}>
+                    <DownloadIcon />
+                  </Button>
+                )}
+                key="name"
+              />
+            </Datagrid>
+          </Box>
+        )}
       </List>
     </>
   );

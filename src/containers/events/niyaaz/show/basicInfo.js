@@ -1,15 +1,12 @@
 import React from "react";
-import {
-  ArrayField,
-  FunctionField,
-  NumberField,
-  SimpleShowLayout,
-  TextField,
-} from "react-admin";
+import { ArrayField, FunctionField, NumberField, SimpleShowLayout, TextField } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
+import { useMediaQuery } from "@mui/material";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 
-export default () => (
+export default () => {
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
+  return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={3}>
         <SimpleShowLayout>
@@ -19,7 +16,10 @@ export default () => (
         </SimpleShowLayout>
       </Grid>
       <Grid item xs={12} sm={4}>
-        <SimpleShowLayout>
+        <SimpleShowLayout
+          direction={isSmall ? "row" : "column"}
+          sx={isSmall ? { "& .RaSimpleShowLayout-stack": { justifyContent: "space-between" } } : {}}
+        >
           <NumberField source="takhmeenAmount" label="Takhmeen" />
           <NumberField source="chairs" label="Chairs" />
           <NumberField source="iftaari" label="Iftaari" />
@@ -27,7 +27,10 @@ export default () => (
         </SimpleShowLayout>
       </Grid>
       <Grid item xs={12} sm={4}>
-        <SimpleShowLayout>
+        <SimpleShowLayout
+          direction={isSmall ? "row" : "column"}
+          sx={isSmall ? { "& .RaSimpleShowLayout-stack": { justifyContent: "space-between" } } : {}}
+        >
           <FunctionField
             source="totalPayable"
             label="Total Payable"
@@ -53,4 +56,5 @@ export default () => (
         </SimpleShowLayout>
       </Grid>
     </Grid>
-);
+  );
+};
