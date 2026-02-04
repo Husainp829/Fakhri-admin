@@ -154,7 +154,7 @@ const SabilReceipt = ({ ...props }) => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
               <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{displayName}</div>
-              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالا</div>
+              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالى</div>
             </div>
           </div>
           <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>{displayAddress}</div>
@@ -184,21 +184,37 @@ const SabilReceipt = ({ ...props }) => {
               <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
               {periodEnd && (
                 <>
-                  <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>
-                    {periodEnd}
-                  </div>
+                  <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>{periodEnd}</div>
                   <div style={{ flex: "1", textAlign: "center" }}>إلى</div>
                 </>
               )}
               {periodStart && (
-                <div style={{ flex: isYearlySabil ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}>
+                <div
+                  style={{ flex: isYearlySabil ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}
+                >
                   {periodStart}
                 </div>
               )}
               <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
-
             </div>
           </div>
+
+          {receiptData.remarks && (
+            <div
+              style={{
+                padding: "20px 10px",
+                borderTop: "1px solid #ccc",
+                display: "flex",
+                alignItems: "baseline",
+                textAlign: "left",
+              }}
+            >
+              <span style={{ whiteSpace: "nowrap", marginRight: "8px" }}>Remarks:</span>
+              <span style={{ flex: 1, borderBottom: "1px solid #cfcfcf", minWidth: 0 }}>
+                {receiptData.remarks}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
