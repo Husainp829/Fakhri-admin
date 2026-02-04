@@ -233,6 +233,7 @@ const ReceiptDatagrid = () => {
       />
       <TextField source="amount" />
       <DateField source="receiptDate" />
+      <TextField source="remarks" />
       <TextField source="paymentMode" />
       <FunctionField
         label="Download"
@@ -277,9 +278,7 @@ export default () => {
     const currentFilter = filterRef.current;
 
     // Get tab name for filename
-    const currentTab = SABIL_TYPE_OPTIONS.find(
-      (tab) => tab.id === currentFilter?.sabilType
-    );
+    const currentTab = SABIL_TYPE_OPTIONS.find((tab) => tab.id === currentFilter?.sabilType);
 
     let tabNameForFile = "sabilreceipts";
     if (currentTab && currentTab.name) {
@@ -308,8 +307,7 @@ export default () => {
       },
       {
         header: "Name",
-        field: (rec) =>
-          rec?.sabilData?.name || rec?.sabilData?.itsdata?.Full_Name || "",
+        field: (rec) => rec?.sabilData?.name || rec?.sabilData?.itsdata?.Full_Name || "",
         width: 30,
       },
       {
@@ -361,7 +359,7 @@ export default () => {
       key="paymentMode"
       alwaysOn
     />,
-    <TextInput source="itsNo" label="ITS No" key="itsNo" alwaysOn />
+    <TextInput source="itsNo" label="ITS No" key="itsNo" alwaysOn />,
   ];
 
   return (
