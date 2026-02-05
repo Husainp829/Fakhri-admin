@@ -7,6 +7,7 @@ import FestivalIcon from "@mui/icons-material/Festival";
 import TableRowsIcon from "@mui/icons-material/TableRows";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import EventIcon from "@mui/icons-material/Event";
 import { navigateToBaseRoute } from "../../utils/routeUtility";
 import { hasPermission } from "../../utils/permissionUtils";
 
@@ -65,6 +66,13 @@ export default function DefaultDashboard() {
             "FMB",
             "View and manage all fmb data",
             "fmb",
+          ],
+          [
+            hasPermission(permissions, "miqaats.view"),
+            EventIcon,
+            "Miqaats",
+            "View and manage miqaats and RSVPs",
+            "miqaat",
           ],
           [
             hasPermission(permissions, "miqaatNiyaazReceipts.view"),

@@ -65,6 +65,7 @@ import blockedHallDates from "./containers/bookings/blockedHallDates";
 import miqaatNiyaazReceipts from "./containers/miqaat/miqaatNiyaazReceipts";
 import MiqaatNiyaazReceiptPrint from "./containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrintA5";
 import MiqaatDashboard from "./containers/miqaat/dashboard";
+import miqaats from "./containers/miqaat/miqaats";
 import AccountsDashboard from "./containers/accounts/dashboard";
 
 dayjs.extend(utc);
@@ -124,11 +125,13 @@ const MainApp = () => {
           <Navigate to="/fmbData" />
         );
       case "miqaat":
-        return hasPermission(permissions, "miqaatNiyaazReceipts.dashboard") ? (
-          <MiqaatDashboard />
-        ) : (
-          <Navigate to="/miqaatNiyaazReceipts" />
-        );
+        if (hasPermission(permissions, "miqaatNiyaazReceipts.dashboard")) {
+          return <MiqaatDashboard />;
+        }
+        if (hasPermission(permissions, "miqaats.view")) {
+          return <Navigate to="/miqaats" />;
+        }
+        return <Navigate to="/miqaatNiyaazReceipts" />;
       case "accounts":
         return hasPermission(permissions, "accounts.view") ? (
           <AccountsDashboard />
@@ -240,6 +243,14 @@ const MainApp = () => {
           )}
           {baseRoute === "miqaat" && (
             <>
+              {hasPermission(permissions, "miqaats.view") && (
+                <Resource
+                  {...miqaats}
+                  create={hasPermission(permissions, "miqaats.create") ? miqaats.create : null}
+                  edit={hasPermission(permissions, "miqaats.edit") ? miqaats.edit : null}
+                  options={{ label: "Miqaats" }}
+                />
+              )}
               {hasPermission(permissions, "miqaatNiyaazReceipts.view") && (
                 <Resource {...miqaatNiyaazReceipts} />
               )}

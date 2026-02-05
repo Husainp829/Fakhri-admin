@@ -55,6 +55,16 @@ export const hallColorMap = {
   "FM-2": "#1E90FF",
 };
 
+export const MEAL_TYPE_CHOICES = [
+  { id: "LUNCH", name: "Lunch" },
+  { id: "DINNER", name: "Evening" },
+];
+
+export const VENUE_CHOICES = [
+  { id: "Fakhri Manzil", name: "Fakhri Manzil" },
+  { id: "Burhani Hall", name: "Burhani Hall" },
+];
+
 export const dateFilterOptions = [
   {
     id: "TODAY",
