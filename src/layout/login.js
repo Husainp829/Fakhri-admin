@@ -13,21 +13,21 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 
-import background from "../assets/LoginPage.png";
+import background from "../assets/JameaAlAnwar.jpg";
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       Copyright ©
       <Link color="inherit" href="/">
-        Fakhri Jamaat
+        Anjuman-e-Fakhri Poona
       </Link>{" "}
       {new Date().getFullYear()}.
     </Typography>
   );
 }
 
-export default function SignInSide() {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
