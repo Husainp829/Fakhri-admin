@@ -1,25 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { AppBar, TitlePortal } from "react-admin";
-import Box from "@mui/material/Box";
-import EventIcon from "@mui/icons-material/Event";
-import IconButton from "@mui/material/IconButton";
+import HomeIcon from "@mui/icons-material/Home";
+import { Button, IconButton } from "@mui/material";
 
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { Button } from "@mui/material";
+import { navigateToBaseRoute, useBaseRoute } from "../utils/routeUtility";
 
-import { navigateToBaseRoute } from "../utils/routeUtility";
+const goToDashboard = () => navigateToBaseRoute();
 
 export default (props) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const baseRoute = useBaseRoute();
+  const showBackToDashboard = Boolean(baseRoute);
 
   return (
     <AppBar
@@ -34,35 +24,28 @@ export default (props) => {
       elevation={2}
       {...props}
     >
-      <Button onClick={() => navigateToBaseRoute()}>
-        <img src="/logo.png" alt="logo" width="50px" />
-      </Button>
       <TitlePortal />
-      <Box>
-        <IconButton
-          color="primary"
-          aria-label="dashboard-menu"
-          component="label"
-          onClick={handleClick}
-        >
-          <EventIcon />
-        </IconButton>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem
-            onClick={() => {
-              navigateToBaseRoute();
-            }}
+      {showBackToDashboard && (
+        <>
+          <IconButton
+            color="primary"
+            aria-label="Back to Dashboard"
+            onClick={goToDashboard}
+            sx={{ display: { xs: "inline-flex", sm: "none" } }}
           >
-            Dashboard
-          </MenuItem>
-        </Menu>
-      </Box>
+            <HomeIcon />
+          </IconButton>
+          <Button
+            color="primary"
+            startIcon={<HomeIcon />}
+            onClick={goToDashboard}
+            size="small"
+            sx={{ display: { xs: "none", sm: "inline-flex" } }}
+          >
+            Back to Home
+          </Button>
+        </>
+      )}
     </AppBar>
   );
 };
