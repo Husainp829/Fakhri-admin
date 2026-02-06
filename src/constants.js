@@ -1,5 +1,5 @@
-export const apiUrl = "/api";
-// export const apiUrl = "http://localhost:3012";
+// export const apiUrl = "/api";
+export const apiUrl = "http://localhost:3012";
 
 export const getApiUrl = () => apiUrl;
 

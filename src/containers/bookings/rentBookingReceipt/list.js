@@ -12,6 +12,7 @@ import {
   TextInput,
   DateInput,
   useListContext,
+  SimpleList,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
@@ -26,6 +27,7 @@ import {
   TableRow,
   Paper,
   Link,
+  useMediaQuery,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { exportToExcel } from "../../../utils/exportToExcel";
@@ -182,10 +184,22 @@ const PaymentSummary = () => {
 };
 
 const TAB_OPTIONS = [
-  { id: 0, name: "DEPOSIT - CASH", type: "DEPOSIT", mode: "CASH" },
-  { id: 1, name: "CONTRIBUTIONS - CASH", type: "RENT", mode: "CASH" },
-  { id: 2, name: "CONTRIBUTIONS - ONLINE", type: "RENT", mode: "ONLINE" },
-  { id: 3, name: "CONTRIBUTIONS - CHEQUE", type: "RENT", mode: "CHEQUE" },
+  { id: 0, name: "DEPOSIT - CASH", shortLabel: "Deposit", type: "DEPOSIT", mode: "CASH" },
+  { id: 1, name: "CONTRIBUTIONS - CASH", shortLabel: "Cont. Cash", type: "RENT", mode: "CASH" },
+  {
+    id: 2,
+    name: "CONTRIBUTIONS - ONLINE",
+    shortLabel: "Cont. Online",
+    type: "RENT",
+    mode: "ONLINE",
+  },
+  {
+    id: 3,
+    name: "CONTRIBUTIONS - CHEQUE",
+    shortLabel: "Cont. Cheque",
+    type: "RENT",
+    mode: "CHEQUE",
+  },
 ];
 
 const getTabIdFromFilters = (filters) => {
@@ -221,6 +235,7 @@ const ReceiptTypeTabs = () => {
       options={TAB_OPTIONS.map((option) => ({
         id: option.id,
         name: option.name,
+        shortLabel: option.shortLabel,
       }))}
       value={tabValue}
       onChange={handleChange}
@@ -229,10 +244,48 @@ const ReceiptTypeTabs = () => {
   );
 };
 
+const formatAmount = (amount) =>
+  amount != null
+    ? new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(amount)
+    : "—";
+
 const ReceiptDatagrid = () => {
   const { filterValues } = useListContext();
   const { permissions } = usePermissions();
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
   const isDeposit = filterValues?.type === "DEPOSIT";
+
+  if (isSmall) {
+    return (
+      <SimpleList
+        primaryText={(record) => `${record.receiptNo ?? "—"} · ${record.organiser ?? "—"}`}
+        secondaryText={(record) => {
+          const bookingNo = record?.booking?.bookingNo || record?.bookingId || "—";
+          const dateStr = record.date ? dayjs(record.date).format("DD-MMM-YYYY") : "—";
+          const amountStr = formatAmount(record.amount);
+          const refundStr =
+            isDeposit && record?.refundAmount != null
+              ? ` · Refund ${formatAmount(record.refundAmount)}`
+              : "";
+          return (
+            <>
+              {bookingNo} · {record.organiserIts ?? "—"}
+              <br />
+              {dateStr} · {amountStr}
+              {refundStr}
+            </>
+          );
+        }}
+        tertiaryText={(record) => record?.admin?.name || record.createdBy || "—"}
+        linkType="edit"
+        rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+      />
+    );
+  }
 
   return (
     <Datagrid rowClick="edit" bulkActionButtons={false}>
@@ -268,11 +321,7 @@ const ReceiptDatagrid = () => {
           source="refundAmount"
           render={(record) => {
             if (record?.refundAmount) {
-              return new Intl.NumberFormat("en-IN", {
-                style: "currency",
-                currency: "INR",
-                maximumFractionDigits: 0,
-              }).format(record.refundAmount);
+              return formatAmount(record.refundAmount);
             }
             return <span>-</span>;
           }}
@@ -342,10 +391,7 @@ export default () => {
     let tabNameForFile = "receipts";
     if (currentTab && currentTab.name) {
       // Remove all spaces and hyphens, convert to lowercase
-      tabNameForFile = currentTab.name
-        .toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/-/g, "");
+      tabNameForFile = currentTab.name.toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
     } else if (currentFilter?.type && currentFilter?.mode) {
       // Fallback: construct from filter values if tab not found
       // Normalize the type value (handle case where it might be "RENT" but we want "CONT")

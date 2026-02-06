@@ -13,10 +13,11 @@ import {
   useListContext,
   usePermissions,
   Pagination,
+  SimpleList,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
-import { Box, Card, CardContent, Grid, Typography, Link } from "@mui/material";
+import { Box, Card, CardContent, Grid, Typography, Link, useMediaQuery } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import httpClient from "../../../dataprovider/httpClient";
 import { getApiUrl, SABIL_TYPE_OPTIONS } from "../../../constants";
@@ -194,10 +195,43 @@ const SabilTypeTabs = () => {
   );
 };
 
+const formatAmount = (amount) =>
+  amount != null
+    ? new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(amount)
+    : "—";
+
 const ReceiptDatagrid = () => {
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
+
   const printReceipt = (id) => {
     window.open(`#/sabil-receipt?receiptId=${id}`, "_blank");
   };
+
+  if (isSmall) {
+    return (
+      <SimpleList
+        primaryText={(record) => {
+          const name = record.sabilData?.name || record.sabilData?.itsdata?.Full_Name || "—";
+          return `${record.receiptNo ?? "—"} · ${name}`;
+        }}
+        secondaryText={(record) => (
+          <>
+            {record.sabilData?.sabilNo ?? "—"} · {record.sabilData?.itsNo ?? "—"}
+            <br />
+            {record.receiptDate ? dayjs(record.receiptDate).format("DD-MMM-YYYY") : "—"} ·{" "}
+            {formatAmount(record.amount)}
+          </>
+        )}
+        tertiaryText={(record) => record.paymentMode ?? "—"}
+        linkType="show"
+        rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+      />
+    );
+  }
 
   return (
     <Datagrid rowClick="show">

@@ -10,6 +10,7 @@ import {
   useListContext,
   usePermissions,
   Pagination,
+  SimpleList,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
@@ -23,6 +24,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  useMediaQuery,
 } from "@mui/material";
 import { exportToExcel } from "../../utils/exportToExcel";
 import { hasPermission } from "../../utils/permissionUtils";
@@ -235,10 +237,40 @@ const PaymentModeTabs = () => {
   );
 };
 
+const formatAmount = (amount) =>
+  amount != null
+    ? new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(amount)
+    : "—";
+
 const ReceiptDatagrid = () => {
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
+
   const printReceipt = (id) => {
     window.open(`#/lagat-rcpt/${id}`, "_blank");
   };
+
+  if (isSmall) {
+    return (
+      <SimpleList
+        primaryText={(record) => `${record.receiptNo ?? "—"} · ${record.name ?? "—"}`}
+        secondaryText={(record) => (
+          <>
+            {record.itsNo ?? "—"} · {record.purpose ?? "—"}
+            <br />
+            {record.receiptDate ? dayjs(record.receiptDate).format("DD-MMM-YYYY") : "—"} ·{" "}
+            {formatAmount(record.amount)}
+          </>
+        )}
+        tertiaryText={(record) => record.paymentMode ?? "—"}
+        linkType="show"
+        rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+      />
+    );
+  }
 
   return (
     <Datagrid rowClick="show" bulkActionButtons={false}>

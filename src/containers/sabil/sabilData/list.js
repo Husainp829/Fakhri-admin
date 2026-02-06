@@ -18,10 +18,11 @@ import {
   FunctionField,
   DateField,
   SelectInput,
+  SimpleList,
 } from "react-admin";
-import Divider from "@mui/material/Divider";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { useMediaQuery } from "@mui/material";
+import dayjs from "dayjs";
+import CommonTabs from "../../../components/CommonTabs";
 
 const getTabIdFromFilters = (filters, statuses) => {
   const t = statuses.findIndex((s) => s.id === filters?.sabilType);
@@ -78,27 +79,51 @@ function TabbedDatagrid() {
 
   const PostBulkActionButtons = () => <div style={{ marginLeft: "25px" }}></div>;
 
-  const DataGrid = () => (
-    <DatagridConfigurable
-      size="small"
-      sx={{
-        color: "success.main",
-      }}
-      bulkActionButtons={<PostBulkActionButtons />}
-      rowClick="show"
-    >
-      {[...fields]}
-    </DatagridConfigurable>
-  );
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
+
+  const DataGrid = () =>
+    isSmall ? (
+      <SimpleList
+        primaryText={(record) =>
+          `${record.sabilNo ?? "—"} · ${(record.itsdata?.Full_Name || record.name) ?? "—"}`
+        }
+        secondaryText={(record) => (
+          <>
+            {record.itsNo ?? "—"} · {record.sabilType ?? "—"}
+            <br />
+            {record.mohallah ?? "—"} · Takhmeen:{" "}
+            {record.sabilTakhmeenCurrent?.takhmeenAmount ?? "—"}
+          </>
+        )}
+        tertiaryText={(record) =>
+          record.lastPaidDate ? dayjs(record.lastPaidDate).format("DD-MMM-YYYY") : "—"
+        }
+        linkType="show"
+        rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+      />
+    ) : (
+      <DatagridConfigurable
+        size="small"
+        sx={{
+          color: "success.main",
+        }}
+        bulkActionButtons={<PostBulkActionButtons />}
+        rowClick="show"
+      >
+        {[...fields]}
+      </DatagridConfigurable>
+    );
+
+  const tabOptions =
+    sabilTypeList?.map((choice, i) => ({
+      id: i,
+      name: choice.name,
+      shortLabel: choice.id,
+    })) ?? [];
 
   return (
     <>
-      <Tabs value={tabValue} indicatorColor="primary" onChange={handleChange}>
-        {sabilTypeList?.map((choice, i) => (
-          <Tab key={i} label={choice.name} value={i} />
-        ))}
-      </Tabs>
-      <Divider />
+      <CommonTabs options={tabOptions} value={tabValue} onChange={handleChange} showDivider />
       <div>
         <DataGrid />
       </div>
