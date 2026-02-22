@@ -161,6 +161,7 @@ export default () => {
               <TextField source="HOFId" label="HOF ID" />
               <TextField source="HOFName" label="HOF Name" />
               <TextField source="HOFPhone" label="HOF Phone" />
+              <NumberField source="zabihat" label="Zabihat" textAlign="left" />
               <NumberField source="totalPayable" label="Total Payable" textAlign="left" />
               <NumberField source="paidAmount" textAlign="left" />
               <NumberField source="balance" label="Balance" textAlign="left" />
