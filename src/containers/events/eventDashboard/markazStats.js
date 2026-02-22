@@ -6,15 +6,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useRedirect, useStore } from "react-admin";
+import { useCreatePath, useStore } from "react-admin";
+import { useNavigate } from "react-router-dom";
 import { calcTotalBalance, calcTotalPayable } from "../../../utils";
 
 const MarkazStats = ({ niyaazCounts, selectedMarkaz }) => {
   const [currentEvent] = useStore("currentEvent");
-  const redirect = useRedirect();
+  const navigate = useNavigate();
+  const createPath = useCreatePath();
 
   const goToNiyaazWithZabihats = () => {
-    redirect("list", "niyaaz", { filter: { zabihat_gt: 0 } });
+    const listPath = createPath({ type: "list", resource: "niyaaz" });
+    const filter = { zabihat_gt: 0 };
+    const search = `?filter=${encodeURIComponent(JSON.stringify(filter))}`;
+    navigate(`${listPath}${search}`);
   };
 
   return (
