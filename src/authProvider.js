@@ -1,5 +1,5 @@
 /* eslint-disable brace-style */
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut, getIdToken } from "firebase/auth";
 import { LRUCache } from "lru-cache";
 import { authObj } from "./firebaseConfig";
 import { goToLogin } from "./utils";
@@ -158,6 +158,11 @@ const authProvider = {
   login: async ({ username, password }) => {
     try {
       const { user } = await signInWithEmailAndPassword(authObj, username, password);
+
+      // Set the new user's token in storage before any API call so httpClient uses it (not a previous session's token)
+      const idToken = await getIdToken(user, true);
+      localStorage.setItem("AUTH_TOKEN", idToken);
+      localStorage.setItem("EXPIRE_TIME", String(Date.now() + 3000 * 1000)); // ~50 min, match httpClient
 
       // Always fetch fresh permissions from API on login
       const permissionArray = await fetchPermissionsFromAPI();
