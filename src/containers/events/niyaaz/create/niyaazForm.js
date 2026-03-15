@@ -88,6 +88,15 @@ export default () => {
           <Grid item size={{ md: 6, xs: 12 }} sx={{ mb: { xs: 2, md: 0 } }}>
             <TextInput source="HOFPhone" label="Phone" fullWidth isRequired />
           </Grid>
+          <Grid item size={{ xs: 12 }} sx={{ mb: 2 }}>
+            <BooleanInput
+              source="sendReminders"
+              label="Send reminders"
+              fullWidth
+              defaultValue
+              helperText="Send WhatsApp contribution reminder messages for outstanding balance"
+            />
+          </Grid>
           <Grid item size={{ xs: 12 }}></Grid>
 
           <Grid item size={{ xs: 12 }} sx={{ mb: 2, mt: { xs: 1, md: 0 } }}>

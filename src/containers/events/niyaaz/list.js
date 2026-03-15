@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  BooleanField,
   Button,
   CreateButton,
   DatagridConfigurable as Datagrid,
@@ -98,6 +99,11 @@ export default () => {
         width: 15,
       },
       {
+        header: "Send Reminders",
+        field: (rec) => (rec.sendReminders ? "Yes" : "No"),
+        width: 15,
+      },
+      {
         header: "Total Payable",
         field: "totalPayable",
         width: 15,
@@ -143,6 +149,7 @@ export default () => {
                 <br />₹{Number(record.totalPayable || 0).toLocaleString("en-IN")} · Paid ₹
                 {Number(record.paidAmount || 0).toLocaleString("en-IN")} · Bal ₹
                 {Number(record.balance || 0).toLocaleString("en-IN")}
+                {record.sendReminders !== false ? " · Reminders on" : " · Reminders off"}
               </>
             )}
             tertiaryText={(record) => record.markaz || "—"}
@@ -161,6 +168,13 @@ export default () => {
               <TextField source="HOFId" label="HOF ID" />
               <TextField source="HOFName" label="HOF Name" />
               <TextField source="HOFPhone" label="HOF Phone" />
+              <BooleanField
+                source="sendReminders"
+                label="Send reminders"
+                valueLabelTrue="Yes"
+                valueLabelFalse="No"
+                defaultValue
+              />
               <NumberField source="zabihat" label="Zabihat" textAlign="left" />
               <NumberField source="totalPayable" label="Total Payable" textAlign="left" />
               <NumberField source="paidAmount" textAlign="left" />
