@@ -1,7 +1,6 @@
-import React, { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import React from "react";
 import {
-  Create,
+  Edit,
   SimpleForm,
   TextInput,
   ReferenceInput,
@@ -11,45 +10,27 @@ import {
   minValue,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
-import dayjs from "dayjs";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import MonthInput from "../../../components/MonthInput";
 import { ITSInput } from "./common/itsInput";
 import {
   CATEGORY_CHOICES,
   TakhmeenYearAutoSummary,
-  transformTakhmeenCreate,
+  transformTakhmeenUpdate,
 } from "./common/takhmeenFormShared";
 
-export default function FmbTakhmeenCreate(props) {
-  const [searchParams] = useSearchParams();
-  const prefFmbId = searchParams.get("fmbId") || "";
-
-  const defaultValues = useMemo(() => {
-    const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
-    return prefFmbId
-      ? { fmbId: prefFmbId, category: "THALI", startDate }
-      : { category: "THALI", startDate };
-  }, [prefFmbId]);
-
+export default function FmbTakhmeenEdit(props) {
   return (
-    <Create
-      {...props}
-      transform={transformTakhmeenCreate}
-      redirect={(resource, id, data) => {
-        const fid = data?.fmbId || prefFmbId;
-        return fid ? `/fmbData/${fid}/show/takhmeenHistory` : "list";
-      }}
-    >
-      <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 720 }} defaultValues={defaultValues}>
+    <Edit {...props} transform={transformTakhmeenUpdate} mutationMode="pessimistic">
+      <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 720 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <ReferenceInput source="fmbId" reference="fmbData" perPage={100} required>
+            <ReferenceInput source="fmbId" reference="fmbData" perPage={100}>
               <ITSInput
                 label="FMB record"
                 optionText={(r) => `${r.fmbNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
                 fullWidth
-                required
+                disabled
                 debounce={300}
                 filterToQuery={(q) => ({ search: q })}
               />
@@ -62,17 +43,9 @@ export default function FmbTakhmeenCreate(props) {
             <TextInput source="name" label="Account name" fullWidth disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextInput
-              source="previousTakhmeenAmount"
-              label="Current takhmeen amount"
-              fullWidth
-              disabled
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <NoArrowKeyNumberInput
               source="takhmeenAmount"
-              label="New takhmeen amount"
+              label="Takhmeen amount"
               fullWidth
               required
               validate={[required(), minValue(1)]}
@@ -92,7 +65,7 @@ export default function FmbTakhmeenCreate(props) {
               source="shawwalStartDate"
               label="1 Shawwal (Gregorian, optional)"
               fullWidth
-              helperText="If set, Hijri year is taken from this date; else from effective month below"
+              helperText="If set, Hijri year is taken from this date; else from effective month"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -101,6 +74,6 @@ export default function FmbTakhmeenCreate(props) {
           <TakhmeenYearAutoSummary />
         </Grid>
       </SimpleForm>
-    </Create>
+    </Edit>
   );
 }

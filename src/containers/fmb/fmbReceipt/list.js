@@ -18,7 +18,7 @@ export default () => {
   };
   const optionRenderer = (choice) => `${choice.itsNo}`;
   const ReceiptFilters = [
-    <ReferenceInput source="fmbId" reference="fmbData" required key="fmbId" alwaysOn>
+    <ReferenceInput source="fmbId" reference="fmbData" key="fmbId" alwaysOn>
       <AutocompleteInput
         fullWidth
         optionText={optionRenderer}

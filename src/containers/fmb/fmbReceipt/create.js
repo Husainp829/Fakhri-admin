@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   TextInput,
   Create,
@@ -11,33 +12,44 @@ import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
-export default (props) => {
+export default function FmbReceiptCreate(props) {
+  const [searchParams] = useSearchParams();
+  const fmbId = searchParams.get("fmbId") || undefined;
+  const fmbTakhmeenId = searchParams.get("fmbTakhmeenId") || undefined;
+
+  const defaultValues = useMemo(
+    () => ({
+      fmbId,
+      fmbTakhmeenId,
+      paymentMode: "CASH",
+      receiptDate: new Date(),
+    }),
+    [fmbId, fmbTakhmeenId],
+  );
+
   const optionRenderer = (choice) => `${choice.itsNo}`;
 
-  const { href } = window.location;
-  const params = href.split("?")[1];
-  const searchParams = new URLSearchParams(params);
-  const fmbId = searchParams.get("fmbId");
-  const fmbTakhmeenId = searchParams.get("fmbTakhmeenId");
+  const transform = (data) => {
+    const amount = Number(data.amount);
+    const out = {
+      fmbId: data.fmbId,
+      fmbTakhmeenId: data.fmbTakhmeenId,
+      amount: Number.isFinite(amount) ? Math.round(amount) : 0,
+      paymentMode: data.paymentMode,
+      remarks: data.remarks,
+    };
+    if (data.receiptDate) {
+      const d = data.receiptDate instanceof Date ? data.receiptDate : new Date(data.receiptDate);
+      if (!Number.isNaN(d.getTime())) {
+        out.receiptDate = d.toISOString();
+      }
+    }
+    return out;
+  };
 
-  const transform = (data) => ({
-    fmbId: data.fmbId,
-    fmbTakhmeenId: data.fmbTakhmeenId,
-    amount: data.amount,
-    receiptType: "DEBIT",
-    paymentMode: data.paymentMode,
-    remarks: data.remarks,
-    receiptDate: data.receiptDate,
-  });
-
-  const receiptDefaultValues = () => ({ fmbId, fmbTakhmeenId });
   return (
     <Create {...props} transform={transform}>
-      <SimpleForm
-        warnWhenUnsavedChanges
-        sx={{ maxWidth: 700 }}
-        defaultValues={receiptDefaultValues}
-      >
+      <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 700 }} defaultValues={defaultValues}>
         <Grid container spacing={1}>
           <Grid item lg={6} xs={6}>
             <ReferenceInput source="fmbId" reference="fmbData" required>
@@ -57,7 +69,7 @@ export default (props) => {
           <Grid item lg={6} xs={6}>
             <TextInput source="name" label="FMB Account Holder Name" fullWidth disabled />
             <DateInput source="lastPaidDate" fullWidth disabled />
-            <DateInput source="receiptDate" fullWidth defaultValue={new Date()} />
+            <DateInput source="receiptDate" fullWidth />
           </Grid>
         </Grid>
 
@@ -71,7 +83,8 @@ export default (props) => {
           fullWidth
         />
         <TextInput source="remarks" fullWidth />
+        <TextInput source="fmbTakhmeenId" sx={{ display: "none" }} />
       </SimpleForm>
     </Create>
   );
-};
+}

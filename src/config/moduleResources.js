@@ -32,6 +32,10 @@ import sabilLedger from "../containers/sabil/sabilLedger";
 import fmbData from "../containers/fmb/fmbData";
 import fmbReceipt from "../containers/fmb/fmbReceipt";
 import fmbTakhmeen from "../containers/fmb/fmbTakhmeen";
+import fmbDeliveryScheduleProfile from "../containers/fmb/fmbDeliveryScheduleProfile";
+import fmbThaliSettings from "../containers/fmb/fmbThaliSettings";
+import fmbHoliday from "../containers/fmb/fmbHoliday";
+import fmbThaliSuspension from "../containers/fmb/fmbThaliSuspension";
 
 import miqaatNiyaazReceipts from "../containers/miqaat/miqaatNiyaazReceipts";
 
@@ -126,9 +130,29 @@ export const MODULE_RESOURCES = {
   },
   fmb: {
     resources: [
-      { permission: "admins.view", resource: fmbData },
-      { permission: "admins.view", resource: fmbReceipt },
-      { permission: "admins.view", resource: fmbTakhmeen },
+      { permission: "fmbData.view", resource: fmbData, createPermission: "fmbData.create" },
+      {
+        permission: "fmbReceipt.view",
+        resource: fmbReceipt,
+        createPermission: "fmbReceipt.create",
+      },
+      { permission: "fmbData.view", resource: fmbTakhmeen, createPermission: "fmbData.edit" },
+      {
+        permission: "fmbThaliSuspension.view",
+        resource: fmbThaliSuspension,
+        createPermission: "fmbThaliSuspension.create",
+      },
+      {
+        permission: "fmbDeliveryScheduleProfile.view",
+        resource: fmbDeliveryScheduleProfile,
+        createPermission: "fmbDeliveryScheduleProfile.create",
+      },
+      {
+        permission: "fmbHoliday.view",
+        resource: fmbHoliday,
+        createPermission: "fmbHoliday.create",
+      },
+      { permission: "fmbThaliSettings.view", resource: fmbThaliSettings },
     ],
   },
   miqaat: {

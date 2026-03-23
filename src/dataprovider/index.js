@@ -38,12 +38,9 @@ const getAvailablePermissions = async () => {
     return availablePermissionsPromise;
   }
 
-  availablePermissionsPromise = httpClient(
-    `${getApiUrl()}/admins/permissions/available`,
-    {
-      method: "GET",
-    }
-  )
+  availablePermissionsPromise = httpClient(`${getApiUrl()}/admins/permissions/available`, {
+    method: "GET",
+  })
     .then(({ json }) => {
       availablePermissionsCache = json.rows || json.data || [];
       availablePermissionsPromise = null;
@@ -72,10 +69,7 @@ const normalizeAdminPermissions = async (data) => {
     return data;
   }
 
-  const normalized = normalizePermissionsWithChoices(
-    data.permissions,
-    availableChoices
-  );
+  const normalized = normalizePermissionsWithChoices(data.permissions, availableChoices);
 
   return {
     ...data,
@@ -106,11 +100,9 @@ export default {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(
-      ({ json: { rows } }) => ({
-        data: rows[0],
-      })
-    ),
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
+      data: rows[0],
+    })),
 
   getMany: (resource, params) => {
     const query = {
@@ -161,13 +153,10 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(
-      `${getApiUrl(resource)}/${resource}?${stringify(query)}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(params.data),
-      }
-    ).then(({ json }) => ({ data: json.data }));
+    return httpClient(`${getApiUrl(resource)}/${resource}?${stringify(query)}`, {
+      method: "PUT",
+      body: JSON.stringify(params.data),
+    }).then(({ json }) => ({ data: json.data }));
   },
 
   create: async (resource, params) => {
@@ -205,33 +194,31 @@ export default {
         httpClient(`${getApiUrl(resource)}/${resource}/${id}`, {
           method: "DELETE",
           body: JSON.stringify(params.data),
-        })
-      )
+        }),
+      ),
     ).then(() => ({
       data: [],
     })),
 
   deleteImage: (resource, params) =>
-    httpClient(
-      `${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`
-    ).then(() => ({
+    httpClient(`${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`).then(() => ({
       data: "",
     })),
   pdfDownload: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(
-      `${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`
-    ).then((response) => {
-      const linkSource = `data:application/pdf;base64,${response.body}`;
-      const downloadLink = document.createElement("a");
-      const fileName = `${params.name}-${Date.now()}.pdf`;
-      downloadLink.href = linkSource;
-      downloadLink.download = fileName;
-      downloadLink.click();
-      return { data: [] };
-    });
+    return httpClient(`${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`).then(
+      (response) => {
+        const linkSource = `data:application/pdf;base64,${response.body}`;
+        const downloadLink = document.createElement("a");
+        const fileName = `${params.name}-${Date.now()}.pdf`;
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
+        return { data: [] };
+      },
+    );
   },
   previewRecipients: (resource, params) => {
     const { filterCriteria, limit = 25, offset = 0 } = params;

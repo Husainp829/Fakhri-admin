@@ -1,14 +1,14 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import {
   Button,
+  EditButton,
   Show,
   TabbedShowLayout,
   TopToolbar,
   useRedirect,
   useShowContext,
 } from "react-admin";
-import EditNoteIcon from "@mui/icons-material/ModeEdit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -16,82 +16,79 @@ import TakhmeenHistory from "./takhmeenHistory";
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
-const FmbActions = () => {
-  const redirect = useRedirect();
-  const {
-    record, // record fetched via dataProvider.getOne() based on the id from the location
-  } = useShowContext();
+import SuspensionsTab from "./suspensions";
 
+const FmbShowActions = () => {
+  const redirect = useRedirect();
+  const { record } = useShowContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const id = record?.id;
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  const go = (path) => {
+    handleClose();
+    redirect(path);
+  };
+
   return (
     <TopToolbar>
+      <EditButton />
       <Button
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
+        id="fmb-show-more-actions"
+        aria-controls={open ? "fmb-show-more-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        startIcon={<MoreVertIcon />}
+        color="inherit"
       >
-        <EditNoteIcon sx={{ mr: 1 }} />
-        Actions
+        More
       </Button>
       <Menu
-        id="basic-menu"
+        id="fmb-show-more-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
+        MenuListProps={{ "aria-labelledby": "fmb-show-more-actions" }}
       >
-        <MenuItem
-          onClick={() => {
-            redirect(`/fmbData/${record?.id}`);
-          }}
-        >
-          Edit Sabil
+        <MenuItem disabled={!id} onClick={() => go(`/fmbTakhmeen/create?fmbId=${id}`)}>
+          New takhmeen period
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            redirect(`/fmbTakhmeen/create?sabilId=${record?.id}`);
-          }}
-        >
-          Update Takhmeen
+        <MenuItem disabled={!id} onClick={() => go(`/fmbReceipt/create?fmbId=${id}`)}>
+          Record receipt
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            redirect(`/fmbTakhmeen/create?sabilId=${record?.id}`);
-          }}
-        >
-          Close/Transfer
+        <MenuItem disabled={!id} onClick={() => go(`/fmbThaliSuspension/create?fmbId=${id}`)}>
+          Add thali suspension
         </MenuItem>
       </Menu>
     </TopToolbar>
   );
 };
-export default ({ props }) => (
-  <Show actions={<FmbActions {...props} />}>
-    <TabbedShowLayout>
-      <TabbedShowLayout.Tab label="Information">
-        <BasicInfo />
-      </TabbedShowLayout.Tab>
-      <TabbedShowLayout.Tab label="Family Members" path="family">
-        <FamilyMembers />
-      </TabbedShowLayout.Tab>
-      <TabbedShowLayout.Tab label="Takhmeen History" path="takhmeenHistory">
-        <TakhmeenHistory />
-      </TabbedShowLayout.Tab>
-      <TabbedShowLayout.Tab label="Receipts" path="receipts">
-        <Receipt />
-      </TabbedShowLayout.Tab>
-    </TabbedShowLayout>
-  </Show>
-);
+
+export default function FmbDataShow(props) {
+  return (
+    <Show {...props} actions={<FmbShowActions />}>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label="Information">
+          <BasicInfo />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Family Members" path="family">
+          <FamilyMembers />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Takhmeen History" path="takhmeenHistory">
+          <TakhmeenHistory />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Receipts" path="receipts">
+          <Receipt />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Suspensions" path="suspensions">
+          <SuspensionsTab />
+        </TabbedShowLayout.Tab>
+      </TabbedShowLayout>
+    </Show>
+  );
+}

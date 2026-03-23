@@ -10,15 +10,25 @@ import {
   TextField,
   useRedirect,
 } from "react-admin";
+import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
 
 export default () => {
   const redirect = useRedirect();
 
   return (
     <ReferenceManyField reference="fmbTakhmeen" target="fmbId" label={false}>
-      <Datagrid>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField source="takhmeenAmount" />
-        <TextField source="takhmeenYear" />
+        <FunctionField
+          label="Hijri period"
+          source="takhmeenYear"
+          render={(record) =>
+            formatFmbHijriPeriod(
+              record?.hijriYearStart ?? record?.takhmeenYear,
+              record?.hijriYearEnd,
+            ) ?? "—"
+          }
+        />
         <NumberField source="pendingBalance" />
         <NumberField source="paidBalance" />
         <ReferenceField source="updatedBy" reference="admins">
@@ -30,8 +40,11 @@ export default () => {
           source="fmbId"
           render={(record) => (
             <Button
+              type="button"
               variant="contained"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 redirect(`/fmbReceipt/create?fmbId=${record?.fmbId}&fmbTakhmeenId=${record?.id}`);
               }}
               label="Add Payment"

@@ -7,11 +7,16 @@ import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "../../../utils";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
 
+/** Query string from hash route `#/fmb-receipt?receiptId=…` (not `window.location.search`). */
+function getReceiptIdFromLocation() {
+  const hash = window.location.hash || "";
+  const q = hash.indexOf("?");
+  const queryString = q >= 0 ? hash.slice(q + 1) : window.location.search.replace(/^\?/, "");
+  return new URLSearchParams(queryString).get("receiptId");
+}
+
 const FmbReceipt = () => {
-  const { href } = window.location;
-  const params = href.split("?")[1];
-  const searchParams = new URLSearchParams(params);
-  const receiptId = searchParams.get("receiptId");
+  const receiptId = getReceiptIdFromLocation();
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
 
@@ -26,7 +31,7 @@ const FmbReceipt = () => {
         const response = await callApiWithoutAuth({
           location: "fmbReceipt",
           method: "GET",
-          id: receiptId,
+          id: `print/${receiptId}`,
         });
         if (response?.data?.rows?.[0]) {
           setData(response.data.rows[0]);
@@ -50,7 +55,11 @@ const FmbReceipt = () => {
   }
   const receiptData = data || {};
   const fmbData = data?.fmbData || {};
+  const fmbTakhmeen = data?.fmbTakhmeen || {};
   const itsdata = fmbData.itsdata || {};
+  const hijriStart = fmbTakhmeen?.hijriYearStart ?? fmbTakhmeen?.takhmeenYear ?? null;
+  const hijriEnd = fmbTakhmeen?.hijriYearEnd ?? (hijriStart ? hijriStart + 1 : null);
+  const fmbPeriodLabel = hijriStart && hijriEnd ? `${hijriStart}-${hijriEnd}` : "—";
 
   const toWords = new ToWords();
 
@@ -74,7 +83,7 @@ const FmbReceipt = () => {
               <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
                 {itsdata?.Full_Name}
               </div>
-              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالا</div>
+              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالى</div>
             </div>
           </div>
           <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
@@ -97,18 +106,13 @@ const FmbReceipt = () => {
           </div>
 
           <div style={{ textAlign: "center", padding: "10px" }}>
-            <strong>فيض المواىٔد البره‍انية</strong>&rdquo; فند ما&ldquo;
+            <strong>فيض المواىٔد البره‍انية</strong>&ldquo; فند ما&rdquo;
           </div>
 
           <div style={{ padding: "10px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ flex: "4", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
-              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}></div>
-              <div style={{ flex: "1", paddingRight: "10px", textAlign: "center" }}>سنة الا</div>
-              <div style={{ flex: "2", borderBottom: "1px solid #cfcfcf" }}>
-                {formatDate(receiptData.createdAt)}
-              </div>
-              <div style={{ flex: "1.2", paddingLeft: "10px", textAlign: "right" }}>من شهر</div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ paddingRight: "10px" }}>ما وصول تهيا چهے</div>
+              <div style={{ borderBottom: "1px solid #cfcfcf" }}>{fmbPeriodLabel}</div>
             </div>
           </div>
         </div>

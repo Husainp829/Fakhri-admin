@@ -73,7 +73,14 @@ export default function OrderList(props) {
           bulkActionButtons={<PostBulkActionButtons />}
           rowClick="show"
         >
-          <TextField source="fmbNo" label="Sabil No." key="sabilNo" />
+          <TextField source="fmbNo" label="FMB No." key="fmbNo" />
+          <TextField source="fileNo" label="File No." key="fileNo" />
+          <TextField
+            source="deliveryScheduleProfile.name"
+            label="Schedule"
+            emptyText="—"
+            key="schedule"
+          />
           <TextField source="itsNo" label="ITS" key="itsNo" />
           <FunctionField
             label="Name"
@@ -95,8 +102,10 @@ export default function OrderList(props) {
             label="Takhmeen"
             key="takhmeenAmount"
           />
-          <TextField source="mohallah" label="Mohallah" key="itsdata" />
-          <TextField source="itsdata.Sector_Incharge_Name" label="Masool" key="itsdata" />
+          <TextField source="address" label="Address" key="address" />
+          <TextField source="mohallah" label="Mohallah" key="mohallah" />
+          <TextField source="itsdata.Area" label="Area" key="itsdata-area" />
+          <TextField source="itsdata.Sector_Incharge_Name" label="Masool" key="itsdata-masool" />
           <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />
         </DatagridConfigurable>
       </List>
