@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardActionArea, Typography, Grid } from "@mui/material";
 import { Title, usePermissions } from "react-admin";
 import { navigateToBaseRoute } from "../../utils/routeUtility";
-import { hasPermission } from "../../utils/permissionUtils";
+import { hasAnyPermission, hasPermission } from "../../utils/permissionUtils";
 import { MODULE_REGISTRY } from "../../config/modules";
 
 const DashboardCard = ({ icon: Icon, title, description, path }) => (
@@ -26,7 +26,11 @@ export default function DefaultDashboard() {
     <>
       <Title title="Fakhri Mohalla Poona" />
       <Grid container spacing={2} mt={1}>
-        {MODULE_REGISTRY.filter((m) => hasPermission(permissions, m.permission)).map((m) => (
+        {MODULE_REGISTRY.filter((m) =>
+          m.permissionsAny?.length
+            ? hasAnyPermission(permissions, m.permissionsAny)
+            : hasPermission(permissions, m.permission),
+        ).map((m) => (
           <Grid key={m.path} item size={{ xs: 6, sm: 6, md: 3 }}>
             <DashboardCard
               icon={m.icon}

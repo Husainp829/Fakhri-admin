@@ -39,9 +39,16 @@ import fmbThaliSuspension from "../containers/fmb/fmbThaliSuspension";
 
 import miqaatNiyaazReceipts from "../containers/miqaat/miqaatNiyaazReceipts";
 
+import ohbatMajlis from "../containers/ohbat/ohbatMajlis";
+import ohbatMajlisUpcoming from "../containers/ohbat/ohbatMajlisUpcoming";
+import ohbatMajlisAttendance from "../containers/ohbat/ohbatMajlisAttendance";
+import sadarats from "../containers/ohbat/sadarats";
+import makhsoosItsData from "../containers/ohbat/makhsoosItsData";
+
 /**
  * @typedef {Object} ResourceConfig
- * @property {string|null} permission - Permission to view resource; null = always show
+ * @property {string|null} permission - Permission to view resource; null = always show (unless permissionsAny is set)
+ * @property {string[]} [permissionsAny] - User needs at least one of these permissions (OR)
  * @property {Object} resource - React-admin resource definition
  * @property {string} [createPermission] - Permission to show create button; if absent, use resource.create as-is
  * @property {boolean} [requireRouteId] - Only show when routeId exists (events module)
@@ -157,6 +164,26 @@ export const MODULE_RESOURCES = {
   },
   miqaat: {
     resources: [{ permission: "miqaatNiyaazReceipts.view", resource: miqaatNiyaazReceipts }],
+  },
+  ohbat: {
+    resources: [
+      { permission: "ohbatMajalis.view", resource: ohbatMajlis, createPermission: "ohbatMajalis.create" },
+      {
+        permissionsAny: ["ohbatMajalis.view", "ohbatMajlisAttendance.view"],
+        resource: ohbatMajlisUpcoming,
+      },
+      { permission: "sadarats.view", resource: sadarats, createPermission: "sadarats.create" },
+      {
+        permission: "makhsoosItsData.view",
+        resource: makhsoosItsData,
+        createPermission: "makhsoosItsData.create",
+      },
+      {
+        permission: "ohbatMajlisAttendance.view",
+        resource: ohbatMajlisAttendance,
+        createPermission: "ohbatMajlisAttendance.create",
+      },
+    ],
   },
   accounts: {
     resources: [

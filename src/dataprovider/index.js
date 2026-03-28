@@ -79,6 +79,15 @@ const normalizeAdminPermissions = async (data) => {
 
 export default {
   getList: (resource, params) => {
+    if (resource === "ohbatMajlisUpcoming") {
+      return httpClient(`${getApiUrl()}/ohbatMajalis/attendance/upcoming`).then(
+        ({ json: { count, rows } }) => ({
+          data: convertRows(rows || []),
+          total: count ?? (rows || []).length,
+        }),
+      );
+    }
+
     const { pagination = {}, filter = {}, sort = {} } = params;
     const { page = 1, perPage = 10 } = pagination;
     const { field, order } = sort;
@@ -105,6 +114,24 @@ export default {
     })),
 
   getMany: (resource, params) => {
+    const ids = (params.ids || []).map((id) => (id == null ? "" : String(id))).filter(Boolean);
+    const uuidLike = (s) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+    const uuidIds = ids.filter(uuidLike);
+    const itsIds = ids.filter((id) => !uuidLike(id));
+
+    if (resource === "itsdata" && itsIds.length > 0 && uuidIds.length === 0) {
+      const query = {
+        filter: JSON.stringify({ ITS_ID_in: itsIds }),
+        limit: Math.min(Math.max(itsIds.length, 50), 100),
+      };
+      const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
+      return httpClient(url).then(({ json: { rows } }) => ({
+        data: convertRows(rows || []),
+        total: (rows || []).length,
+      }));
+    }
+
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };

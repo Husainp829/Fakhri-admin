@@ -19,6 +19,9 @@ const CustomCalendarToolbar = ({
   view,
   onView,
   date,
+  showListToggle = true,
+  /** When set, rendered instead of hall bookings ViewToggle (e.g. ohbat majlis). */
+  listToggleComponent: ListToggleComponent,
 }) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Box px={2} pb={2}>
@@ -73,7 +76,9 @@ const CustomCalendarToolbar = ({
             <ToggleButton value="week">Week</ToggleButton>
             <ToggleButton value="month">Month</ToggleButton>
           </ToggleButtonGroup>
-          <ViewToggle />
+          {showListToggle ? (
+            ListToggleComponent ? <ListToggleComponent /> : <ViewToggle />
+          ) : null}
         </Grid>
       </Grid>
     </Box>
