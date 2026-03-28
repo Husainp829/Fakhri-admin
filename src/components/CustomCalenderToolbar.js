@@ -76,9 +76,7 @@ const CustomCalendarToolbar = ({
             <ToggleButton value="week">Week</ToggleButton>
             <ToggleButton value="month">Month</ToggleButton>
           </ToggleButtonGroup>
-          {showListToggle ? (
-            ListToggleComponent ? <ListToggleComponent /> : <ViewToggle />
-          ) : null}
+          {showListToggle && (ListToggleComponent ? <ListToggleComponent /> : <ViewToggle />)}
         </Grid>
       </Grid>
     </Box>
