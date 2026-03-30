@@ -172,16 +172,16 @@ export const MODULE_RESOURCES = {
         permissionsAny: ["ohbatMajalis.view", "ohbatMajlisAttendance.view"],
         resource: ohbatMajlisUpcoming,
       },
+      {
+        permission: "ohbatMajlisAttendance.view",
+        resource: ohbatMajlisAttendance,
+        createPermission: "ohbatMajlisAttendance.create",
+      },
       { permission: "sadarats.view", resource: sadarats, createPermission: "sadarats.create" },
       {
         permission: "makhsoosItsData.view",
         resource: makhsoosItsData,
         createPermission: "makhsoosItsData.create",
-      },
-      {
-        permission: "ohbatMajlisAttendance.view",
-        resource: ohbatMajlisAttendance,
-        createPermission: "ohbatMajlisAttendance.create",
       },
     ],
   },

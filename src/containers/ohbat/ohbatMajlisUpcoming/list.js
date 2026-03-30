@@ -1,42 +1,107 @@
 import React from "react";
 import {
   Datagrid,
-  DateField,
   FunctionField,
   List,
   TextField,
   Title,
+  SimpleList,
   useCreatePath,
 } from "react-admin";
-import { Button } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
+import { fromGregorian } from "../../../utils/hijriDateUtils";
 
-const RecordAttendanceButton = ({ record }) => {
+const formatSlotLabel = (slot) =>
+  slot ? `${slot.charAt(0).toUpperCase()}${slot.slice(1)}` : "—";
+
+const formatMajlisDateUtc = (date) =>
+  date ? dayjs.utc(date).format("DD - MMM - YYYY") : "—";
+
+const formatMajlisDayOfWeekUtc = (date) => (date ? dayjs.utc(date).format("dddd") : "—");
+
+const formatMajlisHijriUtc = (date) =>
+  date ? fromGregorian(dayjs.utc(date).toDate(), "code") : "—";
+
+const OhbatMajlisUpcomingList = () => {
+  const isSmall = useMediaQuery((t) => t.breakpoints.down("sm"), { noSsr: true });
   const createPath = useCreatePath();
-  const base = createPath({ resource: "ohbatMajlisAttendance", type: "create" });
-  const to = `${base}?ohbatMajalisId=${encodeURIComponent(record.id)}`;
+  const attendanceBase = createPath({ resource: "ohbatMajlisAttendance", type: "create" });
+
+  const toAttendance = (majlisId) =>
+    `${attendanceBase}?ohbatMajalisId=${encodeURIComponent(majlisId)}`;
+
   return (
-    <Button component={Link} to={to} size="small" variant="outlined">
-      Record attendance
-    </Button>
+    <>
+      <Title title="Upcoming ohbat majlis" />
+      <List resource="ohbatMajlisUpcoming" pagination={false} perPage={500}>
+        {isSmall ? (
+          <SimpleList
+            primaryText={(r) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 1,
+                  width: "100%",
+                }}
+              >
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography fontWeight={700} noWrap>
+                    {r.hostName || r.hostItsNo || "—"}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {r.sadarat?.name || "—"}
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ whiteSpace: "nowrap" }}
+                  component={Link}
+                  to={toAttendance(r.id)}
+                >
+                  Record
+                </Button>
+              </Box>
+            )}
+            secondaryText={(r) =>
+              `${r.type || "—"} · ${formatMajlisDateUtc(r.date)} · ${formatSlotLabel(r.slot)} · ${formatMajlisDayOfWeekUtc(
+                r.date,
+              )} · ${formatMajlisHijriUtc(r.date)}`
+            }
+            rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+          />
+        ) : (
+          <Datagrid bulkActionButtons={false}>
+            <TextField source="type" />
+            <TextField source="slot" />
+            <FunctionField label="Date (UTC)" render={(r) => formatMajlisDateUtc(r.date)} />
+            <FunctionField label="Day" render={(r) => formatMajlisDayOfWeekUtc(r.date)} />
+            <FunctionField label="Hijri" render={(r) => formatMajlisHijriUtc(r.date)} />
+            <FunctionField label="Sadarat" render={(r) => r.sadarat?.name || "—"} />
+            <TextField source="hostItsNo" label="Host ITS" />
+            <TextField source="hostName" label="Host name" />
+            <FunctionField
+              label=""
+              render={(r) => (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  component={Link}
+                  to={toAttendance(r.id)}
+                >
+                  Record attendance
+                </Button>
+              )}
+            />
+          </Datagrid>
+        )}
+      </List>
+    </>
   );
 };
-
-const OhbatMajlisUpcomingList = () => (
-  <>
-    <Title title="Upcoming ohbat majlis" />
-    <List resource="ohbatMajlisUpcoming" pagination={false} perPage={500}>
-      <Datagrid bulkActionButtons={false}>
-        <DateField source="date" />
-        <TextField source="type" />
-        <TextField source="slot" />
-        <FunctionField label="Sadarat" render={(r) => r.sadarat?.name || "—"} />
-        <TextField source="hostItsNo" label="Host ITS" />
-        <TextField source="hostName" label="Host name" />
-        <FunctionField label="" render={(r) => <RecordAttendanceButton record={r} />} />
-      </Datagrid>
-    </List>
-  </>
-);
 
 export default OhbatMajlisUpcomingList;

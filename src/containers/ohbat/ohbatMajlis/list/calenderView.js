@@ -44,7 +44,7 @@ const CustomEventComponent = ({ event }) => {
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   return (
     <div style={{ color: "white", padding: 0 }}>
-      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "1.5vw" : "0.8vw" }}>
+      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "3vw" : "0.8vw" }}>
         {dayjs(event.start).format("h A")} - {dayjs(event.end).format("h A")}
         <br />
         {event.title}
