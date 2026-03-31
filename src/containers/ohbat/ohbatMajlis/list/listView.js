@@ -34,7 +34,9 @@ const columns = [
     width: 12,
   },
   { header: "Host ITS", field: "hostItsNo", width: 12 },
-  { header: "Host name", field: "hostName", width: 28 },
+  { header: "Host name", field: "hostName", width: 24 },
+  { header: "Host sector", field: "hostSector", width: 22 },
+  { header: "Host sub-sector", field: "hostSubSector", width: 22 },
   { header: "Sadarat", field: (rec) => rec.sadarat?.name ?? "", width: 24 },
   {
     header: "Khidmatguzar",
@@ -76,7 +78,7 @@ export default () => {
         sort={{ field: "date", order: "DESC" }}
         title={false}
       >
-        <Datagrid rowClick={false} bulkActionButtons={false}>
+        <Datagrid rowClick={false} bulkActionButtons={false} sx={{ minWidth: 1280 }}>
           <DateField
             source="date"
             locales="en-IN"
@@ -93,7 +95,9 @@ export default () => {
             render={(record) => slotNameMap[record.slot] ?? record.slot ?? ""}
           />
           <TextField source="hostItsNo" label="Host ITS" />
-          <TextField source="hostName" label="Host name" />
+          <TextField source="hostName" label="Host name" emptyText="—" />
+          <TextField source="hostSector" label="Sector" emptyText="—" />
+          <TextField source="hostSubSector" label="Sub-sector" emptyText="—" />
           <FunctionField label="Sadarat" render={(r) => r?.sadarat?.name || "—"} />
           <FunctionField
             label="Khidmatguzar"

@@ -235,6 +235,8 @@ const CalenderView = () => {
               <Grid container spacing={2}>
                 <LabelValue label="Host ITS" value={selectedEvent?.hostItsNo || "—"} />
                 <LabelValue label="Host name" value={selectedEvent?.hostName || "—"} />
+                <LabelValue label="Sector" value={selectedEvent?.hostSector || "—"} />
+                <LabelValue label="Sub-sector" value={selectedEvent?.hostSubSector || "—"} />
                 <LabelValue label="Contact mobile" value={selectedEvent?.mobileNo || "—"} />
                 <LabelValue label="Type" value={selectedEvent?.type || "—"} />
                 <LabelValue label="Slot" value={capitalize(selectedEvent?.slot)} />

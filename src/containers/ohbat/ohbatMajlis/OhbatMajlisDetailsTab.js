@@ -112,6 +112,8 @@ export default function OhbatMajlisDetailsTab() {
           <SummaryTable title="Host & venue">
             <SummaryRow label="Host ITS" value={dash(record.hostItsNo)} />
             <SummaryRow label="Host name" value={dash(record.hostName)} />
+            <SummaryRow label="Sector (from host ITS)" value={dash(record.hostSector)} />
+            <SummaryRow label="Sub-sector (from host ITS)" value={dash(record.hostSubSector)} />
             <SummaryRow label="Venue address" value={dash(record.address)} />
             <SummaryRow label="Contact mobile" value={dash(record.mobileNo)} />
             <TableRow>

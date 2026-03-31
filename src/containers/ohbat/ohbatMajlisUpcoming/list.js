@@ -54,6 +54,9 @@ const OhbatMajlisUpcomingList = () => {
                   </Typography>
                   <Typography variant="caption" color="text.secondary" noWrap>
                     {r.sadarat?.name || "—"}
+                    {r.hostSector || r.hostSubSector
+                      ? ` · ${[r.hostSector, r.hostSubSector].filter(Boolean).join(" · ")}`
+                      : ""}
                   </Typography>
                 </Box>
                 <Button
@@ -83,7 +86,9 @@ const OhbatMajlisUpcomingList = () => {
             <FunctionField label="Hijri" render={(r) => formatMajlisHijriUtc(r.date)} />
             <FunctionField label="Sadarat" render={(r) => r.sadarat?.name || "—"} />
             <TextField source="hostItsNo" label="Host ITS" />
-            <TextField source="hostName" label="Host name" />
+            <TextField source="hostName" label="Host name" emptyText="—" />
+            <TextField source="hostSector" label="Sector" emptyText="—" />
+            <TextField source="hostSubSector" label="Sub-sector" emptyText="—" />
             <FunctionField
               label=""
               render={(r) => (
