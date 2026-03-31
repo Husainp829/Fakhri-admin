@@ -9,16 +9,16 @@ const ActiveFmbCounts = ({ activeFmb }) => (
   <Grid container spacing={2}>
     <Grid item size={{ xs: 12, sm: 4 }}>
       <CountCard
-        title="Thali active"
-        value={activeFmb?.thaliActive ?? 0}
+        title="Active thalis"
+        value={activeFmb?.activeThalis ?? 0}
         icon={CheckCircleIcon}
         color="primary"
       />
     </Grid>
     <Grid item size={{ xs: 12, sm: 4 }}>
       <CountCard
-        title="Thali inactive / unset"
-        value={activeFmb?.thaliInactive ?? 0}
+        title="Inactive thalis"
+        value={activeFmb?.inactiveThalis ?? 0}
         icon={PauseCircleIcon}
         color="secondary"
       />

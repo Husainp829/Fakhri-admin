@@ -17,6 +17,8 @@ import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
 import SuspensionsTab from "./suspensions";
+import ContributionsTab from "./contributions";
+import PeriodTotalsTab from "./periodTotals";
 
 const FmbShowActions = () => {
   const redirect = useRedirect();
@@ -24,6 +26,8 @@ const FmbShowActions = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const id = record?.id;
+  const defaultThaliId =
+    record?.thalis?.find((thali) => thali?.isActive)?.id || record?.thalis?.[0]?.id;
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -56,12 +60,18 @@ const FmbShowActions = () => {
         MenuListProps={{ "aria-labelledby": "fmb-show-more-actions" }}
       >
         <MenuItem disabled={!id} onClick={() => go(`/fmbTakhmeen/create?fmbId=${id}`)}>
-          New takhmeen period
+          New takhmeen
         </MenuItem>
         <MenuItem disabled={!id} onClick={() => go(`/fmbReceipt/create?fmbId=${id}`)}>
           Record receipt
         </MenuItem>
-        <MenuItem disabled={!id} onClick={() => go(`/fmbThaliSuspension/create?fmbId=${id}`)}>
+        <MenuItem disabled={!id} onClick={() => go(`/fmbContributions/create?fmbId=${id}`)}>
+          Add contribution
+        </MenuItem>
+        <MenuItem
+          disabled={!defaultThaliId}
+          onClick={() => go(`/fmbThaliSuspension/create?fmbId=${id}&fmbThaliId=${defaultThaliId}`)}
+        >
           Add thali suspension
         </MenuItem>
       </Menu>
@@ -84,6 +94,12 @@ export default function FmbDataShow(props) {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Receipts" path="receipts">
           <Receipt />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Contributions" path="contributions">
+          <ContributionsTab />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Period totals" path="periodTotals">
+          <PeriodTotalsTab />
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Suspensions" path="suspensions">
           <SuspensionsTab />

@@ -12,6 +12,7 @@ import {
   Button,
   TablePagination,
 } from "@mui/material";
+import { formatINR } from "../../../../utils";
 
 const FmbTakhmeenAmountTable = ({ categoryLabel, data, redirect }) => {
   const [page, setPage] = useState(0);
@@ -62,7 +63,7 @@ const FmbTakhmeenAmountTable = ({ categoryLabel, data, redirect }) => {
               <TableRow key={item.amount} hover>
                 <TableCell>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    ₹{item.amount.toLocaleString("en-IN")}
+                    {formatINR(item.amount)}
                   </Typography>
                 </TableCell>
                 <TableCell>

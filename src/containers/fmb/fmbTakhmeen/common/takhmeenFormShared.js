@@ -6,11 +6,6 @@ import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 import { formatFmbHijriPeriod, getHijriYear } from "../../../../utils/hijriDateUtils";
 
-export const CATEGORY_CHOICES = [
-  { id: "THALI", name: "Thali" },
-  { id: "ZABIHAT", name: "Zabihat" },
-];
-
 export function resolveTakhmeenYear(startDate, shawwalStartDate) {
   const sw = shawwalStartDate != null && shawwalStartDate !== "" ? dayjs(shawwalStartDate) : null;
   if (sw?.isValid()) {
@@ -35,9 +30,6 @@ export function transformTakhmeenCreate(data) {
     startDate: dayjs(data.startDate).startOf("month").toISOString(),
   };
 
-  if (data.category) {
-    out.category = data.category;
-  }
   if (data.shawwalStartDate) {
     const d = dayjs(data.shawwalStartDate);
     if (d.isValid()) {
@@ -58,7 +50,6 @@ export function transformTakhmeenUpdate(data) {
     takhmeenAmount: Number(data.takhmeenAmount),
     takhmeenYear,
     startDate: dayjs(data.startDate).startOf("month").toISOString(),
-    category: data.category,
   };
 
   if (data.shawwalStartDate) {

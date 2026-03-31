@@ -29,7 +29,6 @@ export default function FmbTakhmeenShow(props) {
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB record">
           <TextField source="fmbNo" />
         </ReferenceField>
-        <TextField source="category" label="Category" />
         <NumberField source="takhmeenAmount" label="Takhmeen amount" />
         <NumberField source="pendingBalance" label="Pending balance" />
         <NumberField source="paidBalance" label="Paid balance" />

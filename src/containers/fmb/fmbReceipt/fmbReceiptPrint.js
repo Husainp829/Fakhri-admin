@@ -55,9 +55,17 @@ const FmbReceipt = () => {
   }
   const receiptData = data || {};
   const fmbData = data?.fmbData || {};
-  const fmbTakhmeen = data?.fmbTakhmeen || {};
   const itsdata = fmbData.itsdata || {};
-  const hijriStart = fmbTakhmeen?.hijriYearStart ?? fmbTakhmeen?.takhmeenYear ?? null;
+  const allocations = Array.isArray(receiptData.allocations) ? receiptData.allocations : [];
+  const firstAnnual = allocations.find((a) => a?.fmbTakhmeen);
+  const firstContrib = allocations.find((a) => a?.fmbContribution);
+  const fmbTakhmeen = firstAnnual?.fmbTakhmeen || {};
+  const fmbContribution = firstContrib?.fmbContribution || {};
+  const hijriStart =
+    fmbTakhmeen?.hijriYearStart ??
+    fmbTakhmeen?.takhmeenYear ??
+    fmbContribution?.hijriYearStart ??
+    null;
   const hijriEnd = fmbTakhmeen?.hijriYearEnd ?? (hijriStart ? hijriStart + 1 : null);
   const fmbPeriodLabel = hijriStart && hijriEnd ? `${hijriStart}-${hijriEnd}` : "—";
 

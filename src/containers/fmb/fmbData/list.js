@@ -17,10 +17,11 @@ import {
   FunctionField,
   DateField,
 } from "react-admin";
+import { formatINR } from "../../../utils";
 
 const RegistrationFilters = [
   <TextInput
-    label="Search By HOF ITS OR Thaali No..."
+    label="Search by Name, ITS, FMB, File, or Thaali No..."
     source="search"
     alwaysOn
     key={0}
@@ -73,7 +74,6 @@ export default function OrderList(props) {
           bulkActionButtons={<PostBulkActionButtons />}
           rowClick="show"
         >
-          <TextField source="fmbNo" label="FMB No." key="fmbNo" />
           <TextField source="fileNo" label="File No." key="fileNo" />
           <TextField
             source="deliveryScheduleProfile.name"
@@ -87,25 +87,40 @@ export default function OrderList(props) {
             render={(record) => record.itsdata?.Full_Name || record.name}
             key="name"
           />
-          <TextField
-            source="fmbTakhmeenCurrent.pendingBalance"
-            key="pendingBalance"
+          <FunctionField
+            label="Thalis"
+            key="thalis"
+            render={(record) => {
+              const thalis = Array.isArray(record.thalis) ? record.thalis : [];
+              if (!thalis.length) return "—";
+              const activeCount = thalis.filter((thali) => thali?.isActive).length;
+              return `${activeCount}/${thalis.length} active`;
+            }}
+          />
+          <FunctionField
             label="Pending Balance"
+            key="pendingBalance"
+            textAlign="right"
+            render={(record) =>
+              formatINR(record?.fmbTakhmeenCurrent?.pendingBalance, { empty: "—" })
+            }
           />
-          <TextField
-            source="fmbTakhmeenCurrent.paidBalance"
-            key="paidBalance"
+          <FunctionField
             label="Paid Balance"
+            key="paidBalance"
+            textAlign="right"
+            render={(record) => formatINR(record?.fmbTakhmeenCurrent?.paidBalance, { empty: "—" })}
           />
-          <TextField
-            source="fmbTakhmeenCurrent.takhmeenAmount"
+          <FunctionField
             label="Takhmeen"
             key="takhmeenAmount"
+            textAlign="right"
+            render={(record) =>
+              formatINR(record?.fmbTakhmeenCurrent?.takhmeenAmount, { empty: "—" })
+            }
           />
-          <TextField source="address" label="Address" key="address" />
-          <TextField source="mohallah" label="Mohallah" key="mohallah" />
-          <TextField source="itsdata.Area" label="Area" key="itsdata-area" />
-          <TextField source="itsdata.Sector_Incharge_Name" label="Masool" key="itsdata-masool" />
+          <TextField source="itsdata.Address" label="Address (ITS)" key="itsdata-address" />
+          <TextField source="itsdata.Jamaat" label="Jamaat (ITS)" key="itsdata-jamaat" />
           <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />
         </DatagridConfigurable>
       </List>

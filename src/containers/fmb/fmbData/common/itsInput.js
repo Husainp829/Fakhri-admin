@@ -13,26 +13,41 @@ function itsField(choice, field) {
   return choice[field] ?? null;
 }
 
+function normalizeString(v) {
+  if (v == null) return "";
+  return String(v).trim();
+}
+
 export const ITSInput = (props) => {
   const { selectedChoices } = useChoicesContext();
-  const { setValue } = useFormContext();
+  const { setValue, getValues } = useFormContext();
   const selectedChoice = selectedChoices[0];
 
   useEffect(() => {
     if (selectedChoice?.id) {
       setValue("name", itsField(selectedChoice, "Full_Name") ?? selectedChoice.name ?? null);
-      setValue("area", itsField(selectedChoice, "Area"));
+      setValue("area", itsField(selectedChoice, "Sub_Sector"));
       setValue("masool", itsField(selectedChoice, "Sector_Incharge_Name"));
-      setValue("mohallah", itsField(selectedChoice, "Jamaat") ?? selectedChoice.mohallah ?? null);
       setValue("mobileNo", itsField(selectedChoice, "Mobile"));
-      setValue("address", itsField(selectedChoice, "Address") ?? selectedChoice.address ?? null);
+
+      // Default thali delivery address from ITS (only when empty; never overwrite user edits)
+      const itsAddress = normalizeString(itsField(selectedChoice, "Address"));
+      if (itsAddress) {
+        const thalis = getValues("thalis");
+        if (Array.isArray(thalis)) {
+          thalis.forEach((thali, idx) => {
+            const current = normalizeString(thali?.deliveryAddress);
+            if (!current) {
+              setValue(`thalis.${idx}.deliveryAddress`, itsAddress, { shouldDirty: true });
+            }
+          });
+        }
+      }
     } else {
       setValue("name", null);
       setValue("area", null);
       setValue("masool", null);
-      setValue("mohallah", null);
       setValue("mobileNo", null);
-      setValue("address", null);
     }
   }, [selectedChoice, setValue]);
 

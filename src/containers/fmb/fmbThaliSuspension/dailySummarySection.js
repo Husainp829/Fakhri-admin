@@ -86,24 +86,35 @@ export default function DailySummarySection() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Thaali no.</TableCell>
+                <TableCell>Thali</TableCell>
+                <TableCell>FMB</TableCell>
+                <TableCell>Address</TableCell>
                 <TableCell>Schedule</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.fmbNo ?? row.id}</TableCell>
+                <TableRow key={row.fmbThaliId}>
                   <TableCell>
-                    {row.deliveryScheduleProfile
-                      ? `${row.deliveryScheduleProfile.code} — ${row.deliveryScheduleProfile.name}`
+                    {row.thaliNo}
+                    {row.thaliType ? ` (${row.thaliType})` : ""}
+                  </TableCell>
+                  <TableCell>{row.fmbNo ?? "—"}</TableCell>
+                  <TableCell>
+                    {row.deliveryAddress || row.deliveryMohallah
+                      ? [row.deliveryAddress, row.deliveryMohallah].filter(Boolean).join(" — ")
+                      : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {row.profileCode && row.profileName
+                      ? `${row.profileCode} — ${row.profileName}`
                       : "—"}
                   </TableCell>
                 </TableRow>
               ))}
               {rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={2}>
+                  <TableCell colSpan={4}>
                     No deliveries (non-service day, inactive thali, or all suspended).
                   </TableCell>
                 </TableRow>

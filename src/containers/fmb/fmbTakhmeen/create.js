@@ -6,7 +6,6 @@ import {
   TextInput,
   ReferenceInput,
   DateInput,
-  SelectInput,
   required,
   minValue,
 } from "react-admin";
@@ -15,11 +14,7 @@ import dayjs from "dayjs";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import MonthInput from "../../../components/MonthInput";
 import { ITSInput } from "./common/itsInput";
-import {
-  CATEGORY_CHOICES,
-  TakhmeenYearAutoSummary,
-  transformTakhmeenCreate,
-} from "./common/takhmeenFormShared";
+import { TakhmeenYearAutoSummary, transformTakhmeenCreate } from "./common/takhmeenFormShared";
 
 export default function FmbTakhmeenCreate(props) {
   const [searchParams] = useSearchParams();
@@ -27,9 +22,7 @@ export default function FmbTakhmeenCreate(props) {
 
   const defaultValues = useMemo(() => {
     const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
-    return prefFmbId
-      ? { fmbId: prefFmbId, category: "THALI", startDate }
-      : { category: "THALI", startDate };
+    return prefFmbId ? { fmbId: prefFmbId, startDate } : { startDate };
   }, [prefFmbId]);
 
   return (
@@ -76,15 +69,6 @@ export default function FmbTakhmeenCreate(props) {
               fullWidth
               required
               validate={[required(), minValue(1)]}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <SelectInput
-              source="category"
-              label="Category"
-              choices={CATEGORY_CHOICES}
-              fullWidth
-              required
             />
           </Grid>
           <Grid item xs={12} sm={6}>

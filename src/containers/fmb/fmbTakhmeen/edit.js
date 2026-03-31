@@ -5,7 +5,6 @@ import {
   TextInput,
   ReferenceInput,
   DateInput,
-  SelectInput,
   required,
   minValue,
 } from "react-admin";
@@ -13,11 +12,7 @@ import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import MonthInput from "../../../components/MonthInput";
 import { ITSInput } from "./common/itsInput";
-import {
-  CATEGORY_CHOICES,
-  TakhmeenYearAutoSummary,
-  transformTakhmeenUpdate,
-} from "./common/takhmeenFormShared";
+import { TakhmeenYearAutoSummary, transformTakhmeenUpdate } from "./common/takhmeenFormShared";
 
 export default function FmbTakhmeenEdit(props) {
   return (
@@ -49,15 +44,6 @@ export default function FmbTakhmeenEdit(props) {
               fullWidth
               required
               validate={[required(), minValue(1)]}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <SelectInput
-              source="category"
-              label="Category"
-              choices={CATEGORY_CHOICES}
-              fullWidth
-              required
             />
           </Grid>
           <Grid item xs={12} sm={6}>
