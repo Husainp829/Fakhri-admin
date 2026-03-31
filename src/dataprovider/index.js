@@ -88,6 +88,24 @@ export default {
       );
     }
 
+    if (resource === "itsdataAddressChangeQueue") {
+      const { pagination = {}, filter = {}, sort = {} } = params;
+      const { page = 1, perPage = 10 } = pagination;
+      const { field, order } = sort;
+      const query = {
+        ...fetchUtils.flattenObject(filter),
+        orderBy: field,
+        order,
+        limit: perPage,
+        startAfter: (page - 1) * perPage,
+      };
+      const url = `${getApiUrl()}/itsdata/address-change-queue?${stringify(query)}`;
+      return httpClient(url).then(({ json: { count, rows } }) => ({
+        data: convertRows(rows || []),
+        total: count,
+      }));
+    }
+
     const { pagination = {}, filter = {}, sort = {} } = params;
     const { page = 1, perPage = 10 } = pagination;
     const { field, order } = sort;
@@ -166,6 +184,15 @@ export default {
     // Normalize permissions for admins resource
     if (resource === "admins" && dataToSend.permissions) {
       dataToSend = await normalizeAdminPermissions(dataToSend);
+    }
+
+    if (resource === "itsdataAddressChangeQueue" && dataToSend.markDone) {
+      return httpClient(`${getApiUrl()}/itsdata/address-change-queue/${params.id}/done`, {
+        method: "PATCH",
+        body: "{}",
+      }).then(({ json: { rows } }) => ({
+        data: convertRows(rows || [])[0] || rows[0],
+      }));
     }
 
     return httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
