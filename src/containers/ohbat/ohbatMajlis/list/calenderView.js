@@ -15,6 +15,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import startCase from "lodash/startCase";
 import Grid from "@mui/material/Grid";
 import CloseIcon from "@mui/icons-material/Close";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -44,7 +45,7 @@ const CustomEventComponent = ({ event }) => {
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   return (
     <div style={{ color: "white", padding: 0 }}>
-      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "3vw" : "0.8vw" }}>
+      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "3vw" : "10px" }}>
         {dayjs(event.start).format("h A")} - {dayjs(event.end).format("h A")}
         <br />
         {event.title}
@@ -146,7 +147,7 @@ const CalenderView = () => {
         return {
           id: row.id,
           title: row.hostName || row.sadarat?.name || row.hostItsNo || "Ohbat majlis",
-          subTitle: `${row.type} · ${capitalize(row.slot)}`,
+          subTitle: `${startCase(row.type)} · ${capitalize(row.slot)}`,
           start: dayjs(d, "YYYY-MM-DD").hour(startHour).minute(0).second(0).toDate(),
           end: dayjs(d, "YYYY-MM-DD").hour(endHour).minute(0).second(0).toDate(),
           resource: row,
@@ -178,9 +179,9 @@ const CalenderView = () => {
   const calendarStyle = isMobile
     ? { height: "95vh", width: "95vw" }
     : {
-        height: "calc(100vh - 8vh)",
-        width: sidebarOpen ? "calc(100vw - 255px)" : "calc(100vw - 65px)",
-      };
+      height: "calc(100vh - 8vh)",
+      width: sidebarOpen ? "calc(100vw - 255px)" : "calc(100vw - 65px)",
+    };
 
   return (
     <div>

@@ -154,7 +154,7 @@ const OhbatMajlisShow = () => (
         <TabbedShowLayout.Tab label="Details">
           <OhbatMajlisDetailsTab />
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label="Makhsoos (host sector)" path="makhsoos">
+        <TabbedShowLayout.Tab label="Makhsoos (host sector / sub-sector)" path="makhsoos">
           <MakhsoosHostSectorTab />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>

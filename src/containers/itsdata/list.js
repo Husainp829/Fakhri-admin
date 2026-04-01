@@ -26,7 +26,7 @@ const ListActions = () => {
 
   return (
     <>
-      <TopToolbar>
+      <TopToolbar sx={{ justifyContent: "space-between" }}>
         {isSmall && (
           <IconButton
             color="primary"
@@ -89,6 +89,9 @@ export default () => {
 
   return (
     <List
+      sx={{
+        "& .RaList-actions": { justifyContent: "flex-start" },
+      }}
       actions={<ListActions />}
       aside={!isSmall ? <PostFilterSidebar /> : null}
       empty={

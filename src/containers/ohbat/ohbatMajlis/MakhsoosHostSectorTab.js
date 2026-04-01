@@ -13,7 +13,7 @@ import { getApiUrl } from "../../../constants";
 import httpClient from "../../../dataprovider/httpClient";
 
 /**
- * Lists makhsoos-marked ITS rows whose itsdata sector/sub-sector matches the host ITS (API: makhsoos-matches).
+ * Lists makhsoos-marked ITS rows whose itsdata matches the host on Sector OR Sub_Sector (API: makhsoos-matches).
  */
 export default function MakhsoosHostSectorTab() {
   const record = useRecordContext();
@@ -62,7 +62,7 @@ export default function MakhsoosHostSectorTab() {
   if (rows.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No makhsoos ITS records share the host&apos;s sector and sub-sector, or host ITS was not found in
+        No makhsoos ITS records share the host&apos;s sector or sub-sector, or host ITS was not found in
         itsdata.
       </Typography>
     );
@@ -75,6 +75,8 @@ export default function MakhsoosHostSectorTab() {
           <TableRow>
             <TableCell>ITS</TableCell>
             <TableCell>Name</TableCell>
+            <TableCell>Sector</TableCell>
+            <TableCell>Sub-sector</TableCell>
             <TableCell>Mobile</TableCell>
             <TableCell>Address</TableCell>
           </TableRow>
@@ -84,6 +86,12 @@ export default function MakhsoosHostSectorTab() {
             <TableRow key={r.id}>
               <TableCell>{r.ITS_ID ?? "—"}</TableCell>
               <TableCell>{r.Full_Name?.trim() || "—"}</TableCell>
+              <TableCell sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                {r.Sector?.trim() || "—"}
+              </TableCell>
+              <TableCell sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                {r.Sub_Sector?.trim() || "—"}
+              </TableCell>
               <TableCell>{r.Mobile?.trim() || "—"}</TableCell>
               <TableCell sx={{ maxWidth: 360, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                 {r.Address?.trim() || "—"}
