@@ -2,7 +2,7 @@ import React from "react";
 import { usePermissions } from "react-admin";
 import { Navigate } from "react-router-dom";
 import { useBaseRoute, useRouteId } from "../utils/routeUtility";
-import { hasPermission } from "../utils/permissionUtils";
+import { hasAnyPermission, hasPermission } from "../utils/permissionUtils";
 import { getModuleByPath } from "../config/modules";
 import DefaultDashboard from "../containers/defaultDashboard";
 
@@ -17,7 +17,9 @@ const DashboardAdmin = () => {
   }
 
   const dashboardPermission = module.dashboardPermission ?? module.permission;
-  const hasDashboardAccess = hasPermission(permissions, dashboardPermission);
+  const hasDashboardAccess = module.permissionsAny?.length
+    ? hasAnyPermission(permissions, module.permissionsAny)
+    : hasPermission(permissions, dashboardPermission);
 
   if (!hasDashboardAccess) {
     if (module.fallback.type === "navigate" && module.fallback.path) {

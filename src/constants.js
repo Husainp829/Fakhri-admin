@@ -1,4 +1,4 @@
-export const apiUrl = "/api";
+export const apiUrl = "https://jms.anjumanefakhripoona.org/api";
 // export const apiUrl = "http://localhost:3012";
 
 export const getApiUrl = () => apiUrl;

@@ -8,6 +8,7 @@ import FestivalIcon from "@mui/icons-material/Festival";
 import TableRowsIcon from "@mui/icons-material/TableRows";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import GroupsIcon from "@mui/icons-material/Groups";
 
 import BookingDashboard from "../containers/bookings/dashboard";
 import EventsDashboard from "../containers/events/dashboard";
@@ -17,6 +18,7 @@ import SabilDashboard from "../containers/sabil/dashboard";
 import FmbDashboard from "../containers/fmb/dashboard";
 import MiqaatDashboard from "../containers/miqaat/dashboard";
 import AccountsDashboard from "../containers/accounts/dashboard";
+import OhbatDashboard from "../containers/ohbat/dashboard";
 
 /**
  * Fallback when user lacks dashboard permission
@@ -110,6 +112,18 @@ export const MODULE_REGISTRY = [
     dashboardPermission: "accounts.view",
     fallback: FALLBACK_DEFAULT,
     dashboard: AccountsDashboard,
+  },
+  {
+    id: "ohbat",
+    path: "ohbat",
+    label: "Ohbat",
+    description: "Ohbat majlis, makhsoos marks, and attendance",
+    icon: GroupsIcon,
+    permission: "ohbatMajalis.view",
+    permissionsAny: ["ohbatMajalis.view", "ohbatMajlisAttendance.view"],
+    dashboardPermission: null,
+    fallback: FALLBACK_NAVIGATE("/ohbatMajlisUpcoming"),
+    dashboard: OhbatDashboard,
   },
 ];
 

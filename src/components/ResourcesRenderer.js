@@ -5,8 +5,13 @@ import { hasPermission } from "../utils/permissionUtils";
 import { MODULE_RESOURCES } from "../config/moduleResources";
 import { GLOBAL_RESOURCES } from "../config/globalResources";
 
-const renderResource = (permissions, { permission, resource, createPermission, name }) => {
-  if (permission !== null && !hasPermission(permissions, permission)) {
+const renderResource = (permissions, { permission, permissionsAny, resource, createPermission, name }) => {
+  if (permissionsAny?.length) {
+    const allowed = permissionsAny.some((p) => hasPermission(permissions, p));
+    if (!allowed) {
+      return null;
+    }
+  } else if (permission != null && !hasPermission(permissions, permission)) {
     return null;
   }
   const create =

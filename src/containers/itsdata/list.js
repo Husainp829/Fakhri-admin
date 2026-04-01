@@ -13,6 +13,9 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import { useMediaQuery } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
+import { Link as RouterLink } from "react-router-dom";
+import Button from "@mui/material/Button";
 import ITSSyncUploadButton from "../../components/uploadHelpers/ITSSyncUpload";
 import CustomEmpty from "../../components/CustomEmpty";
 import PostFilterSidebar from "./PostFilterSidebar";
@@ -35,6 +38,14 @@ const ListActions = () => {
           </IconButton>
         )}
         {!isSmall && <SelectColumnsButton />}
+        <Button
+          size="small"
+          component={RouterLink}
+          to="/itsdataAddressChangeQueue"
+          startIcon={<EditLocationAltIcon />}
+        >
+          Address updates
+        </Button>
         <ITSSyncUploadButton />
       </TopToolbar>
       {isSmall && (
