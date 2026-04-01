@@ -260,7 +260,7 @@ const MiqaatNiyaazDashboard = () => {
                     secondaryText={(record) => (
                       <Box>
                         <Typography variant="body2">
-                          {dayjs(record.receiptDate).format("DD/MM/YYYY")} •{" "}
+                          {dayjs(record.receiptDate).format("DD/MM/YYYY")} ·{" "}
                           <span
                             style={{
                               color: record.receiptType === "CREDIT" ? "green" : "red",
@@ -272,7 +272,7 @@ const MiqaatNiyaazDashboard = () => {
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {record.purpose}
-                          {record.paymentRef && ` • Ref: ${record.paymentRef}`}
+                          {record.paymentRef && ` · Ref: ${record.paymentRef}`}
                         </Typography>
                         <Typography
                           variant="body2"

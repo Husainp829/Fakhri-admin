@@ -25,12 +25,8 @@ export default () => {
         />
         <FunctionField
           label="Hijri period"
-          source="takhmeenYear"
           render={(record) =>
-            formatFmbHijriPeriod(
-              record?.hijriYearStart ?? record?.takhmeenYear,
-              record?.hijriYearEnd,
-            ) ?? "—"
+            formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
         <FunctionField

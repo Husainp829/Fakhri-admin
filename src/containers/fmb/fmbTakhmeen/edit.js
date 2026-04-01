@@ -10,9 +10,8 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
-import MonthInput from "../../../components/MonthInput";
 import { ITSInput } from "./common/itsInput";
-import { TakhmeenYearAutoSummary, transformTakhmeenUpdate } from "./common/takhmeenFormShared";
+import { TakhmeenYearSelect, transformTakhmeenUpdate } from "./common/takhmeenFormShared";
 
 export default function FmbTakhmeenEdit(props) {
   return (
@@ -23,16 +22,12 @@ export default function FmbTakhmeenEdit(props) {
             <ReferenceInput source="fmbId" reference="fmbData" perPage={100}>
               <ITSInput
                 label="FMB record"
-                optionText={(r) => `${r.fmbNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
+                optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
                 fullWidth
                 disabled
                 debounce={300}
-                filterToQuery={(q) => ({ search: q })}
               />
             </ReferenceInput>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextInput source="fmbNo" label="FMB number" fullWidth disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextInput source="name" label="Account name" fullWidth disabled />
@@ -48,16 +43,13 @@ export default function FmbTakhmeenEdit(props) {
           </Grid>
           <Grid item xs={12} sm={6}>
             <DateInput
-              source="shawwalStartDate"
-              label="1 Shawwal (Gregorian, optional)"
+              source="startDate"
+              label="Effective from (date)"
               fullWidth
-              helperText="If set, Hijri year is taken from this date; else from effective month"
+              validate={[required()]}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <MonthInput source="startDate" label="Effective from (month)" validate={[required()]} />
-          </Grid>
-          <TakhmeenYearAutoSummary />
+          <TakhmeenYearSelect />
         </Grid>
       </SimpleForm>
     </Edit>

@@ -17,7 +17,6 @@ export const ITSInput = (props) => {
 
   useEffect(() => {
     if (selectedChoice?.id) {
-      setValue("fmbNo", selectedChoice.fmbNo ?? "");
       setValue("name", selectedChoice?.itsdata?.Full_Name ?? selectedChoice.name ?? "");
       setValue("fmbTakhmeenId", selectedChoice?.fmbTakhmeenCurrent?.id ?? null);
       setValue("hijriYearStart", selectedChoice?.fmbTakhmeenCurrent?.hijriYearStart ?? "");
@@ -27,7 +26,6 @@ export const ITSInput = (props) => {
       setValue("beneficiaryItsNo", "");
       setValue("fmbTakhmeenId", null);
       setValue("hijriYearStart", "");
-      setValue("fmbNo", "");
       setValue("name", "");
     }
   }, [selectedChoice, setValue]);

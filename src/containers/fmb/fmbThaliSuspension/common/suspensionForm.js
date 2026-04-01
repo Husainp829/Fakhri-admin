@@ -129,7 +129,7 @@ export function SuspensionForm({ isEdit, defaultFmbId, defaultFmbThaliId }) {
         <Grid item xs={12}>
           <ReferenceInput source="fmbId" reference="fmbData" required label="FMB record">
             <AutocompleteInput
-              optionText="fmbNo"
+              optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
               fullWidth
               required
               disabled={isEdit}

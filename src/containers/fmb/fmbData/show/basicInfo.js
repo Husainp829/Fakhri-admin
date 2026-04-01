@@ -34,13 +34,13 @@ const formatMoney = (n) => formatINR(n, { empty: "—" });
 
 const formatHijriPeriod = (t) => {
   if (!t) return "—";
-  const label = formatFmbHijriPeriod(t.hijriYearStart ?? t.takhmeenYear, t.hijriYearEnd);
+  const label = formatFmbHijriPeriod(t.hijriYearStart, t.hijriYearEnd);
   return label ?? "—";
 };
 
 const formatThaliLabel = (thali) => {
   const typeName = thali?.thaliType?.name;
-  const base = `${thali.thaliNo}${typeName ? ` (${typeName})` : ""}${thali.isActive ? "" : " • inactive"}`;
+  const base = `${thali.thaliNo}${typeName ? ` (${typeName})` : ""}${thali.isActive ? "" : " · inactive"}`;
   const addr = thali.deliveryAddress || thali.deliveryMohallah;
   return addr
     ? `${base} — ${[thali.deliveryAddress, thali.deliveryMohallah].filter(Boolean).join(", ")}`
@@ -153,8 +153,6 @@ export default function BasicInfo() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <InfoSection title="FMB record">
-            <InfoField label="FMB number">{record.fmbNo}</InfoField>
-            <Divider sx={{ my: 0.75 }} />
             <InfoField label="File no. (legacy)">{record.fileNo}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Delivery schedule">
@@ -263,11 +261,6 @@ export default function BasicInfo() {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <InfoField label="Hijri period">{formatHijriPeriod(t)}</InfoField>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <InfoField label="Shawwal start (Gregorian)">
-                    {formatDate(t.shawwalStartDate)}
-                  </InfoField>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <InfoField label="Period start">{formatDate(t.startDate)}</InfoField>

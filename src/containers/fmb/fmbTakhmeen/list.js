@@ -29,8 +29,8 @@ export default function FmbTakhmeenList(props) {
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50]} />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
-        <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB no.">
-          <TextField source="fmbNo" />
+        <ReferenceField source="fmbId" reference="fmbData" link="show" label="File no.">
+          <TextField source="fileNo" />
         </ReferenceField>
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="ITS">
           <TextField source="name" />
@@ -53,10 +53,7 @@ export default function FmbTakhmeenList(props) {
         <FunctionField
           label="Hijri period"
           render={(record) =>
-            formatFmbHijriPeriod(
-              record?.hijriYearStart ?? record?.takhmeenYear,
-              record?.hijriYearEnd,
-            ) ?? "—"
+            formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
         <DateField source="startDate" label="Effective" emptyText="—" />

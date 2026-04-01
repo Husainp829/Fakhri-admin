@@ -36,7 +36,7 @@ export default () => {
         <Datagrid rowClick="show">
           <TextField source="receiptNo" />
           <ReferenceField source="fmbId" reference="fmbData" link="show">
-            <TextField source="fmbNo" />
+            <TextField source="fileNo" />
           </ReferenceField>
           <ReferenceField source="fmbId" label="HOF ITS" reference="fmbData" link="show">
             <TextField source="itsNo" />
@@ -45,6 +45,11 @@ export default () => {
             label="Amount"
             textAlign="right"
             render={(record) => formatINR(record?.amount, { empty: "—" })}
+          />
+          <FunctionField
+            label="Credit used"
+            textAlign="right"
+            render={(record) => formatINR(record?.creditUsed ?? 0, { empty: "—" })}
           />
           <DateField source="receiptDate" />
           <FunctionField

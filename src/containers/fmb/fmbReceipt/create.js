@@ -40,6 +40,7 @@ const LINE_KIND = {
 function ReceiptAllocationValidator({ enabled }) {
   const { setError, clearErrors, watch } = useFormContext();
   const amount = watch("amount");
+  const creditUsed = watch("creditUsed");
   const allocations = watch("allocations");
   const fmbId = watch("fmbId");
 
@@ -47,15 +48,25 @@ function ReceiptAllocationValidator({ enabled }) {
     if (!enabled) {
       clearErrors("allocations");
       clearErrors("fmbId");
+      clearErrors("creditUsed");
       return;
     }
-    const total = Number(amount) || 0;
+    const cash = Number(amount) || 0;
+    const credit = Number(creditUsed) || 0;
+    const total = cash + credit;
     const rows = Array.isArray(allocations) ? allocations : [];
     const sum = rows.reduce((s, row) => s + (Number(row?.amount) || 0), 0);
     if (sum > total) {
       setError("allocations", {
         type: "manual",
         message: "Sum of allocation lines cannot exceed payment amount.",
+      });
+      return;
+    }
+    if (credit > 0 && !fmbId?.trim()) {
+      setError("fmbId", {
+        type: "manual",
+        message: "Select an FMB account when using on-account credit.",
       });
       return;
     }
@@ -69,16 +80,18 @@ function ReceiptAllocationValidator({ enabled }) {
     }
     clearErrors("allocations");
     clearErrors("fmbId");
-  }, [enabled, amount, allocations, fmbId, setError, clearErrors]);
+    clearErrors("creditUsed");
+  }, [enabled, amount, creditUsed, allocations, fmbId, setError, clearErrors]);
 
   return null;
 }
 
 function AllocationTotalsSummary() {
   const amount = useWatch({ name: "amount" });
+  const creditUsed = useWatch({ name: "creditUsed" });
   const allocations = useWatch({ name: "allocations" });
   const fmbId = useWatch({ name: "fmbId" });
-  const total = Number(amount) || 0;
+  const total = (Number(amount) || 0) + (Number(creditUsed) || 0);
   const rows = Array.isArray(allocations) ? allocations : [];
   const allocated = rows.reduce((s, r) => s + (Number(r?.amount) || 0), 0);
   const remainder = total - allocated;
@@ -160,7 +173,7 @@ function pickContributionPendingAmount(choice) {
 }
 
 function annualRowLabel(t) {
-  const a = t?.hijriYearStart ?? t?.takhmeenYear ?? "—";
+  const a = t?.hijriYearStart ?? "—";
   const b = t?.hijriYearEnd ?? "—";
   return `${a}–${b} · commit ${formatINR(t?.takhmeenAmount, { empty: "—" })}`;
 }
@@ -322,15 +335,26 @@ function computeRemainingForRow(allocations, rowIndex, totalPayment) {
 function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
   const { setValue, getValues, clearErrors, watch } = useFormContext();
   const amountRaw = watch("amount");
+  const creditUsedRaw = watch("creditUsed");
   const amountConfirmed = watch("amountConfirmed") === true;
   const fmbIdWatch = watch("fmbId");
   const allocationsWatch = watch("allocations");
   const amountNum = Number(amountRaw) || 0;
-  const canConfirm = amountNum >= 1;
+  const creditUsedNum = Number(creditUsedRaw) || 0;
+  const effectiveTotal = Math.max(0, amountNum) + Math.max(0, creditUsedNum);
+  const canConfirm = effectiveTotal >= 1;
   const preferred = useMemo(
     () => getPreferredAllocationFromTemplate(allocationTemplate),
     [allocationTemplate],
   );
+
+  const { data: fmbDataForCredit } = useGetOne(
+    "fmbData",
+    { id: fmbIdWatch },
+    { enabled: Boolean(fmbIdWatch?.trim()) },
+  );
+  const availableCredit = fmbDataForCredit?.paymentCreditBalance ?? 0;
+  const showCredit = Boolean(fmbIdWatch?.trim()) && availableCredit > 0;
 
   const allocationSeedTokenRef = useRef(0);
   const lastSeededTokenRef = useRef(-1);
@@ -396,10 +420,12 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
     }
 
     const totalPay = Number(amountRaw) || 0;
+    const credit = Number(creditUsedRaw) || 0;
+    const effectivePay = totalPay + credit;
 
     if (!fmbIdWatch?.trim()) {
       const template = cloneAllocationTemplate(allocationTemplate);
-      setValue("allocations", seedStandaloneTemplateRows(template, totalPay), {
+      setValue("allocations", seedStandaloneTemplateRows(template, effectivePay), {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -421,13 +447,14 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
     );
     const seeded =
       prioritized.rows.length > 0
-        ? applyMaxSuggestedAmounts(prioritized.rows, prioritized.meta, totalPay)
+        ? applyMaxSuggestedAmounts(prioritized.rows, prioritized.meta, effectivePay)
         : [];
     setValue("allocations", seeded, { shouldDirty: true, shouldValidate: true });
     lastSeededTokenRef.current = token;
   }, [
     amountConfirmed,
     amountRaw,
+    creditUsedRaw,
     allocationTemplate,
     fmbIdWatch,
     takhmeenLoading,
@@ -439,6 +466,13 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
     preferred,
     setValue,
   ]);
+
+  useEffect(() => {
+    // Prevent hidden creditUsed from affecting totals/validation when credit UI isn't shown.
+    if (!showCredit && (Number(getValues("creditUsed")) || 0) > 0) {
+      setValue("creditUsed", 0, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [showCredit, getValues, setValue]);
 
   const handleConfirmTotal = () => {
     if (!canConfirm) {
@@ -465,7 +499,9 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
   const rowCount = Array.isArray(allocationsWatch) ? allocationsWatch.length : 0;
 
   const handleApplyRemainingToRow = (rowIndex, pending) => {
-    const totalPay = Number(getValues("amount")) || 0;
+    const cash = Number(getValues("amount")) || 0;
+    const credit = Number(getValues("creditUsed")) || 0;
+    const totalPay = cash + credit;
     const allocs = getValues("allocations");
     const remaining = computeRemainingForRow(allocs, rowIndex, totalPay);
     const cap = pending != null && Number.isFinite(pending) ? Math.max(0, pending) : remaining;
@@ -489,15 +525,42 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
       <ReceiptAllocationValidator enabled={amountConfirmed} />
 
       <Grid container spacing={2} sx={{ alignItems: "center", mb: 1 }}>
-        <Grid item xs={12} sm={8}>
+        <Grid item xs={12} sm={showCredit ? 4 : 8}>
           <NoArrowKeyNumberInput
             source="amount"
-            label="Total payment received (₹)"
+            label="Amount received (₹)"
             fullWidth
             InputProps={{ readOnly: amountConfirmed }}
-            validate={[required(), minValue(1)]}
+            sx={
+              amountConfirmed
+                ? {
+                    "& .MuiInputBase-input": { pointerEvents: "none" },
+                    opacity: 0.75,
+                  }
+                : undefined
+            }
+            validate={[minValue(0)]}
           />
         </Grid>
+        {showCredit ? (
+          <Grid item xs={12} sm={4}>
+            <NoArrowKeyNumberInput
+              source="creditUsed"
+              label="Use on-account credit (₹)"
+              fullWidth
+              InputProps={{ readOnly: amountConfirmed }}
+              sx={
+                amountConfirmed
+                  ? {
+                      "& .MuiInputBase-input": { pointerEvents: "none" },
+                      opacity: 0.75,
+                    }
+                  : undefined
+              }
+              validate={[minValue(0)]}
+            />
+          </Grid>
+        ) : null}
         <Grid item xs={12} sm={4}>
           {amountConfirmed ? (
             <Button
@@ -527,6 +590,16 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
       {!amountConfirmed ? (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Enter and confirm the payment total, then split it across annual and contribution lines.
+        </Typography>
+      ) : null}
+
+      {showCredit ? (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 1, textAlign: { xs: "left", sm: "right" } }}
+        >
+          Effective total: {formatINR(effectiveTotal)}
         </Typography>
       ) : null}
 
@@ -682,6 +755,7 @@ export default function FmbReceiptCreate(props) {
       paymentMode: "CASH",
       receiptDate: new Date(),
       amountConfirmed: false,
+      creditUsed: 0,
       allocations: [],
     }),
     [fmbId],
@@ -695,18 +769,20 @@ export default function FmbReceiptCreate(props) {
     return errors;
   };
 
-  const showPrefillHint = Boolean(fmbId || fmbTakhmeenId || fmbContributionId);
   const optionRenderer = (choice) => {
     const its = choice?.itsNo ?? choice?.itsdata?.ITS_ID ?? "—";
     const name = choice?.itsdata?.Full_Name ?? choice?.name ?? "—";
-    const fmbNoLabel = choice?.fmbNo ? `FMB ${choice.fmbNo}` : "FMB —";
+    const fmbNoLabel = choice?.fileNo ? `File ${choice.fileNo}` : "File —";
     const area = choice?.itsdata?.Area ? ` · ${choice.itsdata.Area}` : "";
     const status = choice?.closedAt ? " · CLOSED" : "";
     return `${its} · ${name} · ${fmbNoLabel}${area}${status}`;
   };
 
   const transform = (data) => {
-    const amount = Number(data.amount);
+    const cash = Number(data.amount);
+    const creditUsed = Number(data.creditUsed) || 0;
+    const amount =
+      (Number.isFinite(cash) ? cash : 0) + (Number.isFinite(creditUsed) ? creditUsed : 0);
     const rows = Array.isArray(data.allocations) ? data.allocations : [];
     const allocations = rows
       .map((row) => {
@@ -734,6 +810,7 @@ export default function FmbReceiptCreate(props) {
     const out = {
       fmbId: data.fmbId?.trim() || undefined,
       amount: Number.isFinite(amount) ? Math.round(amount) : 0,
+      creditUsed: Number.isFinite(creditUsed) ? Math.round(creditUsed) : 0,
       paymentMode: data.paymentMode,
       remarks: data.remarks,
       allocations,
@@ -755,12 +832,6 @@ export default function FmbReceiptCreate(props) {
         defaultValues={defaultValues}
         validate={validateFmbReceiptForm}
       >
-        {showPrefillHint ? (
-          <Alert severity="info" sx={{ mb: 1 }} variant="outlined">
-            Prefilled from link — verify FMB and allocation lines before saving.
-          </Alert>
-        ) : null}
-
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <ReferenceInput source="fmbId" reference="fmbData">
@@ -774,7 +845,6 @@ export default function FmbReceiptCreate(props) {
                 syncAnnualContext
               />
             </ReferenceInput>
-            <TextInput source="fmbNo" fullWidth disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextInput source="name" label="FMB account holder name" fullWidth disabled />

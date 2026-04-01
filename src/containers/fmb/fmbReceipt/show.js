@@ -67,9 +67,7 @@ function AllocationTable() {
             if (a?.fmbContribution?.contributionType != null) {
               target = `${a.fmbContribution.contributionType} · ITS ${a.fmbContribution.beneficiaryItsNo ?? "—"}`;
             } else if (a?.fmbTakhmeen) {
-              target = `${a.fmbTakhmeen.hijriYearStart ?? a.fmbTakhmeen.takhmeenYear ?? "—"}–${
-                a.fmbTakhmeen.hijriYearEnd ?? "—"
-              }`;
+              target = `${a.fmbTakhmeen.hijriYearStart ?? "—"}–${a.fmbTakhmeen.hijriYearEnd ?? "—"}`;
             }
             return (
               <TableRow key={a?.id ?? idx}>
@@ -92,7 +90,7 @@ export default function FmbReceiptShow(props) {
         <TextField source="receiptNo" label="Receipt no" />
         <DateField source="receiptDate" label="Receipt date" />
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB">
-          <TextField source="fmbNo" />
+          <TextField source="fileNo" />
         </ReferenceField>
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="HOF ITS">
           <TextField source="itsNo" />
@@ -100,6 +98,10 @@ export default function FmbReceiptShow(props) {
         <FunctionField
           label="Total amount"
           render={(record) => formatINR(record?.amount, { empty: "—" })}
+        />
+        <FunctionField
+          label="Credit used"
+          render={(record) => formatINR(record?.creditUsed ?? 0, { empty: "—" })}
         />
         <FunctionField
           label="Unallocated (credit)"

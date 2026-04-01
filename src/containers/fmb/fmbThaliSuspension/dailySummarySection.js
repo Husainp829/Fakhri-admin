@@ -99,7 +99,7 @@ export default function DailySummarySection() {
                     {row.thaliNo}
                     {row.thaliType ? ` (${row.thaliType})` : ""}
                   </TableCell>
-                  <TableCell>{row.fmbNo ?? "—"}</TableCell>
+                  <TableCell>{row.fileNo ?? "—"}</TableCell>
                   <TableCell>
                     {row.deliveryAddress || row.deliveryMohallah
                       ? [row.deliveryAddress, row.deliveryMohallah].filter(Boolean).join(" — ")

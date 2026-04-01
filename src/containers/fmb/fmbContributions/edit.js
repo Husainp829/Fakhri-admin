@@ -122,7 +122,7 @@ export default function FmbContributionsEdit(props) {
             <ReferenceInput source="fmbId" reference="fmbData" perPage={100}>
               <ITSInput
                 label="FMB record (optional)"
-                optionText={(r) => `${r.fmbNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
+                optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
                 fullWidth
                 debounce={300}
                 filterToQuery={(q) => ({ search: q })}
@@ -143,9 +143,10 @@ export default function FmbContributionsEdit(props) {
                       fullWidth
                       label="Annual period (takhmeen)"
                       optionText={(choice) =>
-                        `${choice.hijriYearStart ?? choice.takhmeenYear ?? "—"}–${
-                          choice.hijriYearEnd ?? "—"
-                        } · ${formatINR(choice.takhmeenAmount, { empty: "—" })}`
+                        `${choice.hijriYearStart ?? "—"}–${choice.hijriYearEnd ?? "—"} · ${formatINR(
+                          choice.takhmeenAmount,
+                          { empty: "—" },
+                        )}`
                       }
                       shouldRenderSuggestions={(val) => val.trim().length >= 0}
                       noOptionsText="No annual periods for this FMB"
@@ -254,8 +255,8 @@ function FmbHouseholdSummaryAndItsSync() {
     <>
       <Grid item xs={12} sm={6}>
         <TextField
-          label="FMB number"
-          value={fmb?.fmbNo != null && fmb.fmbNo !== "" ? String(fmb.fmbNo) : ""}
+          label="File no."
+          value={fmb?.fileNo != null && fmb.fileNo !== "" ? String(fmb.fileNo) : ""}
           fullWidth
           disabled
           InputProps={{ readOnly: true }}

@@ -98,7 +98,6 @@ export function ThaliFieldsInput() {
             my: 1,
             backgroundColor: "background.paper",
           },
-          // "& .RaSimpleFormIterator-line": { alignItems: "flex-start" },
         }}
       >
         <Grid container spacing={1} sx={{ width: "100%", alignItems: "center" }}>
@@ -116,7 +115,6 @@ export function ThaliFieldsInput() {
                 optionText={(r) => `${r.code} — ${r.name}`}
                 fullWidth
                 debounce={250}
-                helperText={false}
               />
             </ReferenceInput>
           </Grid>
@@ -141,7 +139,7 @@ export function ThaliFieldsInput() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <ReferenceInput
               source="deliveryScheduleProfileId"
               reference="fmbDeliveryScheduleProfile"
@@ -152,13 +150,11 @@ export function ThaliFieldsInput() {
                 optionText={(r) => `${r.code} — ${r.name}`}
                 fullWidth
                 debounce={250}
+                helperText="Optional - defaults to FMB record profile when omitted"
               />
             </ReferenceInput>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <TextInput source="deliveryMohallah" label="Delivery mohallah" fullWidth />
-          </Grid>
           <Grid item xs={12}>
             <TextInput
               source="deliveryAddress"

@@ -48,7 +48,7 @@ export default function ContributionsTab() {
         />
         <DateField source="createdAt" showTime />
         <FunctionField
-          label="Add receipt"
+          label="Add payment"
           render={(record) => {
             const pending = Number(record?.contributionPendingAmount || 0);
             if (pending <= 0) {
@@ -65,7 +65,7 @@ export default function ContributionsTab() {
                     `/fmbReceipt/create?fmbId=${record?.fmbId}&fmbContributionId=${record?.id}&target=CONTRIBUTION`,
                   );
                 }}
-                label="Add receipt"
+                label="Add payment"
               />
             );
           }}

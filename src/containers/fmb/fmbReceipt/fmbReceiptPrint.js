@@ -61,11 +61,7 @@ const FmbReceipt = () => {
   const firstContrib = allocations.find((a) => a?.fmbContribution);
   const fmbTakhmeen = firstAnnual?.fmbTakhmeen || {};
   const fmbContribution = firstContrib?.fmbContribution || {};
-  const hijriStart =
-    fmbTakhmeen?.hijriYearStart ??
-    fmbTakhmeen?.takhmeenYear ??
-    fmbContribution?.hijriYearStart ??
-    null;
+  const hijriStart = fmbTakhmeen?.hijriYearStart ?? fmbContribution?.hijriYearStart ?? null;
   const hijriEnd = fmbTakhmeen?.hijriYearEnd ?? (hijriStart ? hijriStart + 1 : null);
   const fmbPeriodLabel = hijriStart && hijriEnd ? `${hijriStart}-${hijriEnd}` : "—";
 
@@ -135,7 +131,7 @@ const FmbReceipt = () => {
         >
           <LabelValue label="تاريخ" value={formatDate(receiptData.createdAt)} />
           <LabelValue label="رسيد نمبر" value={receiptData.receiptNo} />
-          <LabelValue label="Thaali No." value={fmbData.fmbNo} />
+          <LabelValue label="Thaali No." value={fmbData.fileNo} />
           <LabelValue label="HOF ITS" value={itsdata.ITS_ID} noBorder />
         </div>
       </div>

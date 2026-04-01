@@ -15,7 +15,6 @@ export const ITSInput = (props) => {
   useEffect(() => {
     const its = selectedChoice?.itsdata;
     if (selectedChoice?.id) {
-      setValue("fmbNo", selectedChoice.fmbNo);
       setValue("name", its?.Full_Name ?? selectedChoice.name);
       setValue("area", its?.Area ?? null);
       setValue("masool", its?.Sector_Incharge_Name ?? null);

@@ -43,14 +43,14 @@ const transform = (data) => {
     delete next.deliveryScheduleProfileId;
   }
 
-  // Back-compat: old UI used `takhmeen`; API expects `takhmeenAmount` + `takhmeenYear`.
+  // Back-compat: old UI used `takhmeen`; API expects `takhmeenAmount` + `hijriYearStart`.
   if (next.takhmeenAmount == null && next.takhmeen != null) {
     next.takhmeenAmount = next.takhmeen;
   }
   delete next.takhmeen;
 
-  if (next.takhmeenYear == null || next.takhmeenYear === "") {
-    next.takhmeenYear = getFmbTakhmeenYearFromGregorian(new Date());
+  if (next.hijriYearStart == null || next.hijriYearStart === "") {
+    next.hijriYearStart = getFmbTakhmeenYearFromGregorian(new Date());
   }
   if (next.takhmeenAmount != null && next.takhmeenAmount !== "") {
     next.takhmeenAmount = Number(next.takhmeenAmount);
@@ -68,7 +68,7 @@ export default function FmbDataCreate(props) {
   const dataProvider = useDataProvider();
   const resultCacheRef = React.useRef(new Map()); // its -> boolean (duplicate?)
   const inFlightRef = React.useRef(new Map()); // its -> Promise<boolean>
-  const takhmeenYear = React.useMemo(() => getFmbTakhmeenYearFromGregorian(new Date()), []);
+  const hijriYearStart = React.useMemo(() => getFmbTakhmeenYearFromGregorian(new Date()), []);
 
   function CreateToolbar() {
     const { formState } = useFormContext();
@@ -185,12 +185,6 @@ export default function FmbDataCreate(props) {
             </ReferenceInput>
           </Grid>
           <Grid item xs={12} sm={6} lg={6}>
-            <TextInput source="area" label="Area (ITS)" fullWidth />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={6}>
-            <TextInput source="masool" label="Masool (ITS)" fullWidth />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={6}>
             <TextInput source="mobileNo" label="Mobile (ITS)" fullWidth />
           </Grid>
           <Grid item xs={12} sm={6} lg={6}>
@@ -199,7 +193,7 @@ export default function FmbDataCreate(props) {
           <Grid item xs={12} sm={6} lg={6}>
             <NoArrowKeyNumberInput
               source="takhmeenAmount"
-              label={`Takhmeen Amount (${formatFmbHijriPeriod(takhmeenYear)})`}
+              label={`Takhmeen Amount (${formatFmbHijriPeriod(hijriYearStart)})`}
               fullWidth
               required
             />

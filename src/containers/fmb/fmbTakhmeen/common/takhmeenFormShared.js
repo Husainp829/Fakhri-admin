@@ -1,88 +1,93 @@
 import React, { useMemo } from "react";
 import dayjs from "dayjs";
-import { useWatch } from "react-hook-form";
+import { SelectInput, required, useDataProvider } from "react-admin";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
-import Typography from "@mui/material/Typography";
 import { formatFmbHijriPeriod, getHijriYear } from "../../../../utils/hijriDateUtils";
 
-export function resolveTakhmeenYear(startDate, shawwalStartDate) {
-  const sw = shawwalStartDate != null && shawwalStartDate !== "" ? dayjs(shawwalStartDate) : null;
-  if (sw?.isValid()) {
-    return getHijriYear(sw.toDate());
-  }
-  const sd = startDate != null && startDate !== "" ? dayjs(startDate) : null;
-  if (sd?.isValid()) {
-    return getHijriYear(sd.startOf("month").toDate());
-  }
-  return null;
-}
-
 export function transformTakhmeenCreate(data) {
-  const takhmeenYear = resolveTakhmeenYear(data.startDate, data.shawwalStartDate);
-  if (takhmeenYear == null || !Number.isFinite(takhmeenYear)) {
-    throw new Error("Could not derive Hijri takhmeen year from the dates entered.");
+  const hijriYearStart =
+    data.hijriYearStart != null && data.hijriYearStart !== "" ? Number(data.hijriYearStart) : null;
+  if (hijriYearStart == null || !Number.isFinite(hijriYearStart)) {
+    throw new Error("Please select a Hijri period.");
   }
   const out = {
     fmbId: data.fmbId,
     takhmeenAmount: Number(data.takhmeenAmount),
-    takhmeenYear,
+    hijriYearStart,
+    hijriYearEnd: hijriYearStart + 1,
     startDate: dayjs(data.startDate).startOf("month").toISOString(),
   };
-
-  if (data.shawwalStartDate) {
-    const d = dayjs(data.shawwalStartDate);
-    if (d.isValid()) {
-      out.shawwalStartDate = d.format("YYYY-MM-DD");
-    }
-  }
 
   return out;
 }
 
-/** Update: always send shawwal as YYYY-MM-DD or null so cleared dates persist. Omit fmbId (immutable). */
+/** Update: omit fmbId (immutable); hijriYearStart is selected explicitly in the form. */
 export function transformTakhmeenUpdate(data) {
-  const takhmeenYear = resolveTakhmeenYear(data.startDate, data.shawwalStartDate);
-  if (takhmeenYear == null || !Number.isFinite(takhmeenYear)) {
-    throw new Error("Could not derive Hijri takhmeen year from the dates entered.");
+  const hijriYearStart =
+    data.hijriYearStart != null && data.hijriYearStart !== "" ? Number(data.hijriYearStart) : null;
+  if (hijriYearStart == null || !Number.isFinite(hijriYearStart)) {
+    throw new Error("Please select a Hijri period.");
   }
   const out = {
     takhmeenAmount: Number(data.takhmeenAmount),
-    takhmeenYear,
+    hijriYearStart,
+    hijriYearEnd: hijriYearStart + 1,
     startDate: dayjs(data.startDate).startOf("month").toISOString(),
   };
-
-  if (data.shawwalStartDate) {
-    const d = dayjs(data.shawwalStartDate);
-    out.shawwalStartDate = d.isValid() ? d.format("YYYY-MM-DD") : null;
-  } else {
-    out.shawwalStartDate = null;
-  }
 
   return out;
 }
 
-export function TakhmeenYearAutoSummary() {
-  const startDate = useWatch({ name: "startDate" });
-  const shawwalStartDate = useWatch({ name: "shawwalStartDate" });
-  const takhmeenYear = useMemo(
-    () => resolveTakhmeenYear(startDate, shawwalStartDate),
-    [startDate, shawwalStartDate],
-  );
+export function TakhmeenYearSelect(props) {
+  const { helperText, ...rest } = props || {};
+  const dataProvider = useDataProvider();
+  const current = useMemo(() => getHijriYear(new Date()), []);
+  const [minYear, setMinYear] = React.useState(null);
 
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await dataProvider.getList("fmbTakhmeen", {
+          pagination: { page: 1, perPage: 1 },
+          sort: { field: "hijriYearStart", order: "ASC" },
+          filter: {},
+        });
+        const first = Array.isArray(res?.data) ? res.data[0] : null;
+        const y = first?.hijriYearStart ?? null;
+        const n = y == null ? null : Number(y);
+        if (!alive) return;
+        setMinYear(Number.isFinite(n) ? n : null);
+      } catch {
+        if (!alive) return;
+        setMinYear(null);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [dataProvider]);
+
+  const choices = useMemo(() => {
+    const start = minYear != null ? minYear : current;
+    const end = current + 2;
+    const years = [];
+    for (let y = start; y <= end; y += 1) years.push(y);
+    return years.map((y) => ({ id: y, name: formatFmbHijriPeriod(y) }));
+  }, [minYear, current]);
   return (
     <Grid item xs={12} sm={6}>
       <Box sx={{ pt: 0.5 }}>
-        <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-          Hijri period (auto)
-        </Typography>
-        <Typography variant="body1" component="p">
-          {takhmeenYear != null ? formatFmbHijriPeriod(takhmeenYear) : "—"}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
-          Uses 1 Shawwal (Gregorian) when set; otherwise the tabular Hijri calendar year of the
-          effective month.
-        </Typography>
+        <SelectInput
+          source="hijriYearStart"
+          label="Hijri period"
+          choices={choices}
+          fullWidth
+          validate={[required()]}
+          helperText={helperText ?? "Defaults to current period"}
+          {...rest}
+        />
       </Box>
     </Grid>
   );

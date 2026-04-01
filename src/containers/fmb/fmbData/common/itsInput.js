@@ -22,12 +22,11 @@ export const ITSInput = (props) => {
   const { selectedChoices } = useChoicesContext();
   const { setValue, getValues } = useFormContext();
   const selectedChoice = selectedChoices[0];
+  console.log({ selectedChoices, itsField: getValues("itsNo") });
 
   useEffect(() => {
     if (selectedChoice?.id) {
       setValue("name", itsField(selectedChoice, "Full_Name") ?? selectedChoice.name ?? null);
-      setValue("area", itsField(selectedChoice, "Sub_Sector"));
-      setValue("masool", itsField(selectedChoice, "Sector_Incharge_Name"));
       setValue("mobileNo", itsField(selectedChoice, "Mobile"));
 
       // Default thali delivery address from ITS (only when empty; never overwrite user edits)
@@ -45,8 +44,6 @@ export const ITSInput = (props) => {
       }
     } else {
       setValue("name", null);
-      setValue("area", null);
-      setValue("masool", null);
       setValue("mobileNo", null);
     }
   }, [selectedChoice, setValue]);

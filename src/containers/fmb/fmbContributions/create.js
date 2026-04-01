@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Create,
@@ -10,7 +10,6 @@ import {
   BooleanInput,
   FormDataConsumer,
   AutocompleteInput,
-  useGetList,
   useGetOne,
   minValue,
 } from "react-admin";
@@ -18,6 +17,8 @@ import { useFormContext, useWatch } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
+import httpClient from "../../../dataprovider/httpClient";
+import { getApiUrl } from "../../../constants";
 import { ITSInput } from "./common/itsInput";
 import { BeneficiaryItsAutocomplete } from "./common/beneficiaryItsAutocomplete";
 import { formatINR } from "../../../utils";
@@ -69,14 +70,15 @@ function validateContributionForm(values) {
 export default function FmbContributionsCreate(props) {
   const [searchParams] = useSearchParams();
   const prefFmbId = searchParams.get("fmbId") || "";
-  const { data: thaliSettingsRows = [] } = useGetList(
-    "fmbThaliSettings",
-    {
-      pagination: { page: 1, perPage: 1 },
-    },
-    { enabled: true },
-  );
-  const defaultUnitAmount = thaliSettingsRows?.[0]?.zabihatUnitAmount;
+  const [defaultUnitAmount, setDefaultUnitAmount] = useState(undefined);
+
+  useEffect(() => {
+    httpClient(`${getApiUrl()}/fmbThaliSettings`)
+      .then(({ json: { rows } }) => {
+        setDefaultUnitAmount(rows?.[0]?.zabihatUnitAmount);
+      })
+      .catch(() => {});
+  }, []);
 
   const defaultValues = useMemo(
     () => ({
@@ -106,15 +108,12 @@ export default function FmbContributionsCreate(props) {
             <ReferenceInput source="fmbId" reference="fmbData" perPage={100}>
               <ITSInput
                 label="FMB record (optional)"
-                optionText={(r) => `${r.fmbNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
+                optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
                 fullWidth
                 debounce={300}
                 filterToQuery={(q) => ({ search: q })}
               />
             </ReferenceInput>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextInput source="fmbNo" label="FMB number" fullWidth disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextInput source="name" label="Account name" fullWidth disabled />
@@ -133,9 +132,10 @@ export default function FmbContributionsCreate(props) {
                       fullWidth
                       label="Annual period (takhmeen)"
                       optionText={(choice) =>
-                        `${choice.hijriYearStart ?? choice.takhmeenYear ?? "—"}–${
-                          choice.hijriYearEnd ?? "—"
-                        } · ${formatINR(choice.takhmeenAmount, { empty: "—" })}`
+                        `${choice.hijriYearStart ?? "—"}–${choice.hijriYearEnd ?? "—"} · ${formatINR(
+                          choice.takhmeenAmount,
+                          { empty: "—" },
+                        )}`
                       }
                       shouldRenderSuggestions={(val) => val.trim().length >= 0}
                       noOptionsText="No annual periods for this FMB"
@@ -268,13 +268,18 @@ function PrefetchFmbItsDefaults({ prefFmbId }) {
 }
 
 function UnitAmountDefaultInitializer({ defaultUnitAmount }) {
-  const { getValues, setValue } = useFormContext();
+  const { getValues, setValue, control } = useFormContext();
+  const contributionType = useWatch({ control, name: "contributionType" });
 
   useEffect(() => {
     if (defaultUnitAmount == null) return;
+    if (contributionType !== "ZABIHAT") return;
     const currentUnitAmount = getValues("unitAmount");
     const isCurrentEmpty =
-      currentUnitAmount === undefined || currentUnitAmount === null || currentUnitAmount === "";
+      currentUnitAmount === undefined ||
+      currentUnitAmount === null ||
+      currentUnitAmount === "" ||
+      Number(currentUnitAmount) === 0;
 
     if (isCurrentEmpty) {
       setValue("unitAmount", defaultUnitAmount, {
@@ -282,7 +287,7 @@ function UnitAmountDefaultInitializer({ defaultUnitAmount }) {
         shouldTouch: false,
       });
     }
-  }, [defaultUnitAmount, getValues, setValue]);
+  }, [contributionType, defaultUnitAmount, getValues, setValue]);
 
   return null;
 }

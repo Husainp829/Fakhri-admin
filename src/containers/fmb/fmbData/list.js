@@ -101,6 +101,7 @@ export default function OrderList(props) {
             label="Pending Balance"
             key="pendingBalance"
             textAlign="right"
+            sortBy="pendingBalance"
             render={(record) =>
               formatINR(record?.fmbTakhmeenCurrent?.pendingBalance, { empty: "—" })
             }
@@ -109,18 +110,30 @@ export default function OrderList(props) {
             label="Paid Balance"
             key="paidBalance"
             textAlign="right"
+            sortBy="paidBalance"
             render={(record) => formatINR(record?.fmbTakhmeenCurrent?.paidBalance, { empty: "—" })}
           />
           <FunctionField
             label="Takhmeen"
             key="takhmeenAmount"
             textAlign="right"
+            sortBy="takhmeenAmount"
             render={(record) =>
               formatINR(record?.fmbTakhmeenCurrent?.takhmeenAmount, { empty: "—" })
             }
           />
-          <TextField source="itsdata.Address" label="Address (ITS)" key="itsdata-address" />
-          <TextField source="itsdata.Jamaat" label="Jamaat (ITS)" key="itsdata-jamaat" />
+          <FunctionField
+            label="Delivery Address"
+            key="delivery-address"
+            render={(record) => {
+              const thalis = Array.isArray(record.thalis) ? record.thalis : [];
+              if (!thalis.length) return "—";
+              const thali = thalis.find((t) => t?.isActive) || thalis[0];
+              const addrParts = [thali?.deliveryAddress, thali?.deliveryMohallah].filter(Boolean);
+              return addrParts.length ? addrParts.join(" — ") : "—";
+            }}
+          />
+          <TextField source="remarks" label="Remarks" key="remarks" />
           <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />
         </DatagridConfigurable>
       </List>
