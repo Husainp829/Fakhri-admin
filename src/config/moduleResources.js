@@ -32,10 +32,12 @@ import sabilLedger from "../containers/sabil/sabilLedger";
 import fmbData from "../containers/fmb/fmbData";
 import fmbReceipt from "../containers/fmb/fmbReceipt";
 import fmbTakhmeen from "../containers/fmb/fmbTakhmeen";
+import fmbContributions from "../containers/fmb/fmbContributions";
 import fmbDeliveryScheduleProfile from "../containers/fmb/fmbDeliveryScheduleProfile";
 import fmbThaliSettings from "../containers/fmb/fmbThaliSettings";
 import fmbHoliday from "../containers/fmb/fmbHoliday";
 import fmbThaliSuspension from "../containers/fmb/fmbThaliSuspension";
+import fmbThaliType from "../containers/fmb/fmbThaliType";
 
 import miqaatNiyaazReceipts from "../containers/miqaat/miqaatNiyaazReceipts";
 
@@ -143,6 +145,7 @@ export const MODULE_RESOURCES = {
         resource: fmbReceipt,
         createPermission: "fmbReceipt.create",
       },
+      { permission: "fmbData.view", resource: fmbContributions, createPermission: "fmbData.edit" },
       { permission: "fmbData.view", resource: fmbTakhmeen, createPermission: "fmbData.edit" },
       {
         permission: "fmbThaliSuspension.view",
@@ -158,6 +161,11 @@ export const MODULE_RESOURCES = {
         permission: "fmbHoliday.view",
         resource: fmbHoliday,
         createPermission: "fmbHoliday.create",
+      },
+      {
+        permission: "fmbThaliType.view",
+        resource: fmbThaliType,
+        createPermission: "fmbThaliType.create",
       },
       { permission: "fmbThaliSettings.view", resource: fmbThaliSettings },
     ],

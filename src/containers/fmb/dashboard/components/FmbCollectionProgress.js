@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, Typography, Box, Grid, LinearProgress } from "@mui/material";
+import { formatINR } from "../../../../utils";
 
 const FmbCollectionProgress = ({ stats, collectionPercentage }) => {
   const getProgressBarColor = (percentage) => {
@@ -12,12 +13,12 @@ const FmbCollectionProgress = ({ stats, collectionPercentage }) => {
     <Card elevation={2}>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-          Receipts vs period takhmeen
+          Receipts vs period commitments
         </Typography>
         <Box sx={{ mb: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
             <Typography variant="body2" color="text.secondary">
-              Share of period takhmeen collected (by receipts)
+              Share of annual + contribution commitments collected (by receipts)
             </Typography>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               {collectionPercentage}%
@@ -43,7 +44,7 @@ const FmbCollectionProgress = ({ stats, collectionPercentage }) => {
               Receipts (period)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600, color: "success.main" }}>
-              ₹{(stats.paymentsReceived || 0).toLocaleString("en-IN")}
+              {formatINR(stats.paymentsReceived || 0)}
             </Typography>
           </Grid>
           <Grid item size={{ xs: 6 }}>
@@ -51,7 +52,7 @@ const FmbCollectionProgress = ({ stats, collectionPercentage }) => {
               Pending (period)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600, color: "error.main" }}>
-              ₹{(stats.paymentsPending || 0).toLocaleString("en-IN")}
+              {formatINR(stats.paymentsPending || 0)}
             </Typography>
           </Grid>
         </Grid>

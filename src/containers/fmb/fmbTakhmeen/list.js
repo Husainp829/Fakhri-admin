@@ -3,7 +3,6 @@ import {
   List,
   Datagrid,
   TextField,
-  NumberField,
   DateField,
   ReferenceField,
   TopToolbar,
@@ -11,6 +10,7 @@ import {
   Pagination,
   FunctionField,
 } from "react-admin";
+import { formatINR } from "../../../utils";
 import { formatFmbHijriPeriod } from "../../../utils/hijriDateUtils";
 
 const ListActions = () => (
@@ -29,23 +29,35 @@ export default function FmbTakhmeenList(props) {
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50]} />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
-        <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB no.">
-          <TextField source="fmbNo" />
+        <ReferenceField source="fmbId" reference="fmbData" link="show" label="File no.">
+          <TextField source="fileNo" />
         </ReferenceField>
-        <TextField source="category" label="Category" />
-        <NumberField source="takhmeenAmount" label="Amount" />
-        <NumberField source="pendingBalance" label="Pending" />
-        <NumberField source="paidBalance" label="Paid" />
+        <ReferenceField source="fmbId" reference="fmbData" link="show" label="ITS">
+          <TextField source="name" />
+        </ReferenceField>
+        <FunctionField
+          label="Amount"
+          textAlign="right"
+          render={(record) => formatINR(record?.takhmeenAmount, { empty: "—" })}
+        />
+        <FunctionField
+          label="Pending"
+          textAlign="right"
+          render={(record) => formatINR(record?.pendingBalance, { empty: "—" })}
+        />
+        <FunctionField
+          label="Paid"
+          textAlign="right"
+          render={(record) => formatINR(record?.paidBalance, { empty: "—" })}
+        />
         <FunctionField
           label="Hijri period"
           render={(record) =>
-            formatFmbHijriPeriod(
-              record?.hijriYearStart ?? record?.takhmeenYear,
-              record?.hijriYearEnd,
-            ) ?? "—"
+            formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
         <DateField source="startDate" label="Effective" emptyText="—" />
+        <DateField source="createdAt" label="Created" emptyText="—" />
       </Datagrid>
     </List>
   );

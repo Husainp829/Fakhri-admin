@@ -27,22 +27,17 @@ export default function FmbTakhmeenShow(props) {
     <Show {...props} actions={<FmbTakhmeenShowActions />}>
       <SimpleShowLayout>
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB record">
-          <TextField source="fmbNo" />
+          <TextField source="fileNo" />
         </ReferenceField>
-        <TextField source="category" label="Category" />
         <NumberField source="takhmeenAmount" label="Takhmeen amount" />
         <NumberField source="pendingBalance" label="Pending balance" />
         <NumberField source="paidBalance" label="Paid balance" />
         <FunctionField
           label="Hijri period"
           render={(record) =>
-            formatFmbHijriPeriod(
-              record?.hijriYearStart ?? record?.takhmeenYear,
-              record?.hijriYearEnd,
-            ) ?? "—"
+            formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
-        <DateField source="shawwalStartDate" label="1 Shawwal (Gregorian)" emptyText="—" />
         <DateField source="startDate" label="Effective from" emptyText="—" />
         <DateField source="createdAt" label="Created" showTime />
         <DateField source="updatedAt" label="Updated" showTime />

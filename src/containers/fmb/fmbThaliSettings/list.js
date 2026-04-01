@@ -102,6 +102,7 @@ export default function FmbThaliSettingsPage() {
   const [timezone, setTimezone] = useState("");
   const [defaultCutoffOffsetDays, setDefaultCutoffOffsetDays] = useState(0);
   const [defaultCutoffMinutes, setDefaultCutoffMinutes] = useState(0);
+  const [zabihatUnitAmount, setZabihatUnitAmount] = useState(0);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -112,6 +113,7 @@ export default function FmbThaliSettingsPage() {
           setTimezone(r.timezone ?? "");
           setDefaultCutoffOffsetDays(r.defaultCutoffOffsetDays ?? 0);
           setDefaultCutoffMinutes(r.defaultCutoffMinutes ?? 0);
+          setZabihatUnitAmount(r.zabihatUnitAmount ?? 0);
         }
       })
       .catch(() => notify("Could not load thali settings", { type: "error" }))
@@ -135,6 +137,7 @@ export default function FmbThaliSettingsPage() {
         timezone: timezone.trim(),
         defaultCutoffOffsetDays: Number(defaultCutoffOffsetDays),
         defaultCutoffMinutes: Number(defaultCutoffMinutes),
+        zabihatUnitAmount: Number(zabihatUnitAmount),
       }),
     })
       .then(() => notify("Saved", { type: "success" }))
@@ -220,6 +223,18 @@ export default function FmbThaliSettingsPage() {
                 </>
               )}
             </Alert>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Default zabihat unit amount"
+              type="number"
+              value={zabihatUnitAmount}
+              onChange={(e) => setZabihatUnitAmount(Number(e.target.value))}
+              fullWidth
+              required
+              inputProps={{ min: 0 }}
+              helperText="Used when creating ZABIHAT contributions without a unit amount override"
+            />
           </Grid>
           <Grid item xs={12}>
             <Button variant="contained" onClick={save} disabled={saving}>

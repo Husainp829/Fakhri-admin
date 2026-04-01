@@ -92,34 +92,42 @@ export default function FmbDashboard() {
     setSelectedHijriStart(hijriYearStart);
   };
 
-  const financialData = useMemo(
-    () =>
-      stats
-        ? [
-            {
-              name: "Takhmeen",
-              value: stats.fmbForecast || 0,
-              color: COLORS[0],
-            },
-            {
-              name: "Received",
-              value: stats.paymentsReceived || 0,
-              color: COLORS[1],
-            },
-            {
-              name: "Pending",
-              value: stats.paymentsPending || 0,
-              color: COLORS[2],
-            },
-            {
-              name: "Zabihat",
-              value: stats.zabihatForecast || 0,
-              color: COLORS[3],
-            },
-          ]
-        : [],
-    [stats],
-  );
+  const financialData = useMemo(() => {
+    if (!stats) {
+      return [];
+    }
+    const byType = stats.takhmeenAmountCountsByType || {};
+    const sumType = (key) =>
+      (byType[key] || []).reduce(
+        (sum, row) => sum + Number(row.amount || 0) * Number(row.count || 0),
+        0,
+      );
+    const annualCommitted = sumType("ANNUAL");
+    const zabihatCommitted = sumType("ZABIHAT");
+    const voluntaryCommitted = sumType("VOLUNTARY");
+    return [
+      {
+        name: "Annual",
+        value: annualCommitted,
+        color: COLORS[0],
+      },
+      {
+        name: "Contributions",
+        value: zabihatCommitted + voluntaryCommitted,
+        color: COLORS[1],
+      },
+      {
+        name: "Received",
+        value: stats.paymentsReceived || 0,
+        color: COLORS[2],
+      },
+      {
+        name: "Pending",
+        value: stats.paymentsPending || 0,
+        color: COLORS[3],
+      },
+    ];
+  }, [stats]);
 
   const deliveryProfileData = useMemo(() => {
     if (!stats?.deliveryProfileDistribution?.length) {

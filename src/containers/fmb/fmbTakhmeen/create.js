@@ -6,20 +6,15 @@ import {
   TextInput,
   ReferenceInput,
   DateInput,
-  SelectInput,
   required,
   minValue,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import dayjs from "dayjs";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
-import MonthInput from "../../../components/MonthInput";
 import { ITSInput } from "./common/itsInput";
-import {
-  CATEGORY_CHOICES,
-  TakhmeenYearAutoSummary,
-  transformTakhmeenCreate,
-} from "./common/takhmeenFormShared";
+import { TakhmeenYearSelect, transformTakhmeenCreate } from "./common/takhmeenFormShared";
+import { getHijriYear } from "../../../utils/hijriDateUtils";
 
 export default function FmbTakhmeenCreate(props) {
   const [searchParams] = useSearchParams();
@@ -27,9 +22,10 @@ export default function FmbTakhmeenCreate(props) {
 
   const defaultValues = useMemo(() => {
     const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+    const hijriYearStart = getHijriYear(new Date());
     return prefFmbId
-      ? { fmbId: prefFmbId, category: "THALI", startDate }
-      : { category: "THALI", startDate };
+      ? { fmbId: prefFmbId, startDate, hijriYearStart }
+      : { startDate, hijriYearStart };
   }, [prefFmbId]);
 
   return (
@@ -47,19 +43,16 @@ export default function FmbTakhmeenCreate(props) {
             <ReferenceInput source="fmbId" reference="fmbData" perPage={100} required>
               <ITSInput
                 label="FMB record"
-                optionText={(r) => `${r.fmbNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
+                optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"} · ${r.name ?? "—"}`}
                 fullWidth
                 required
                 debounce={300}
-                filterToQuery={(q) => ({ search: q })}
+                helperText={false}
               />
             </ReferenceInput>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextInput source="fmbNo" label="FMB number" fullWidth disabled />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextInput source="name" label="Account name" fullWidth disabled />
+          <Grid item xs={12}>
+            <TextInput source="name" label="Account name" fullWidth disabled helperText={false} />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextInput
@@ -67,6 +60,7 @@ export default function FmbTakhmeenCreate(props) {
               label="Current takhmeen amount"
               fullWidth
               disabled
+              helperText={false}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -74,31 +68,20 @@ export default function FmbTakhmeenCreate(props) {
               source="takhmeenAmount"
               label="New takhmeen amount"
               fullWidth
-              required
+              helperText={false}
               validate={[required(), minValue(1)]}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <SelectInput
-              source="category"
-              label="Category"
-              choices={CATEGORY_CHOICES}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <DateInput
-              source="shawwalStartDate"
-              label="1 Shawwal (Gregorian, optional)"
+              source="startDate"
+              label="Effective from (date)"
+              helperText="Defaults to current date"
               fullWidth
-              helperText="If set, Hijri year is taken from this date; else from effective month below"
+              validate={[required()]}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <MonthInput source="startDate" label="Effective from (month)" validate={[required()]} />
-          </Grid>
-          <TakhmeenYearAutoSummary />
+          <TakhmeenYearSelect />
         </Grid>
       </SimpleForm>
     </Create>
