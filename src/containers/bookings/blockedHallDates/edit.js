@@ -7,10 +7,10 @@ import {
   TextInput,
   ReferenceInput,
   SelectInput,
-  NumberInput,
 } from "react-admin";
 import { useWatch } from "react-hook-form";
 import { slotNameMap } from "../../../constants";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 const BlockedHallDateForm = () => {
   const type = useWatch({ name: "type" });
@@ -39,7 +39,7 @@ const BlockedHallDateForm = () => {
       />
       {type === "PERMANENT" && (
         <>
-          <NumberInput
+          <NoArrowKeyNumberInput
             source="hijriMonth"
             label="Hijri Month (0-11)"
             fullWidth
@@ -47,7 +47,7 @@ const BlockedHallDateForm = () => {
             max={11}
             helperText="0 = Moharram, 1 = Safar, ..., 11 = Zilhaj"
           />
-          <NumberInput
+          <NoArrowKeyNumberInput
             source="hijriDay"
             label="Hijri Day (1-30, leave empty for whole month)"
             fullWidth

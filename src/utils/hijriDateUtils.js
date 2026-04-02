@@ -124,3 +124,39 @@ export const fromGregorian = (gregorianDate, format = "short") => {
   }
   return `${day} ${monthName} ${year}`;
 };
+
+export const getHijriYear = (gregorianDate = new Date()) => {
+  const ajd = gregorianToAJD(gregorianDate);
+  const { year } = fromAJD(ajd);
+  return year;
+};
+
+/** @returns {{ year: number, month: number, day: number }} month index 0=Moharram … 9=Shawwal … 11=Zilhaj */
+export const getHijriDateParts = (gregorianDate) => {
+  const ajd = gregorianToAJD(gregorianDate);
+  return fromAJD(ajd);
+};
+
+/**
+ * “Shawwal-cycle” Hijri label: year of the 1 Shawwal that *opened* the current FMB year.
+ * For Moharram–Ramadan of civil Hijri year Y, returns Y − 1 (e.g. Ramadan 1447 → 1446).
+ * Takhmeen create uses getHijriYear for the effective month instead (civil Hijri year).
+ */
+export const getFmbTakhmeenYearFromGregorian = (gregorianDate) => {
+  const { year, month } = getHijriDateParts(gregorianDate);
+  return month < 9 ? year - 1 : year;
+};
+
+/**
+ * FMB takhmeen period label, e.g. "1447–1448". Uses explicit end when present; otherwise start + 1.
+ */
+export const formatFmbHijriPeriod = (hijriStart, hijriEnd) => {
+  if (hijriStart == null || hijriStart === "") return null;
+  const start = Number(hijriStart);
+  if (!Number.isFinite(start)) return null;
+  const end =
+    hijriEnd != null && hijriEnd !== "" && Number.isFinite(Number(hijriEnd))
+      ? Number(hijriEnd)
+      : start + 1;
+  return `${start}\u2013${end}`;
+};

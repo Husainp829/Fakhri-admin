@@ -3,10 +3,10 @@ import {
   TextInput,
   Create,
   SimpleForm,
-  NumberInput,
   DateInput,
   RadioButtonGroupInput,
 } from "react-admin";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import CustomReferenceInput from "../../../components/CustomReferenceInput";
 
 export default (props) => (
@@ -35,7 +35,7 @@ export default (props) => (
         defaultKey="id"
         title="Type"
       />
-      <NumberInput source="paid" fullWidth />
+      <NoArrowKeyNumberInput source="paid" fullWidth label="Paid Amount" />
 
       <DateInput source="paidDate" fullWidth />
       <RadioButtonGroupInput

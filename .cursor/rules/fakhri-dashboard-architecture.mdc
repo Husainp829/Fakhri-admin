@@ -1,0 +1,60 @@
+---
+description: Fakhri-admin dashboard, modules, resources, and authless routes architecture
+globs: src/config/**/*.js, src/layout/**/*.js, src/components/ResourcesRenderer.js, src/containers/defaultDashboard/**/*.js, src/App.js
+alwaysApply: false
+---
+
+# Fakhri Dashboard Architecture
+
+## Overview
+
+The app uses a config-driven architecture. Add or change modules/resources by editing config files; avoid hardcoding in `App.js` or `DashboardAdmin`.
+
+## Default Dashboard
+
+- **File**: `src/containers/defaultDashboard/index.js`
+- **Config**: `src/config/modules.js` → `MODULE_REGISTRY`
+- Renders cards for each module the user has permission for (`m.permission`).
+- Each card navigates via `navigateToBaseRoute(path)` to the module’s base path.
+
+## Child Dashboards
+
+- **Router**: `src/layout/DashboardAdmin.js`
+- **Config**: Modules in `MODULE_REGISTRY` with `hasChildDashboard: true` and `childDashboard`.
+- If `baseRoute` matches a module and `routeId` exists, renders `childDashboard`; otherwise renders `dashboard`.
+
+```javascript
+// In modules.js
+{ id: "events", hasChildDashboard: true, dashboard: EventsDashboard, childDashboard: ActiveEventDashboard }
+```
+
+## Module Resources
+
+- **Config**: `src/config/moduleResources.js` → `MODULE_RESOURCES` (keyed by baseRoute)
+- **Renderer**: `src/components/ResourcesRenderer.js`
+- Resources are shown only when `baseRoute` matches the module.
+- Each entry: `{ permission, resource, createPermission?, requireRouteId? }`
+- `requireRouteId: true`: show only when `routeId` exists (e.g. events).
+- `customRoutes`: module-specific noLayout routes (prints, vouchers).
+
+## Global Resources
+
+- **Config**: `src/config/globalResources.js` → `GLOBAL_RESOURCES`
+- Always rendered regardless of `baseRoute` (e.g. admin, itsdata, cronStatus).
+- Each entry: `{ permission, resource, name? }` — `name` overrides resource name.
+
+## Authless Routes
+
+- **Config**: `src/config/authlessRoutes.js` → `AUTHLESS_ROUTES`
+- **Usage**: Rendered in `App.js` as `<CustomRoutes noLayout>`.
+- No layout, no auth; used for prints and forgot-password.
+- Each entry: `{ path, element }` — `element` is a component.
+
+## Adding New Items
+
+| What                      | Where                                                |
+| ------------------------- | ---------------------------------------------------- |
+| New module/dashboard card | `modules.js` → `MODULE_REGISTRY`                     |
+| New resource for a module | `moduleResources.js` → `MODULE_RESOURCES[baseRoute]` |
+| New global resource       | `globalResources.js` → `GLOBAL_RESOURCES`            |
+| New authless route        | `authlessRoutes.js` → `AUTHLESS_ROUTES`              |

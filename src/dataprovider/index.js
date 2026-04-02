@@ -5,11 +5,107 @@ import { stringify } from "query-string";
 import { unflatten } from "flat";
 import { getApiUrl } from "../constants";
 import httpClient from "./httpClient";
+import { normalizePermissionsWithChoices } from "../utils/permissionUtils";
 
 const convertRows = (rows) => rows.map(unflatten);
 
+// Cache for available permissions (used for normalization)
+let availablePermissionsCache = null;
+let availablePermissionsPromise = null;
+
+// Export function to clear cache
+export const clearAvailablePermissionsCache = () => {
+  availablePermissionsCache = null;
+  availablePermissionsPromise = null;
+};
+
+// Listen for cache clear events
+if (typeof window !== "undefined") {
+  window.addEventListener("permissionsCacheCleared", () => {
+    clearAvailablePermissionsCache();
+  });
+}
+
+/**
+ * Fetch available permissions (cached)
+ */
+const getAvailablePermissions = async () => {
+  if (availablePermissionsCache) {
+    return availablePermissionsCache;
+  }
+
+  if (availablePermissionsPromise) {
+    return availablePermissionsPromise;
+  }
+
+  availablePermissionsPromise = httpClient(`${getApiUrl()}/admins/permissions/available`, {
+    method: "GET",
+  })
+    .then(({ json }) => {
+      availablePermissionsCache = json.rows || json.data || [];
+      availablePermissionsPromise = null;
+      return availablePermissionsCache;
+    })
+    .catch((error) => {
+      console.error("Failed to fetch permissions for normalization:", error);
+      availablePermissionsPromise = null;
+      return [];
+    });
+
+  return availablePermissionsPromise;
+};
+
+/**
+ * Normalize admin permissions before saving
+ */
+const normalizeAdminPermissions = async (data) => {
+  if (!data.permissions || !Array.isArray(data.permissions)) {
+    return data;
+  }
+
+  const availableChoices = await getAvailablePermissions();
+
+  if (!availableChoices || availableChoices.length === 0) {
+    return data;
+  }
+
+  const normalized = normalizePermissionsWithChoices(data.permissions, availableChoices);
+
+  return {
+    ...data,
+    permissions: normalized,
+  };
+};
+
 export default {
   getList: (resource, params) => {
+    if (resource === "ohbatMajlisUpcoming") {
+      return httpClient(`${getApiUrl()}/ohbatMajalis/attendance/upcoming`).then(
+        ({ json: { count, rows } }) => ({
+          data: convertRows(rows || []),
+          total: count ?? (rows || []).length,
+        }),
+      );
+    }
+
+    if (resource === "itsdataAddressChangeQueue") {
+      const { pagination = {}, filter = {}, sort = {} } = params;
+      const { page = 1, perPage = 10 } = pagination;
+      const { field, order } = sort;
+      const query = {
+        ...fetchUtils.flattenObject(filter),
+        orderBy: field,
+        order,
+        limit: perPage,
+        startAfter: (page - 1) * perPage,
+      };
+      const url = `${getApiUrl()}/itsdata/address-change-queue?${stringify(query)}`;
+      return httpClient(url).then(({ json: { count, rows } }) => ({
+        data: convertRows(rows || []),
+        total: count,
+      }));
+    }
+
     const { pagination = {}, filter = {}, sort = {} } = params;
     const { page = 1, perPage = 10 } = pagination;
     const { field, order } = sort;
@@ -36,6 +132,24 @@ export default {
     })),
 
   getMany: (resource, params) => {
+    const ids = (params.ids || []).map((id) => (id == null ? "" : String(id))).filter(Boolean);
+    const uuidLike = (s) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+    const uuidIds = ids.filter(uuidLike);
+    const itsIds = ids.filter((id) => !uuidLike(id));
+
+    if (resource === "itsdata" && itsIds.length > 0 && uuidIds.length === 0) {
+      const query = {
+        filter: JSON.stringify({ ITS_ID_in: itsIds }),
+        limit: Math.min(Math.max(itsIds.length, 50), 100),
+      };
+      const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
+      return httpClient(url).then(({ json: { rows } }) => ({
+        data: convertRows(rows || []),
+        total: (rows || []).length,
+      }));
+    }
+
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
@@ -64,13 +178,30 @@ export default {
     }));
   },
 
-  update: async (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
+  update: async (resource, params) => {
+    let dataToSend = params.data;
+
+    // Normalize permissions for admins resource
+    if (resource === "admins" && dataToSend.permissions) {
+      dataToSend = await normalizeAdminPermissions(dataToSend);
+    }
+
+    if (resource === "itsdataAddressChangeQueue" && dataToSend.markDone) {
+      return httpClient(`${getApiUrl()}/itsdata/address-change-queue/${params.id}/done`, {
+        method: "PATCH",
+        body: "{}",
+      }).then(({ json: { rows } }) => ({
+        data: convertRows(rows || [])[0] || rows[0],
+      }));
+    }
+
+    return httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
       method: "PUT",
-      body: JSON.stringify(params.data),
+      body: JSON.stringify(dataToSend),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    })),
+    }));
+  },
 
   updateMany: (resource, params) => {
     const query = {
@@ -82,13 +213,21 @@ export default {
     }).then(({ json }) => ({ data: json.data }));
   },
 
-  create: async (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}`, {
+  create: async (resource, params) => {
+    let dataToSend = params.data;
+
+    // Normalize permissions for admins resource
+    if (resource === "admins" && dataToSend.permissions) {
+      dataToSend = await normalizeAdminPermissions(dataToSend);
+    }
+
+    return httpClient(`${getApiUrl(resource)}/${resource}`, {
       method: "POST",
-      body: JSON.stringify(params.data),
+      body: JSON.stringify(dataToSend),
     }).then(({ json: { rows } }) => ({
       data: rows[0],
-    })),
+    }));
+  },
 
   createMany: (resource, params) =>
     httpClient(`${getApiUrl(resource)}/${resource}/bulk-upload`, {
@@ -109,8 +248,8 @@ export default {
         httpClient(`${getApiUrl(resource)}/${resource}/${id}`, {
           method: "DELETE",
           body: JSON.stringify(params.data),
-        })
-      )
+        }),
+      ),
     ).then(() => ({
       data: [],
     })),
@@ -132,7 +271,7 @@ export default {
         downloadLink.download = fileName;
         downloadLink.click();
         return { data: [] };
-      }
+      },
     );
   },
   previewRecipients: (resource, params) => {

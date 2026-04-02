@@ -1,13 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardActionArea, Typography, Grid } from "@mui/material";
 import { Title, usePermissions } from "react-admin";
-import BookOnlineIcon from "@mui/icons-material/BookOnline";
-import BadgeIcon from "@mui/icons-material/Badge";
-import FestivalIcon from "@mui/icons-material/Festival";
-import TableRowsIcon from "@mui/icons-material/TableRows";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-
 import { navigateToBaseRoute } from "../../utils/routeUtility";
+import { hasAnyPermission, hasPermission } from "../../utils/permissionUtils";
+import { MODULE_REGISTRY } from "../../config/modules";
 
 const DashboardCard = ({ icon: Icon, title, description, path }) => (
   <Card sx={{ minHeight: 150, width: "100%" }}>
@@ -25,49 +21,25 @@ const DashboardCard = ({ icon: Icon, title, description, path }) => (
 
 export default function DefaultDashboard() {
   const { permissions } = usePermissions();
+
   return (
     <>
       <Title title="Fakhri Mohalla Poona" />
-      <Grid container spacing={2} mt={3}>
-        {[
-          [
-            permissions?.bookings?.view,
-            BookOnlineIcon,
-            "Bookings",
-            "View and manage all hall bookings",
-            "bookings",
-          ],
-          [
-            permissions?.event?.view,
-            FestivalIcon,
-            "Events",
-            "View and manage all events",
-            "events",
-          ],
-          [permissions?.employees?.view, BadgeIcon, "Staff", "View and manage all staff", "staff"],
-          [
-            permissions?.admins?.view,
-            BadgeIcon,
-            "Sabil",
-            "View and manage all sabil data",
-            "sabil",
-          ],
-          [permissions?.admins?.view, TableRowsIcon, "FMB", "View and manage all fmb data", "fmb"],
-          [
-            permissions?.receipt?.view,
-            ReceiptIcon,
-            "Miqaat Niyaaz Receipts",
-            "View and manage all miqaat niyaaz receipts",
-            "miqaat",
-          ],
-        ].map(
-          ([perm, icon, title, description, path]) =>
-            perm && (
-              <Grid key={path} item size={{ xs: 6, sm: 6, md: 4 }}>
-                <DashboardCard icon={icon} title={title} description={description} path={path} />
-              </Grid>
-            )
-        )}
+      <Grid container spacing={2} mt={1}>
+        {MODULE_REGISTRY.filter((m) =>
+          m.permissionsAny?.length
+            ? hasAnyPermission(permissions, m.permissionsAny)
+            : hasPermission(permissions, m.permission),
+        ).map((m) => (
+          <Grid key={m.path} item size={{ xs: 6, sm: 6, md: 3 }}>
+            <DashboardCard
+              icon={m.icon}
+              title={m.label}
+              description={m.description}
+              path={m.path}
+            />
+          </Grid>
+        ))}
       </Grid>
     </>
   );

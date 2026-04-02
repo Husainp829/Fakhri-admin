@@ -5,9 +5,14 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useSearchParams } from "react-router-dom";
 import { CreateButton, usePermissions } from "react-admin";
 import { useBaseRoute } from "../../../../utils/routeUtility";
+import { hasPermission } from "../../../../utils/permissionUtils";
 
 const BookingActions = ({ permissions }) => (
-  <>{permissions?.bookings?.edit && <CreateButton resource="bookings" />}</>
+  <>
+    {hasPermission(permissions, "bookings.edit") && (
+      <CreateButton resource="bookings" />
+    )}
+  </>
 );
 
 const ViewToggle = ({ hideCreateButton }) => {
@@ -31,7 +36,7 @@ const ViewToggle = ({ hideCreateButton }) => {
       }}
     >
       {!hideCreateButton && <BookingActions permissions={permissions} />}
-      {permissions?.bookingReceipts?.view && (
+      {hasPermission(permissions, "bookingReceipts.view") && (
         <ToggleButtonGroup
           value={viewParam}
           exclusive
@@ -39,7 +44,11 @@ const ViewToggle = ({ hideCreateButton }) => {
           sx={{ ml: 3, display: "flex", alignItems: "center" }}
           size="small"
         >
-          <ToggleButton value="CALENDAR" aria-label="calendar" sx={{ height: 40 }}>
+          <ToggleButton
+            value="CALENDAR"
+            aria-label="calendar"
+            sx={{ height: 40 }}
+          >
             <CalendarMonthIcon />
           </ToggleButton>
           <ToggleButton value="LIST" aria-label="list" sx={{ height: 40 }}>

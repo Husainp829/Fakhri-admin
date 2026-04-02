@@ -1,56 +1,11 @@
-export const apiUrl = "https://jmsapi.rapid-events.com";
+export const apiUrl = "https://jms.anjumanefakhripoona.org/api";
 // export const apiUrl = "http://localhost:3012";
 
-export const getApiUrl = (resource) =>
-  [
-    "bookings",
-    "halls",
-    "hallBookings",
-    "contRcpt",
-    "media",
-    "itsdata",
-    "employees",
-    "employeesAttendance",
-    "blockedHallDates",
-    "miqaatNiyaazReceipts",
-    "whatsappBroadcasts",
-    "whatsappBroadcastRecipients",
-  ].some((item) => resource.startsWith(item))
-    ? `${apiUrl}/v2`
-    : apiUrl;
-
-export const permissionsList = [
-  { id: "event.view", name: "View Events" },
-  { id: "admins.view", name: "View Admin" },
-  { id: "view.its.data", name: "View ITS Data" },
-  { id: "show.its.dump", name: "Show ITS Data" },
-  { id: "niyaaz.view", name: "View Niyaaz" },
-  { id: "niyaaz.create", name: "Create Niyaaz" },
-  { id: "niyaaz.edit", name: "Edit Niyaaz" },
-  { id: "niyaaz.export", name: "Export Niyaaz" },
-  { id: "receipt.view", name: "View receipt" },
-  { id: "receipt.create", name: "Create receipt" },
-  { id: "receipt.edit", name: "Edit receipt" },
-  { id: "receipt.export", name: "Export receipt" },
-  { id: "dashboard.markaz", name: "Jaman Venue Stats" },
-  { id: "dashboard.daywiseReceipt", name: "Day Wise Receipt" },
-  { id: "vendors.edit", name: "Vendors Add/Edit/Delete" },
-  { id: "vendorTypes.edit", name: "Vendor Types Master" },
-  { id: "vendorLedger.edit", name: "Vendor Ledger View/Edit/Delete" },
-  { id: "halls.view", name: "Halls View/Edit/Delete" },
-  { id: "bookings.view", name: "Bookings View" },
-  { id: "bookings.edit", name: "Bookings Edit" },
-  { id: "bookings.dashboard", name: "Booking Dashboard" },
-  { id: "bookingReceipts.view", name: "Booking Receipts View" },
-  { id: "bookingReceipts.edit", name: "Booking Receipts Edit" },
-  { id: "writeoff.allow", name: "Has WriteOff" },
-  { id: "employees.view", name: "Employees View" },
-];
+export const getApiUrl = () => apiUrl;
 
 export const MARKAZ_LIST = {
   FM: "Fakhri Manzil",
   BH: "Burhani Hall",
-  ZM: "Zainy Masjid Sehen",
 };
 
 export const EMPLOYEE_TYPE = {
@@ -61,12 +16,6 @@ export const EMPLOYEE_TYPE = {
   ADMIN: "ADMIN",
 };
 
-export const NAMAAZ_VENUE = {
-  FM: "Fakhri Manzil",
-  BH: "Burhani Hall",
-  ZM: "Zainy Masjid",
-};
-
 export const PAYMENT_MODE_CONST = {
   cash: "Cash",
   cheque: "Cheque",
@@ -75,11 +24,17 @@ export const PAYMENT_MODE_CONST = {
 export const Page404 = "Page not found, go home!";
 
 export const getType = (type) => {
-  if (type === "CHULA" || type === "MUTTAVATTEEN") {
+  if (type === "MUTTAVATTEEN") {
     return "CHULA";
   }
-  return "ESTABLISHMENT";
+  return type;
 };
+
+export const SABIL_TYPE_OPTIONS = [
+  { id: "CHULA", name: "CHULA" },
+  { id: "ESTABLISHMENT", name: "ESTABLISHMENT" },
+  { id: "MUTTAVATTEEN", name: "MUTTAVATTEEN" },
+];
 
 export const slotTimeRanges = {
   morning: [7, 10],

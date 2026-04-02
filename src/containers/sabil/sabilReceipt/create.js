@@ -4,12 +4,12 @@ import {
   Create,
   SimpleForm,
   ReferenceInput,
-  NumberInput,
   DateInput,
   RadioButtonGroupInput,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { ITSInput } from "./common/itsInput";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default (props) => {
   const optionRenderer = (choice) => `${choice.itsNo} - ${choice.sabilType}`;
@@ -30,7 +30,11 @@ export default (props) => {
 
   const receiptDefaultValues = () => ({ sabilId });
   return (
-    <Create {...props} transform={transform}>
+    <Create
+      {...props}
+      transform={transform}
+      redirect={(_, id, data) => `/sabilData/${data.sabilId}/show`}
+    >
       <SimpleForm
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}
@@ -49,8 +53,7 @@ export default (props) => {
             </ReferenceInput>
             <TextInput source="sabilNo" fullWidth disabled />
             <TextInput source="takhmeenAmount" fullWidth disabled />
-            <NumberInput source="amount" fullWidth />
-            <NumberInput source="balancePending" fullWidth disabled />
+            <NoArrowKeyNumberInput source="amount" fullWidth label="Amount" />
           </Grid>
           <Grid item lg={6} xs={6}>
             <TextInput source="sabilType" fullWidth disabled />

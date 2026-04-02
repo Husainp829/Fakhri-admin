@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import axios from "axios";
-import { apiUrl, getApiUrl } from "../constants";
+import { getApiUrl } from "../constants";
 import { getToken } from "./httpClient";
 
 export const callApi = async ({ location, data = {}, method = "POST", headers = {}, id }) => {

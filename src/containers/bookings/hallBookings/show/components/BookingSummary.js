@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
 
 import { useShowTotals } from "../context";
+import { hasPermission } from "../../../../../utils/permissionUtils";
 
 const BookingSummary = () => {
   const record = useRecordContext();
@@ -71,8 +72,12 @@ const BookingSummary = () => {
     { label: "Phone", value: record.phone },
     { label: "Mohalla", value: record.mohalla },
     { label: "Sadarat", value: record.sadarat || "-" },
+    { label: "PAN Card", value: record.pancard || "-" },
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },
-    { label: "Booked On", value: dayjs(record.createdAt).format("DD MMM YYYY") },
+    {
+      label: "Booked On",
+      value: dayjs(record.createdAt).format("DD MMM YYYY"),
+    },
   ];
 
   return (
@@ -94,7 +99,7 @@ const BookingSummary = () => {
         </Table>
       </Grid>
 
-      {permissions?.bookings.edit && (
+      {hasPermission(permissions, "bookings.edit") && (
         <Grid item size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>
             Payments

@@ -6,11 +6,12 @@ import { Button, downloadCSV, usePermissions } from "react-admin";
 import jsonExport from "jsonexport/dist";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import LoadingGridList from "../../../components/LoadingWidget";
-
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
 import { receiptGroupBy } from "../../../utils";
+import { hasPermission } from "../../../utils/permissionUtils";
 
 const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();
@@ -40,12 +41,12 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   return (
     <>
       <Grid container spacing={1} sx={{ mt: 3 }}>
-        {permissions?.dashboard?.markaz && (
+        {hasPermission(permissions, "dashboard.markaz") && (
           <Grid item xs={12} sx={{ mb: 5 }}>
             <MarkazStats niyaazCounts={niyaazCounts} selectedMarkaz={selectedMarkaz} />
           </Grid>
         )}
-        {permissions?.dashboard?.daywiseReceipt && (
+        {hasPermission(permissions, "dashboard.daywiseReceipt") && (
           <>
             <Grid item xs={12} sx={{ mb: 5 }}>
               <Typography variant="h6" sx={{ mb: 0 }}>
@@ -64,6 +65,12 @@ const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
 };
 
 const GridList = ({ isLoading, ...props }) =>
-  isLoading ? <LoadingGridList /> : <LoadedGridList {...props} />;
+  isLoading ? (
+    <Backdrop sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })} open>
+      <CircularProgress color="inherit" />
+    </Backdrop>
+  ) : (
+    <LoadedGridList {...props} />
+  );
 
 export default GridList;

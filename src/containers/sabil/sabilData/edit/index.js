@@ -10,15 +10,22 @@ export default (props) => {
     if (type === "CHULA") {
       return {
         id: data.id,
-        remarks: data.remarks,
+        itsNo: data.itsNo,
+        name: data.name,
+        address: data.address,
         pan: data.pan,
+        remarks: data.remarks,
       };
     }
     return {
       id: data.id,
-      firmName: data.firmName,
+      itsNo: data.itsNo,
+      name: data.name,
       address: data.address,
+      firmName: data.firmName,
+      firmAddress: data.firmAddress,
       pan: data.pan,
+      remarks: data.remarks,
     };
   };
   return (

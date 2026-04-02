@@ -59,13 +59,27 @@ const editEvent = (id) => {
 
 const CardGridList = ({ data }) => {
   const [, setCurrentEvent] = useStore("currentEvent", null);
+
+  const handleClick = () => {
+    setCurrentEvent(data);
+    localStorage.setItem(
+      "currEvent",
+      JSON.stringify({
+        id: data.id,
+        name: data.name,
+        hijriYear: data.hijriYear,
+        slug: data.slug,
+        zabihat: data.zabihat,
+        chairs: data.chairs,
+      })
+    );
+    navigateToBaseRoute("events", data.id);
+  };
   return (
     <Grid item lg={3} xs={12} sx={styles.tile} key={data.id}>
       <Card sx={styles.card}>
         <CardActionArea
-          onClick={() => {
-            navigateToBaseRoute("events", data.id);
-          }}
+          onClick={handleClick}
         >
           <div
             style={{
@@ -97,21 +111,7 @@ const CardGridList = ({ data }) => {
           <Button
             size="small"
             color="primary"
-            onClick={() => {
-              setCurrentEvent(data);
-              localStorage.setItem(
-                "currEvent",
-                JSON.stringify({
-                  id: data.id,
-                  name: data.name,
-                  hijriYear: data.hijriYear,
-                  slug: data.slug,
-                  zabihat: data.zabihat,
-                  chairs: data.chairs,
-                })
-              );
-              navigateToBaseRoute("events", data.id);
-            }}
+            onClick={handleClick}
           >
             <Typography color="primary">View</Typography>
           </Button>

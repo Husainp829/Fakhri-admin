@@ -13,22 +13,21 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
 
-import Logo from "../assets/logo.png";
-import background from "../assets/LoginPage.png";
+import background from "../assets/JameaAlAnwar.jpg";
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       Copyright ©
       <Link color="inherit" href="/">
-        Fakhri Jamaat
+        Anjuman-e-Fakhri Poona
       </Link>{" "}
       {new Date().getFullYear()}.
     </Typography>
   );
 }
 
-export default function SignInSide() {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,12 +69,7 @@ export default function SignInSide() {
             textAlign: "center",
             padding: "35px",
           }}
-        >
-          {/* <Typography color="primary" variant="body1">
-            Powered By
-          </Typography>
-          <img src={Logo} alt="logo" style={{ maxWidth: "90px" }} /> */}
-        </div>
+        ></div>
       </Grid>
       <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6}>
         <Box
@@ -89,7 +83,7 @@ export default function SignInSide() {
           }}
         >
           <Box>
-            <img src={Logo} alt="logo" style={{ maxWidth: "100px", marginBottom: "100px" }} />
+            <img src="/logo.png" alt="logo" style={{ maxWidth: "100px", marginBottom: "100px" }} />
           </Box>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 0 }}>
             <TextField

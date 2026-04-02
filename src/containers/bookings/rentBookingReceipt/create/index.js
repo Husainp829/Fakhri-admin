@@ -44,7 +44,7 @@ export default (props) => {
     } else if (values.type === "DEPOSIT" && values.amount > totalDepositPending) {
       errors.amount = "Payment Amount cannot be greater than Deposit Pending";
     } else if (values.type === "RENT" && values.amount > totalAmountPending) {
-      errors.amount = "Payment Amount cannot be greater than Rent Pending";
+      errors.amount = "Payment Amount cannot be greater than Cont Pending";
     }
 
     return errors;

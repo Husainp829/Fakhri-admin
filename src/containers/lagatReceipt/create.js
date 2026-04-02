@@ -4,9 +4,9 @@ import {
   Create,
   SimpleForm,
   ReferenceInput,
-  NumberInput,
   SelectInput,
 } from "react-admin";
+import NoArrowKeyNumberInput from "../../components/NoArrowKeyNumberInput";
 
 import LagatITSLookup from "./common/lagatItsLookup";
 import PaymentModeInput from "./common/paymentModeInput";
@@ -41,7 +41,7 @@ export default (props) => {
         <ReferenceInput source="purpose" reference="bookingPurpose" required>
           <SelectInput fullWidth label="Purpose" noOptionsText="Select Purpose" />
         </ReferenceInput>
-        <NumberInput source="amount" fullWidth />
+        <NoArrowKeyNumberInput source="amount" fullWidth />
 
         <PaymentModeInput />
         <TextInput source="remarks" fullWidth />

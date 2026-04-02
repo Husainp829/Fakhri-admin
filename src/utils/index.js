@@ -33,6 +33,17 @@ export const formatDate = (value) => {
   return dayjs(utcFromLocal).format("DD-MM-YYYY");
 };
 
+export const formatINR = (amount, opts = {}) => {
+  const { empty = "—", minimumFractionDigits = 0, maximumFractionDigits = 0 } = opts || {};
+  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return empty;
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits,
+    maximumFractionDigits,
+  }).format(Number(amount));
+};
+
 export const groupBy = (key) => (array) =>
   array.reduce((objectsByKeyValue, obj) => {
     const value = obj[key];
@@ -49,7 +60,7 @@ export const receiptGroupBy = (array) =>
       ...curMarkaz,
       [curr.day]: {
         ...curDay,
-        [curr.mode]: curr.total_amount,
+        [curr.mode]: curr.totalAmount,
       },
     };
     return acc;
@@ -76,7 +87,7 @@ export const downLoadPasses = async (row) => {
       markaz={row.markaz}
       namaazVenue={row.namaazVenue}
       event={row.event}
-    />
+    />,
   ).toBlob();
   downloadPDF(blob, `${row.formNo}`);
 };

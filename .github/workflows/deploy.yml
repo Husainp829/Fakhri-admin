@@ -1,0 +1,157 @@
+name: Deploy Admin to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --frozen-lockfile
+
+      - name: Build application
+        run: npm run build
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          # Add other build-time environment variables as needed
+
+      - name: Create build archive
+        run: |
+          cd build
+          tar -czf ../admin-build.tar.gz .
+          cd ..
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-build
+          path: admin-build.tar.gz
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-build
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -H ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          # Extract locally first
+          echo "Extracting admin build locally..."
+          mkdir -p admin-build
+          tar -xzf admin-build.tar.gz -C admin-build
+
+          # Verify extraction locally
+          if [ ! -f "admin-build/index.html" ]; then
+            echo "ERROR: index.html not found in extracted build"
+            exit 1
+          fi
+
+          # SSH to create backup before syncing
+          echo "Creating backup on server..."
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'BACKUP_EOF'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}/../api
+            # Delete all old backups first (keep only 1 backup at a time)
+            rm -rf admin-build-backup-* 2>/dev/null || true
+            if [ -d "admin-build" ]; then
+              BACKUP_DIR="admin-build-backup-$(date +%Y%m%d-%H%M%S)"
+              mv admin-build "$BACKUP_DIR"
+              echo "Backed up existing build to $BACKUP_DIR"
+            fi
+          BACKUP_EOF
+
+          # Use rsync to sync the extracted files to the server
+          echo "Syncing admin build to server..."
+          rsync -avz --delete admin-build/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:${{ secrets.DEPLOY_PATH }}/../api/admin-build/
+
+          # Verify and restart
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'DEPLOY_EOF'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}/../api
+            
+            # Verify build was synced correctly
+            if [ ! -f "admin-build/index.html" ]; then
+              echo "ERROR: index.html not found in build. Rolling back..."
+              BACKUP_DIR=$(ls -dt admin-build-backup-* 2>/dev/null | head -1)
+              if [ -d "$BACKUP_DIR" ]; then
+                rm -rf admin-build
+                mv "$BACKUP_DIR" admin-build
+              fi
+              exit 1
+            fi
+            
+            # Restart nginx container to pick up new static files and clear cache
+            cd ../deployment
+            echo "Restarting nginx container to serve new admin build..."
+            docker compose restart nginx
+            
+            # Wait for containers to be ready
+            sleep 5
+            
+            echo "Admin build deployed successfully!"
+          DEPLOY_EOF
+
+      - name: Verify deployment
+        run: |
+          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+            cd ${{ secrets.DEPLOY_PATH }}/../api
+            
+            # Check container status
+            echo "=== Container Status ==="
+            cd ../deployment
+            docker compose ps api
+            
+            # Verify admin build exists
+            echo ""
+            echo "=== Admin Build Verification ==="
+            cd ../api
+            if [ -f "admin-build/index.html" ]; then
+              echo "✓ Admin build files present"
+              ls -lh admin-build/ | head -10
+            else
+              echo "✗ ERROR: Admin build files not found!"
+              exit 1
+            fi
+            
+            # Check API logs for any errors
+            echo ""
+            echo "=== Recent API Logs ==="
+            cd ../deployment
+            docker compose logs --tail=30 api | grep -i "static\|admin\|error" || echo "No relevant log entries"
+            
+            echo ""
+            echo "=== Deployment Complete ==="
+            echo "Admin UI is now served from the API container at https://jms.rapid-events.com"
+          EOF

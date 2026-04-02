@@ -67,16 +67,12 @@ function TabbedDatagrid() {
       render={(record) => record.itsdata?.Full_Name || record.name}
       key="name"
     />,
-    <TextField source="pendingBalance" key="pendingBalance" />,
-    <TextField source="paidBalance" key="paidBalance" />,
     <TextField
       source="sabilTakhmeenCurrent.takhmeenAmount"
       label="Takhmeen"
       key="takhmeenAmount"
     />,
     <TextField source="mohallah" label="Mohallah" key="itsdata" />,
-    <TextField source="itsdata.Sector_Incharge_Name" label="Masool" key="itsdata" />,
-    <TextField source="category" key="category" />,
     <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />,
   ];
 
@@ -138,6 +134,25 @@ export default function OrderList(props) {
     unselectAll();
   }, [resource]);
 
+  // Parse filter from URL query parameters
+  const getFilterFromURL = () => {
+    if (typeof window === "undefined") return { sabilType: "CHULA" };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get("filter");
+
+    if (filterParam) {
+      try {
+        const parsed = JSON.parse(filterParam);
+        return { ...parsed, sabilType: parsed.sabilType || "CHULA" };
+      } catch (e) {
+        console.error("Error parsing filter from URL:", e);
+      }
+    }
+
+    return { sabilType: "CHULA" };
+  };
+
   const ListActions = () => (
     <TopToolbar sx={{ justifyContent: "start" }}>
       <FilterButton />
@@ -151,7 +166,7 @@ export default function OrderList(props) {
       <List
         {...props}
         sort={{ field: "updatedAt", order: "DESC" }}
-        filterDefaultValues={{ sabilType: "CHULA" }}
+        filterDefaultValues={getFilterFromURL()}
         perPage={25}
         pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
         filters={RegistrationFilters}

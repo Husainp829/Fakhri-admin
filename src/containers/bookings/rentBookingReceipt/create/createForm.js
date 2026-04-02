@@ -110,7 +110,7 @@ export default function BookingReceiptForm({ bookingId }) {
           source="type"
           choices={[
             { id: "DEPOSIT", name: "DEPOSIT" },
-            { id: "RENT", name: "RENT" },
+            { id: "RENT", name: "CONT" },
           ]}
           fullWidth
         />
