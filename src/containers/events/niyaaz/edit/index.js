@@ -34,9 +34,7 @@ export default (props) => {
       errors.markaz = "The HOF Name is required";
     }
     // You can add a message for a whole ArrayInput
-    if (!values.familyMembers || !values.familyMembers.length) {
-      errors.familyMembers = "Atleast 1 Family Member required";
-    } else {
+    if (values.familyMembers && values.familyMembers.length > 0) {
       // Or target each child of an ArrayInput by returning an array of error objects
       errors.familyMembers = values.familyMembers.map((member) => {
         const memberErrors = {};

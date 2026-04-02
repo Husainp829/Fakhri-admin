@@ -1,8 +1,10 @@
-/* eslint-disable no-console */
 import React, { useEffect } from "react";
 import { AutocompleteInput, useChoicesContext } from "react-admin";
 import { useFormContext } from "react-hook-form";
 
+/**
+ * Autocomplete for selecting an FMB record (`fmbId`); fills display-only fields from the choice.
+ */
 export const ITSInput = (props) => {
   const { selectedChoices } = useChoicesContext();
   const { setValue } = useFormContext();
@@ -10,13 +12,10 @@ export const ITSInput = (props) => {
 
   useEffect(() => {
     if (selectedChoice?.id) {
-      setValue("fmbNo", selectedChoice.fmbNo);
       setValue("name", selectedChoice.name);
-      setValue("takhmeenAmount", selectedChoice?.fmbTakhmeen?.takhmeenAmount);
-      setValue("lastPaidDate", selectedChoice.lastPaidDate);
-      setValue("previousTakhmeenAmount", selectedChoice?.fmbTakhmeenCurrent?.takhmeenAmount);
+      setValue("previousTakhmeenAmount", selectedChoice?.fmbTakhmeenCurrent?.takhmeenAmount ?? "");
     }
-  }, [selectedChoice]);
+  }, [selectedChoice, setValue]);
 
   return <AutocompleteInput {...props} size="small" />;
 };

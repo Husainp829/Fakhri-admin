@@ -41,7 +41,7 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
       const base64Data = base64String.split(",").pop();
 
       // Call the sync API
-      await callApi({
+      const response = await callApi({
         location: "itsdata/sync",
         method: "POST",
         data: {
@@ -51,7 +51,15 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
         },
       });
 
-      notify("File synced successfully", { type: "success" });
+      const n = response?.data?.addressChangeQueueCount;
+      if (typeof n === "number" && n > 0) {
+        notify(
+          `Sync completed. ${n} address change${n === 1 ? "" : "s"} queued — update the external portal and mark them done under ITS address updates.`,
+          { type: "success" },
+        );
+      } else {
+        notify("File synced successfully", { type: "success" });
+      }
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";

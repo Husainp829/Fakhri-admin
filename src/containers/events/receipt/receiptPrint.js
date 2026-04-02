@@ -72,7 +72,7 @@ const Receipt = () => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
               <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{data?.HOFName}</div>
-              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالا</div>
+              <div style={{ paddingLeft: "10px" }}>حفظ الله تعالى</div>
             </div>
           </div>
           <div style={{ textAlign: "center", padding: "10px" }}>بعد السلام الجميل</div>

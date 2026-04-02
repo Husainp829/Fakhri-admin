@@ -1,5 +1,12 @@
 import React from "react";
-import { ArrayField, FunctionField, NumberField, SimpleShowLayout, TextField } from "react-admin";
+import {
+  ArrayField,
+  BooleanField,
+  FunctionField,
+  NumberField,
+  SimpleShowLayout,
+  TextField,
+} from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import { useMediaQuery } from "@mui/material";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
@@ -13,6 +20,13 @@ export default () => {
           <TextField source="HOFName" label="Name" emptyText="-" />
           <TextField source="HOFId" label="ITS NO." />
           <TextField source="HOFPhone" label="Phone" />
+          <BooleanField
+            source="sendReminders"
+            label="Send reminders"
+            valueLabelTrue="Yes"
+            valueLabelFalse="No"
+            defaultValue
+          />
         </SimpleShowLayout>
       </Grid>
       <Grid item xs={12} sm={4}>

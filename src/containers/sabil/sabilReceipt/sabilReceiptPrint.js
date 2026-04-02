@@ -228,6 +228,7 @@ const SabilReceipt = ({ ...props }) => {
           <LabelValue label="تاريخ" value={formatDate(receiptData.receiptDate)} />
           <LabelValue label="رسيد نمبر" value={receiptData.receiptNo} />
           <LabelValue label="سبيل نمبر" value={sabilData.sabilNo} />
+          <LabelValue label="Sabil Type" value={sabilType || "—"} />
           <LabelValue label="HOF ITS" value={itsdata.ITS_ID} noBorder />
         </div>
       </div>

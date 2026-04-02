@@ -8,6 +8,7 @@ import {
   TextField,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import { formatINR } from "../../../../utils";
 
 export default () => {
   const printReceipt = (id) => {
@@ -18,8 +19,25 @@ export default () => {
     <ReferenceManyField reference="fmbReceipt" target="fmbId" label={false}>
       <Datagrid>
         <TextField source="receiptNo" label="Receipt No" />
-        <TextField source="amount" />
+        <FunctionField
+          label="Amount"
+          textAlign="right"
+          render={(record) => formatINR(record?.amount, { empty: "—" })}
+        />
         <DateField source="receiptDate" />
+        <FunctionField
+          label="Target"
+          render={(record) => {
+            const lines = record?.allocations;
+            if (lines?.length > 1) {
+              return `${lines.length} lines`;
+            }
+            if (lines?.length === 1) {
+              return lines[0].fmbContributionId ? "Contribution" : "Annual";
+            }
+            return record?.unallocatedAmount > 0 ? "Credit" : "—";
+          }}
+        />
         <TextField source="receiptType" />
         <FunctionField
           label="Download"

@@ -1,58 +1,89 @@
-import React from "react";
-import dayjs from "dayjs";
-import { TextInput, Create, SimpleForm, ReferenceInput } from "react-admin";
+import React, { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import {
+  Create,
+  SimpleForm,
+  TextInput,
+  ReferenceInput,
+  DateInput,
+  required,
+  minValue,
+} from "react-admin";
 import Grid from "@mui/material/GridLegacy";
+import dayjs from "dayjs";
+import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import { ITSInput } from "./common/itsInput";
-import MonthInput from "../../../components/MonthInput";
+import { TakhmeenYearSelect, transformTakhmeenCreate } from "./common/takhmeenFormShared";
+import { getHijriYear } from "../../../utils/hijriDateUtils";
 
-export default (props) => {
-  const optionRenderer = (choice) => `${choice.itsNo}`;
+export default function FmbTakhmeenCreate(props) {
+  const [searchParams] = useSearchParams();
+  const prefFmbId = searchParams.get("fmbId") || "";
 
-  const { href } = window.location;
-  const params = href.split("?")[1];
-  const searchParams = new URLSearchParams(params);
-  const fmbId = searchParams.get("fmbId");
-  const transform = (data) => ({
-    fmbId: data.fmbId,
-    takhmeenAmount: data.newTakhmeenAmount,
-    startDate: dayjs(data.startDate).startOf("month"),
-  });
+  const defaultValues = useMemo(() => {
+    const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+    const hijriYearStart = getHijriYear(new Date());
+    return prefFmbId
+      ? { fmbId: prefFmbId, startDate, hijriYearStart }
+      : { startDate, hijriYearStart };
+  }, [prefFmbId]);
 
-  const takhmeenDefaultValues = () => ({ fmbId });
   return (
-    <Create {...props} transform={transform} redirect={`/fmbData/${fmbId}/show/takhmeenHistory`}>
-      <SimpleForm
-        warnWhenUnsavedChanges
-        sx={{ maxWidth: 700 }}
-        defaultValues={takhmeenDefaultValues}
-      >
-        <Grid container spacing={1}>
-          <Grid item lg={6} xs={6}>
-            <ReferenceInput source="fmbId" reference="fmbData" required>
+    <Create
+      {...props}
+      transform={transformTakhmeenCreate}
+      redirect={(resource, id, data) => {
+        const fid = data?.fmbId || prefFmbId;
+        return fid ? `/fmbData/${fid}/show/takhmeenHistory` : "list";
+      }}
+    >
+      <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 720 }} defaultValues={defaultValues}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <ReferenceInput source="fmbId" reference="fmbData" perPage={100} required>
               <ITSInput
+                label="FMB record"
+                optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"} · ${r.name ?? "—"}`}
                 fullWidth
-                label="ITS No."
-                optionText={optionRenderer}
-                shouldRenderSuggestions={(val) => val.trim().length === 8}
-                noOptionsText="Enter valid ITS No."
+                required
+                debounce={300}
+                helperText={false}
               />
             </ReferenceInput>
-            <TextInput source="fmbNo" fullWidth disabled />
+          </Grid>
+          <Grid item xs={12}>
+            <TextInput source="name" label="Account name" fullWidth disabled helperText={false} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextInput
               source="previousTakhmeenAmount"
+              label="Current takhmeen amount"
               fullWidth
               disabled
-              label="Previous Takhmeen Amount"
+              helperText={false}
             />
-            <MonthInput source="startDate" fullWidth label="Start Date" />
           </Grid>
-          <Grid item lg={6} xs={6}>
-            <TextInput source="name" label="FMB Account Holder Name" fullWidth disabled />
-            <TextInput source="newTakhmeenAmount" fullWidth label="New Takhmeen Amount" />
+          <Grid item xs={12} sm={6}>
+            <NoArrowKeyNumberInput
+              source="takhmeenAmount"
+              label="New takhmeen amount"
+              fullWidth
+              helperText={false}
+              validate={[required(), minValue(1)]}
+            />
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <DateInput
+              source="startDate"
+              label="Effective from (date)"
+              helperText="Defaults to current date"
+              fullWidth
+              validate={[required()]}
+            />
+          </Grid>
+          <TakhmeenYearSelect />
         </Grid>
-        <TextInput source="remarks" fullWidth />
       </SimpleForm>
     </Create>
   );
-};
+}

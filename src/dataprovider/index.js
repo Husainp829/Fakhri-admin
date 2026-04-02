@@ -38,12 +38,9 @@ const getAvailablePermissions = async () => {
     return availablePermissionsPromise;
   }
 
-  availablePermissionsPromise = httpClient(
-    `${getApiUrl()}/admins/permissions/available`,
-    {
-      method: "GET",
-    }
-  )
+  availablePermissionsPromise = httpClient(`${getApiUrl()}/admins/permissions/available`, {
+    method: "GET",
+  })
     .then(({ json }) => {
       availablePermissionsCache = json.rows || json.data || [];
       availablePermissionsPromise = null;
@@ -72,10 +69,7 @@ const normalizeAdminPermissions = async (data) => {
     return data;
   }
 
-  const normalized = normalizePermissionsWithChoices(
-    data.permissions,
-    availableChoices
-  );
+  const normalized = normalizePermissionsWithChoices(data.permissions, availableChoices);
 
   return {
     ...data,
@@ -85,6 +79,33 @@ const normalizeAdminPermissions = async (data) => {
 
 export default {
   getList: (resource, params) => {
+    if (resource === "ohbatMajlisUpcoming") {
+      return httpClient(`${getApiUrl()}/ohbatMajalis/attendance/upcoming`).then(
+        ({ json: { count, rows } }) => ({
+          data: convertRows(rows || []),
+          total: count ?? (rows || []).length,
+        }),
+      );
+    }
+
+    if (resource === "itsdataAddressChangeQueue") {
+      const { pagination = {}, filter = {}, sort = {} } = params;
+      const { page = 1, perPage = 10 } = pagination;
+      const { field, order } = sort;
+      const query = {
+        ...fetchUtils.flattenObject(filter),
+        orderBy: field,
+        order,
+        limit: perPage,
+        startAfter: (page - 1) * perPage,
+      };
+      const url = `${getApiUrl()}/itsdata/address-change-queue?${stringify(query)}`;
+      return httpClient(url).then(({ json: { count, rows } }) => ({
+        data: convertRows(rows || []),
+        total: count,
+      }));
+    }
+
     const { pagination = {}, filter = {}, sort = {} } = params;
     const { page = 1, perPage = 10 } = pagination;
     const { field, order } = sort;
@@ -106,13 +127,29 @@ export default {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(
-      ({ json: { rows } }) => ({
-        data: rows[0],
-      })
-    ),
+    httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json: { rows } }) => ({
+      data: rows[0],
+    })),
 
   getMany: (resource, params) => {
+    const ids = (params.ids || []).map((id) => (id == null ? "" : String(id))).filter(Boolean);
+    const uuidLike = (s) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+    const uuidIds = ids.filter(uuidLike);
+    const itsIds = ids.filter((id) => !uuidLike(id));
+
+    if (resource === "itsdata" && itsIds.length > 0 && uuidIds.length === 0) {
+      const query = {
+        filter: JSON.stringify({ ITS_ID_in: itsIds }),
+        limit: Math.min(Math.max(itsIds.length, 50), 100),
+      };
+      const url = `${getApiUrl(resource)}/${resource}?${stringify(query)}`;
+      return httpClient(url).then(({ json: { rows } }) => ({
+        data: convertRows(rows || []),
+        total: (rows || []).length,
+      }));
+    }
+
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
@@ -149,6 +186,15 @@ export default {
       dataToSend = await normalizeAdminPermissions(dataToSend);
     }
 
+    if (resource === "itsdataAddressChangeQueue" && dataToSend.markDone) {
+      return httpClient(`${getApiUrl()}/itsdata/address-change-queue/${params.id}/done`, {
+        method: "PATCH",
+        body: "{}",
+      }).then(({ json: { rows } }) => ({
+        data: convertRows(rows || [])[0] || rows[0],
+      }));
+    }
+
     return httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`, {
       method: "PUT",
       body: JSON.stringify(dataToSend),
@@ -161,13 +207,10 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(
-      `${getApiUrl(resource)}/${resource}?${stringify(query)}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(params.data),
-      }
-    ).then(({ json }) => ({ data: json.data }));
+    return httpClient(`${getApiUrl(resource)}/${resource}?${stringify(query)}`, {
+      method: "PUT",
+      body: JSON.stringify(params.data),
+    }).then(({ json }) => ({ data: json.data }));
   },
 
   create: async (resource, params) => {
@@ -205,33 +248,31 @@ export default {
         httpClient(`${getApiUrl(resource)}/${resource}/${id}`, {
           method: "DELETE",
           body: JSON.stringify(params.data),
-        })
-      )
+        }),
+      ),
     ).then(() => ({
       data: [],
     })),
 
   deleteImage: (resource, params) =>
-    httpClient(
-      `${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`
-    ).then(() => ({
+    httpClient(`${getApiUrl(resource)}/${resource}/delete-image?${stringify(params)}`).then(() => ({
       data: "",
     })),
   pdfDownload: (resource, params) => {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(
-      `${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`
-    ).then((response) => {
-      const linkSource = `data:application/pdf;base64,${response.body}`;
-      const downloadLink = document.createElement("a");
-      const fileName = `${params.name}-${Date.now()}.pdf`;
-      downloadLink.href = linkSource;
-      downloadLink.download = fileName;
-      downloadLink.click();
-      return { data: [] };
-    });
+    return httpClient(`${getApiUrl(resource)}/${resource}/${params.name}?${stringify(query)}`).then(
+      (response) => {
+        const linkSource = `data:application/pdf;base64,${response.body}`;
+        const downloadLink = document.createElement("a");
+        const fileName = `${params.name}-${Date.now()}.pdf`;
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
+        return { data: [] };
+      },
+    );
   },
   previewRecipients: (resource, params) => {
     const { filterCriteria, limit = 25, offset = 0 } = params;
