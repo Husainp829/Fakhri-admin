@@ -15,9 +15,10 @@ import {
   TopToolbar,
 } from "react-admin";
 import dayjs from "dayjs";
-import { slotNameMap } from "../../../../constants";
+import { formatMajlisStartTimeLabel } from "../ohbatMajlisTime";
 import { exportToExcel } from "../../../../utils/exportToExcel";
 import ViewToggle from "./viewToggle";
+import { majlisHasSadarat, missingSadaratBorderLeft } from "./missingSadaratHighlight";
 
 const columns = [
   {
@@ -28,9 +29,8 @@ const columns = [
   },
   { header: "Type", field: "type", width: 14 },
   {
-    header: "Slot",
-    field: (rec) =>
-      typeof rec.slot !== "undefined" ? slotNameMap[rec.slot] ?? rec.slot : "",
+    header: "Time",
+    field: (rec) => formatMajlisStartTimeLabel(rec.startTime),
     width: 12,
   },
   { header: "Host ITS", field: "hostItsNo", width: 12 },
@@ -78,7 +78,14 @@ export default () => {
         sort={{ field: "date", order: "DESC" }}
         title={false}
       >
-        <Datagrid rowClick={false} bulkActionButtons={false} sx={{ minWidth: 1280 }}>
+        <Datagrid
+          rowClick={false}
+          bulkActionButtons={false}
+          sx={{ minWidth: 1280 }}
+          rowSx={(record) =>
+            !majlisHasSadarat(record) ? { borderLeft: missingSadaratBorderLeft } : undefined
+          }
+        >
           <DateField
             source="date"
             locales="en-IN"
@@ -90,9 +97,9 @@ export default () => {
           />
           <TextField source="type" />
           <FunctionField
-            label="Slot"
-            source="slot"
-            render={(record) => slotNameMap[record.slot] ?? record.slot ?? ""}
+            label="Time"
+            source="startTime"
+            render={(record) => formatMajlisStartTimeLabel(record.startTime)}
           />
           <TextField source="hostItsNo" label="Host ITS" />
           <TextField source="hostName" label="Host name" emptyText="—" />

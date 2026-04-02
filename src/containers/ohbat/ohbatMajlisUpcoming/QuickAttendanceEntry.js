@@ -17,6 +17,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { formatMajlisStartTimeLabel } from "../ohbatMajlis/ohbatMajlisTime";
 
 const normalizeIts = (s) => String(s ?? "").trim();
 
@@ -158,14 +159,7 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }) {
     } finally {
       setSaving(false);
     }
-  }, [
-    attendeeItsInput,
-    dataProvider,
-    ensureItsFullName,
-    existingSet,
-    notify,
-    presetMajlisId,
-  ]);
+  }, [attendeeItsInput, dataProvider, ensureItsFullName, existingSet, notify, presetMajlisId]);
 
   return (
     <Box sx={{ px: { xs: 1, sm: 2 }, pb: 2, pt: 1 }}>
@@ -207,7 +201,7 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }) {
                   {majlis.date ? dayjs.utc(majlis.date).format("DD - MMM - YYYY") : "—"}
                 </Typography>
                 <Typography variant="body2">
-                  <strong>Slot:</strong> {majlis.slot || "—"}
+                  <strong>Time:</strong> {formatMajlisStartTimeLabel(majlis.startTime)}
                 </Typography>
               </Box>
             ) : (
@@ -216,7 +210,14 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }) {
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <Typography variant="subtitle1" fontWeight={700}>
                 Add attendees by ITS
               </Typography>

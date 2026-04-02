@@ -12,12 +12,9 @@ import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { formatMajlisStartTimeLabel } from "../ohbatMajlis/ohbatMajlisTime";
 
-const formatSlotLabel = (slot) =>
-  slot ? `${slot.charAt(0).toUpperCase()}${slot.slice(1)}` : "—";
-
-const formatMajlisDateUtc = (date) =>
-  date ? dayjs.utc(date).format("DD - MMM - YYYY") : "—";
+const formatMajlisDateUtc = (date) => (date ? dayjs.utc(date).format("DD - MMM - YYYY") : "—");
 
 const formatMajlisDayOfWeekUtc = (date) => (date ? dayjs.utc(date).format("dddd") : "—");
 
@@ -71,7 +68,7 @@ const OhbatMajlisUpcomingList = () => {
               </Box>
             )}
             secondaryText={(r) =>
-              `${r.type || "—"} · ${formatMajlisDateUtc(r.date)} · ${formatSlotLabel(r.slot)} · ${formatMajlisDayOfWeekUtc(
+              `${r.type || "—"} · ${formatMajlisDateUtc(r.date)} · ${formatMajlisStartTimeLabel(r.startTime)} · ${formatMajlisDayOfWeekUtc(
                 r.date,
               )} · ${formatMajlisHijriUtc(r.date)}`
             }
@@ -80,7 +77,7 @@ const OhbatMajlisUpcomingList = () => {
         ) : (
           <Datagrid bulkActionButtons={false}>
             <TextField source="type" />
-            <TextField source="slot" />
+            <FunctionField label="Time" render={(r) => formatMajlisStartTimeLabel(r.startTime)} />
             <FunctionField label="Date (UTC)" render={(r) => formatMajlisDateUtc(r.date)} />
             <FunctionField label="Day" render={(r) => formatMajlisDayOfWeekUtc(r.date)} />
             <FunctionField label="Hijri" render={(r) => formatMajlisHijriUtc(r.date)} />
@@ -92,12 +89,7 @@ const OhbatMajlisUpcomingList = () => {
             <FunctionField
               label=""
               render={(r) => (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  component={Link}
-                  to={toAttendance(r.id)}
-                >
+                <Button variant="outlined" size="small" component={Link} to={toAttendance(r.id)}>
                   Record attendance
                 </Button>
               )}
