@@ -106,6 +106,16 @@ export default {
       }));
     }
 
+    if (resource === "fmbThaliDistributionDailyRun") {
+      const { filter = {} } = params;
+      const date = filter.date || new Date().toISOString().slice(0, 10);
+      const url = `${getApiUrl()}/fmbThaliDistribution/dashboard?date=${encodeURIComponent(date)}`;
+      return httpClient(url).then(({ json: { count, rows } }) => ({
+        data: convertRows(rows || []),
+        total: count ?? (rows || []).length,
+      }));
+    }
+
     const { pagination = {}, filter = {}, sort = {} } = params;
     const { page = 1, perPage = 10 } = pagination;
     const { field, order } = sort;

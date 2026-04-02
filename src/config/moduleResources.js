@@ -38,6 +38,8 @@ import fmbThaliSettings from "../containers/fmb/fmbThaliSettings";
 import fmbHoliday from "../containers/fmb/fmbHoliday";
 import fmbThaliSuspension from "../containers/fmb/fmbThaliSuspension";
 import fmbThaliType from "../containers/fmb/fmbThaliType";
+import fmbThaliDistributor from "../containers/fmb/fmbThaliDistributor";
+import fmbThaliDistributionDailyRun from "../containers/fmb/fmbThaliDistributionDailyRun";
 
 import miqaatNiyaazReceipts from "../containers/miqaat/miqaatNiyaazReceipts";
 
@@ -167,6 +169,15 @@ export const MODULE_RESOURCES = {
         resource: fmbThaliType,
         createPermission: "fmbThaliType.create",
       },
+      {
+        permission: "fmbThaliDistributor.view",
+        resource: fmbThaliDistributor,
+        createPermission: "fmbThaliDistributor.create",
+      },
+      {
+        permission: "fmbThaliDistribution.view",
+        resource: fmbThaliDistributionDailyRun,
+      },
       { permission: "fmbThaliSettings.view", resource: fmbThaliSettings },
     ],
   },
@@ -175,7 +186,11 @@ export const MODULE_RESOURCES = {
   },
   ohbat: {
     resources: [
-      { permission: "ohbatMajalis.view", resource: ohbatMajlis, createPermission: "ohbatMajalis.create" },
+      {
+        permission: "ohbatMajalis.view",
+        resource: ohbatMajlis,
+        createPermission: "ohbatMajalis.create",
+      },
       {
         permissionsAny: ["ohbatMajalis.view", "ohbatMajlisAttendance.view"],
         resource: ohbatMajlisUpcoming,
