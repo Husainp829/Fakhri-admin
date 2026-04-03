@@ -257,11 +257,22 @@ export const transformFilterCriteria = (filterCriteria) => {
  * @param {string} data.createdBy - Creator identifier (optional)
  * @returns {Object} - Transformed data ready for API submission
  */
-export const transformBroadcastData = (data) => ({
-  templateName: data.templateName,
-  name: data.name,
-  parameters: transformParameters(data.parameters),
-  filterCriteria: transformFilterCriteria(data.filterCriteria),
-  recipientPhoneNumbers: transformRecipientPhoneNumbers(data),
-  createdBy: data.createdBy || "admin", // TODO: Get from auth context
-});
+export const transformBroadcastData = (data) => {
+  const payload = {
+    templateName: data.templateName,
+    name: data.name,
+    parameters: transformParameters(data.parameters),
+    filterCriteria: transformFilterCriteria(data.filterCriteria),
+    recipientPhoneNumbers: transformRecipientPhoneNumbers(data),
+    createdBy: data.createdBy || "admin", // TODO: Get from auth context
+  };
+
+  if (
+    Array.isArray(data.recipientItsIds) &&
+    data.recipientItsIds.length > 0
+  ) {
+    payload.recipientItsIds = data.recipientItsIds;
+  }
+
+  return payload;
+};

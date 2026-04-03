@@ -292,4 +292,15 @@ export default {
       };
     });
   },
+  lookupIts: (resource, params) => {
+    const { itsIds } = params;
+    return httpClient(`${getApiUrl(resource)}/${resource}/lookup-its`, {
+      method: "POST",
+      body: JSON.stringify({ itsIds }),
+    }).then(({ json }) => ({
+      matched: json.matched || [],
+      unmatched: json.unmatched || [],
+      count: json.count || 0,
+    }));
+  },
 };

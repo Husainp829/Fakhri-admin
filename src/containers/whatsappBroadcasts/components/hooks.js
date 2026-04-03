@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useGetOne, useDataProvider } from "react-admin";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -143,4 +143,45 @@ export const useTemplateValidation = (
   ]);
 
   return validationResult;
+};
+
+/**
+ * Custom hook to look up ITS data from a list of ITS IDs (e.g. parsed from CSV).
+ * Returns matched records, unmatched IDs, loading state, and a trigger function.
+ */
+export const useLookupIts = () => {
+  const dataProvider = useDataProvider();
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const lookup = useCallback(
+    async (itsIds) => {
+      if (!itsIds || itsIds.length === 0) {
+        setData({ matched: [], unmatched: [], count: 0 });
+        return;
+      }
+      setIsLoading(true);
+      setError(null);
+      try {
+        const result = await dataProvider.lookupIts(
+          "whatsappBroadcasts",
+          { itsIds }
+        );
+        setData(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [dataProvider]
+  );
+
+  const reset = useCallback(() => {
+    setData(null);
+    setError(null);
+  }, []);
+
+  return { data, isLoading, error, lookup, reset };
 };
