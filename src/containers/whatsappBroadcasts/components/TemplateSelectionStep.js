@@ -19,11 +19,7 @@ import { useTemplateValidation } from "./hooks";
  * @param {string} props.source - Form field source (default: '_templateStep')
  * @param {Function} props.onValidationChange - Callback when validation state changes
  */
-const TemplateSelectionStep = ({
-  source = "_templateStep",
-  onValidationChange,
-  ...props
-}) => {
+const TemplateSelectionStep = ({ source = "_templateStep", onValidationChange, ...props }) => {
   // Use useInput to integrate with React Admin form
   const { field } = useInput({ source, ...props });
   const { control } = useFormContext();
@@ -32,8 +28,7 @@ const TemplateSelectionStep = ({
   const templateName = useWatch({ control, name: "templateName" });
 
   // Use template from context (fetched once at parent level)
-  const { data: selectedTemplate, isLoading: isLoadingTemplate } =
-    useTemplateContext();
+  const { data: selectedTemplate, isLoading: isLoadingTemplate } = useTemplateContext();
 
   // Watch parameters with useWatch - it will trigger re-renders when parameters change
   // We serialize immediately and compare by content to prevent infinite loops
@@ -41,6 +36,12 @@ const TemplateSelectionStep = ({
     control,
     name: "parameters",
     defaultValue: {},
+  });
+
+  const csvColumnHeaders = useWatch({
+    control,
+    name: "csvColumnHeaders",
+    defaultValue: [],
   });
 
   // Track parameters using ref with content-based comparison
@@ -64,7 +65,8 @@ const TemplateSelectionStep = ({
     templateName,
     selectedTemplate,
     isLoadingTemplate,
-    parameters
+    parameters,
+    Array.isArray(csvColumnHeaders) ? csvColumnHeaders : [],
   );
 
   // Create validation state object for compatibility
@@ -73,7 +75,7 @@ const TemplateSelectionStep = ({
       isValid,
       errorMessage,
     }),
-    [isValid, errorMessage]
+    [isValid, errorMessage],
   );
 
   // Store step completion status in form context
@@ -90,12 +92,7 @@ const TemplateSelectionStep = ({
         isValid: validationState.isValid,
         expectedVariablesCount: expectedVariables?.length || 0,
       }),
-    [
-      templateName,
-      parametersSerialized,
-      validationState.isValid,
-      expectedVariables?.length || 0,
-    ]
+    [templateName, parametersSerialized, validationState.isValid, expectedVariables?.length || 0],
   );
 
   React.useEffect(() => {
@@ -130,10 +127,7 @@ const TemplateSelectionStep = ({
           isValid: validationState.isValid,
           errorMessage: validationState.errorMessage,
         };
-        onValidationChange(
-          validationState.isValid,
-          validationState.errorMessage
-        );
+        onValidationChange(validationState.isValid, validationState.errorMessage);
       }
     }
     // Don't include onValidationChange in deps - it's unstable from parent

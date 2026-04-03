@@ -19,6 +19,119 @@ export const extractTemplateVariables = (bodyText) => {
   return [...new Set(variables)].sort((a, b) => a - b);
 };
 
+const ITS_HEADER_ALIASES = new Set(["its", "its_id", "itsid", "its_no", "itsno"]);
+
+const normalizeHeaderKey = (h) => String(h).replace(/[\s_]/g, "").toLowerCase();
+
+/**
+ * Parse one CSV line with quote support.
+ * @param {string} line
+ * @returns {string[]}
+ */
+export const parseCsvLine = (line) => {
+  const result = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === "," && !inQuotes) {
+      result.push(cur.trim());
+      cur = "";
+    } else {
+      cur += c;
+    }
+  }
+  result.push(cur.trim());
+  return result.map((cell) => cell.replace(/^"|"$/g, "").trim());
+};
+
+/**
+ * Find the header cell that holds ITS numbers (multi-column files).
+ * @param {string[]} headers
+ * @returns {string|null}
+ */
+export const resolveItsColumnHeader = (headers) => {
+  if (!headers || headers.length === 0) return null;
+  if (headers.length === 1) return headers[0];
+  const found = headers.find((h) => ITS_HEADER_ALIASES.has(normalizeHeaderKey(h)));
+  return found || null;
+};
+
+/**
+ * Normalize an ITS id from a CSV cell (digits only, min length 5).
+ * @param {string|undefined|null} cell
+ * @returns {string}
+ */
+export const normalizeItsIdFromCell = (cell) => {
+  if (cell === undefined || cell === null) return "";
+  const digits = String(cell).replace(/\D/g, "");
+  return /^\d{5,}$/.test(digits) ? digits : "";
+};
+
+/**
+ * Parse CSV text into headers and row objects for broadcast uploads.
+ * @param {string} text - Raw file contents
+ * @returns {{ headers: string[], rows: Record<string, string>[], itsHeader: string|null }}
+ */
+export const parseBroadcastCsv = (text) => {
+  const lines = String(text)
+    .replace(/^\uFEFF/, "")
+    .split(/\r?\n/)
+    .map((l) => l.trimEnd())
+    .filter((l) => l.trim() !== "");
+
+  if (lines.length === 0) {
+    return { headers: [], rows: [], itsHeader: null };
+  }
+
+  const firstCells = parseCsvLine(lines[0]);
+  const singleCellNumeric =
+    firstCells.length === 1 && /^\d{5,}$/.test(firstCells[0].replace(/\s/g, ""));
+
+  let headers;
+  let dataStart;
+
+  if (firstCells.length === 1 && singleCellNumeric) {
+    headers = ["ITS"];
+    dataStart = 0;
+  } else {
+    headers = firstCells.map((h) => String(h).trim());
+    dataStart = 1;
+  }
+
+  const rows = [];
+  for (let i = dataStart; i < lines.length; i += 1) {
+    const cells = parseCsvLine(lines[i]);
+    const row = {};
+    headers.forEach((h, idx) => {
+      row[h] = cells[idx] !== undefined ? String(cells[idx]).trim() : "";
+    });
+    rows.push(row);
+  }
+
+  const itsHeader = resolveItsColumnHeader(headers);
+  return { headers, rows, itsHeader };
+};
+
+/**
+ * Unique valid ITS ids from parsed CSV rows.
+ * @param {{ rows: Record<string, string>[], itsHeader: string|null }} parsed
+ * @returns {string[]}
+ */
+export const extractItsIdsFromParsedCsv = (parsed) => {
+  const { rows, itsHeader } = parsed;
+  if (!itsHeader || !rows.length) return [];
+  const ids = rows.map((r) => normalizeItsIdFromCell(r[itsHeader])).filter((id) => id.length > 0);
+  return [...new Set(ids)];
+};
+
 /**
  * Validate that all required template parameters have values.
  *
@@ -26,9 +139,10 @@ export const extractTemplateVariables = (bodyText) => {
  * @param {Object} parameters - The parameters object
  *   Old format: { "1": "value1", "2": "value2" }
  *   New format: { "1": { type: "text", value: "..." }, "2": { type: "column", column: "Full_Name" } }
+ * @param {string[]} [csvColumnHeaders] - Header names from uploaded CSV (for columnSource "csv")
  * @returns {{ isValid: boolean, missingParams: number[], errors: Object }} - Validation result
  */
-export const validateTemplateParameters = (templateBodyText, parameters) => {
+export const validateTemplateParameters = (templateBodyText, parameters, csvColumnHeaders = []) => {
   const expectedVariables = extractTemplateVariables(templateBodyText);
 
   // If no variables expected, validation always passes
@@ -70,13 +184,15 @@ export const validateTemplateParameters = (templateBodyText, parameters) => {
         );
       }
       if (param.type === "column") {
-        // For column type, column must be selected
-        const { column } = param;
-        return (
-          column === undefined ||
-          column === null ||
-          (typeof column === "string" && column.trim() === "")
-        );
+        const col =
+          param.column === undefined || param.column === null ? "" : String(param.column).trim();
+        if (!col) return true;
+        const fromCsv = param.columnSource === "csv";
+        if (fromCsv) {
+          if (!csvColumnHeaders || csvColumnHeaders.length === 0) return true;
+          return !csvColumnHeaders.includes(col);
+        }
+        return false;
       }
       // Invalid structure
       return true;
@@ -89,9 +205,7 @@ export const validateTemplateParameters = (templateBodyText, parameters) => {
 
     // Missing or invalid
     return (
-      param === undefined ||
-      param === null ||
-      (typeof param === "string" && param.trim() === "")
+      param === undefined || param === null || (typeof param === "string" && param.trim() === "")
     );
   });
 
@@ -102,13 +216,26 @@ export const validateTemplateParameters = (templateBodyText, parameters) => {
     // Determine which field to highlight in the error
     if (param && typeof param === "object") {
       if (param.type === "text") {
-        acc[
-          `parameters.${varNum}.value`
-        ] = `Parameter {{${varNum}}} value is required`;
+        acc[`parameters.${varNum}.value`] = `Parameter {{${varNum}}} value is required`;
       } else if (param.type === "column") {
-        acc[
-          `parameters.${varNum}.column`
-        ] = `Parameter {{${varNum}}} column is required`;
+        const fromCsv = param.columnSource === "csv";
+        const col =
+          param.column === undefined || param.column === null ? "" : String(param.column).trim();
+        if (fromCsv && (!csvColumnHeaders || csvColumnHeaders.length === 0)) {
+          acc[`parameters.${varNum}.column`] =
+            `Parameter {{${varNum}}}: upload a CSV with column headers on the recipients step to use CSV columns`;
+        } else if (
+          fromCsv &&
+          col &&
+          csvColumnHeaders &&
+          csvColumnHeaders.length > 0 &&
+          !csvColumnHeaders.includes(col)
+        ) {
+          acc[`parameters.${varNum}.column`] =
+            `Parameter {{${varNum}}}: "${col}" is not a column in the uploaded CSV`;
+        } else {
+          acc[`parameters.${varNum}.column`] = `Parameter {{${varNum}}} column is required`;
+        }
       } else {
         acc[`parameters.${varNum}`] = `Parameter {{${varNum}}} is required`;
       }
@@ -176,12 +303,16 @@ export const transformParameters = (parameters) => {
             };
           }
         } else if (param.type === "column") {
-          const { column } = param;
+          const { column, columnSource } = param;
           if (column !== undefined && column !== null && column !== "") {
-            transformed[key] = {
+            const entry = {
               type: "column",
               column: String(column).trim(),
             };
+            if (columnSource === "csv") {
+              entry.columnSource = "csv";
+            }
+            transformed[key] = entry;
           }
         }
       } else if (param !== undefined && param !== null && param !== "") {
@@ -213,9 +344,7 @@ export const transformRecipientPhoneNumbers = (data) => {
     return null;
   }
 
-  const cleaned = data.selectedRecipientPhones.filter(
-    (p) => p && String(p).trim().length > 0
-  );
+  const cleaned = data.selectedRecipientPhones.filter((p) => p && String(p).trim().length > 0);
 
   return cleaned.length > 0 ? cleaned : null;
 };
@@ -267,11 +396,16 @@ export const transformBroadcastData = (data) => {
     createdBy: data.createdBy || "admin", // TODO: Get from auth context
   };
 
-  if (
-    Array.isArray(data.recipientItsIds) &&
-    data.recipientItsIds.length > 0
-  ) {
+  if (Array.isArray(data.recipientItsIds) && data.recipientItsIds.length > 0) {
     payload.recipientItsIds = data.recipientItsIds;
+  }
+
+  if (
+    data.recipientCsvData &&
+    typeof data.recipientCsvData === "object" &&
+    Object.keys(data.recipientCsvData).length > 0
+  ) {
+    payload.recipientCsvData = data.recipientCsvData;
   }
 
   return payload;

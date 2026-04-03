@@ -23,20 +23,20 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useRecipientSelection } from "../context";
 import AdvancedFilterBuilder from "./AdvancedFilterBuilder";
 import { useLookupIts } from "./hooks";
+import { parseBroadcastCsv, extractItsIdsFromParsedCsv, normalizeItsIdFromCell } from "./utils";
 
 const CsvUploadTab = () => {
   const { setValue } = useFormContext();
-  const {
-    updateSelectedPhones,
-    updatePreviewStatus,
-  } = useRecipientSelection();
+  const { updateSelectedPhones, updatePreviewStatus } = useRecipientSelection();
   const { data: lookupData, isLoading, error, lookup, reset } = useLookupIts();
 
   const [parsedIds, setParsedIds] = useState([]);
   const [fileName, setFileName] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [csvParseError, setCsvParseError] = useState(null);
   const fileInputRef = useRef(null);
+  const parsedCsvRef = useRef(null);
 
   const handleFileUpload = useCallback(
     (event) => {
@@ -44,32 +44,51 @@ const CsvUploadTab = () => {
       if (!file) return;
 
       setFileName(file.name);
+      setCsvParseError(null);
+      parsedCsvRef.current = null;
       reset();
       updatePreviewStatus(false);
+      setValue("recipientCsvData", null, { shouldDirty: false });
+      setValue("csvColumnHeaders", [], { shouldDirty: false });
 
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result;
         if (typeof text !== "string") return;
 
-        const ids = text
-          .split(/[\r\n,]+/)
-          .map((v) => v.replace(/["\s]/g, "").trim())
-          .filter((v) => /^\d{5,}$/.test(v));
+        const parsed = parseBroadcastCsv(text);
+        parsedCsvRef.current = parsed;
 
-        const unique = [...new Set(ids)];
-        setParsedIds(unique);
-
-        if (unique.length > 0) {
-          lookup(unique);
+        if (!parsed.headers.length || !parsed.rows.length) {
+          setCsvParseError("No data rows found in the file.");
+          setParsedIds([]);
+          return;
         }
+
+        if (!parsed.itsHeader) {
+          setCsvParseError(
+            "Could not find an ITS column. Add a header named ITS, ITS_ID, or itsNo, or use a single column of ITS numbers.",
+          );
+          setParsedIds([]);
+          return;
+        }
+
+        const unique = extractItsIdsFromParsedCsv(parsed);
+        if (unique.length === 0) {
+          setCsvParseError("No valid ITS numbers found in the ITS column.");
+          setParsedIds([]);
+          return;
+        }
+
+        setParsedIds(unique);
+        lookup(unique);
       };
       reader.readAsText(file);
 
       // Reset the input so re-uploading the same file triggers onChange
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
-    [lookup, reset, updatePreviewStatus]
+    [lookup, reset, updatePreviewStatus, setValue],
   );
 
   // When lookup completes, sync matched recipients into the form/context
@@ -93,34 +112,65 @@ const CsvUploadTab = () => {
       setValue("recipientItsIds", matched.map((r) => r.ITS_ID).filter(Boolean), {
         shouldDirty: false,
       });
+
+      const parsed = parsedCsvRef.current;
+      if (parsed && parsed.itsHeader && parsed.rows.length) {
+        const rowsByIts = {};
+        parsed.rows.forEach((row) => {
+          const id = normalizeItsIdFromCell(row[parsed.itsHeader]);
+          if (id) {
+            const flat = {};
+            Object.keys(row).forEach((k) => {
+              flat[k] = row[k] === undefined || row[k] === null ? "" : String(row[k]);
+            });
+            rowsByIts[id] = flat;
+          }
+        });
+
+        const csvDataByItsId = {};
+        matched.forEach((r) => {
+          const id = r.ITS_ID !== undefined && r.ITS_ID !== null ? String(r.ITS_ID).trim() : "";
+          if (id && rowsByIts[id]) {
+            csvDataByItsId[id] = rowsByIts[id];
+          }
+        });
+
+        setValue(
+          "recipientCsvData",
+          Object.keys(csvDataByItsId).length > 0 ? csvDataByItsId : null,
+          { shouldDirty: false },
+        );
+        setValue("csvColumnHeaders", parsed.headers.slice(), {
+          shouldDirty: false,
+        });
+      } else {
+        setValue("recipientCsvData", null, { shouldDirty: false });
+        setValue("csvColumnHeaders", [], { shouldDirty: false });
+      }
     } else {
       updateSelectedPhones([]);
       updatePreviewStatus(false);
       setValue("recipientItsIds", null, { shouldDirty: false });
+      setValue("recipientCsvData", null, { shouldDirty: false });
+      setValue("csvColumnHeaders", [], { shouldDirty: false });
     }
   }, [lookupData, updateSelectedPhones, updatePreviewStatus, setValue]);
 
   const matched = lookupData?.matched || [];
   const unmatched = lookupData?.unmatched || [];
-  const paginatedMatched = matched.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const paginatedMatched = matched.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box>
       <Alert severity="info" sx={{ mb: 2, py: 0.75 }}>
-        Upload a CSV file containing ITS numbers. The file can have a single
-        column of ITS numbers or a column header named &ldquo;ITS&rdquo; / &ldquo;ITS_ID&rdquo; /
-        &ldquo;itsNo&rdquo;. All numbers will be cross-checked against the ITS database.
+        Upload a CSV with an ITS column (&ldquo;ITS&rdquo;, &ldquo;ITS_ID&rdquo;, or
+        &ldquo;itsNo&rdquo;) or a single column of ITS numbers. Extra columns can be mapped to
+        template parameters under Column → CSV file. All ITS numbers are checked against the
+        database.
       </Alert>
 
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Button
-          variant="outlined"
-          component="label"
-          startIcon={<UploadFileIcon />}
-        >
+        <Button variant="outlined" component="label" startIcon={<UploadFileIcon />}>
           Upload CSV
           <input
             ref={fileInputRef}
@@ -141,10 +191,14 @@ const CsvUploadTab = () => {
       {isLoading && (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, my: 2 }}>
           <CircularProgress size={20} />
-          <Typography variant="body2">
-            Looking up {parsedIds.length} ITS numbers…
-          </Typography>
+          <Typography variant="body2">Looking up {parsedIds.length} ITS numbers…</Typography>
         </Box>
+      )}
+
+      {csvParseError && (
+        <Alert severity="error" sx={{ my: 2 }}>
+          {csvParseError}
+        </Alert>
       )}
 
       {error && (
@@ -156,24 +210,15 @@ const CsvUploadTab = () => {
       {lookupData && !isLoading && (
         <>
           <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-            <Chip
-              label={`${matched.length} matched`}
-              color="success"
-              variant="outlined"
-            />
+            <Chip label={`${matched.length} matched`} color="success" variant="outlined" />
             {unmatched.length > 0 && (
-              <Chip
-                label={`${unmatched.length} not found`}
-                color="error"
-                variant="outlined"
-              />
+              <Chip label={`${unmatched.length} not found`} color="error" variant="outlined" />
             )}
           </Stack>
 
           {unmatched.length > 0 && (
             <Alert severity="warning" sx={{ mb: 2 }}>
-              The following ITS numbers were not found:{" "}
-              <strong>{unmatched.join(", ")}</strong>
+              The following ITS numbers were not found: <strong>{unmatched.join(", ")}</strong>
             </Alert>
           )}
 
@@ -234,8 +279,7 @@ const CsvUploadTab = () => {
 
 const RecipientFilters = () => {
   const { setValue, control } = useFormContext();
-  const { updateSelectedPhones, updatePreviewStatus } =
-    useRecipientSelection();
+  const { updateSelectedPhones, updatePreviewStatus } = useRecipientSelection();
 
   const filterCriteria = useWatch({ control, name: "filterCriteria" });
   const [tab, setTab] = useState(0);
@@ -247,8 +291,10 @@ const RecipientFilters = () => {
       updateSelectedPhones([]);
       updatePreviewStatus(false);
       setValue("recipientItsIds", null, { shouldDirty: false });
+      setValue("recipientCsvData", null, { shouldDirty: false });
+      setValue("csvColumnHeaders", [], { shouldDirty: false });
     },
-    [updateSelectedPhones, updatePreviewStatus, setValue]
+    [updateSelectedPhones, updatePreviewStatus, setValue],
   );
 
   return (

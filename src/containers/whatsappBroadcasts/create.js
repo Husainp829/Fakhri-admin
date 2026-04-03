@@ -9,20 +9,8 @@ import {
   SaveButton,
   Toolbar,
 } from "react-admin";
-import {
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
-  Button,
-  Alert,
-} from "@mui/material";
-import {
-  RecipientSelectionStep,
-  TemplateSelectionStep,
-  SummaryStep,
-} from "./components";
+import { Box, Stepper, Step, StepLabel, StepContent, Button, Alert } from "@mui/material";
+import { RecipientSelectionStep, TemplateSelectionStep, SummaryStep } from "./components";
 import { TemplateProvider, RecipientSelectionProvider } from "./context";
 import { transformBroadcastData } from "./components/utils";
 
@@ -41,9 +29,7 @@ const validateForm = (values) => {
   // Handles both old format (simple string values) and new format (objects with type/value/column)
   if (values.templateName && values.parameters) {
     const parameters = values.parameters || {};
-    const paramKeys = Object.keys(parameters).sort(
-      (a, b) => parseInt(a, 10) - parseInt(b, 10)
-    );
+    const paramKeys = Object.keys(parameters).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
     // Check if any parameter is empty
     const emptyParams = paramKeys.filter((key) => {
@@ -60,22 +46,21 @@ const validateForm = (values) => {
           );
         }
         if (param.type === "column") {
-          const { column } = param;
-          return (
-            column === undefined ||
-            column === null ||
-            (typeof column === "string" && column.trim() === "")
-          );
+          const { column, columnSource } = param;
+          const col = column === undefined || column === null ? "" : String(column).trim();
+          if (!col) return true;
+          if (columnSource === "csv") {
+            const headers = values.csvColumnHeaders || [];
+            if (!Array.isArray(headers) || headers.length === 0) return true;
+            return !headers.includes(col);
+          }
+          return false;
         }
         return true; // Invalid structure
       }
 
       // Handle old structure: simple string value (backward compatibility)
-      return (
-        !param ||
-        param === null ||
-        (typeof param === "string" && param.trim() === "")
-      );
+      return !param || param === null || (typeof param === "string" && param.trim() === "");
     });
 
     if (emptyParams.length > 0) {
@@ -84,13 +69,29 @@ const validateForm = (values) => {
         const param = parameters[key];
         if (param && typeof param === "object" && param.type) {
           if (param.type === "text") {
-            errors[
-              `parameters.${key}.value`
-            ] = `Parameter {{${key}}} value is required`;
+            errors[`parameters.${key}.value`] = `Parameter {{${key}}} value is required`;
           } else if (param.type === "column") {
-            errors[
-              `parameters.${key}.column`
-            ] = `Parameter {{${key}}} column is required`;
+            const fromCsv = param.columnSource === "csv";
+            const col =
+              param.column === undefined || param.column === null
+                ? ""
+                : String(param.column).trim();
+            const headers = values.csvColumnHeaders || [];
+            if (fromCsv && (!Array.isArray(headers) || headers.length === 0)) {
+              errors[`parameters.${key}.column`] =
+                `Parameter {{${key}}}: upload a CSV with column headers to use CSV columns`;
+            } else if (
+              fromCsv &&
+              col &&
+              Array.isArray(headers) &&
+              headers.length > 0 &&
+              !headers.includes(col)
+            ) {
+              errors[`parameters.${key}.column`] =
+                `Parameter {{${key}}}: "${col}" is not a column in the uploaded CSV`;
+            } else {
+              errors[`parameters.${key}.column`] = `Parameter {{${key}}} column is required`;
+            }
           } else {
             errors[`parameters.${key}`] = `Parameter {{${key}}} is required`;
           }
@@ -121,7 +122,7 @@ export default () => {
     (data) =>
       // Use shared transformation utility
       transformBroadcastData(data),
-    []
+    [],
   );
 
   const onSuccess = useCallback(
@@ -131,23 +132,20 @@ export default () => {
       });
       redirect("show", "whatsappBroadcasts", data.id);
     },
-    [notify, redirect]
+    [notify, redirect],
   );
 
   // Handle step validation changes
-  const handleStepValidationChange = useCallback(
-    (stepIndex, isValid, errorMessage = null) => {
-      setStepValidations((prev) => ({
-        ...prev,
-        [`step${stepIndex}`]: isValid,
-      }));
-      setStepErrors((prev) => ({
-        ...prev,
-        [`step${stepIndex}`]: errorMessage,
-      }));
-    },
-    []
-  );
+  const handleStepValidationChange = useCallback((stepIndex, isValid, errorMessage = null) => {
+    setStepValidations((prev) => ({
+      ...prev,
+      [`step${stepIndex}`]: isValid,
+    }));
+    setStepErrors((prev) => ({
+      ...prev,
+      [`step${stepIndex}`]: errorMessage,
+    }));
+  }, []);
 
   // Navigation handlers with validation checks
   const handleNext = useCallback(() => {
@@ -165,14 +163,13 @@ export default () => {
         // Default error message for step 0 (Recipient selection)
         notify(
           "Please preview recipients before proceeding. Click 'Preview Recipients' for filter-based selection.",
-          { type: "warning" }
+          { type: "warning" },
         );
       } else if (activeStep === 1) {
         // Default error message for step 1 (Template selection)
-        notify(
-          "Please select a template and fill all required parameters before proceeding.",
-          { type: "warning" }
-        );
+        notify("Please select a template and fill all required parameters before proceeding.", {
+          type: "warning",
+        });
       }
       return; // Block navigation
     }
@@ -193,9 +190,8 @@ export default () => {
 
   // Memoize validation change callbacks for each step to prevent infinite loops
   const handleStep0ValidationChange = useCallback(
-    (isValid, errorMessage) =>
-      handleStepValidationChange(0, isValid, errorMessage),
-    [handleStepValidationChange]
+    (isValid, errorMessage) => handleStepValidationChange(0, isValid, errorMessage),
+    [handleStepValidationChange],
   );
 
   // Custom toolbar that only shows Save button on final step
@@ -211,11 +207,7 @@ export default () => {
   };
 
   return (
-    <Create
-      transform={transform}
-      mutationOptions={{ onSuccess }}
-      title="Create WhatsApp Broadcast"
-    >
+    <Create transform={transform} mutationOptions={{ onSuccess }} title="Create WhatsApp Broadcast">
       <SimpleForm validate={validateForm} toolbar={<CustomToolbar />}>
         {/* Template Provider to share template data across all steps */}
         <TemplateProvider>
@@ -237,9 +229,7 @@ export default () => {
               <Step>
                 <StepLabel>Select Recipients</StepLabel>
                 <StepContent>
-                  <RecipientSelectionStep
-                    onValidationChange={handleStep0ValidationChange}
-                  />
+                  <RecipientSelectionStep onValidationChange={handleStep0ValidationChange} />
                   {stepErrors.step0 && (
                     <Alert severity="error" sx={{ mt: 2, mb: 1 }}>
                       {stepErrors.step0}
@@ -294,8 +284,8 @@ export default () => {
                   <Box sx={{ mb: 2, mt: 2 }}>
                     <Button onClick={handleBack}>Back</Button>
                     <Alert severity="info" sx={{ mt: 2 }}>
-                      Review all selections above. Click the Save button in the
-                      toolbar to create the broadcast.
+                      Review all selections above. Click the Save button in the toolbar to create
+                      the broadcast.
                     </Alert>
                   </Box>
                 </StepContent>
