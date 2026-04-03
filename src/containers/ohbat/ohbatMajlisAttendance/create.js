@@ -20,6 +20,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { formatMajlisStartTimeLabel } from "../ohbatMajlis/ohbatMajlisTime";
 
 const normalizeIts = (s) => String(s ?? "").trim();
 
@@ -202,15 +203,15 @@ export default function OhbatMajlisAttendanceCreate() {
                         <strong>Date:</strong>{" "}
                         {majlis.date
                           ? `${dayjs.utc(majlis.date).format("DD/MMM/YYYY")} · ${dayjs
-                            .utc(majlis.date)
-                            .format("dddd")} · ${fromGregorian(
+                              .utc(majlis.date)
+                              .format("dddd")} · ${fromGregorian(
                               dayjs.utc(majlis.date).toDate(),
                               "code",
                             )}`
                           : "—"}
                       </Typography>
                       <Typography variant="body2">
-                        <strong>Slot:</strong> {startCase(majlis.slot) || "—"}
+                        <strong>Time:</strong> {formatMajlisStartTimeLabel(majlis.startTime)}
                       </Typography>
                     </Box>
                   ) : (
@@ -282,7 +283,10 @@ export default function OhbatMajlisAttendanceCreate() {
                       ) : (
                         existingIts.map((its, idx) => {
                           const key = normalizeIts(its);
-                          const fullName = Object.prototype.hasOwnProperty.call(itsFullNameByIts, key)
+                          const fullName = Object.prototype.hasOwnProperty.call(
+                            itsFullNameByIts,
+                            key,
+                          )
                             ? itsFullNameByIts[key]
                             : null;
                           return (
@@ -329,12 +333,10 @@ export default function OhbatMajlisAttendanceCreate() {
                       </Typography>
                       <Typography variant="body2">
                         <strong>Hijri:</strong>{" "}
-                        {majlis.date
-                          ? fromGregorian(dayjs.utc(majlis.date).toDate(), "code")
-                          : "—"}
+                        {majlis.date ? fromGregorian(dayjs.utc(majlis.date).toDate(), "code") : "—"}
                       </Typography>
                       <Typography variant="body2">
-                        <strong>Slot:</strong> {majlis.slot || "—"}
+                        <strong>Time:</strong> {formatMajlisStartTimeLabel(majlis.startTime)}
                       </Typography>
                     </Box>
                   ) : (
@@ -406,7 +408,10 @@ export default function OhbatMajlisAttendanceCreate() {
                       ) : (
                         existingIts.map((its, idx) => {
                           const key = normalizeIts(its);
-                          const fullName = Object.prototype.hasOwnProperty.call(itsFullNameByIts, key)
+                          const fullName = Object.prototype.hasOwnProperty.call(
+                            itsFullNameByIts,
+                            key,
+                          )
                             ? itsFullNameByIts[key]
                             : null;
                           return (

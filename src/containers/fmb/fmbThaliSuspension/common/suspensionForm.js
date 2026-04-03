@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   SimpleForm,
   ReferenceInput,
   AutocompleteInput,
+  SelectInput,
   DateInput,
   TextInput,
   Toolbar,
   SaveButton,
   DeleteButton,
   FormDataConsumer,
+  useGetOne,
+  useGetList,
 } from "react-admin";
 import Grid from "@mui/material/GridLegacy";
 import dayjs from "dayjs";
+import { useFormContext, useWatch } from "react-hook-form";
 
 const todayStr = () => dayjs().format("YYYY-MM-DD");
 
@@ -52,27 +56,89 @@ const CreateToolbar = () => (
   </Toolbar>
 );
 
-export function SuspensionForm({ isEdit, defaultFmbId }) {
+const ThaliInput = ({ isEdit }) => {
+  const fmbId = useWatch({ name: "fmbId" });
+  const { data, isLoading } = useGetOne(
+    "fmbData",
+    { id: fmbId },
+    { enabled: !!fmbId, staleTime: 60_000 },
+  );
+  const thalis = Array.isArray(data?.thalis) ? data.thalis : [];
+  const choices = thalis.map((thali) => ({
+    id: thali.id,
+    name: `${thali.thaliNo}${thali?.thaliType?.name ? ` — ${thali.thaliType.name}` : ""}${thali.isActive ? "" : " (inactive)"}`,
+  }));
+
+  return (
+    <SelectInput
+      source="fmbThaliId"
+      label="Thali"
+      choices={choices}
+      fullWidth
+      required
+      disabled={isEdit || !fmbId || isLoading}
+      helperText={fmbId ? undefined : "Select an FMB first"}
+    />
+  );
+};
+
+const InferFmbFromThali = ({ isEdit }) => {
+  const { setValue } = useFormContext();
+  const fmbId = useWatch({ name: "fmbId" });
+  const fmbThaliId = useWatch({ name: "fmbThaliId" });
+  const { data = [], isLoading } = useGetList("fmbData", {
+    pagination: { page: 1, perPage: 1000 },
+    sort: { field: "updatedAt", order: "DESC" },
+    filter: {},
+  });
+
+  useEffect(() => {
+    if (!isEdit || fmbId || !fmbThaliId || isLoading || !Array.isArray(data) || !data.length) {
+      return;
+    }
+    const ownerFmb = data.find((row) =>
+      Array.isArray(row?.thalis) ? row.thalis.some((thali) => thali?.id === fmbThaliId) : false,
+    );
+    if (ownerFmb?.id) {
+      setValue("fmbId", ownerFmb.id, { shouldDirty: false, shouldTouch: false });
+    }
+  }, [data, fmbId, fmbThaliId, isEdit, isLoading, setValue]);
+
+  return null;
+};
+
+export function SuspensionForm({ isEdit, defaultFmbId, defaultFmbThaliId }) {
   const minDateStr = todayStr();
+  const createDefaults =
+    !isEdit && (defaultFmbId || defaultFmbThaliId)
+      ? {
+          ...(defaultFmbId ? { fmbId: defaultFmbId } : {}),
+          ...(defaultFmbThaliId ? { fmbThaliId: defaultFmbThaliId } : {}),
+        }
+      : undefined;
 
   return (
     <SimpleForm
-      defaultValues={!isEdit && defaultFmbId ? { fmbId: defaultFmbId } : undefined}
+      defaultValues={createDefaults}
       toolbar={isEdit ? <EditToolbar /> : <CreateToolbar />}
       warnWhenUnsavedChanges
       sx={{ maxWidth: 720 }}
     >
+      <InferFmbFromThali isEdit={isEdit} />
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <ReferenceInput source="fmbId" reference="fmbData" required label="FMB record">
             <AutocompleteInput
-              optionText="fmbNo"
+              optionText={(r) => `${r.fileNo ?? "—"} · ITS ${r.itsNo ?? "—"}`}
               fullWidth
               required
               disabled={isEdit}
               debounce={300}
             />
           </ReferenceInput>
+        </Grid>
+        <Grid item xs={12}>
+          <ThaliInput isEdit={isEdit} />
         </Grid>
         <Grid item xs={12} sm={6}>
           <DateInput

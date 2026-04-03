@@ -12,7 +12,6 @@ export const ITSInput = (props) => {
 
   useEffect(() => {
     if (selectedChoice?.id) {
-      setValue("fmbNo", selectedChoice.fmbNo);
       setValue("name", selectedChoice.name);
       setValue("previousTakhmeenAmount", selectedChoice?.fmbTakhmeenCurrent?.takhmeenAmount ?? "");
     }

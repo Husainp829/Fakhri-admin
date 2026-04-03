@@ -1,6 +1,17 @@
 import React from "react";
 import { useShowContext } from "react-admin";
-import { Box, Divider, Grid, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  Collapse,
+  Divider,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { formatINR } from "../../../../utils";
 import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
 
 const ISO_WEEKDAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -19,21 +30,21 @@ const formatDate = (value, empty = "—") => {
   });
 };
 
-const formatMoney = (n) => {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  return `₹${Number(n).toLocaleString("en-IN")}`;
-};
-
-const formatThaliActive = (v) => {
-  if (v === true) return "Yes";
-  if (v === false) return "No";
-  return "—";
-};
+const formatMoney = (n) => formatINR(n, { empty: "—" });
 
 const formatHijriPeriod = (t) => {
   if (!t) return "—";
-  const label = formatFmbHijriPeriod(t.hijriYearStart ?? t.takhmeenYear, t.hijriYearEnd);
+  const label = formatFmbHijriPeriod(t.hijriYearStart, t.hijriYearEnd);
   return label ?? "—";
+};
+
+const formatThaliLabel = (thali) => {
+  const typeName = thali?.thaliType?.name;
+  const base = `${thali.thaliNo}${typeName ? ` (${typeName})` : ""}${thali.isActive ? "" : " · inactive"}`;
+  const addr = thali.deliveryAddress || thali.deliveryMohallah;
+  return addr
+    ? `${base} — ${[thali.deliveryAddress, thali.deliveryMohallah].filter(Boolean).join(", ")}`
+    : base;
 };
 
 const InfoSection = ({ title, children }) => (
@@ -81,6 +92,7 @@ const InfoField = ({ label, children }) => (
 
 export default function BasicInfo() {
   const { record } = useShowContext();
+  const [showThaliList, setShowThaliList] = React.useState(false);
   if (!record) {
     return null;
   }
@@ -88,7 +100,49 @@ export default function BasicInfo() {
   const profile = record.deliveryScheduleProfile;
   const t = record.fmbTakhmeenCurrent;
   const its = record.itsdata;
+  const thalis = Array.isArray(record.thalis) ? record.thalis : [];
+  const activeThaliCount = thalis.filter((thali) => thali.isActive).length;
+  const hasMultipleThalis = thalis.length > 1;
   const displayName = its?.Full_Name || record.name || "—";
+  let thaliContent = "—";
+  if (thalis.length === 1) {
+    thaliContent = formatThaliLabel(thalis[0]);
+  } else if (hasMultipleThalis) {
+    thaliContent = (
+      <Box sx={{ mt: 0.25 }}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", rowGap: 1 }}>
+          <Chip size="small" color="primary" label={`${thalis.length} total`} />
+          <Chip size="small" color="success" label={`${activeThaliCount} active`} />
+          {thalis.length - activeThaliCount > 0 && (
+            <Chip
+              size="small"
+              color="warning"
+              label={`${thalis.length - activeThaliCount} inactive`}
+            />
+          )}
+        </Stack>
+        <Button
+          size="small"
+          sx={{ mt: 0.75, px: 0.5, minWidth: "auto" }}
+          onClick={() => setShowThaliList((prev) => !prev)}
+        >
+          {showThaliList ? "Hide thali list" : "View thali list"}
+        </Button>
+        <Collapse in={showThaliList}>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.75, flexWrap: "wrap", rowGap: 1 }}>
+            {thalis.map((thali) => (
+              <Chip
+                key={thali.id}
+                size="small"
+                color={thali.isActive ? "success" : "default"}
+                label={formatThaliLabel(thali)}
+              />
+            ))}
+          </Stack>
+        </Collapse>
+      </Box>
+    );
+  }
   const cutoffHint =
     profile && (profile.cutoffOffsetDays != null || profile.cutoffMinutes != null)
       ? `Cut-off: ${profile.cutoffOffsetDays ?? 0} day(s) before, ${profile.cutoffMinutes ?? 0} min from midnight`
@@ -99,8 +153,6 @@ export default function BasicInfo() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <InfoSection title="FMB record">
-            <InfoField label="FMB number">{record.fmbNo}</InfoField>
-            <Divider sx={{ my: 0.75 }} />
             <InfoField label="File no. (legacy)">{record.fileNo}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Delivery schedule">
@@ -128,18 +180,12 @@ export default function BasicInfo() {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <InfoSection title="Thali & contact">
-            <InfoField label="Thali active">{formatThaliActive(record.thaliActive)}</InfoField>
-            <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Thali number">{record.thaliNo}</InfoField>
-            <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Thali type">{record.thaliType}</InfoField>
+          <InfoSection title="Thalis & contact">
+            <InfoField label={hasMultipleThalis ? "Thalis" : "Thali"}>{thaliContent}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Name">{displayName}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="ITS number">{record.itsNo || its?.ITS_ID}</InfoField>
-            <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Mohallah (record)">{record.mohallah}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Jamaat (ITS)">{its?.Jamaat}</InfoField>
             <Divider sx={{ my: 0.75 }} />
@@ -147,7 +193,7 @@ export default function BasicInfo() {
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Masool / sector incharge">{its?.Sector_Incharge_Name}</InfoField>
             <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Address">{record.address}</InfoField>
+            <InfoField label="Address (ITS)">{its?.Address}</InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Mobile">{record.mobileNo}</InfoField>
             <Divider sx={{ my: 0.75 }} />
@@ -191,9 +237,6 @@ export default function BasicInfo() {
             ) : (
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <InfoField label="Category">{t.category}</InfoField>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
                   <Box>
                     <Typography
                       variant="caption"
@@ -218,11 +261,6 @@ export default function BasicInfo() {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <InfoField label="Hijri period">{formatHijriPeriod(t)}</InfoField>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <InfoField label="Shawwal start (Gregorian)">
-                    {formatDate(t.shawwalStartDate)}
-                  </InfoField>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <InfoField label="Period start">{formatDate(t.startDate)}</InfoField>

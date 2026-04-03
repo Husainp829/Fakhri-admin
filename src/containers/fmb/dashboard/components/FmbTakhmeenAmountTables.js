@@ -4,7 +4,9 @@ import FmbTakhmeenAmountTable from "./FmbTakhmeenAmountTable";
 
 const CATEGORY_LABELS = {
   THALI: "Thali",
+  ANNUAL: "Annual",
   ZABIHAT: "Zabihat",
+  VOLUNTARY: "Voluntary",
 };
 
 const FmbTakhmeenAmountTables = ({ takhmeenAmountCountsByType, redirect }) => {

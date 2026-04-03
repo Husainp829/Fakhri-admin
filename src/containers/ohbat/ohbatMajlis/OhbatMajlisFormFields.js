@@ -3,17 +3,12 @@ import { AutocompleteInput, DateInput, ReferenceInput, SelectInput, TextInput } 
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import OhbatITSLookup from "./OhbatITSLookup";
+import { MAJLIS_START_TIME_CHOICES } from "./ohbatMajlisTime";
 
 const typeChoices = [
   { id: "Jaman", name: "Jaman" },
   { id: "Food_packets", name: "Food packets" },
   { id: "Salawaat", name: "Salawaat" },
-];
-
-const slotChoices = [
-  { id: "morning", name: "Morning" },
-  { id: "afternoon", name: "Afternoon" },
-  { id: "evening", name: "Evening" },
 ];
 
 export function OhbatMajlisFormFields() {
@@ -32,7 +27,13 @@ export function OhbatMajlisFormFields() {
           Majlis & contacts
         </Typography>
         <OhbatITSLookup source="hostItsNo" label="Host ITS" />
-        <TextInput source="hostName" label="Host name" fullWidth disabled helperText="Filled from ITS data when you search" />
+        <TextInput
+          source="hostName"
+          label="Host name"
+          fullWidth
+          disabled
+          helperText="Filled from ITS data when you search"
+        />
         <SelectInput source="type" choices={typeChoices} fullWidth />
         <ReferenceInput source="sadaratId" reference="sadarats" perPage={100} allowEmpty>
           <AutocompleteInput
@@ -62,7 +63,13 @@ export function OhbatMajlisFormFields() {
           />
         </ReferenceInput>
         <DateInput source="date" label="Majlis date" fullWidth />
-        <SelectInput source="slot" choices={slotChoices} label="Slot" fullWidth />
+        <SelectInput
+          source="startTime"
+          choices={MAJLIS_START_TIME_CHOICES}
+          label="Time"
+          fullWidth
+          helperText="15-minute steps"
+        />
       </Grid>
       <Grid item size={{ xs: 12, md: 6 }}>
         <Typography variant="overline" color="text.secondary" sx={{ display: "block", mb: 1.5 }}>

@@ -6,6 +6,7 @@ import { SuspensionForm } from "./common/suspensionForm";
 
 const transform = (data) => ({
   ...data,
+  fmbId: undefined,
   startDate: data.startDate ? dayjs(data.startDate).format("YYYY-MM-DD") : data.startDate,
   endDate: data.endDate ? dayjs(data.endDate).format("YYYY-MM-DD") : data.endDate,
 });
@@ -13,10 +14,15 @@ const transform = (data) => ({
 export default function FmbThaliSuspensionCreate(props) {
   const [searchParams] = useSearchParams();
   const defaultFmbId = searchParams.get("fmbId") || undefined;
+  const defaultFmbThaliId = searchParams.get("fmbThaliId") || undefined;
 
   return (
     <Create {...props} transform={transform} redirect="list">
-      <SuspensionForm isEdit={false} defaultFmbId={defaultFmbId} />
+      <SuspensionForm
+        isEdit={false}
+        defaultFmbId={defaultFmbId}
+        defaultFmbThaliId={defaultFmbThaliId}
+      />
     </Create>
   );
 }
