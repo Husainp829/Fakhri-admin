@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /**
  * Extract expected variable numbers from template body text.
  * Looks for patterns like {{1}}, {{2}}, etc. and returns sorted unique numbers.
