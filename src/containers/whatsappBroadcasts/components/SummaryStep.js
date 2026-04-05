@@ -54,7 +54,7 @@ const SummaryStep = () => {
       parameters,
       filterCriteria,
     }),
-    [name, templateName, parameters, filterCriteria]
+    [name, templateName, parameters, filterCriteria],
   );
 
   return <SummaryContent formData={formData} />;
@@ -71,18 +71,15 @@ const SummaryContent = ({ formData }) => {
   const filterCriteria = formData?.filterCriteria;
 
   // Get recipient data from context (cached and memoized)
-  const { recipientCount, recipientDetails, isLoadingDetails } =
-    useRecipientSelection();
+  const { recipientCount, recipientDetails, isLoadingDetails } = useRecipientSelection();
 
   // Use template from context (fetched once at parent level)
-  const { data: selectedTemplate, isLoading: templateLoading } =
-    useTemplateContext();
+  const { data: selectedTemplate, isLoading: templateLoading } = useTemplateContext();
 
   // Memoize filter criteria check and recipient source
   const { hasFilterCriteria, recipientSource, filterStats } = useMemo(() => {
     const hasRules = filterCriteria?.rules && filterCriteria.rules.length > 0;
-    const hasGroups =
-      filterCriteria?.groups && filterCriteria.groups.length > 0;
+    const hasGroups = filterCriteria?.groups && filterCriteria.groups.length > 0;
     const hasFilter = hasRules || hasGroups;
 
     return {
@@ -122,7 +119,7 @@ const SummaryContent = ({ formData }) => {
           return String(param).trim() !== "";
         })
         .sort((a, b) => parseInt(a, 10) - parseInt(b, 10)),
-    [parameters]
+    [parameters],
   );
 
   // Memoize template preview data
@@ -145,8 +142,9 @@ const SummaryContent = ({ formData }) => {
             return param.value || "";
           }
           if (param.type === "column") {
-            // For preview, show the column name in brackets to indicate it's dynamic
-            return `[${param.column || ""}]`;
+            const label =
+              param.columnSource === "csv" ? `CSV: ${param.column || ""}` : param.column || "";
+            return `[${label}]`;
           }
           // Fallback: try to get value if it exists
           return param.value || param.column || "";
@@ -168,7 +166,7 @@ const SummaryContent = ({ formData }) => {
   // Memoize recipient count label
   const recipientCountLabel = useMemo(
     () => `${recipientCount} recipient${recipientCount !== 1 ? "s" : ""}`,
-    [recipientCount]
+    [recipientCount],
   );
 
   // Memoize preview message
@@ -195,16 +193,10 @@ const SummaryContent = ({ formData }) => {
             {/* Recipients Details */}
             <Card variant="outlined">
               <CardContent>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                   Recipients
                 </Typography>
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
-                >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                   <Chip
                     label={recipientCountLabel}
                     color={recipientCount > 0 ? "success" : "default"}
@@ -229,8 +221,8 @@ const SummaryContent = ({ formData }) => {
                     display="block"
                     sx={{ mt: 1 }}
                   >
-                    Filter criteria: {filterStats.rulesCount} rule(s),{" "}
-                    {filterStats.groupsCount} group(s)
+                    Filter criteria: {filterStats.rulesCount} rule(s), {filterStats.groupsCount}{" "}
+                    group(s)
                   </Typography>
                 )}
                 {recipientCount > 0 && recipientDetails.length > 0 && (
@@ -281,10 +273,7 @@ const SummaryContent = ({ formData }) => {
                                   }}
                                 >
                                   <CircularProgress size={20} />
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
+                                  <Typography variant="body2" color="text.secondary">
                                     Loading recipient details...
                                   </Typography>
                                 </Box>
@@ -325,12 +314,7 @@ const SummaryContent = ({ formData }) => {
           ) : (
             <Card variant="outlined">
               <CardContent>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  align="center"
-                  sx={{ py: 4 }}
-                >
+                <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
                   {previewMessage}
                 </Typography>
               </CardContent>

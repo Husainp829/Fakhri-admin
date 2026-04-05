@@ -62,8 +62,9 @@ const BroadcastPreview = () => {
             return param.value || "";
           }
           if (param.type === "column") {
-            // For preview, show the column name in brackets to indicate it's dynamic
-            return `[${param.column || ""}]`;
+            const label =
+              param.columnSource === "csv" ? `CSV: ${param.column || ""}` : param.column || "";
+            return `[${label}]`;
           }
           // Fallback: try to get value if it exists
           return param.value || param.column || "";
@@ -73,9 +74,7 @@ const BroadcastPreview = () => {
       })
       .filter((v) => v !== "" && v !== undefined && v !== null);
     if (paramValues.length > 0 && previewData.components) {
-      const bodyComponent = previewData.components.find(
-        (c) => c.type === "BODY"
-      );
+      const bodyComponent = previewData.components.find((c) => c.type === "BODY");
       if (bodyComponent) {
         previewData.exampleVariables = paramValues.map((v) => ({ value: v }));
       }

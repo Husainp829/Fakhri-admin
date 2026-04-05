@@ -10,7 +10,6 @@ import {
   Button,
   Typography,
   Box,
-  capitalize,
   IconButton,
   useTheme,
   useMediaQuery,
@@ -25,10 +24,12 @@ import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "../../../../utils/dayjsLocalizer";
 import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
-import { slotTimeRanges } from "../../../../constants";
+import { buildOhbatMajlisEventDetailsText } from "../ohbatMajlisEventDetailsClipboard";
+import { formatMajlisStartTimeLabel } from "../ohbatMajlisTime";
 import { useBaseRoute } from "../../../../utils/routeUtility";
 import { fromGregorian } from "../../../../utils/hijriDateUtils";
 import ViewToggle from "./viewToggle";
+import { majlisHasSadarat, missingSadaratBorderLeft } from "./missingSadaratHighlight";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -40,17 +41,64 @@ const ohbatTypeColors = {
   Salawaat: "#6a1b9a",
 };
 
+function sadaratDisplayName(s) {
+  if (!s) return "";
+  const n = s.name?.trim();
+  if (n) return n;
+  const its = s.itsNo?.trim();
+  if (its) return its;
+  return "";
+}
+
 const CustomEventComponent = ({ event }) => {
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  const row = event.resource;
+  const missingSadarat = row && !majlisHasSadarat(row);
+  const sadarat = row?.sadarat;
+  const sadaratName = !missingSadarat ? sadaratDisplayName(sadarat) : "";
+  const sadaratMobile = sadarat?.mobile?.trim();
+  const captionSx = { fontSize: isMobile ? "3vw" : "10px" };
+  const secondarySx = {
+    mt: 0.25,
+    fontSize: isMobile ? "2.6vw" : "9px",
+    lineHeight: 1.25,
+    opacity: 0.95,
+    wordBreak: "break-word",
+  };
+
   return (
     <div style={{ color: "white", padding: 0 }}>
-      <Typography variant="caption" display="block" sx={{ fontSize: isMobile ? "3vw" : "10px" }}>
-        {dayjs(event.start).format("h A")} - {dayjs(event.end).format("h A")}
+      <Typography variant="caption" display="block" sx={captionSx}>
+        {dayjs(event.start).format("h:mm A")} – {dayjs(event.end).format("h:mm A")}
         <br />
         {event.title}
         <br />
         {event.subTitle}
+        {sadaratName && (
+          <>
+            <br />
+            <Box component="span" sx={secondarySx}>
+              Sadarat: {sadaratName}
+              {sadaratMobile ? ` · ${sadaratMobile}` : ""}
+            </Box>
+          </>
+        )}
+        {missingSadarat && (
+          <>
+            <br />
+            <Box
+              component="span"
+              sx={{
+                ...secondarySx,
+                fontStyle: "italic",
+                opacity: 0.92,
+              }}
+            >
+              No sadarat
+            </Box>
+          </>
+        )}
       </Typography>
     </div>
   );
@@ -142,14 +190,23 @@ const CalenderView = () => {
       const rows = await fetchMajlis(rangeStart.toDate(), rangeEnd.toDate());
 
       const formatted = rows.map((row) => {
-        const [startHour, endHour] = slotTimeRanges[row.slot] || [0, 1];
         const d = dayjs(row.date).format("YYYY-MM-DD");
+        const raw = row.startTime || "09:00";
+        const [hStr, mStr] = raw.split(":");
+        const startH = Number(hStr);
+        const startM = Number(mStr);
+        const start = dayjs(d, "YYYY-MM-DD")
+          .hour(Number.isFinite(startH) ? startH : 9)
+          .minute(Number.isFinite(startM) ? startM : 0)
+          .second(0)
+          .toDate();
+        const end = dayjs(start).add(1, "hour").toDate();
         return {
           id: row.id,
           title: row.hostName || row.sadarat?.name || row.hostItsNo || "Ohbat majlis",
-          subTitle: `${startCase(row.type)} · ${capitalize(row.slot)}`,
-          start: dayjs(d, "YYYY-MM-DD").hour(startHour).minute(0).second(0).toDate(),
-          end: dayjs(d, "YYYY-MM-DD").hour(endHour).minute(0).second(0).toDate(),
+          subTitle: `${startCase(row.type)} · ${formatMajlisStartTimeLabel(raw)}`,
+          start,
+          end,
           resource: row,
         };
       });
@@ -179,9 +236,9 @@ const CalenderView = () => {
   const calendarStyle = isMobile
     ? { height: "95vh", width: "95vw" }
     : {
-      height: "calc(100vh - 8vh)",
-      width: sidebarOpen ? "calc(100vw - 255px)" : "calc(100vw - 65px)",
-    };
+        height: "calc(100vh - 8vh)",
+        width: sidebarOpen ? "calc(100vw - 255px)" : "calc(100vw - 65px)",
+      };
 
   return (
     <div>
@@ -213,12 +270,17 @@ const CalenderView = () => {
           },
           week: { header: MonthDateHeader },
         }}
-        eventPropGetter={(event) => ({
-          style: {
-            backgroundColor: ohbatTypeColors[event?.resource?.type] || "#546e7a",
-            color: "white",
-          },
-        })}
+        eventPropGetter={(event) => {
+          const row = event?.resource;
+          const missingSadarat = row && !majlisHasSadarat(row);
+          return {
+            style: {
+              backgroundColor: ohbatTypeColors[row?.type] || "#546e7a",
+              color: "white",
+              ...(missingSadarat ? { borderLeft: missingSadaratBorderLeft } : {}),
+            },
+          };
+        }}
       />
 
       <Dialog open={showModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
@@ -240,7 +302,10 @@ const CalenderView = () => {
                 <LabelValue label="Sub-sector" value={selectedEvent?.hostSubSector || "—"} />
                 <LabelValue label="Contact mobile" value={selectedEvent?.mobileNo || "—"} />
                 <LabelValue label="Type" value={selectedEvent?.type || "—"} />
-                <LabelValue label="Slot" value={capitalize(selectedEvent?.slot)} />
+                <LabelValue
+                  label="Time"
+                  value={formatMajlisStartTimeLabel(selectedEvent?.startTime)}
+                />
                 <LabelValue label="Date" value={dayjs(selectedEvent.date).format("YYYY-MM-DD")} />
                 <LabelValue label="Venue address" value={selectedEvent?.address || "—"} grid={12} />
                 <LabelValue label="Sadarat" value={selectedEvent?.sadarat?.name || "—"} />
@@ -258,6 +323,22 @@ const CalenderView = () => {
           )}
         </DialogContent>
         <DialogActions sx={{ gap: 1, flexWrap: "wrap" }}>
+          <Button
+            onClick={async () => {
+              if (!selectedEvent) return;
+              try {
+                await navigator.clipboard.writeText(
+                  buildOhbatMajlisEventDetailsText(selectedEvent),
+                );
+                notify("Event details copied to clipboard", { type: "success" });
+              } catch {
+                notify("Could not copy to clipboard", { type: "error" });
+              }
+            }}
+            variant="outlined"
+          >
+            Copy details
+          </Button>
           <Button
             onClick={() => {
               redirect("show", "ohbatMajalis", selectedEvent.id);

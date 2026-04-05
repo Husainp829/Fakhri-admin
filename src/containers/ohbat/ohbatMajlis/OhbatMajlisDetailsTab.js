@@ -1,6 +1,7 @@
 import React from "react";
-import { usePermissions, useRecordContext } from "react-admin";
+import { useNotify, usePermissions, useRecordContext } from "react-admin";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Table from "@mui/material/Table";
@@ -9,7 +10,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { capitalize } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { hasPermission } from "../../../utils/permissionUtils";
@@ -17,11 +18,16 @@ import {
   openOhbatMajlisKhidmatDialog,
   openOhbatMajlisSadaratDialog,
 } from "./ohbatMajlisShowDialogOpeners";
+import { buildOhbatMajlisEventDetailsText } from "./ohbatMajlisEventDetailsClipboard";
+import { formatMajlisStartTimeLabel } from "./ohbatMajlisTime";
 
 const dash = (v) => (v != null && String(v).trim() !== "" ? v : "—");
 
 const LabelValue = ({ label, value }) => (
-  <Typography component="div" sx={{ display: "flex", justifyContent: "space-between", gap: 2, mb: 0.5 }}>
+  <Typography
+    component="div"
+    sx={{ display: "flex", justifyContent: "space-between", gap: 2, mb: 0.5 }}
+  >
     <span>{label}:</span>
     <strong style={{ textAlign: "right", wordBreak: "break-word" }}>{value}</strong>
   </Typography>
@@ -67,6 +73,7 @@ function SummaryRow({ label, value }) {
  */
 export default function OhbatMajlisDetailsTab() {
   const record = useRecordContext();
+  const notify = useNotify();
   const { permissions } = usePermissions();
   const canEditMajlis = hasPermission(permissions, "ohbatMajalis.edit");
 
@@ -74,7 +81,7 @@ export default function OhbatMajlisDetailsTab() {
     return null;
   }
 
-  const slotLabel = record.slot ? capitalize(String(record.slot)) : "—";
+  const timeLabel = formatMajlisStartTimeLabel(record.startTime);
   const dateLabel = record.date ? dayjs(record.date).format("DD MMM YYYY") : "—";
 
   const khidmatIts = record.khidmatguzar?.ITS_ID ?? record.khidmatguzarItsNo;
@@ -107,6 +114,23 @@ export default function OhbatMajlisDetailsTab() {
 
   return (
     <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, pb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          startIcon={<ContentCopyIcon />}
+          variant="outlined"
+          size="small"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(buildOhbatMajlisEventDetailsText(record));
+              notify("Event details copied to clipboard", { type: "success" });
+            } catch {
+              notify("Could not copy to clipboard", { type: "error" });
+            }
+          }}
+        >
+          Copy event details
+        </Button>
+      </Box>
       <Grid container spacing={3}>
         <Grid item size={{ xs: 12, md: 6 }}>
           <SummaryTable title="Host & venue">
@@ -148,7 +172,7 @@ export default function OhbatMajlisDetailsTab() {
         >
           <SummaryTable title="Majlis & schedule">
             <SummaryRow label="Date" value={dateLabel} />
-            <SummaryRow label="Slot" value={slotLabel} />
+            <SummaryRow label="Time" value={timeLabel} />
             <SummaryRow label="Type" value={dash(record.type)} />
           </SummaryTable>
         </Grid>

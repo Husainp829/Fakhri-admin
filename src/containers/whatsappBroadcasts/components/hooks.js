@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useGetOne, useDataProvider } from "react-admin";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -39,18 +39,9 @@ export const usePreviewRecipients = ({
   const dataProvider = useDataProvider();
 
   return useQuery({
-    queryKey: [
-      "whatsappBroadcasts",
-      "previewRecipients",
-      filterCriteria,
-      limit,
-      offset,
-    ],
+    queryKey: ["whatsappBroadcasts", "previewRecipients", filterCriteria, limit, offset],
     queryFn: async () => {
-      if (
-        !filterCriteria ||
-        (!filterCriteria.rules?.length && !filterCriteria.groups?.length)
-      ) {
+      if (!filterCriteria || (!filterCriteria.rules?.length && !filterCriteria.groups?.length)) {
         throw new Error("Please add at least one filter condition");
       }
       return dataProvider.previewRecipients("whatsappBroadcasts", {
@@ -72,20 +63,23 @@ export const usePreviewRecipients = ({
  * @param {Object} template - The template object (should have bodyText property)
  * @param {boolean} isLoadingTemplate - Whether the template is currently loading
  * @param {Object} parameters - The parameters object from form (e.g., { "1": "value1", "2": "value2" })
+ * @param {string[]} [csvColumnHeaders] - CSV file column names when mapping parameters from CSV
  * @returns {Object} - Validation state with isValid, errorMessage, expectedVariables, and validationErrors
  * @example
  * const { isValid, errorMessage, expectedVariables } = useTemplateValidation(
  *   templateName,
  *   selectedTemplate,
  *   isLoadingTemplate,
- *   parameters
+ *   parameters,
+ *   csvColumnHeaders
  * );
  */
 export const useTemplateValidation = (
   templateName,
   template,
   isLoadingTemplate,
-  parameters
+  parameters,
+  csvColumnHeaders = [],
 ) => {
   // Extract expected variables from template body text
   const expectedVariables = useMemo(() => {
@@ -94,9 +88,11 @@ export const useTemplateValidation = (
   }, [template?.bodyText]);
 
   // Serialize parameters for memoization (to detect actual content changes)
-  const parametersSerialized = useMemo(
-    () => JSON.stringify(parameters || {}),
-    [parameters]
+  const parametersSerialized = useMemo(() => JSON.stringify(parameters || {}), [parameters]);
+
+  const csvHeadersSerialized = useMemo(
+    () => JSON.stringify(csvColumnHeaders || []),
+    [csvColumnHeaders],
   );
 
   // Validate template parameters
@@ -123,14 +119,13 @@ export const useTemplateValidation = (
     // Use shared validation utility
     const result = validateTemplateParameters(
       template?.bodyText || "",
-      parameters
+      parameters,
+      csvColumnHeaders || [],
     );
 
     return {
       isValid: result.isValid,
-      errorMessage: result.isValid
-        ? null
-        : getMissingParametersMessage(result.missingParams),
+      errorMessage: result.isValid ? null : getMissingParametersMessage(result.missingParams),
       expectedVariables,
       validationErrors: result.errors,
     };
@@ -139,8 +134,47 @@ export const useTemplateValidation = (
     isLoadingTemplate,
     template?.bodyText,
     parametersSerialized,
+    csvHeadersSerialized,
     expectedVariables,
   ]);
 
   return validationResult;
+};
+
+/**
+ * Custom hook to look up ITS data from a list of ITS IDs (e.g. parsed from CSV).
+ * Returns matched records, unmatched IDs, loading state, and a trigger function.
+ */
+export const useLookupIts = () => {
+  const dataProvider = useDataProvider();
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const lookup = useCallback(
+    async (itsIds) => {
+      if (!itsIds || itsIds.length === 0) {
+        setData({ matched: [], unmatched: [], count: 0 });
+        return;
+      }
+      setIsLoading(true);
+      setError(null);
+      try {
+        const result = await dataProvider.lookupIts("whatsappBroadcasts", { itsIds });
+        setData(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [dataProvider],
+  );
+
+  const reset = useCallback(() => {
+    setData(null);
+    setError(null);
+  }, []);
+
+  return { data, isLoading, error, lookup, reset };
 };
