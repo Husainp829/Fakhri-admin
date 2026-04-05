@@ -67,7 +67,6 @@ export default function OhbatMajlisAttendanceCreate() {
       setExistingIts(its);
 
       // Preload itsdata names for quick display in this page.
-      // Store null when not found so we can show "ITS Not is jamaat".
       try {
         if (its.length > 0) {
           const { data } = await dataProvider.getMany("itsdata", { ids: its });
@@ -101,7 +100,6 @@ export default function OhbatMajlisAttendanceCreate() {
       const key = normalizeIts(its);
       if (!key) return null;
 
-      // If key exists in map, return cached value (including null).
       if (Object.prototype.hasOwnProperty.call(itsFullNameByIts, key)) {
         return itsFullNameByIts[key];
       }
@@ -195,6 +193,12 @@ export default function OhbatMajlisAttendanceCreate() {
                     <Box>
                       <Typography variant="body2">
                         <strong>Host:</strong> {majlis.hostName || majlis.hostItsNo || "—"}
+                      </Typography>
+                      <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                        <strong>Venue address:</strong>{" "}
+                        {typeof majlis.address === "string" && majlis.address.trim()
+                          ? majlis.address.trim()
+                          : "—"}
                       </Typography>
                       <Typography variant="body2">
                         <strong>Sadarat:</strong> {majlis.sadarat?.name || "—"}
@@ -292,7 +296,7 @@ export default function OhbatMajlisAttendanceCreate() {
                           return (
                             <TableRow key={`${its}-${idx}`}>
                               <TableCell sx={{ fontFamily: "monospace" }}>{its}</TableCell>
-                              <TableCell>{fullName || "ITS Not is jamaat"}</TableCell>
+                              <TableCell>{fullName || "ITS not in jamaat"}</TableCell>
                             </TableRow>
                           );
                         })
@@ -312,6 +316,12 @@ export default function OhbatMajlisAttendanceCreate() {
                     <Box>
                       <Typography variant="body2">
                         <strong>Host:</strong> {majlis.hostName || majlis.hostItsNo || "—"}
+                      </Typography>
+                      <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                        <strong>Venue address:</strong>{" "}
+                        {typeof majlis.address === "string" && majlis.address.trim()
+                          ? majlis.address.trim()
+                          : "—"}
                       </Typography>
                       <Typography variant="body2">
                         <strong>Sadarat:</strong> {majlis.sadarat?.name || "—"}
@@ -417,7 +427,7 @@ export default function OhbatMajlisAttendanceCreate() {
                           return (
                             <TableRow key={`${its}-${idx}`}>
                               <TableCell sx={{ fontFamily: "monospace" }}>{its}</TableCell>
-                              <TableCell>{fullName || "ITS Not is jamaat"}</TableCell>
+                              <TableCell>{fullName || "ITS not in jamaat"}</TableCell>
                             </TableRow>
                           );
                         })

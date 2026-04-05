@@ -4,7 +4,7 @@ import list from "./list";
 export default {
   list,
   icon: Icon,
-  label: "Upcoming (attendance)",
-  options: { label: "Upcoming (attendance)" },
+  label: "Ohbat majlis (attendance)",
+  options: { label: "Ohbat majlis (attendance)" },
   name: "ohbatMajlisUpcoming",
 };

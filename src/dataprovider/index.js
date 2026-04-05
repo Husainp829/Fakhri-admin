@@ -80,7 +80,9 @@ const normalizeAdminPermissions = async (data) => {
 export default {
   getList: (resource, params) => {
     if (resource === "ohbatMajlisUpcoming") {
-      return httpClient(`${getApiUrl()}/ohbatMajalis/attendance/upcoming`).then(
+      const scope = params?.meta?.attendanceScope === "past" ? "past" : "upcoming";
+      const path = scope === "past" ? "past" : "upcoming";
+      return httpClient(`${getApiUrl()}/ohbatMajalis/attendance/${path}`).then(
         ({ json: { count, rows } }) => ({
           data: convertRows(rows || []),
           total: count ?? (rows || []).length,

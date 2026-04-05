@@ -136,7 +136,7 @@ const CalenderView = () => {
   const [sidebarOpen] = useSidebarState();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialView = searchParams.get("view") || (isMobile ? Views.DAY : Views.MONTH);
+  const initialView = searchParams.get("view") || Views.MONTH;
   const initialDate = dayjs(searchParams.get("date"))?.isValid()
     ? dayjs(searchParams.get("date"))
     : dayjs();

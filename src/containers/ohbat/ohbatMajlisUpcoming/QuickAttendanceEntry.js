@@ -275,7 +275,7 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }) {
                     return (
                       <TableRow key={`${its}-${idx}`}>
                         <TableCell sx={{ fontFamily: "monospace" }}>{its}</TableCell>
-                        <TableCell>{fullName || "ITS Not is jamaat"}</TableCell>
+                        <TableCell>{fullName || "ITS not in jamaat"}</TableCell>
                       </TableRow>
                     );
                   })
