@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   DatagridConfigurable,
+  ExportButton,
   List,
   SelectColumnsButton,
   TextField,
@@ -38,6 +39,7 @@ const ListActions = () => {
           </IconButton>
         )}
         {!isSmall && <SelectColumnsButton />}
+        <ExportButton maxResults={5000} />
         <Button
           size="small"
           component={RouterLink}
