@@ -5,7 +5,7 @@ import { Box, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@m
 import { useParams } from "react-router";
 
 import ReceiptHeader from "../../../components/ReceiptLayout/receiptHeader";
-import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { fromGregorian } from "@/utils/hijri-date-utils";
 
 const RazaPrint = () => {
   const { id } = useParams();

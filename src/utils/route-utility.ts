@@ -1,7 +1,9 @@
-// src/utils/router.js
 import { useEffect, useState } from "react";
 
-export function parsePathname(pathname = window.location.pathname) {
+export function parsePathname(pathname: string = window.location.pathname): {
+  baseRoute: string | null;
+  routeId: string | null;
+} {
   const segments = pathname
     .replace(/^\/+|\/+$/g, "")
     .split("/")
@@ -17,36 +19,28 @@ export function parsePathname(pathname = window.location.pathname) {
   return { baseRoute, routeId };
 }
 
-/**
- * Parse the hash part for additional routing
- */
-export function parseHash() {
+export function parseHash(): string[] {
   const hash = window.location.hash.replace(/^#+/, "");
   return hash.split("/").filter(Boolean);
 }
 
-/**
- * Get just the baseRoute from pathname.
- */
-export function getBaseRouteFromPathname(pathname = window.location.pathname) {
+export function getBaseRouteFromPathname(
+  pathname: string = window.location.pathname
+): string | null {
   const { baseRoute } = parsePathname(pathname);
   return baseRoute;
 }
 
-/**
- * Get the routeId from pathname.
- */
-export function getRouteIdFromPathname(pathname = window.location.pathname) {
+export function getRouteIdFromPathname(pathname: string = window.location.pathname): string | null {
   const { routeId } = parsePathname(pathname);
   return routeId;
 }
 
-/**
- * Navigate to baseRoute + hash route WITHOUT full page reload.
- * Maintains structure: /baseRoute/routeId/#/paths
- */
-export function navigateToBaseRoute(baseRoute, routeId = null, hashPaths = []) {
-  // Build the pathname part
+export function navigateToBaseRoute(
+  baseRoute: string | null,
+  routeId: string | null = null,
+  hashPaths: string[] = []
+): void {
   let pathname = "/";
 
   if (!baseRoute) {
@@ -55,16 +49,13 @@ export function navigateToBaseRoute(baseRoute, routeId = null, hashPaths = []) {
     window.dispatchEvent(new Event("hashchange"));
     return;
   }
-  if (baseRoute) {
-    const normalizedBase = baseRoute.replace(/^\/+|\/+$/g, "");
-    pathname = `/${normalizedBase}/`;
+  const normalizedBase = baseRoute.replace(/^\/+|\/+$/g, "");
+  pathname = `/${normalizedBase}/`;
 
-    if (routeId) {
-      pathname += `${routeId}/`;
-    }
+  if (routeId) {
+    pathname += `${routeId}/`;
   }
 
-  // Build the hash part
   let hash = "";
   if (hashPaths && hashPaths.length > 0) {
     const cleanPaths = hashPaths.filter((p) => p !== "").map((p) => p.replace(/^\/+|\/+$/g, ""));
@@ -77,16 +68,14 @@ export function navigateToBaseRoute(baseRoute, routeId = null, hashPaths = []) {
     hash = "#/";
   }
 
-  // Use History API to change URL without reload
   const newUrl = pathname + hash;
   window.history.pushState({}, "", newUrl);
 
-  // Dispatch events to notify listeners
   window.dispatchEvent(new Event("popstate"));
   window.dispatchEvent(new Event("hashchange"));
 }
 
-export function useRouteParams() {
+export function useRouteParams(): { baseRoute: string | null; routeId: string | null } {
   const [params, setParams] = useState(() => ({
     ...parsePathname(),
   }));
@@ -110,19 +99,12 @@ export function useRouteParams() {
   return params;
 }
 
-/**
- * Hook to watch changes in baseRoute only.
- * For backward compatibility.
- */
-export function useBaseRoute() {
+export function useBaseRoute(): string | null {
   const { baseRoute } = useRouteParams();
   return baseRoute;
 }
 
-/**
- * Hook to watch changes in routeId only.
- */
-export function useRouteId() {
+export function useRouteId(): string | null {
   const { routeId } = useRouteParams();
   return routeId;
 }

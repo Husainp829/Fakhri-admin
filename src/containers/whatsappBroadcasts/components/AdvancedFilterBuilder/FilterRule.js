@@ -18,20 +18,14 @@ const FilterRule = React.memo(({ rule, onUpdate, onDelete }) => {
     [rule.field]
   );
 
-  const operators = useMemo(
-    () => getOperatorsForType(column.type),
-    [column.type]
-  );
+  const operators = useMemo(() => getOperatorsForType(column.type), [column.type]);
 
   const needsValue = useMemo(
     () => !["isEmpty", "isNotEmpty"].includes(rule.operator),
     [rule.operator]
   );
 
-  const isMultiValue = useMemo(
-    () => ["in", "notIn"].includes(rule.operator),
-    [rule.operator]
-  );
+  const isMultiValue = useMemo(() => ["in", "notIn"].includes(rule.operator), [rule.operator]);
 
   const handleFieldChange = useCallback(
     (fieldId) => {
@@ -52,10 +46,7 @@ const FilterRule = React.memo(({ rule, onUpdate, onDelete }) => {
       onUpdate({
         ...rule,
         operator: operatorId,
-        value:
-          operatorId === "isEmpty" || operatorId === "isNotEmpty"
-            ? ""
-            : rule.value,
+        value: operatorId === "isEmpty" || operatorId === "isNotEmpty" ? "" : rule.value,
       });
     },
     [rule, onUpdate]
@@ -98,11 +89,7 @@ const FilterRule = React.memo(({ rule, onUpdate, onDelete }) => {
             }}
           >
             {ITS_COLUMNS.map((col) => (
-              <MenuItem
-                key={col.id}
-                value={col.id}
-                sx={{ fontSize: "0.8125rem", py: 0.5 }}
-              >
+              <MenuItem key={col.id} value={col.id} sx={{ fontSize: "0.8125rem", py: 0.5 }}>
                 {col.label}
               </MenuItem>
             ))}
@@ -125,11 +112,7 @@ const FilterRule = React.memo(({ rule, onUpdate, onDelete }) => {
             }}
           >
             {operators.map((op) => (
-              <MenuItem
-                key={op.id}
-                value={op.id}
-                sx={{ fontSize: "0.8125rem", py: 0.5 }}
-              >
+              <MenuItem key={op.id} value={op.id} sx={{ fontSize: "0.8125rem", py: 0.5 }}>
                 {op.label}
               </MenuItem>
             ))}
@@ -156,22 +139,13 @@ const FilterRule = React.memo(({ rule, onUpdate, onDelete }) => {
             }}
           />
         ) : (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ fontSize: "0.75rem" }}
-          >
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.75rem" }}>
             No value needed
           </Typography>
         )}
       </TableCell>
       <TableCell sx={{ py: 0.5, width: "5%", textAlign: "center" }}>
-        <IconButton
-          color="error"
-          size="small"
-          onClick={onDelete}
-          sx={{ width: 28, height: 28 }}
-        >
+        <IconButton color="error" size="small" onClick={onDelete} sx={{ width: 28, height: 28 }}>
           <DeleteIcon fontSize="small" />
         </IconButton>
       </TableCell>

@@ -18,8 +18,8 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
-import { formatINR } from "../../../utils";
+import { getApiUrl } from "@/constants";
+import { formatINR } from "@/utils";
 import { BeneficiaryItsAutocomplete } from "./common/beneficiaryItsAutocomplete";
 import { ITSInput } from "./common/itsInput";
 import {
@@ -48,7 +48,7 @@ function TakhmeenHijriSync() {
   const { data: t } = useGetOne(
     "fmbTakhmeen",
     { id: fmbTakhmeenId },
-    { enabled: Boolean(fmbId) && Boolean(fmbTakhmeenId) },
+    { enabled: Boolean(fmbId) && Boolean(fmbTakhmeenId) }
   );
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function FmbContributionsEdit(props) {
                       optionText={(choice) =>
                         `${choice.hijriYearStart ?? "—"}–${choice.hijriYearEnd ?? "—"} · ${formatINR(
                           choice.takhmeenAmount,
-                          { empty: "—" },
+                          { empty: "—" }
                         )}`
                       }
                       shouldRenderSuggestions={(val) => val.trim().length >= 0}

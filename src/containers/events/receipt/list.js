@@ -18,8 +18,8 @@ import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import dayjs from "dayjs";
-import { MARKAZ_LIST } from "../../../constants";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { MARKAZ_LIST } from "@/constants";
+import { hasPermission } from "@/utils/permission-utils";
 
 export default () => {
   const { permissions } = usePermissions();

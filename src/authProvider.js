@@ -1,11 +1,11 @@
 /* eslint-disable brace-style */
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, getIdToken } from "firebase/auth";
 import { LRUCache } from "lru-cache";
-import { authObj } from "./firebaseConfig";
-import { goToLogin } from "./utils";
+import { authObj } from "@/firebase-config";
+import { goToLogin } from "@/utils";
 import httpClient from "./dataprovider/httpClient";
-import { getApiUrl } from "./constants";
-import { parsePermissionsArray } from "./utils/permissionUtils";
+import { getApiUrl } from "@/constants";
+import { parsePermissionsArray } from "@/utils/permission-utils";
 
 // --------------------
 // Helpers

@@ -8,7 +8,7 @@ import {
   TextField,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import { formatINR } from "../../../../utils";
+import { formatINR } from "@/utils";
 
 export default () => {
   const printReceipt = (id) => {

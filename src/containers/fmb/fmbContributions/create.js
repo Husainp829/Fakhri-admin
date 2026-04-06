@@ -18,10 +18,10 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl } from "@/constants";
 import { ITSInput } from "./common/itsInput";
 import { BeneficiaryItsAutocomplete } from "./common/beneficiaryItsAutocomplete";
-import { formatINR } from "../../../utils";
+import { formatINR } from "@/utils";
 import {
   validateContributionFmbOrPeriod,
   validatePositiveContributionTotal,
@@ -87,7 +87,7 @@ export default function FmbContributionsCreate(props) {
       quantity: 1,
       isAmountOverridden: false,
     }),
-    [prefFmbId],
+    [prefFmbId]
   );
 
   return (
@@ -134,7 +134,7 @@ export default function FmbContributionsCreate(props) {
                       optionText={(choice) =>
                         `${choice.hijriYearStart ?? "—"}–${choice.hijriYearEnd ?? "—"} · ${formatINR(
                           choice.takhmeenAmount,
-                          { empty: "—" },
+                          { empty: "—" }
                         )}`
                       }
                       shouldRenderSuggestions={(val) => val.trim().length >= 0}
@@ -229,7 +229,7 @@ function TakhmeenHijriSync() {
   const { data: t } = useGetOne(
     "fmbTakhmeen",
     { id: fmbTakhmeenId },
-    { enabled: Boolean(fmbId) && Boolean(fmbTakhmeenId) },
+    { enabled: Boolean(fmbId) && Boolean(fmbTakhmeenId) }
   );
 
   useEffect(() => {

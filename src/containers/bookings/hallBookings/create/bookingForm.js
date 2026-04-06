@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import ITSLookup from "../common/ITSLookup";
 import HallBookingTable from "./bookingTable";
 import HallBookingModal from "./bookingModal";
-import { calcBookingTotals } from "../../../../utils/bookingCalculations";
+import { calcBookingTotals } from "@/utils/booking-calculations";
 import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 const LabelValue = ({ label, value, labelProps = {}, valueProps = {} }) => (

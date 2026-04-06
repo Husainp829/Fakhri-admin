@@ -1,19 +1,15 @@
-function isAplhanumeric(char) {
+function isAplhanumeric(char: string | undefined): boolean {
   const x = `${char || ""}`.charCodeAt(0);
 
   if (!char || Number.isNaN(x)) {
     return false;
   }
 
-  return !!(
-    (x >= 65 && x <= 90) ||
-    (x >= 97 && x <= 122) ||
-    (x >= 48 && x <= 57)
-  );
+  return !!((x >= 65 && x <= 90) || (x >= 97 && x <= 122) || (x >= 48 && x <= 57));
 }
 
-function getIndexes(text, wildcard) {
-  const indices = [];
+function getIndexes(text: string, wildcard: string): number[] {
+  const indices: number[] = [];
 
   for (let i = 0; i <= text.length - wildcard.length; i += 1) {
     if (text.slice(i, i + wildcard.length) === wildcard) {
@@ -32,7 +28,6 @@ function getIndexes(text, wildcard) {
       } else {
         indices.push(i);
       }
-      // Skip ahead by wildcard length - 1 (loop will increment by 1)
       i += wildcard.length - 1;
     } else if (text[i].charCodeAt(0) === 10 && indices.length % 2) {
       indices.pop();
@@ -40,14 +35,19 @@ function getIndexes(text, wildcard) {
   }
 
   if (indices.length % 2) {
-    // we have unclosed tags
     indices.pop();
   }
 
   return indices;
 }
 
-function injectTags(text, indices, rule) {
+type FormatRule = {
+  closeTag: string;
+  openTag: string;
+  wildcard: string;
+};
+
+function injectTags(text: string, indices: number[], rule: FormatRule): string {
   let e = 0;
   let injectedText = text;
 
@@ -57,10 +57,7 @@ function injectTags(text, indices, rule) {
     let v = value;
     v += e;
 
-    injectedText =
-      injectedText.slice(0, v) +
-      tag +
-      injectedText.slice(v + rule.wildcard.length);
+    injectedText = injectedText.slice(0, v) + tag + injectedText.slice(v + rule.wildcard.length);
 
     e += tag.length - rule.wildcard.length;
   });
@@ -68,21 +65,18 @@ function injectTags(text, indices, rule) {
   return injectedText;
 }
 
-function execRule(text, rule) {
+function execRule(text: string, rule: FormatRule): string {
   const indices = getIndexes(text, rule.wildcard);
   return injectTags(text, indices, rule);
 }
 
-function parseText(text, rules) {
-  const final = rules.reduce(
-    (transformed, rule) => execRule(transformed, rule),
-    text
-  );
+function parseText(text: string, rules: FormatRule[]): string {
+  const final = rules.reduce((transformed, rule) => execRule(transformed, rule), text);
 
   return final.replace(/\n/gi, "<br>");
 }
 
-export const whatsappRules = [
+export const whatsappRules: FormatRule[] = [
   {
     closeTag: "</strong>",
     openTag: "<strong>",
@@ -110,6 +104,6 @@ export const whatsappRules = [
   },
 ];
 
-export function format(text, rules) {
+export function format(text: string, rules?: FormatRule[]): string {
   return parseText(text, rules || whatsappRules);
 }

@@ -10,7 +10,7 @@ import { useStore } from "react-admin";
 
 import Button from "@mui/material/Button";
 import dayjs from "dayjs";
-import { navigateToBaseRoute } from "../../../utils/routeUtility";
+import { navigateToBaseRoute } from "@/utils/route-utility";
 
 const styles = {
   container: {
@@ -78,9 +78,7 @@ const CardGridList = ({ data }) => {
   return (
     <Grid item lg={3} xs={12} sx={styles.tile} key={data.id}>
       <Card sx={styles.card}>
-        <CardActionArea
-          onClick={handleClick}
-        >
+        <CardActionArea onClick={handleClick}>
           <div
             style={{
               display: "flex",
@@ -108,11 +106,7 @@ const CardGridList = ({ data }) => {
           ).format("D MMMM YYYY")}`}</Typography>
         </CardContent>
         <CardActions>
-          <Button
-            size="small"
-            color="primary"
-            onClick={handleClick}
-          >
+          <Button size="small" color="primary" onClick={handleClick}>
             <Typography color="primary">View</Typography>
           </Button>
           <Button size="small" color="primary" onClick={() => editEvent(data.id)}>

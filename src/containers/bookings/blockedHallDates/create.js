@@ -1,16 +1,9 @@
 /* eslint-disable no-console */
 import React from "react";
-import {
-  Create,
-  SimpleForm,
-  DateInput,
-  TextInput,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
+import { Create, SimpleForm, DateInput, TextInput, ReferenceInput, SelectInput } from "react-admin";
 import { useWatch } from "react-hook-form";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
-import { slotNameMap } from "../../../constants";
+import { slotNameMap } from "@/constants";
 
 const BlockedHallDateForm = () => {
   const type = useWatch({ name: "type" });

@@ -77,12 +77,7 @@ const RecipientsPreview = React.memo(
     // Extract recipient data from ALL data (not just current page)
     // Pass full recipient objects with ITS_ID and phone for accurate lookup
     useEffect(() => {
-      if (
-        onSelectionChange &&
-        allData &&
-        Array.isArray(allData) &&
-        allData.length > 0
-      ) {
+      if (onSelectionChange && allData && Array.isArray(allData) && allData.length > 0) {
         // Filter out skipped IDs from all data
         const includedRecipients = allData.filter(
           (recipient) => recipient?.id && !skippedIds.has(recipient.id)
@@ -128,10 +123,7 @@ const RecipientsPreview = React.memo(
     );
 
     const handlePreview = useCallback(() => {
-      if (
-        !filterGroup ||
-        (!filterGroup.rules?.length && !filterGroup.groups?.length)
-      ) {
+      if (!filterGroup || (!filterGroup.rules?.length && !filterGroup.groups?.length)) {
         setValidationError("Please add at least one filter condition");
         return;
       }
@@ -184,12 +176,7 @@ const RecipientsPreview = React.memo(
 
     return (
       <Box>
-        <Button
-          variant="contained"
-          onClick={handlePreview}
-          disabled={shouldFetch}
-          sx={{ mb: 2 }}
-        >
+        <Button variant="contained" onClick={handlePreview} disabled={shouldFetch} sx={{ mb: 2 }}>
           Preview Recipients
         </Button>
 
@@ -209,20 +196,14 @@ const RecipientsPreview = React.memo(
 
             {error && (
               <Alert severity="error" sx={{ mt: 2 }}>
-                {error?.body?.message ||
-                  error?.message ||
-                  "Failed to get recipient data"}
+                {error?.body?.message || error?.message || "Failed to get recipient data"}
               </Alert>
             )}
 
             {!isLoading && !error && allData && allData.length > 0 && (
               <>
                 <Alert severity="success" sx={{ mb: 2, py: 0.5 }}>
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    sx={{ fontWeight: "bold" }}
-                  >
+                  <Typography variant="body2" component="span" sx={{ fontWeight: "bold" }}>
                     {total - skippedIds.size}
                   </Typography>
                   <Typography variant="body2" component="span" sx={{ ml: 1 }}>
@@ -235,9 +216,7 @@ const RecipientsPreview = React.memo(
                       <TableHead>
                         <TableRow>
                           {fields.map((field) => (
-                            <TableCell key={field}>
-                              {getFieldLabel(field)}
-                            </TableCell>
+                            <TableCell key={field}>{getFieldLabel(field)}</TableCell>
                           ))}
                           <TableCell>Action</TableCell>
                         </TableRow>
@@ -249,20 +228,14 @@ const RecipientsPreview = React.memo(
                             <TableRow
                               key={record.id}
                               sx={{
-                                backgroundColor: isSkipped
-                                  ? "#ffebee"
-                                  : "inherit",
+                                backgroundColor: isSkipped ? "#ffebee" : "inherit",
                                 "&:hover": {
-                                  backgroundColor: isSkipped
-                                    ? "#ffcdd2"
-                                    : "action.hover",
+                                  backgroundColor: isSkipped ? "#ffcdd2" : "action.hover",
                                 },
                               }}
                             >
                               {fields.map((field) => (
-                                <TableCell key={field}>
-                                  {record[field] || "-"}
-                                </TableCell>
+                                <TableCell key={field}>{record[field] || "-"}</TableCell>
                               ))}
                               <TableCell>
                                 <Button

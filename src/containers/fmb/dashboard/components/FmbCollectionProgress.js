@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, Typography, Box, Grid, LinearProgress } from "@mui/material";
-import { formatINR } from "../../../../utils";
+import { formatINR } from "@/utils";
 
 const FmbCollectionProgress = ({ stats, collectionPercentage }) => {
   const getProgressBarColor = (percentage) => {

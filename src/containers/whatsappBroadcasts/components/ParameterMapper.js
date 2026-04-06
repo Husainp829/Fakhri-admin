@@ -51,7 +51,7 @@ const ParameterMapper = () => {
         number: num,
         placeholder: `{{${num}}}`,
       })),
-    [variableNumbers],
+    [variableNumbers]
   );
 
   // Prepare ITS_COLUMNS choices for SelectInput
@@ -61,7 +61,7 @@ const ParameterMapper = () => {
         id: col.id,
         name: col.label,
       })),
-    [],
+    []
   );
 
   const csvColumnChoices = React.useMemo(
@@ -70,7 +70,7 @@ const ParameterMapper = () => {
         id: h,
         name: h,
       })),
-    [csvColumnHeaders],
+    [csvColumnHeaders]
   );
 
   // Initialize parameters structure for each variable if needed
@@ -167,7 +167,7 @@ const ParameterMapper = () => {
                   ...currentParams,
                   [paramKey]: updatedParam,
                 },
-                { shouldValidate: true },
+                { shouldValidate: true }
               );
             };
 
@@ -186,7 +186,7 @@ const ParameterMapper = () => {
                     column: "",
                   },
                 },
-                { shouldValidate: true },
+                { shouldValidate: true }
               );
             };
 

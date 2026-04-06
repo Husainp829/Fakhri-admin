@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl } from "@/constants";
 
 // Capacity per booking type: QUARTER = 0.25, HALF = 0.5, FULL = 1 (used to sum slot usage).
 const TYPE_MULTIPLIER = { QUARTER: 0.25, HALF: 0.5, FULL: 1 };
@@ -204,9 +204,9 @@ const RaatBookingsModal = ({ open, onClose, day, dayData, onDeleteSuccess }) => 
           ...booking,
           slot: slotData.slot,
           slotType: slotData.type,
-        })),
+        }))
       ),
-    [dayData?.slots],
+    [dayData?.slots]
   );
 
   const handleDelete = async (bookingId) => {
@@ -291,7 +291,7 @@ export default function NiyaazBookedSlotsList() {
     setLoading(true);
     try {
       const { json } = await httpClient(
-        `${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/calendar?eventId=${currentEvent.id}`,
+        `${getApiUrl("niyaazBookedSlots")}/niyaazBookedSlots/calendar?eventId=${currentEvent.id}`
       );
       setCalendarData(json);
     } catch (error) {

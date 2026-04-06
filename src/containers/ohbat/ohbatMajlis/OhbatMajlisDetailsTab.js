@@ -13,7 +13,7 @@ import Typography from "@mui/material/Typography";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 import {
   openOhbatMajlisKhidmatDialog,
   openOhbatMajlisSadaratDialog,

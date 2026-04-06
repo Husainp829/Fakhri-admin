@@ -10,8 +10,8 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import MarkazStats from "./markazStats";
 import ReceiptDayWise from "./receiptDayWise";
-import { receiptGroupBy } from "../../../utils";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { receiptGroupBy } from "@/utils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const LoadedGridList = ({ niyaazCounts, receiptReport, selectedMarkaz }) => {
   const { permissions } = usePermissions();

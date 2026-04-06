@@ -17,7 +17,7 @@ import {
   FunctionField,
   DateField,
 } from "react-admin";
-import { formatINR } from "../../../utils";
+import { formatINR } from "@/utils";
 
 const RegistrationFilters = [
   <TextInput

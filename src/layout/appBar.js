@@ -3,7 +3,7 @@ import { AppBar, TitlePortal } from "react-admin";
 import HomeIcon from "@mui/icons-material/Home";
 import { Button, IconButton } from "@mui/material";
 
-import { navigateToBaseRoute, useBaseRoute } from "../utils/routeUtility";
+import { navigateToBaseRoute, useBaseRoute } from "@/utils/route-utility";
 
 const goToDashboard = () => navigateToBaseRoute();
 

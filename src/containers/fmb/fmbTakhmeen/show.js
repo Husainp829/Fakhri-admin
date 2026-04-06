@@ -13,7 +13,7 @@ import {
   EditButton,
   FunctionField,
 } from "react-admin";
-import { formatFmbHijriPeriod } from "../../../utils/hijriDateUtils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const FmbTakhmeenShowActions = () => (
   <TopToolbar>

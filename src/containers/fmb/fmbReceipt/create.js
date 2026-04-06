@@ -30,7 +30,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { ITSInput } from "./common/itsInput";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
-import { formatINR } from "../../../utils";
+import { formatINR } from "@/utils";
 
 const LINE_KIND = {
   ANNUAL: "ANNUAL",
@@ -122,7 +122,7 @@ function FmbPaymentCreditReadout() {
   const { data, isLoading } = useGetOne(
     "fmbData",
     { id: fmbId },
-    { enabled: Boolean(fmbId?.trim()) },
+    { enabled: Boolean(fmbId?.trim()) }
   );
   if (!fmbId?.trim() || isLoading || !data) {
     return null;
@@ -244,7 +244,7 @@ function seedStandaloneTemplateRows(rows, totalPayment) {
     return [];
   }
   return rows.map((row, i) =>
-    i === 0 ? { ...row, amount: t > 0 ? t : "" } : { ...row, amount: "" },
+    i === 0 ? { ...row, amount: t > 0 ? t : "" } : { ...row, amount: "" }
   );
 }
 
@@ -345,13 +345,13 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
   const canConfirm = effectiveTotal >= 1;
   const preferred = useMemo(
     () => getPreferredAllocationFromTemplate(allocationTemplate),
-    [allocationTemplate],
+    [allocationTemplate]
   );
 
   const { data: fmbDataForCredit } = useGetOne(
     "fmbData",
     { id: fmbIdWatch },
-    { enabled: Boolean(fmbIdWatch?.trim()) },
+    { enabled: Boolean(fmbIdWatch?.trim()) }
   );
   const availableCredit = fmbDataForCredit?.paymentCreditBalance ?? 0;
   const showCredit = Boolean(fmbIdWatch?.trim()) && availableCredit > 0;
@@ -371,7 +371,7 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
       pagination: { page: 1, perPage: 500 },
       sort: { field: "startDate", order: "DESC" },
     },
-    { enabled: listEnabled },
+    { enabled: listEnabled }
   );
   const {
     data: contributionsList = [],
@@ -383,7 +383,7 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
       filter: { fmbId: fmbIdWatch },
       pagination: { page: 1, perPage: 500 },
     },
-    { enabled: listEnabled },
+    { enabled: listEnabled }
   );
 
   const displayRows = useMemo(() => {
@@ -396,13 +396,13 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
         const pending =
           kind === LINE_KIND.CONTRIBUTION
             ? pickContributionPendingAmount(
-                contributionsList.find((c) => c.id === row?.fmbContributionId),
+                contributionsList.find((c) => c.id === row?.fmbContributionId)
               )
             : pickAnnualPendingAmount(takhmeenList.find((t) => t.id === row?.fmbTakhmeenId));
         const label =
           kind === LINE_KIND.CONTRIBUTION
             ? contributionRowLabel(
-                contributionsList.find((c) => c.id === row?.fmbContributionId) || {},
+                contributionsList.find((c) => c.id === row?.fmbContributionId) || {}
               )
             : annualRowLabel(takhmeenList.find((t) => t.id === row?.fmbTakhmeenId) || {});
         return { index, kind, pending, label, payNow };
@@ -443,7 +443,7 @@ function PaymentTotalAndAllocationsSection({ allocationTemplate }) {
       pending.meta,
       preferred,
       takhmeenList,
-      contributionsList,
+      contributionsList
     );
     const seeded =
       prioritized.rows.length > 0
@@ -758,7 +758,7 @@ export default function FmbReceiptCreate(props) {
       creditUsed: 0,
       allocations: [],
     }),
-    [fmbId],
+    [fmbId]
   );
 
   const validateFmbReceiptForm = (values) => {

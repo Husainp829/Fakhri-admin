@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import { ITSInput } from "./common/itsInput";
 import { TakhmeenYearSelect, transformTakhmeenCreate } from "./common/takhmeenFormShared";
-import { getHijriYear } from "../../../utils/hijriDateUtils";
+import { getHijriYear } from "@/utils/hijri-date-utils";
 
 export default function FmbTakhmeenCreate(props) {
   const [searchParams] = useSearchParams();

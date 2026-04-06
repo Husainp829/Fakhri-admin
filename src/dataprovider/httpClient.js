@@ -3,8 +3,8 @@
 import dayjs from "dayjs";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { fetchUtils } from "react-admin";
-import { authObj } from "../firebaseConfig";
-import { getRouteIdFromPathname } from "../utils/routeUtility";
+import { authObj } from "@/firebase-config";
+import { getRouteIdFromPathname } from "@/utils/route-utility";
 
 export const getToken = async () => {
   let token = localStorage.getItem("AUTH_TOKEN");

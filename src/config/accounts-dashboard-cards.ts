@@ -3,8 +3,17 @@
  * Add new cards here to extend the Accounts dashboard.
  */
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import type { SvgIconComponent } from "@mui/icons-material";
 
-export const ACCOUNTS_DASHBOARD_CARDS = [
+export type AccountsDashboardCard = {
+  permission: string;
+  icon: SvgIconComponent;
+  label: string;
+  description: string;
+  path: string;
+};
+
+export const ACCOUNTS_DASHBOARD_CARDS: AccountsDashboardCard[] = [
   {
     permission: "sabilReceipts.view",
     icon: ReceiptIcon,

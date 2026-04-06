@@ -1,6 +1,3 @@
-// hijriDateUtils.js
-
-// Number of days in Hijri months and 30-year cycle
 const DAYS_IN_YEAR = [30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325];
 const DAYS_IN_30_YEARS = [
   354, 708, 1063, 1417, 1771, 2126, 2480, 2834, 3189, 3543, 3898, 4252, 4606, 4961, 5315, 5669,
@@ -56,20 +53,20 @@ const MONTH_NAMES = {
       "Zilhaj",
     ],
   },
-};
+} as const;
 
-// Julian check
-const isJulian = (date) => {
+type HijriFormat = keyof typeof MONTH_NAMES;
+
+const isJulian = (date: Date): boolean => {
   const y = date.getFullYear();
   const m = date.getMonth();
   const d = date.getDate();
   return y < 1582 || (y === 1582 && (m < 9 || (m === 9 && d < 5)));
 };
 
-// Gregorian to Astronomical Julian Date
-const gregorianToAJD = (date) => {
-  let a;
-  let b;
+const gregorianToAJD = (date: Date): number => {
+  let a: number;
+  let b: number;
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
   const day =
@@ -94,8 +91,7 @@ const gregorianToAJD = (date) => {
   return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + b - 1524.5;
 };
 
-// From AJD to Hijri
-const fromAJD = (ajd) => {
+const fromAJD = (ajd: number): { year: number; month: number; day: number } => {
   let i = 0;
   let left = Math.floor(ajd - 1948083.5);
   const y30 = Math.floor(left / 10631.0);
@@ -115,7 +111,7 @@ const fromAJD = (ajd) => {
   return { year, month, day };
 };
 
-export const fromGregorian = (gregorianDate, format = "short") => {
+export const fromGregorian = (gregorianDate: Date, format: HijriFormat = "short"): string => {
   const ajd = gregorianToAJD(gregorianDate);
   const { year, month, day } = fromAJD(ajd);
   const monthName = MONTH_NAMES[format].en[month];
@@ -125,32 +121,28 @@ export const fromGregorian = (gregorianDate, format = "short") => {
   return `${day} ${monthName} ${year}`;
 };
 
-export const getHijriYear = (gregorianDate = new Date()) => {
+export const getHijriYear = (gregorianDate: Date = new Date()): number => {
   const ajd = gregorianToAJD(gregorianDate);
   const { year } = fromAJD(ajd);
   return year;
 };
 
-/** @returns {{ year: number, month: number, day: number }} month index 0=Moharram … 9=Shawwal … 11=Zilhaj */
-export const getHijriDateParts = (gregorianDate) => {
+export const getHijriDateParts = (
+  gregorianDate: Date
+): { year: number; month: number; day: number } => {
   const ajd = gregorianToAJD(gregorianDate);
   return fromAJD(ajd);
 };
 
-/**
- * “Shawwal-cycle” Hijri label: year of the 1 Shawwal that *opened* the current FMB year.
- * For Moharram–Ramadan of civil Hijri year Y, returns Y − 1 (e.g. Ramadan 1447 → 1446).
- * Takhmeen create uses getHijriYear for the effective month instead (civil Hijri year).
- */
-export const getFmbTakhmeenYearFromGregorian = (gregorianDate) => {
+export const getFmbTakhmeenYearFromGregorian = (gregorianDate: Date): number => {
   const { year, month } = getHijriDateParts(gregorianDate);
   return month < 9 ? year - 1 : year;
 };
 
-/**
- * FMB takhmeen period label, e.g. "1447–1448". Uses explicit end when present; otherwise start + 1.
- */
-export const formatFmbHijriPeriod = (hijriStart, hijriEnd) => {
+export const formatFmbHijriPeriod = (
+  hijriStart: string | number | null | undefined,
+  hijriEnd: string | number | null | undefined
+): string | null => {
   if (hijriStart == null || hijriStart === "") return null;
   const start = Number(hijriStart);
   if (!Number.isFinite(start)) return null;

@@ -36,18 +36,15 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { slotNameMap } from "../../../../../constants";
-import { hasPermission } from "../../../../../utils/permissionUtils";
+import { slotNameMap } from "@/constants";
+import { hasPermission } from "@/utils/permission-utils";
 import NoArrowKeyNumberInput from "../../../../../components/NoArrowKeyNumberInput";
 
 const CustomToolbar = ({ onClose, ...props }) => {
   const refresh = useRefresh();
 
   return (
-    <Toolbar
-      {...props}
-      sx={{ display: "flex", justifyContent: "space-between" }}
-    >
+    <Toolbar {...props} sx={{ display: "flex", justifyContent: "space-between" }}>
       <SaveButton />
       <DeleteButton
         mutationOptions={{
@@ -100,11 +97,7 @@ const HallBookingEditModal = ({ id, open, onClose }) => {
           <SimpleForm toolbar={<CustomToolbar onClose={onClose} />}>
             <TextInput source="hall.name" label="Hall" disabled fullWidth />
             <NoArrowKeyNumberInput source="thaals" label="Thaals" fullWidth />
-            <ReferenceInput
-              source="purpose"
-              reference="bookingPurpose"
-              fullWidth
-            >
+            <ReferenceInput source="purpose" reference="bookingPurpose" fullWidth>
               <SelectInput optionText="name" fullWidth />
             </ReferenceInput>
             <DateInput source="date" label="Date" fullWidth />
@@ -160,11 +153,7 @@ const HallBookingCreateModal = ({ open, onClose, bookingId }) => {
             <ReferenceInput source="hallId" reference="halls">
               <SelectInput optionText="name" fullWidth />
             </ReferenceInput>
-            <ReferenceInput
-              source="purpose"
-              reference="bookingPurpose"
-              fullWidth
-            >
+            <ReferenceInput source="purpose" reference="bookingPurpose" fullWidth>
               <SelectInput optionText="name" fullWidth />
             </ReferenceInput>
             <NoArrowKeyNumberInput source="thaals" label="Thaals" fullWidth />
@@ -228,23 +217,13 @@ const HallBookingsTable = () => {
 
   return (
     <Box mb={4}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Hall Bookings</Typography>
-        {hasPermission(permissions, "bookings.edit") &&
-          !record.checkedOutOn && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenCreate(true)}
-            >
-              Add Hall
-            </Button>
-          )}
+        {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
+          <Button variant="outlined" color="primary" onClick={() => setOpenCreate(true)}>
+            Add Hall
+          </Button>
+        )}
       </Box>
 
       <Table size="small">
@@ -256,10 +235,9 @@ const HallBookingsTable = () => {
             <TableCell>Thaals</TableCell>
             <TableCell>Date</TableCell>
             <TableCell>Slot</TableCell>
-            {hasPermission(permissions, "bookings.edit") &&
-              !record.checkedOutOn && (
-                <TableCell align="right">Actions</TableCell>
-              )}
+            {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
+              <TableCell align="right">Actions</TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -273,28 +251,25 @@ const HallBookingsTable = () => {
                   <TableCell>{hb.purpose}</TableCell>
                   <TableCell>{hb.withAC ? "With AC" : "W/O AC"}</TableCell>
                   <TableCell>{hb.thaals}</TableCell>
-                  <TableCell>
-                    {new Date(hb.date).toLocaleDateString()}
-                  </TableCell>
+                  <TableCell>{new Date(hb.date).toLocaleDateString()}</TableCell>
                   <TableCell>{slotNameMap[hb.slot]}</TableCell>
-                  {hasPermission(permissions, "bookings.edit") &&
-                    !record.checkedOutOn && (
-                      <TableCell align="right">
-                        <IconButton onClick={() => handleEdit(hb.id)}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
+                  {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
+                    <TableCell align="right">
+                      <IconButton onClick={() => handleEdit(hb.id)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
 
-                        <IconButton
-                          color="error"
-                          onClick={() => {
-                            setSelectedId(hb.id);
-                            setOpen(true);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    )}
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setSelectedId(hb.id);
+                          setOpen(true);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
           ) : (
@@ -315,11 +290,7 @@ const HallBookingsTable = () => {
         onClose={() => setOpen(false)}
       />
 
-      <HallBookingEditModal
-        id={editId}
-        open={modalOpen}
-        onClose={handleClose}
-      />
+      <HallBookingEditModal id={editId} open={modalOpen} onClose={handleClose} />
       <HallBookingCreateModal
         open={openCreate}
         bookingId={record.id}

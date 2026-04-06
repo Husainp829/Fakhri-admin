@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, CardContent, CardActionArea, Typography, Grid } from "@mui/material";
 import { Title, usePermissions } from "react-admin";
-import { hasPermission } from "../../../utils/permissionUtils";
-import { ACCOUNTS_DASHBOARD_CARDS } from "../../../config/accountsDashboardCards";
+import { hasPermission } from "@/utils/permission-utils";
+import { ACCOUNTS_DASHBOARD_CARDS } from "@/config/accounts-dashboard-cards";
 
 const DashboardCard = ({ icon: Icon, title, description, path }) => {
   const handleClick = () => {

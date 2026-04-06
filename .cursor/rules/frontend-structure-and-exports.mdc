@@ -1,0 +1,63 @@
+---
+description: Fakhri-admin src layout, file/folder naming, and barrel export conventions (use during JS→TS migration)
+globs: src/**/*.{js,jsx,ts,tsx}
+alwaysApply: false
+---
+
+# Frontend structure, naming, and barrel exports
+
+Use these conventions for **new and migrated** code under `src/`. Apply them **when touching a file** during the phased TypeScript migration; avoid repo-wide renames unless a PR is dedicated to that slice.
+
+## Directory layout (current + target)
+
+Keep the existing **react-admin–aligned** layout unless a change is explicitly scoped:
+
+| Area                                  | Purpose                                                            |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| `src/config/`                         | Module registry, theme, i18n, routes                               |
+| `src/dataprovider/`                   | HTTP client, `DataProvider`, upload helpers                        |
+| `src/layout/`                         | Shell: menu, app bar, login                                        |
+| `src/components/`                     | Shared UI reused across domains                                    |
+| `src/containers/<domain>/<resource>/` | Resource screens (list, create, show, edit, …)                     |
+| `src/utils/`                          | Pure helpers, formatters (no React when possible)                  |
+| `src/types/`                          | Shared TypeScript types and ambient `*.d.ts` (grow as you migrate) |
+
+Optional later rename: `containers/` → `features/` for clarity—only in a dedicated PR with team agreement.
+
+## Folder naming
+
+- Prefer **kebab-case** for folder names (e.g. `ohbat-majlis`, `sabil-receipt`). Many existing folders use **camelCase**; do not bulk-rename unless planned—**new** folders should use kebab-case.
+- Avoid **dots in folder names** (e.g. prefer `components/pdf/` or `components/receipt-pdf/` over `components/pdf.js/`).
+
+## File naming
+
+- **Components** (files containing JSX): **`PascalCase.tsx`** (e.g. `SabilReceiptList.tsx`, `BookingModal.tsx`).
+- **Non-UI modules** (hooks-only, utils, constants colocated in a feature): **`kebab-case.ts`** (e.g. `permission-utils.ts`, `http-client.ts`).
+- **Resource entry**: prefer **`index.tsx`** or **`index.ts`** as the public entry for a resource folder when it wires react-admin; complex resources may use `index.ts` that re-exports a `PascalCase` screen component.
+
+During migration, renaming `list.js` → `SabilReceiptList.tsx` (or domain-appropriate PascalCase) is encouraged when the change stays reviewable.
+
+## Imports
+
+- Prefer **absolute** imports with the **`@/`** alias for anything under `src/` (configured in `tsconfig.json` as `@/*` → `src/*`). Example: `import { hasPermission } from "@/utils/permission-utils"`.
+- **Colocated modules** in the same folder (e.g. feature `constants.js` or `utils.js` next to the screen) should stay **`./constants`**, **`./utils`**, etc. — do not use **`@/constants`** or **`@/utils`** for those, because **`@/constants`** is **`src/constants.ts`** and **`@/utils`** is **`src/utils/index.ts`** (app-wide).
+- **Same-folder** barrels may use `./` re-exports if it keeps the barrel obvious; otherwise use `@/…` for consistency.
+- Use **extensionless** specifiers. Vite + TypeScript resolve `.ts` / `.tsx`. (Exception: the legacy folder `components/pdf.js` keeps that segment in the path until renamed.)
+
+## Barrel exports (`index.ts` / `index.tsx`)
+
+**Do**
+
+- Add a **narrow barrel** at a **resource** or **small feature** root when `config/moduleResources`, `App`, or siblings import multiple symbols from that folder.
+- Use **named exports** explicitly (`export { X, Y } from "./X"`). Prefer **named exports** from leaf modules too, unless the file is the default resource component for react-admin.
+
+**Don’t**
+
+- Create a single **`src/index.ts`** that re-exports the whole app.
+- Add deep chains of barrels that only re-export other barrels (hurts navigation and can worsen circular dependencies).
+- Use `export *` widely; prefer explicit re-exports so APIs stay obvious and tree-shaking behavior stays predictable.
+
+## Coordination with other rules
+
+- Dashboard wiring and module registry details: **`fakhri-dashboard-architecture.mdc`**.
+- Phased TypeScript migration order: project plan **Phased JS to TS migration** (apply this rule in every phase when moving or renaming files).

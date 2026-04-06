@@ -11,7 +11,7 @@ import {
 import { Box, Button, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { fromGregorian } from "@/utils/hijri-date-utils";
 import { formatMajlisStartTimeLabel } from "../ohbatMajlis/ohbatMajlisTime";
 
 const formatMajlisDateUtc = (date) => (date ? dayjs.utc(date).format("DD - MMM - YYYY") : "—");

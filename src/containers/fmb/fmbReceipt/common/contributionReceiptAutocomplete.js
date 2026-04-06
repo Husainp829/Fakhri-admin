@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AutocompleteInput, useChoicesContext } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import { formatINR } from "../../../../utils";
+import { formatINR } from "@/utils";
 
 /** Hydrates read-only contribution total fields when a contribution is selected on the receipt form. */
 export function ContributionReceiptAutocomplete(props) {

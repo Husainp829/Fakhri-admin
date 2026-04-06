@@ -9,8 +9,8 @@ import {
   TextField,
   useRedirect,
 } from "react-admin";
-import { formatINR } from "../../../../utils";
-import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
+import { formatINR } from "@/utils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 export default () => {
   const redirect = useRedirect();

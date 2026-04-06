@@ -22,7 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { hasPermission } from "../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 import CustomEmpty from "../../components/CustomEmpty";
 import { callApi } from "../../dataprovider/miscApis";
 
@@ -78,9 +78,7 @@ const TriggerCronButton = () => {
       }
     } catch (error) {
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to trigger cron job";
+        error?.response?.data?.message || error?.message || "Failed to trigger cron job";
       notify(errorMessage, { type: "error" });
     } finally {
       setLoading(false);

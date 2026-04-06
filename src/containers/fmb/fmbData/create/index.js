@@ -16,10 +16,7 @@ import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput"
 
 import { ITSInput } from "../common/itsInput";
 import { ThaliFieldsInput, mapThaliRowForApi } from "../common/thaliFields";
-import {
-  formatFmbHijriPeriod,
-  getFmbTakhmeenYearFromGregorian,
-} from "../../../../utils/hijriDateUtils";
+import { formatFmbHijriPeriod, getFmbTakhmeenYearFromGregorian } from "@/utils/hijri-date-utils";
 
 const DUPLICATE_ITS_ERROR = "An FMB record already exists for this ITS.";
 const ITS_MIN_LEN_FOR_DUP_CHECK = 5;
@@ -106,7 +103,7 @@ export default function FmbDataCreate(props) {
       resultCacheRef.current.set(its, isDuplicate);
       return isDuplicate;
     },
-    [dataProvider],
+    [dataProvider]
   );
 
   const validateItsNo = React.useCallback(
@@ -130,7 +127,7 @@ export default function FmbDataCreate(props) {
         return undefined;
       }
     },
-    [checkItsDuplicate],
+    [checkItsDuplicate]
   );
 
   function ItsDuplicateGuard() {

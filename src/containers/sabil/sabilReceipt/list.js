@@ -19,10 +19,10 @@ import dayjs from "dayjs";
 import { Box, Card, CardContent, Grid, Typography, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl, SABIL_TYPE_OPTIONS } from "../../../constants";
+import { getApiUrl, SABIL_TYPE_OPTIONS } from "@/constants";
 import CommonTabs from "../../../components/CommonTabs";
-import { exportToExcel } from "../../../utils/exportToExcel";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { exportToExcel } from "@/utils/export-to-excel";
+import { hasPermission } from "@/utils/permission-utils";
 
 const SUMMARY_CONFIG = [
   {

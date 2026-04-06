@@ -2,71 +2,58 @@
  * Resource configuration per module.
  * Used by App.js to render Resources based on baseRoute.
  */
-import hallBookings, { bookings } from "../containers/bookings/hallBookings";
-import bookingPurpose from "../containers/bookings/bookingPurpose";
-import halls from "../containers/bookings/halls";
-import blockedHallDates from "../containers/bookings/blockedHallDates";
-import rentBookingReceipt from "../containers/bookings/rentBookingReceipt";
-import lagatReceipt from "../containers/lagatReceipt";
-import DepositReceiptPrint from "../containers/bookings/rentBookingReceipt/depositReceiptPrint";
-import RazaPrint from "../containers/bookings/hallBookings/razaPrint";
-import ConfirmationVoucher from "../containers/bookings/hallBookings/confirmationReceiptPrint";
+import hallBookings, { bookings } from "@/containers/bookings/hallBookings";
+import bookingPurpose from "@/containers/bookings/bookingPurpose";
+import halls from "@/containers/bookings/halls";
+import blockedHallDates from "@/containers/bookings/blockedHallDates";
+import rentBookingReceipt from "@/containers/bookings/rentBookingReceipt";
+import lagatReceipt from "@/containers/lagatReceipt";
+import DepositReceiptPrint from "@/containers/bookings/rentBookingReceipt/depositReceiptPrint";
+import RazaPrint from "@/containers/bookings/hallBookings/razaPrint";
+import ConfirmationVoucher from "@/containers/bookings/hallBookings/confirmationReceiptPrint";
 
-import niyaaz from "../containers/events/niyaaz";
-import niyaazBookedSlots from "../containers/events/niyaazBookedSlots";
-import receipt from "../containers/events/receipt";
-import vendorLedger from "../containers/events/vendorLedger";
-import vendor from "../containers/events/vendor";
-import vendorType from "../containers/events/vendorType";
-import event from "../containers/events/event";
+import niyaaz from "@/containers/events/niyaaz";
+import niyaazBookedSlots from "@/containers/events/niyaazBookedSlots";
+import receipt from "@/containers/events/receipt";
+import vendorLedger from "@/containers/events/vendorLedger";
+import vendor from "@/containers/events/vendor";
+import vendorType from "@/containers/events/vendorType";
+import event from "@/containers/events/event";
 
-import staff from "../containers/staff/staff";
-import staffAttendance from "../containers/staff/staffAttendance";
+import staff from "@/containers/staff/staff";
+import staffAttendance from "@/containers/staff/staffAttendance";
 
-import sabilData from "../containers/sabil/sabilData";
-import sabilReceipt from "../containers/sabil/sabilReceipt";
-import sabilTakhmeen from "../containers/sabil/sabilTakhmeen";
-import sabilChangeRequests from "../containers/sabil/sabilChangeRequest";
-import sabilLedger from "../containers/sabil/sabilLedger";
+import sabilData from "@/containers/sabil/sabilData";
+import sabilReceipt from "@/containers/sabil/sabilReceipt";
+import sabilTakhmeen from "@/containers/sabil/sabilTakhmeen";
+import sabilChangeRequests from "@/containers/sabil/sabilChangeRequest";
+import sabilLedger from "@/containers/sabil/sabilLedger";
 
-import fmbData from "../containers/fmb/fmbData";
-import fmbReceipt from "../containers/fmb/fmbReceipt";
-import fmbTakhmeen from "../containers/fmb/fmbTakhmeen";
-import fmbContributions from "../containers/fmb/fmbContributions";
-import fmbDeliveryScheduleProfile from "../containers/fmb/fmbDeliveryScheduleProfile";
-import fmbThaliSettings from "../containers/fmb/fmbThaliSettings";
-import fmbHoliday from "../containers/fmb/fmbHoliday";
-import fmbThaliSuspension from "../containers/fmb/fmbThaliSuspension";
-import fmbThaliType from "../containers/fmb/fmbThaliType";
+import fmbData from "@/containers/fmb/fmbData";
+import fmbReceipt from "@/containers/fmb/fmbReceipt";
+import fmbTakhmeen from "@/containers/fmb/fmbTakhmeen";
+import fmbContributions from "@/containers/fmb/fmbContributions";
+import fmbDeliveryScheduleProfile from "@/containers/fmb/fmbDeliveryScheduleProfile";
+import fmbThaliSettings from "@/containers/fmb/fmbThaliSettings";
+import fmbHoliday from "@/containers/fmb/fmbHoliday";
+import fmbThaliSuspension from "@/containers/fmb/fmbThaliSuspension";
+import fmbThaliType from "@/containers/fmb/fmbThaliType";
 
-import miqaatNiyaazReceipts from "../containers/miqaat/miqaatNiyaazReceipts";
+import miqaatNiyaazReceipts from "@/containers/miqaat/miqaatNiyaazReceipts";
 
-import ohbatMajlis from "../containers/ohbat/ohbatMajlis";
-import ohbatMajlisUpcoming from "../containers/ohbat/ohbatMajlisUpcoming";
-import ohbatMajlisAttendance from "../containers/ohbat/ohbatMajlisAttendance";
-import sadarats from "../containers/ohbat/sadarats";
-import makhsoosItsData from "../containers/ohbat/makhsoosItsData";
+import ohbatMajlis from "@/containers/ohbat/ohbatMajlis";
+import ohbatMajlisUpcoming from "@/containers/ohbat/ohbatMajlisUpcoming";
+import ohbatMajlisAttendance from "@/containers/ohbat/ohbatMajlisAttendance";
+import sadarats from "@/containers/ohbat/sadarats";
+import makhsoosItsData from "@/containers/ohbat/makhsoosItsData";
 
-/**
- * @typedef {Object} ResourceConfig
- * @property {string|null} permission - Permission to view resource; null = always show (unless permissionsAny is set)
- * @property {string[]} [permissionsAny] - User needs at least one of these permissions (OR)
- * @property {Object} resource - React-admin resource definition
- * @property {string} [createPermission] - Permission to show create button; if absent, use resource.create as-is
- * @property {boolean} [requireRouteId] - Only show when routeId exists (events module)
- */
-
-/**
- * @typedef {Object} CustomRouteConfig
- * @property {string} path - Route path (e.g. "/dep-rcpt/:id")
- * @property {React.Component} element - Route element component
- */
+import type { ModuleResourcesValue } from "@/types/react-admin-config";
 
 /**
  * Module resources keyed by baseRoute path.
  * Each entry: { resources: ResourceConfig[], customRoutes?: CustomRouteConfig[] }
  */
-export const MODULE_RESOURCES = {
+export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
   bookings: {
     resources: [
       { permission: "bookings.view", resource: bookings },
@@ -175,7 +162,11 @@ export const MODULE_RESOURCES = {
   },
   ohbat: {
     resources: [
-      { permission: "ohbatMajalis.view", resource: ohbatMajlis, createPermission: "ohbatMajalis.create" },
+      {
+        permission: "ohbatMajalis.view",
+        resource: ohbatMajlis,
+        createPermission: "ohbatMajalis.create",
+      },
       {
         permissionsAny: ["ohbatMajalis.view", "ohbatMajlisAttendance.view"],
         resource: ohbatMajlisUpcoming,

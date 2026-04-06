@@ -6,9 +6,9 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import GridList from "./gridList";
 import { callApi } from "../../../dataprovider/miscApis";
-import { MARKAZ_LIST } from "../../../constants";
+import { MARKAZ_LIST } from "@/constants";
 import NamaazStats from "./namaazStats";
-import { useRouteId } from "../../../utils/routeUtility";
+import { useRouteId } from "@/utils/route-utility";
 
 function a11yProps(index) {
   return {

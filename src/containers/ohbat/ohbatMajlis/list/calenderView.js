@@ -22,12 +22,12 @@ import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import dayjsLocalizer from "../../../../utils/dayjsLocalizer";
+import dayjsLocalizer from "@/utils/dayjs-localizer";
 import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
 import { buildOhbatMajlisEventDetailsText } from "../ohbatMajlisEventDetailsClipboard";
 import { formatMajlisStartTimeLabel } from "../ohbatMajlisTime";
-import { useBaseRoute } from "../../../../utils/routeUtility";
-import { fromGregorian } from "../../../../utils/hijriDateUtils";
+import { useBaseRoute } from "@/utils/route-utility";
+import { fromGregorian } from "@/utils/hijri-date-utils";
 import ViewToggle from "./viewToggle";
 import { majlisHasSadarat, missingSadaratBorderLeft } from "./missingSadaratHighlight";
 

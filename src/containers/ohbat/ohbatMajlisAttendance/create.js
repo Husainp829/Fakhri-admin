@@ -19,7 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { fromGregorian } from "../../../utils/hijriDateUtils";
+import { fromGregorian } from "@/utils/hijri-date-utils";
 import { formatMajlisStartTimeLabel } from "../ohbatMajlis/ohbatMajlisTime";
 
 const normalizeIts = (s) => String(s ?? "").trim();

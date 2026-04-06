@@ -3,8 +3,8 @@ import { Admin, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useBaseRoute, useRouteId } from "./utils/routeUtility";
-import { checkAndClearCacheFromURL } from "./utils/clearPermissionCache";
+import { useBaseRoute, useRouteId } from "@/utils/route-utility";
+import { checkAndClearCacheFromURL } from "@/utils/clear-permission-cache";
 
 import withClearCache from "./ClearCache";
 
@@ -13,9 +13,9 @@ import authProvider from "./authProvider";
 import layout from "./layout";
 import DashboardAdmin from "./layout/DashboardAdmin";
 import { ResourcesRenderer } from "./components/ResourcesRenderer";
-import { AUTHLESS_ROUTES } from "./config/authlessRoutes";
-import i18nProvider from "./config/i18n";
-import appTheme from "./config/theme";
+import { AUTHLESS_ROUTES } from "@/config/authless-routes";
+import i18nProvider from "@/config/i18n";
+import appTheme from "@/config/theme";
 import MyLoginPage from "./layout/login";
 
 dayjs.extend(utc);

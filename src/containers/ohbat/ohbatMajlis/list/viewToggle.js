@@ -4,7 +4,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useSearchParams } from "react-router-dom";
 import { CreateButton, usePermissions } from "react-admin";
-import { hasPermission } from "../../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 /** Mirrors hall bookings `BookingActions` + `ViewToggle` structure. */
 const OhbatMajlisActions = ({ permissions }) => (

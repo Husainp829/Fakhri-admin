@@ -3,9 +3,9 @@
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
 import { unflatten } from "flat";
-import { getApiUrl } from "../constants";
+import { getApiUrl } from "@/constants";
 import httpClient from "./httpClient";
-import { normalizePermissionsWithChoices } from "../utils/permissionUtils";
+import { normalizePermissionsWithChoices } from "@/utils/permission-utils";
 
 const convertRows = (rows) => rows.map(unflatten);
 

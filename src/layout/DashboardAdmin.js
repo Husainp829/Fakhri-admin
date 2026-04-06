@@ -1,9 +1,9 @@
 import React from "react";
 import { usePermissions } from "react-admin";
 import { Navigate } from "react-router-dom";
-import { useBaseRoute, useRouteId } from "../utils/routeUtility";
-import { hasAnyPermission, hasPermission } from "../utils/permissionUtils";
-import { getModuleByPath } from "../config/modules";
+import { useBaseRoute, useRouteId } from "@/utils/route-utility";
+import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
+import { getModuleByPath } from "@/config/modules";
 import DefaultDashboard from "../containers/defaultDashboard";
 
 const DashboardAdmin = () => {

@@ -28,11 +28,11 @@ import {
   Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { exportToExcel } from "../../../utils/exportToExcel";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { exportToExcel } from "@/utils/export-to-excel";
+import { hasPermission } from "@/utils/permission-utils";
 import CommonTabs from "../../../components/CommonTabs";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl } from "@/constants";
 
 const SUMMARY_CONFIG = [
   {
@@ -342,10 +342,7 @@ export default () => {
     let tabNameForFile = "receipts";
     if (currentTab && currentTab.name) {
       // Remove all spaces and hyphens, convert to lowercase
-      tabNameForFile = currentTab.name
-        .toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/-/g, "");
+      tabNameForFile = currentTab.name.toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
     } else if (currentFilter?.type && currentFilter?.mode) {
       // Fallback: construct from filter values if tab not found
       // Normalize the type value (handle case where it might be "RENT" but we want "CONT")

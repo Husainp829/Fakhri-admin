@@ -1,12 +1,19 @@
 /* eslint-disable no-shadow */
 import React, { useEffect, useMemo } from "react";
 import { Box, useMediaQuery } from "@mui/material";
-import { Title, useDataProvider, useNotify, useStore, usePermissions, CreateButton } from "react-admin";
+import {
+  Title,
+  useDataProvider,
+  useNotify,
+  useStore,
+  usePermissions,
+  CreateButton,
+} from "react-admin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import dayjs from "dayjs";
 import GridList from "./gridList";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const EventList = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));

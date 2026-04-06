@@ -13,7 +13,7 @@ import Grid from "@mui/material/GridLegacy";
 import { useWatch, useFormContext } from "react-hook-form";
 import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 import { callApi } from "../../../../dataprovider/miscApis";
-import { calcTotalPayable } from "../../../../utils";
+import { calcTotalPayable } from "@/utils";
 
 export default ({ niyaazId }) => {
   const notify = useNotify();

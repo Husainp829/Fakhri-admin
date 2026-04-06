@@ -11,9 +11,9 @@ import {
   Divider,
 } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
-import { authObj } from "../firebaseConfig";
-import { isWildcard, buildResourceGroups } from "../utils/permissionUtils";
-import { shouldBustCache } from "../utils/clearPermissionCache";
+import { authObj } from "@/firebase-config";
+import { isWildcard, buildResourceGroups } from "@/utils/permission-utils";
+import { shouldBustCache } from "@/utils/clear-permission-cache";
 
 // Module-level cache for permissions to prevent refetching
 let permissionsCache = null;
@@ -36,8 +36,7 @@ if (typeof window !== "undefined") {
  * Pure function: Check if a permission should be displayed as checked
  * This only checks if the permission is directly in the stored value
  */
-const isPermissionChecked = (permissionId, storedValue) =>
-  storedValue.includes(permissionId);
+const isPermissionChecked = (permissionId, storedValue) => storedValue.includes(permissionId);
 
 const GroupedPermissionsInput = (props) => {
   const { reference = "admins/permissions/available" } = props;
@@ -121,10 +120,7 @@ const GroupedPermissionsInput = (props) => {
   const choices = useMemo(() => localChoices || [], [localChoices]);
 
   // Memoize resource groups structure for efficient lookups
-  const resourceGroups = useMemo(
-    () => buildResourceGroups(choices, isWildcard),
-    [choices]
-  );
+  const resourceGroups = useMemo(() => buildResourceGroups(choices, isWildcard), [choices]);
 
   // Simple permission change handler - just add/remove the permission
   const handlePermissionChange = useCallback(
@@ -167,9 +163,7 @@ const GroupedPermissionsInput = (props) => {
         }}
       >
         {resourceGroups.groups.length === 0 ? (
-          <Typography
-            sx={{ p: 2, textAlign: "center", color: "text.secondary" }}
-          >
+          <Typography sx={{ p: 2, textAlign: "center", color: "text.secondary" }}>
             No permissions available
           </Typography>
         ) : (
@@ -199,12 +193,7 @@ const GroupedPermissionsInput = (props) => {
                       control={
                         <Checkbox
                           checked={checked}
-                          onChange={(e) =>
-                            handlePermissionChange(
-                              permission.id,
-                              e.target.checked
-                            )
-                          }
+                          onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
                         />
                       }
                       label={

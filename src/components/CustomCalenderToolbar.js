@@ -8,7 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import dayjs from "dayjs";
-import { fromGregorian } from "../utils/hijriDateUtils";
+import { fromGregorian } from "@/utils/hijri-date-utils";
 import ViewToggle from "../containers/bookings/hallBookings/list/viewToggle";
 
 const CustomCalendarToolbar = ({

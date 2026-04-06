@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useCreatePath, useStore } from "react-admin";
 import { useNavigate } from "react-router-dom";
-import { calcTotalBalance, calcTotalPayable } from "../../../utils";
+import { calcTotalBalance, calcTotalPayable } from "@/utils";
 
 const MarkazStats = ({ niyaazCounts, selectedMarkaz }) => {
   const [currentEvent] = useStore("currentEvent");

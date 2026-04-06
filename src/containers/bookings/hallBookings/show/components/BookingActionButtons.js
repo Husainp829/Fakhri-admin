@@ -17,19 +17,11 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CancelIcon from "@mui/icons-material/Cancel";
 import BalanceIcon from "@mui/icons-material/Balance";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import {
-  Box,
-  Typography,
-  Button,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
 import { callApi } from "../../../../../dataprovider/miscApis";
 import { useShowTotals } from "../context";
-import { hasPermission } from "../../../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const ConfirmConfig = {
   raza: {
@@ -150,11 +142,7 @@ const BookingShowActions = () => {
         >
           Actions
         </Button>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem
             onClick={() => {
               redirect(`/contRcpt/create?bookingId=${record?.id}`);
@@ -221,24 +209,23 @@ const BookingShowActions = () => {
             </MenuItem>
           )}
 
-          {hasPermission(permissions, "writeoff.allow") &&
-            totalAmountPending > 0 && (
-              <MenuItem
-                onClick={() => {
-                  setConfirmConfig({
-                    type: "writeoff",
-                    open: true,
-                    loading: false,
-                  });
-                  handleMenuClose();
-                }}
-              >
-                <ListItemIcon>
-                  <CancelIcon fontSize="small" color="warning" />
-                </ListItemIcon>
-                <ListItemText>Write-Off Booking</ListItemText>
-              </MenuItem>
-            )}
+          {hasPermission(permissions, "writeoff.allow") && totalAmountPending > 0 && (
+            <MenuItem
+              onClick={() => {
+                setConfirmConfig({
+                  type: "writeoff",
+                  open: true,
+                  loading: false,
+                });
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <CancelIcon fontSize="small" color="warning" />
+              </ListItemIcon>
+              <ListItemText>Write-Off Booking</ListItemText>
+            </MenuItem>
+          )}
           {!record.refundReturnedOn && (
             <MenuItem
               onClick={() => {

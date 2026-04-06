@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardActionArea, Typography, Grid } from "@mui/material";
 import { Title, usePermissions } from "react-admin";
-import { navigateToBaseRoute } from "../../utils/routeUtility";
-import { hasAnyPermission, hasPermission } from "../../utils/permissionUtils";
-import { MODULE_REGISTRY } from "../../config/modules";
+import { navigateToBaseRoute } from "@/utils/route-utility";
+import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
+import { MODULE_REGISTRY } from "@/config/modules";
 
 const DashboardCard = ({ icon: Icon, title, description, path }) => (
   <Card sx={{ minHeight: 150, width: "100%" }}>
@@ -29,7 +29,7 @@ export default function DefaultDashboard() {
         {MODULE_REGISTRY.filter((m) =>
           m.permissionsAny?.length
             ? hasAnyPermission(permissions, m.permissionsAny)
-            : hasPermission(permissions, m.permission),
+            : hasPermission(permissions, m.permission)
         ).map((m) => (
           <Grid key={m.path} item size={{ xs: 6, sm: 6, md: 3 }}>
             <DashboardCard

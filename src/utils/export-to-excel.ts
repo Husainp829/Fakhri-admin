@@ -1,43 +1,36 @@
-// exporter.util.js
+/* eslint-disable no-console */
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
-/**
- * columns: [
- *   { header: 'Booking No', field: 'booking.bookingNo', width: 20 },
- *   { header: 'Date', field: 'date', formatter: (rec, v) => dayjs(v).format('DD-MMM-YYYY') },
- *   { header: 'Slot', field: rec => slotNameMap[rec.slot] },
- * ]
- *
- * data: array of records (objects)
- *
- * options: {
- *   filenamePrefix: 'bookings',
- *   sheetName: 'Sheet1'
- * }
- */
-export function exportToExcel(columns = [], data = [], options = {}) {
+import type { ExcelColumn, ExportToExcelOptions } from "@/types/excel";
+
+export function exportToExcel<T extends Record<string, unknown> = Record<string, unknown>>(
+  columns: ExcelColumn<T>[] = [],
+  data: T[] = [],
+  options: ExportToExcelOptions = {}
+): { filename: string; blob: Blob } {
   const { filenamePrefix = "export", sheetName = "Sheet1" } = options;
 
-  // helper to get nested values by path 'a.b.c'
-  const getByPath = (obj, path) => {
+  const getByPath = (obj: T, path: string): unknown => {
     if (!obj || !path) return undefined;
-    return path.split(".").reduce((acc, key) => (acc ? acc[key] : undefined), obj);
+    return path.split(".").reduce<unknown>((acc, key) => {
+      if (acc && typeof acc === "object" && key in (acc as object)) {
+        return (acc as Record<string, unknown>)[key];
+      }
+      return undefined;
+    }, obj);
   };
 
-  // Build flat rows with column headers as keys (preserves order)
   const rows = data.map((rec) => {
-    const row = {};
+    const row: Record<string, unknown> = {};
     columns.forEach((col) => {
       const { header, field, formatter } = col;
-      let rawValue;
+      let rawValue: unknown;
       if (typeof field === "function") {
         try {
           rawValue = field(rec);
         } catch (e) {
-          // fail gracefully
           rawValue = "";
-          // eslint-disable-next-line no-console
           console.error("column field function error for header:", header, e);
         }
       } else if (typeof field === "string") {
@@ -52,34 +45,32 @@ export function exportToExcel(columns = [], data = [], options = {}) {
           finalValue = formatter(rec, rawValue);
         } catch (e) {
           finalValue = rawValue;
-          // eslint-disable-next-line no-console
           console.error("formatter error for header:", header, e);
         }
       }
 
-      // Avoid `undefined` in excel cells
       row[header] = finalValue === undefined || finalValue === null ? "" : finalValue;
     });
     return row;
   });
 
-  // Create worksheet & workbook
-  const worksheet = XLSX.utils.json_to_sheet(rows, { origin: "A1" });
+  const worksheet = XLSX.utils.json_to_sheet(
+    rows as Record<string, unknown>[],
+    {
+      origin: "A1",
+    } as XLSX.JSON2SheetOpts
+  );
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
 
-  // Optionally set column widths if provided
   const widths = columns.map((c) => ({ wch: c.width || 20 }));
   worksheet["!cols"] = widths;
 
-  // Write workbook to array buffer
   const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
 
-  // Create blob and trigger download in browser (no file-saver)
   const blob = new Blob([wbout], { type: "application/octet-stream" });
   const filename = `${filenamePrefix}_${dayjs().format("YYYY-MM-DD_HH-mm-ss")}.xlsx`;
 
-  // Browser download
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

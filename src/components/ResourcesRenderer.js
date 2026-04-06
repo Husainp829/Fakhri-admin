@@ -1,11 +1,14 @@
 import React from "react";
 import { Resource, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
-import { hasPermission } from "../utils/permissionUtils";
-import { MODULE_RESOURCES } from "../config/moduleResources";
-import { GLOBAL_RESOURCES } from "../config/globalResources";
+import { hasPermission } from "@/utils/permission-utils";
+import { MODULE_RESOURCES } from "@/config/module-resources";
+import { GLOBAL_RESOURCES } from "@/config/global-resources";
 
-const renderResource = (permissions, { permission, permissionsAny, resource, createPermission, name }) => {
+const renderResource = (
+  permissions,
+  { permission, permissionsAny, resource, createPermission, name }
+) => {
   if (permissionsAny?.length) {
     const allowed = permissionsAny.some((p) => hasPermission(permissions, p));
     if (!allowed) {

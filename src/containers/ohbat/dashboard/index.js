@@ -23,7 +23,7 @@ import {
   Legend,
 } from "recharts";
 import { callApi } from "../../../dataprovider/miscApis";
-import { hasAnyPermission, hasPermission } from "../../../utils/permissionUtils";
+import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
 
 const COLORS = ["#2e7d32", "#1565c0", "#6a1b9a", "#00897b", "#c62828", "#6d4c41", "#455a64", "#7b1fa2"];
 

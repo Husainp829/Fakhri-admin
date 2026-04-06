@@ -1,15 +1,10 @@
 import * as React from "react";
-import {
-  Show,
-  TabbedShowLayout,
-  usePermissions,
-  useShowController,
-} from "react-admin";
+import { Show, TabbedShowLayout, usePermissions, useShowController } from "react-admin";
 import BookingInfoTab from "./BookingInfoTab";
 import ReceiptsTab from "./ReceiptsTab";
 import BookingShowActions from "./components/BookingActionButtons";
 import { BookingShowProvider } from "./context";
-import { hasPermission } from "../../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const BookingShow = (props) => {
   const { record } = useShowController(props);
@@ -20,9 +15,7 @@ const BookingShow = (props) => {
     <BookingShowProvider record={record}>
       <Show
         {...props}
-        actions={
-          hasPermission(permissions, "bookings.edit") && <BookingShowActions />
-        }
+        actions={hasPermission(permissions, "bookings.edit") && <BookingShowActions />}
       >
         <TabbedShowLayout>
           <TabbedShowLayout.Tab label="Information">

@@ -5,8 +5,12 @@ const messages = {
   en: englishMessages,
 };
 
-const i18nProvider = polyglotI18nProvider((locale) => messages[locale], "en", {
-  allowMissing: true,
-});
+const i18nProvider = polyglotI18nProvider(
+  (locale) => messages[locale as keyof typeof messages],
+  "en",
+  {
+    allowMissing: true,
+  }
+);
 
 export default i18nProvider;

@@ -23,10 +23,10 @@ import {
 } from "react-admin";
 import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { downLoadPasses } from "../../../utils";
-import { MARKAZ_LIST } from "../../../constants";
-import { hasPermission } from "../../../utils/permissionUtils";
-import { exportToExcel } from "../../../utils/exportToExcel";
+import { downLoadPasses } from "@/utils";
+import { MARKAZ_LIST } from "@/constants";
+import { hasPermission } from "@/utils/permission-utils";
+import { exportToExcel } from "@/utils/export-to-excel";
 
 export default () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });

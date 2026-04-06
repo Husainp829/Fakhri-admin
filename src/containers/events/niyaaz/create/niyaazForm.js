@@ -17,8 +17,8 @@ import { useWatch, useFormContext } from "react-hook-form";
 import HofLookup from "../common/hofLookup";
 import NiyaazDataGrid from "../common/niyaazDataGrid";
 import BookedSlotsInput from "../common/BookedSlotsInput";
-import { calcTotalPayable } from "../../../../utils";
-import { MARKAZ_LIST } from "../../../../constants";
+import { calcTotalPayable } from "@/utils";
+import { MARKAZ_LIST } from "@/constants";
 import NoArrowKeyNumberInput from "../../../../components/NoArrowKeyNumberInput";
 
 export default () => {

@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useShowContext } from "react-admin";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import { callApi } from "../../../../dataprovider/miscApis";
-import { formatINR } from "../../../../utils";
-import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
+import { formatINR } from "@/utils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const money = (n) => formatINR(Number(n || 0));
 
@@ -90,15 +90,15 @@ export default function PeriodTotalsTab() {
   const totals = useMemo(() => {
     const annualCommitted = rows.takhmeens.reduce(
       (sum, t) => sum + Number(t?.takhmeenAmount || 0),
-      0,
+      0
     );
     const annualPending = rows.takhmeens.reduce(
       (sum, t) => sum + Number(t?.pendingBalance || 0),
-      0,
+      0
     );
     const contributionCommitted = rows.contributions.reduce(
       (sum, c) => sum + Number(c?.amount || 0),
-      0,
+      0
     );
     const contributionIds = new Set(rows.contributions.map((c) => c.id));
     const takhmeenIds = new Set(rows.takhmeens.map((t) => t.id));

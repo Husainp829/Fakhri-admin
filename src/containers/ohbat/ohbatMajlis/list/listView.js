@@ -18,7 +18,7 @@ import {
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import dayjs from "dayjs";
 import { formatMajlisStartTimeLabel } from "../ohbatMajlisTime";
-import { exportToExcel } from "../../../../utils/exportToExcel";
+import { exportToExcel } from "@/utils/export-to-excel";
 import ViewToggle from "./viewToggle";
 import { majlisHasSadarat, missingSadaratBorderLeft } from "./missingSadaratHighlight";
 

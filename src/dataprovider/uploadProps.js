@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import axios from "axios";
-import storage from "../firebaseConfig";
-import { getApiUrl } from "../constants";
+import storage from "@/firebase-config";
+import { getApiUrl } from "@/constants";
 import { getToken } from "./httpClient";
 
 export default async (data, notify, type) => {

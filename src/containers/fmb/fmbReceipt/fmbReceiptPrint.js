@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ToWords } from "to-words";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
-import { formatDate } from "../../../utils";
+import { formatDate } from "@/utils";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
 
 /** Query string from hash route `#/fmb-receipt?receiptId=…` (not `window.location.search`). */

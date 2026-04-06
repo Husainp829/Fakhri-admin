@@ -18,7 +18,7 @@ import {
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { hasPermission } from "../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 import MakhsoosHostSectorTab from "./MakhsoosHostSectorTab";
 import OhbatMajlisDetailsTab from "./OhbatMajlisDetailsTab";
 import {

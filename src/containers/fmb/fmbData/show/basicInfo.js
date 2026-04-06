@@ -11,8 +11,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { formatINR } from "../../../../utils";
-import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
+import { formatINR } from "@/utils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const ISO_WEEKDAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 

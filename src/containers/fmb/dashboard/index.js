@@ -100,7 +100,7 @@ export default function FmbDashboard() {
     const sumType = (key) =>
       (byType[key] || []).reduce(
         (sum, row) => sum + Number(row.amount || 0) * Number(row.count || 0),
-        0,
+        0
       );
     const annualCommitted = sumType("ANNUAL");
     const zabihatCommitted = sumType("ZABIHAT");

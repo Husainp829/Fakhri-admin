@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezonePlugin from "dayjs/plugin/timezone";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl } from "@/constants";
 
 dayjs.extend(utc);
 dayjs.extend(timezonePlugin);
@@ -126,7 +126,7 @@ export default function FmbThaliSettingsPage() {
 
   const cutoffPreview = useMemo(
     () => computeCutoffPreview(timezone, defaultCutoffOffsetDays, defaultCutoffMinutes),
-    [timezone, defaultCutoffOffsetDays, defaultCutoffMinutes],
+    [timezone, defaultCutoffOffsetDays, defaultCutoffMinutes]
   );
 
   const save = () => {

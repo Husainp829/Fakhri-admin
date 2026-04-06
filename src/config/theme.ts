@@ -1,5 +1,6 @@
 import { defaultTheme } from "react-admin";
 import { deepmerge } from "@mui/utils";
+import type { Theme } from "@mui/material/styles";
 
 const appTheme = deepmerge(defaultTheme, {
   palette: {
@@ -40,6 +41,6 @@ const appTheme = deepmerge(defaultTheme, {
       },
     },
   },
-});
+}) as Theme;
 
 export default appTheme;

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { ToWords } from "to-words";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
-import { formatDate } from "../../../utils";
-import { MARKAZ_LIST } from "../../../constants";
+import { formatDate } from "@/utils";
+import { MARKAZ_LIST } from "@/constants";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
-import { getHijriYear } from "../../../utils/hijriDateUtils";
+import { getHijriYear } from "@/utils/hijri-date-utils";
 
 const Receipt = () => {
   const { href } = window.location;

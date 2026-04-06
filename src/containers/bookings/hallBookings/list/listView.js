@@ -17,8 +17,8 @@ import {
   TopToolbar,
 } from "react-admin";
 import dayjs from "dayjs";
-import { slotNameMap } from "../../../../constants";
-import { exportToExcel } from "../../../../utils/exportToExcel";
+import { slotNameMap } from "@/constants";
+import { exportToExcel } from "@/utils/export-to-excel";
 import ViewToggle from "./viewToggle";
 
 const columns = [
@@ -36,7 +36,7 @@ const columns = [
   {
     header: "Slot",
     // field can be function to map slot index to readable name
-    field: (rec) => (typeof rec.slot !== "undefined" ? slotNameMap[rec.slot] ?? rec.slot : ""),
+    field: (rec) => (typeof rec.slot !== "undefined" ? (slotNameMap[rec.slot] ?? rec.slot) : ""),
     width: 12,
   },
 ];

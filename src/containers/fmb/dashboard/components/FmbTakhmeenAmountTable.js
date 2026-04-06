@@ -12,7 +12,7 @@ import {
   Button,
   TablePagination,
 } from "@mui/material";
-import { formatINR } from "../../../../utils";
+import { formatINR } from "@/utils";
 
 const FmbTakhmeenAmountTable = ({ categoryLabel, data, redirect }) => {
   const [page, setPage] = useState(0);

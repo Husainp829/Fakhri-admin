@@ -10,30 +10,26 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import GroupsIcon from "@mui/icons-material/Groups";
 
-import BookingDashboard from "../containers/bookings/dashboard";
-import EventsDashboard from "../containers/events/dashboard";
-import ActiveEventDashboard from "../containers/events/eventDashboard";
-import StaffDashboard from "../containers/staff/dashboard";
-import SabilDashboard from "../containers/sabil/dashboard";
-import FmbDashboard from "../containers/fmb/dashboard";
-import MiqaatDashboard from "../containers/miqaat/dashboard";
-import AccountsDashboard from "../containers/accounts/dashboard";
-import OhbatDashboard from "../containers/ohbat/dashboard";
+import BookingDashboard from "@/containers/bookings/dashboard";
+import EventsDashboard from "@/containers/events/dashboard";
+import ActiveEventDashboard from "@/containers/events/eventDashboard";
+import StaffDashboard from "@/containers/staff/dashboard";
+import SabilDashboard from "@/containers/sabil/dashboard";
+import FmbDashboard from "@/containers/fmb/dashboard";
+import MiqaatDashboard from "@/containers/miqaat/dashboard";
+import AccountsDashboard from "@/containers/accounts/dashboard";
+import OhbatDashboard from "@/containers/ohbat/dashboard";
 
-/**
- * Fallback when user lacks dashboard permission
- * @typedef {"navigate" | "defaultDashboard"} FallbackType
- * @property {FallbackType} type - "navigate" redirects to path, "defaultDashboard" shows DefaultDashboard
- * @property {string|null} path - Required when type is "navigate"
- */
-const FALLBACK_NAVIGATE = (path) => ({ type: "navigate", path });
-const FALLBACK_DEFAULT = { type: "defaultDashboard", path: null };
+import type { ModuleFallback, ModuleRegistryEntry } from "@/types/react-admin-config";
+
+const FALLBACK_NAVIGATE = (path: string): ModuleFallback => ({ type: "navigate", path });
+const FALLBACK_DEFAULT: ModuleFallback = { type: "defaultDashboard", path: null };
 
 /**
  * Module registry for DefaultDashboard cards and DashboardAdmin routing.
  * Order determines display order in DefaultDashboard.
  */
-export const MODULE_REGISTRY = [
+export const MODULE_REGISTRY: ModuleRegistryEntry[] = [
   {
     id: "bookings",
     path: "bookings",
@@ -127,7 +123,5 @@ export const MODULE_REGISTRY = [
   },
 ];
 
-/**
- * Get module config by base route path
- */
-export const getModuleByPath = (path) => MODULE_REGISTRY.find((m) => m.path === path);
+export const getModuleByPath = (path: string): ModuleRegistryEntry | undefined =>
+  MODULE_REGISTRY.find((m) => m.path === path);

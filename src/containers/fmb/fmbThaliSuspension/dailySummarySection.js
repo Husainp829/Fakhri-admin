@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import httpClient from "../../../dataprovider/httpClient";
-import { getApiUrl } from "../../../constants";
+import { getApiUrl } from "@/constants";
 
 export default function DailySummarySection() {
   const [date, setDate] = useState(() => dayjs().format("YYYY-MM-DD"));

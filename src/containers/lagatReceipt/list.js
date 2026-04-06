@@ -24,10 +24,10 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { exportToExcel } from "../../utils/exportToExcel";
-import { hasPermission } from "../../utils/permissionUtils";
+import { exportToExcel } from "@/utils/export-to-excel";
+import { hasPermission } from "@/utils/permission-utils";
 import httpClient from "../../dataprovider/httpClient";
-import { getApiUrl } from "../../constants";
+import { getApiUrl } from "@/constants";
 import CommonTabs from "../../components/CommonTabs";
 
 const SUMMARY_CONFIG = [

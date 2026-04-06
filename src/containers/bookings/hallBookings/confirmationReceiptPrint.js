@@ -5,7 +5,7 @@ import { Box, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@m
 import { useParams } from "react-router";
 
 import ReceiptHeader from "../../../components/ReceiptLayout/receiptHeader";
-import { slotTimeRanges } from "../../../constants";
+import { slotTimeRanges } from "@/constants";
 
 const ConfirmationVoucher = () => {
   const { id } = useParams();

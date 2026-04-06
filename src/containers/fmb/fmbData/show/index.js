@@ -20,7 +20,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { getApiUrl } from "../../../../constants";
+import { getApiUrl } from "@/constants";
 import httpClient from "../../../../dataprovider/httpClient";
 
 import TakhmeenHistory from "./takhmeenHistory";
@@ -60,7 +60,7 @@ function MergeFmbDialog({ open, onClose, parentRecord }) {
         `${getApiUrl()}/fmbData?search=${encodeURIComponent(q || "")}&limit=50&startAfter=0`,
         {
           method: "GET",
-        },
+        }
       );
       const rows = Array.isArray(res?.json?.rows) ? res.json.rows : [];
       setOptions(rows.filter((r) => !disabledIds.has(r?.id)));

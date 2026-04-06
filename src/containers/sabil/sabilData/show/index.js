@@ -12,7 +12,7 @@ import EditNoteIcon from "@mui/icons-material/ModeEdit";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
-import { hasPermission } from "../../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";

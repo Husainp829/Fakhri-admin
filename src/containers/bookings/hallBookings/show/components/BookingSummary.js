@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
 
 import { useShowTotals } from "../context";
-import { hasPermission } from "../../../../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const BookingSummary = () => {
   const record = useRecordContext();

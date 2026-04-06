@@ -6,7 +6,7 @@ import utc from "dayjs/plugin/utc";
 import { ToWords } from "to-words";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
-import { formatDate } from "../../../utils";
+import { formatDate } from "@/utils";
 import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
 
 dayjs.extend(utc);

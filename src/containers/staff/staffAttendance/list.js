@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 
-import { EMPLOYEE_TYPE } from "../../../constants";
+import { EMPLOYEE_TYPE } from "@/constants";
 import { callApi } from "../../../dataprovider/miscApis";
 
 const StaffAttendanceList = () => {

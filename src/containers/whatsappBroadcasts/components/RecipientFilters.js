@@ -67,7 +67,7 @@ const CsvUploadTab = () => {
 
         if (!parsed.itsHeader) {
           setCsvParseError(
-            "Could not find an ITS column. Add a header named ITS, ITS_ID, or itsNo, or use a single column of ITS numbers.",
+            "Could not find an ITS column. Add a header named ITS, ITS_ID, or itsNo, or use a single column of ITS numbers."
           );
           setParsedIds([]);
           return;
@@ -88,7 +88,7 @@ const CsvUploadTab = () => {
       // Reset the input so re-uploading the same file triggers onChange
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
-    [lookup, reset, updatePreviewStatus, setValue],
+    [lookup, reset, updatePreviewStatus, setValue]
   );
 
   // When lookup completes, sync matched recipients into the form/context
@@ -138,7 +138,7 @@ const CsvUploadTab = () => {
         setValue(
           "recipientCsvData",
           Object.keys(csvDataByItsId).length > 0 ? csvDataByItsId : null,
-          { shouldDirty: false },
+          { shouldDirty: false }
         );
         setValue("csvColumnHeaders", parsed.headers.slice(), {
           shouldDirty: false,
@@ -294,7 +294,7 @@ const RecipientFilters = () => {
       setValue("recipientCsvData", null, { shouldDirty: false });
       setValue("csvColumnHeaders", [], { shouldDirty: false });
     },
-    [updateSelectedPhones, updatePreviewStatus, setValue],
+    [updateSelectedPhones, updatePreviewStatus, setValue]
   );
 
   return (

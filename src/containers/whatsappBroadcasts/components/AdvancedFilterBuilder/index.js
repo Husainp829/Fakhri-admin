@@ -26,12 +26,8 @@ const AdvancedFilterBuilder = React.memo(
     const shouldFetchMapRef = useRef(new Map());
 
     // Create state that syncs with refs for reactivity
-    const [skippedIdsMap, setSkippedIdsMap] = useState(
-      skippedIdsMapRef.current
-    );
-    const [shouldFetchMap, setShouldFetchMap] = useState(
-      shouldFetchMapRef.current
-    );
+    const [skippedIdsMap, setSkippedIdsMap] = useState(skippedIdsMapRef.current);
+    const [shouldFetchMap, setShouldFetchMap] = useState(shouldFetchMapRef.current);
 
     // Wrapper functions that update both ref and state
     const updateSkippedIdsMap = useCallback((updater) => {
@@ -84,8 +80,8 @@ const AdvancedFilterBuilder = React.memo(
           Advanced Recipient Filter Builder
         </Typography>
         <Alert severity="info" sx={{ mb: 1.5, py: 0.75 }}>
-          Build complex filters using AND/OR logic. You can nest groups and
-          combine multiple conditions to precisely target your recipients.
+          Build complex filters using AND/OR logic. You can nest groups and combine multiple
+          conditions to precisely target your recipients.
         </Alert>
 
         <FilterGroup
@@ -101,11 +97,7 @@ const AdvancedFilterBuilder = React.memo(
             <Typography variant="subtitle2" gutterBottom>
               Preview Recipients
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mb: 1.5, display: "block" }}
-            >
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: "block" }}>
               Test your filters to see recipients that match your criteria
             </Typography>
             <RecipientsPreview

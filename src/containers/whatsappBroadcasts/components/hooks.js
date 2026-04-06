@@ -79,7 +79,7 @@ export const useTemplateValidation = (
   template,
   isLoadingTemplate,
   parameters,
-  csvColumnHeaders = [],
+  csvColumnHeaders = []
 ) => {
   // Extract expected variables from template body text
   const expectedVariables = useMemo(() => {
@@ -92,7 +92,7 @@ export const useTemplateValidation = (
 
   const csvHeadersSerialized = useMemo(
     () => JSON.stringify(csvColumnHeaders || []),
-    [csvColumnHeaders],
+    [csvColumnHeaders]
   );
 
   // Validate template parameters
@@ -120,7 +120,7 @@ export const useTemplateValidation = (
     const result = validateTemplateParameters(
       template?.bodyText || "",
       parameters,
-      csvColumnHeaders || [],
+      csvColumnHeaders || []
     );
 
     return {
@@ -168,7 +168,7 @@ export const useLookupIts = () => {
         setIsLoading(false);
       }
     },
-    [dataProvider],
+    [dataProvider]
   );
 
   const reset = useCallback(() => {

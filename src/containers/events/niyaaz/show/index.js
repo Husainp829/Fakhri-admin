@@ -23,8 +23,8 @@ import { useMediaQuery } from "@mui/material";
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
-import { downLoadPasses } from "../../../../utils";
-import { hasPermission } from "../../../../utils/permissionUtils";
+import { downLoadPasses } from "@/utils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const NiyaazActions = () => {
   const redirect = useRedirect();

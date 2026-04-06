@@ -1,6 +1,6 @@
 import React from "react";
 import { List, Datagrid, TextField, FunctionField } from "react-admin";
-import { slotNameMap } from "../../../constants";
+import { slotNameMap } from "@/constants";
 
 export default (props) => (
   <List {...props}>

@@ -9,8 +9,8 @@ import {
   Button,
   useRedirect,
 } from "react-admin";
-import { formatINR } from "../../../../utils";
-import { formatFmbHijriPeriod } from "../../../../utils/hijriDateUtils";
+import { formatINR } from "@/utils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 export default function ContributionsTab() {
   const redirect = useRedirect();
@@ -62,7 +62,7 @@ export default function ContributionsTab() {
                   e.stopPropagation();
                   e.preventDefault();
                   redirect(
-                    `/fmbReceipt/create?fmbId=${record?.fmbId}&fmbContributionId=${record?.id}&target=CONTRIBUTION`,
+                    `/fmbReceipt/create?fmbId=${record?.fmbId}&fmbContributionId=${record?.id}&target=CONTRIBUTION`
                   );
                 }}
                 label="Add payment"

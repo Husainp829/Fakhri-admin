@@ -10,8 +10,8 @@ import {
   Pagination,
   FunctionField,
 } from "react-admin";
-import { formatINR } from "../../../utils";
-import { formatFmbHijriPeriod } from "../../../utils/hijriDateUtils";
+import { formatINR } from "@/utils";
+import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const ListActions = () => (
   <TopToolbar>

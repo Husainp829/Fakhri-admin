@@ -1,6 +1,6 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer";
-import { MARKAZ_LIST } from "../../constants";
+import { MARKAZ_LIST } from "@/constants";
 
 // Register font
 import robotoBold from "../../assets/fonts/Roboto-Bold.ttf";

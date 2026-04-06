@@ -19,7 +19,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import { getApiUrl } from "../../constants";
+import { getApiUrl } from "@/constants";
 import httpClient from "../../dataprovider/httpClient";
 
 const toChoices = (arr) => (arr || []).map((s) => ({ id: s, name: s }));
@@ -76,7 +76,7 @@ const PostFilterSidebar = ({ inDrawer = false }) => {
   const idaraChoices = useMemo(() => toChoices(filterOpts.idaras), [filterOpts.idaras]);
   const organisationChoices = useMemo(
     () => toChoices(filterOpts.organisations),
-    [filterOpts.organisations],
+    [filterOpts.organisations]
   );
 
   const selectHelper = optsLoading
@@ -273,7 +273,10 @@ const PostFilterSidebar = ({ inDrawer = false }) => {
             label="Data - Not Verified"
             value={{ Data_Verifcation_Status: "Not Verified" }}
           />
-          <FilterListItem label="Photo - Verified" value={{ Photo_Verifcation_Status: "Verfied" }} />
+          <FilterListItem
+            label="Photo - Verified"
+            value={{ Photo_Verifcation_Status: "Verfied" }}
+          />
           <FilterListItem
             label="Photo - Not Verified"
             value={{ Photo_Verifcation_Status: "Not Verified" }}

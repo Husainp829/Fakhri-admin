@@ -9,7 +9,7 @@ import {
   usePermissions,
 } from "react-admin";
 import Icon from "@mui/icons-material/Filter9Plus";
-import { hasPermission } from "../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 import NoArrowKeyNumberInput from "../../components/NoArrowKeyNumberInput";
 
 const ListSequences = () => {

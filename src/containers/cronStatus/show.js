@@ -8,7 +8,7 @@ import {
   usePermissions,
 } from "react-admin";
 import { Chip, Box, Typography, Paper } from "@mui/material";
-import { hasPermission } from "../../utils/permissionUtils";
+import { hasPermission } from "@/utils/permission-utils";
 
 const CronStatusShow = () => {
   const { permissions } = usePermissions();
@@ -37,8 +37,7 @@ const CronStatusShow = () => {
           label="Duration"
           render={(record) => {
             if (!record.completedAt || !record.startedAt) return "-";
-            const duration =
-              new Date(record.completedAt) - new Date(record.startedAt);
+            const duration = new Date(record.completedAt) - new Date(record.startedAt);
             const seconds = Math.floor(duration / 1000);
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
@@ -69,9 +68,7 @@ const CronStatusShow = () => {
                   wordBreak: "break-word",
                 }}
               >
-                {record.metadata
-                  ? JSON.stringify(record.metadata, null, 2)
-                  : "No metadata"}
+                {record.metadata ? JSON.stringify(record.metadata, null, 2) : "No metadata"}
               </Paper>
             </Box>
           )}

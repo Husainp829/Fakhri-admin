@@ -17,7 +17,7 @@ import {
   CardContent,
   Paper,
 } from "@mui/material";
-import { format } from "../../utils/whatsappFormatter";
+import { format } from "@/utils/whatsapp-formatter";
 
 /**
  * Template Preview Component

@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { SelectInput, required, useDataProvider } from "react-admin";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
-import { formatFmbHijriPeriod, getHijriYear } from "../../../../utils/hijriDateUtils";
+import { formatFmbHijriPeriod, getHijriYear } from "@/utils/hijri-date-utils";
 
 export function transformTakhmeenCreate(data) {
   const hijriYearStart =
