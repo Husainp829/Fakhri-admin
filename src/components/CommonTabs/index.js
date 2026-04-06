@@ -19,29 +19,29 @@ const CommonTabs = ({
   sx = {},
   tabSx = {},
 }) => (
-    <>
-      <Box sx={{ mb: showDivider ? 0 : 3 }}>
-        <Tabs
-          value={value}
-          onChange={onChange}
-          sx={{ borderBottom: 1, borderColor: "divider", ...sx }}
-        >
-          {options.map((option, index) => {
-            const tabValue = option.id || option.value || index;
-            const label = option.name || option.label || option.id || option.value;
-            return (
-              <Tab
-                key={tabValue}
-                label={label}
-                value={tabValue}
-                sx={{ fontWeight: "bold", fontSize: "1rem", ...tabSx }}
-              />
-            );
-          })}
-        </Tabs>
-      </Box>
-      {showDivider && <Divider />}
-    </>
-  );
+  <>
+    <Box sx={{ mb: showDivider ? 0 : 3 }}>
+      <Tabs
+        value={value}
+        onChange={onChange}
+        sx={{ borderBottom: 1, borderColor: "divider", ...sx }}
+      >
+        {options.map((option, index) => {
+          const tabValue = option.id || option.value || index;
+          const label = option.name || option.label || option.id || option.value;
+          return (
+            <Tab
+              key={tabValue}
+              label={label}
+              value={tabValue}
+              sx={{ fontWeight: "bold", fontSize: "1rem", ...tabSx }}
+            />
+          );
+        })}
+      </Tabs>
+    </Box>
+    {showDivider && <Divider />}
+  </>
+);
 
 export default CommonTabs;

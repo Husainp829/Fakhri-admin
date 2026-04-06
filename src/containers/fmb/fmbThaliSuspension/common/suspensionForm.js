@@ -61,7 +61,7 @@ const ThaliInput = ({ isEdit }) => {
   const { data, isLoading } = useGetOne(
     "fmbData",
     { id: fmbId },
-    { enabled: !!fmbId, staleTime: 60_000 },
+    { enabled: !!fmbId, staleTime: 60_000 }
   );
   const thalis = Array.isArray(data?.thalis) ? data.thalis : [];
   const choices = thalis.map((thali) => ({
@@ -97,7 +97,7 @@ const InferFmbFromThali = ({ isEdit }) => {
       return;
     }
     const ownerFmb = data.find((row) =>
-      Array.isArray(row?.thalis) ? row.thalis.some((thali) => thali?.id === fmbThaliId) : false,
+      Array.isArray(row?.thalis) ? row.thalis.some((thali) => thali?.id === fmbThaliId) : false
     );
     if (ownerFmb?.id) {
       setValue("fmbId", ownerFmb.id, { shouldDirty: false, shouldTouch: false });

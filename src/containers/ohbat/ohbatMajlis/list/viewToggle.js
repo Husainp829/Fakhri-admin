@@ -9,9 +9,7 @@ import { hasPermission } from "@/utils/permission-utils";
 /** Mirrors hall bookings `BookingActions` + `ViewToggle` structure. */
 const OhbatMajlisActions = ({ permissions }) => (
   <>
-    {hasPermission(permissions, "ohbatMajalis.create") && (
-      <CreateButton resource="ohbatMajalis" />
-    )}
+    {hasPermission(permissions, "ohbatMajalis.create") && <CreateButton resource="ohbatMajalis" />}
   </>
 );
 

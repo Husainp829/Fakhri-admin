@@ -27,7 +27,7 @@ const ReceiptHeader = ({ title, subTitle }) => (
           {title}
         </h1>
 
-        <h2 style={{ marginTop: "5px", fontSize: "16px", lineHeight: "16px", fontWeight: "400", }}>
+        <h2 style={{ marginTop: "5px", fontSize: "16px", lineHeight: "16px", fontWeight: "400" }}>
           {subTitle}
         </h2>
       </div>

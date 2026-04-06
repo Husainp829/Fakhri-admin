@@ -55,7 +55,7 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
       if (typeof n === "number" && n > 0) {
         notify(
           `Sync completed. ${n} address change${n === 1 ? "" : "s"} queued — update the external portal and mark them done under ITS address updates.`,
-          { type: "success" },
+          { type: "success" }
         );
       } else {
         notify("File synced successfully", { type: "success" });

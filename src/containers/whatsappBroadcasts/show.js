@@ -43,10 +43,7 @@ const BroadcastShow = () => {
             >
               <TextField source="name" />
             </ReferenceField>
-            <FunctionField
-              label="Status"
-              render={(r) => <StatusChip status={r.status} />}
-            />
+            <FunctionField label="Status" render={(r) => <StatusChip status={r.status} />} />
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6" gutterBottom>
               Timing

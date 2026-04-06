@@ -44,7 +44,7 @@ const ThaliTodaySuspensionStatus = ({ thaliId }) => {
   const today = useMemo(() => new Date(), []);
   const todayLabel = useMemo(
     () => today.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" }),
-    [today],
+    [today]
   );
   const {
     data = [],

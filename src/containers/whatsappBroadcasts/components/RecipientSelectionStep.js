@@ -15,11 +15,7 @@ import RecipientFilters from "./RecipientFilters";
  * @param {string} props.source - Form field source (default: '_recipientStep')
  * @param {Function} props.onValidationChange - Callback when validation state changes
  */
-const RecipientSelectionStep = ({
-  source = "_recipientStep",
-  onValidationChange,
-  ...props
-}) => {
+const RecipientSelectionStep = ({ source = "_recipientStep", onValidationChange, ...props }) => {
   // Use useInput to integrate with React Admin form
   const { field } = useInput({ source, ...props });
   const { setValue } = useFormContext();
@@ -70,20 +66,12 @@ const RecipientSelectionStep = ({
     // Only call callback if validation state actually changed
     // Check if this is the first render or if values actually changed
     const isFirstRender = prevValidationStateRef.current === null;
-    const isValidChanged =
-      prevValidationStateRef.current?.isValid !== validationState.isValid;
+    const isValidChanged = prevValidationStateRef.current?.isValid !== validationState.isValid;
     const errorMessageChanged =
-      prevValidationStateRef.current?.errorMessage !==
-      validationState.errorMessage;
+      prevValidationStateRef.current?.errorMessage !== validationState.errorMessage;
 
-    if (
-      onValidationChangeRef.current &&
-      (isFirstRender || isValidChanged || errorMessageChanged)
-    ) {
-      onValidationChangeRef.current(
-        validationState.isValid,
-        validationState.errorMessage
-      );
+    if (onValidationChangeRef.current && (isFirstRender || isValidChanged || errorMessageChanged)) {
+      onValidationChangeRef.current(validationState.isValid, validationState.errorMessage);
       prevValidationStateRef.current = validationState;
     }
   }, [validationState]);

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Create,
-  SimpleForm,
-  TextInput,
-  DateInput,
-  required,
-} from "react-admin";
+import { Create, SimpleForm, TextInput, DateInput, required } from "react-admin";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 
 export default (props) => (
@@ -14,7 +8,12 @@ export default (props) => (
       <TextInput source="name" fullWidth validate={required()} />
       <DateInput source="fromDate" fullWidth validate={required()} />
       <DateInput source="toDate" fullWidth validate={required()} />
-      <TextInput source="hijriYear" fullWidth validate={required()} helperText="Hijri year (e.g., 1445)" />
+      <TextInput
+        source="hijriYear"
+        fullWidth
+        validate={required()}
+        helperText="Hijri year (e.g., 1445)"
+      />
       <TextInput
         source="slug"
         fullWidth

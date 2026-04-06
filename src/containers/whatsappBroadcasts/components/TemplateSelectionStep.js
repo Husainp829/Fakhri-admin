@@ -66,7 +66,7 @@ const TemplateSelectionStep = ({ source = "_templateStep", onValidationChange, .
     selectedTemplate,
     isLoadingTemplate,
     parameters,
-    Array.isArray(csvColumnHeaders) ? csvColumnHeaders : [],
+    Array.isArray(csvColumnHeaders) ? csvColumnHeaders : []
   );
 
   // Create validation state object for compatibility
@@ -75,7 +75,7 @@ const TemplateSelectionStep = ({ source = "_templateStep", onValidationChange, .
       isValid,
       errorMessage,
     }),
-    [isValid, errorMessage],
+    [isValid, errorMessage]
   );
 
   // Store step completion status in form context
@@ -92,7 +92,7 @@ const TemplateSelectionStep = ({ source = "_templateStep", onValidationChange, .
         isValid: validationState.isValid,
         expectedVariablesCount: expectedVariables?.length || 0,
       }),
-    [templateName, parametersSerialized, validationState.isValid, expectedVariables?.length || 0],
+    [templateName, parametersSerialized, validationState.isValid, expectedVariables?.length || 0]
   );
 
   React.useEffect(() => {

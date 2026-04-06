@@ -18,11 +18,7 @@ export default (props) => {
 
   const takhmeenDefaultValues = () => ({ sabilId });
   return (
-    <Create
-      {...props}
-      transform={transform}
-      redirect={`/sabilData/${sabilId}/show`}
-    >
+    <Create {...props} transform={transform} redirect={`/sabilData/${sabilId}/show`}>
       <SimpleForm
         warnWhenUnsavedChanges
         sx={{ maxWidth: 700 }}

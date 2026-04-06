@@ -11,9 +11,7 @@ const TemplateContext = createContext(null);
 export const useTemplateContext = () => {
   const context = useContext(TemplateContext);
   if (context === null) {
-    throw new Error(
-      "useTemplateContext must be used within a TemplateProvider"
-    );
+    throw new Error("useTemplateContext must be used within a TemplateProvider");
   }
   return context;
 };
@@ -28,9 +26,5 @@ export const TemplateProvider = ({ children }) => {
   // Fetch template once at parent level
   const templateQuery = useTemplate(templateName);
 
-  return (
-    <TemplateContext.Provider value={templateQuery}>
-      {children}
-    </TemplateContext.Provider>
-  );
+  return <TemplateContext.Provider value={templateQuery}>{children}</TemplateContext.Provider>;
 };

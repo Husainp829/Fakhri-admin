@@ -122,7 +122,7 @@ export default () => {
     (data) =>
       // Use shared transformation utility
       transformBroadcastData(data),
-    [],
+    []
   );
 
   const onSuccess = useCallback(
@@ -132,7 +132,7 @@ export default () => {
       });
       redirect("show", "whatsappBroadcasts", data.id);
     },
-    [notify, redirect],
+    [notify, redirect]
   );
 
   // Handle step validation changes
@@ -163,7 +163,7 @@ export default () => {
         // Default error message for step 0 (Recipient selection)
         notify(
           "Please preview recipients before proceeding. Click 'Preview Recipients' for filter-based selection.",
-          { type: "warning" },
+          { type: "warning" }
         );
       } else if (activeStep === 1) {
         // Default error message for step 1 (Template selection)
@@ -191,7 +191,7 @@ export default () => {
   // Memoize validation change callbacks for each step to prevent infinite loops
   const handleStep0ValidationChange = useCallback(
     (isValid, errorMessage) => handleStepValidationChange(0, isValid, errorMessage),
-    [handleStepValidationChange],
+    [handleStepValidationChange]
   );
 
   // Custom toolbar that only shows Save button on final step

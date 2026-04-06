@@ -113,7 +113,7 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }) {
         return null;
       }
     },
-    [dataProvider, itsFullNameByIts, notify],
+    [dataProvider, itsFullNameByIts, notify]
   );
 
   const addAndSave = useCallback(async () => {

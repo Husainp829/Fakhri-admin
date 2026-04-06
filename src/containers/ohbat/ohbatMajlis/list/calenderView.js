@@ -328,7 +328,7 @@ const CalenderView = () => {
               if (!selectedEvent) return;
               try {
                 await navigator.clipboard.writeText(
-                  buildOhbatMajlisEventDetailsText(selectedEvent),
+                  buildOhbatMajlisEventDetailsText(selectedEvent)
                 );
                 notify("Event details copied to clipboard", { type: "success" });
               } catch {

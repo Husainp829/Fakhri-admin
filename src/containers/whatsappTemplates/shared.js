@@ -9,14 +9,7 @@ import {
   useRecordContext,
 } from "react-admin";
 import { useWatch } from "react-hook-form";
-import {
-  Box,
-  Typography,
-  Divider,
-  Card,
-  CardContent,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Divider, Card, CardContent, Paper } from "@mui/material";
 import { format } from "@/utils/whatsapp-formatter";
 
 /**
@@ -50,9 +43,7 @@ export const TemplatePreview = ({ formData }) => {
   const bodyComponent = formData.components?.find((c) => c.type === "BODY");
   const headerComponent = formData.components?.find((c) => c.type === "HEADER");
   const footerComponent = formData.components?.find((c) => c.type === "FOOTER");
-  const buttonsComponent = formData.components?.find(
-    (c) => c.type === "BUTTONS"
-  );
+  const buttonsComponent = formData.components?.find((c) => c.type === "BUTTONS");
 
   return (
     <Box
@@ -177,33 +168,21 @@ export const TemplatePreview = ({ formData }) => {
                     let text = bodyComponent.text || "";
                     // Use form example variables if available, then Meta API values, then defaults
                     let sampleValues = null;
-                    if (
-                      formData?.exampleVariables &&
-                      formData.exampleVariables.length > 0
-                    ) {
+                    if (formData?.exampleVariables && formData.exampleVariables.length > 0) {
                       // Use values from form
-                      sampleValues = formData.exampleVariables.map(
-                        (v) => v.value
-                      );
+                      sampleValues = formData.exampleVariables.map((v) => v.value);
                     } else if (
                       formData?.bodyExampleValues ||
-                      formData?.components?.find((c) => c.type === "BODY")
-                        ?.example?.body_text?.[0]
+                      formData?.components?.find((c) => c.type === "BODY")?.example?.body_text?.[0]
                     ) {
                       // Use Meta API example values
                       sampleValues =
                         formData?.bodyExampleValues ||
-                        formData?.components?.find((c) => c.type === "BODY")
-                          ?.example?.body_text?.[0];
+                        formData?.components?.find((c) => c.type === "BODY")?.example
+                          ?.body_text?.[0];
                     } else {
                       // Default samples
-                      sampleValues = [
-                        "John",
-                        "ORD-12345",
-                        "10:00 AM",
-                        "₹1,500",
-                        "2024-01-15",
-                      ];
+                      sampleValues = ["John", "ORD-12345", "10:00 AM", "₹1,500", "2024-01-15"];
                     }
                     text = text.replace(/\{\{(\d+)\}\}/g, (match, num) => {
                       const index = parseInt(num, 10) - 1;
@@ -222,9 +201,7 @@ export const TemplatePreview = ({ formData }) => {
                 sx={{
                   mt: 1.5,
                   pt: 1,
-                  borderTop: buttonsComponent
-                    ? "1px solid rgba(0,0,0,0.1)"
-                    : "none",
+                  borderTop: buttonsComponent ? "1px solid rgba(0,0,0,0.1)" : "none",
                 }}
               >
                 <Typography
@@ -377,11 +354,7 @@ export const ExampleVariablesInput = () => (
       const bodyText = formData?.bodyText || "";
       const variableMatches = bodyText.match(/\{\{(\d+)\}\}/g) || [];
       const maxVar = variableMatches.length
-        ? Math.max(
-            ...variableMatches.map((m) =>
-              parseInt(m.replace(/\{\{|\}\}/g, ""), 10)
-            )
-          )
+        ? Math.max(...variableMatches.map((m) => parseInt(m.replace(/\{\{|\}\}/g, ""), 10)))
         : 0;
 
       if (maxVar === 0) return null;
@@ -393,8 +366,7 @@ export const ExampleVariablesInput = () => (
             Example Variable Values
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            These values will be used in the preview and submitted to Meta for
-            template approval.
+            These values will be used in the preview and submitted to Meta for template approval.
           </Typography>
           <ArrayInput source="exampleVariables" label="">
             <SimpleFormIterator>
@@ -419,9 +391,7 @@ export const LivePreviewCreate = ({ transform }) => {
   const transformedData = transform(formData);
   // Add example variables from form to transformed data for preview
   if (formData?.exampleVariables && formData.exampleVariables.length > 0) {
-    transformedData.exampleVariables = formData.exampleVariables.map(
-      (v) => v.value
-    );
+    transformedData.exampleVariables = formData.exampleVariables.map((v) => v.value);
   }
   return (
     <Box
@@ -444,9 +414,7 @@ export const LivePreviewEdit = ({ transform }) => {
   const transformedData = transform(formData);
   // Add example variables from form to transformed data for preview
   if (formData?.exampleVariables && formData.exampleVariables.length > 0) {
-    transformedData.exampleVariables = formData.exampleVariables.map(
-      (v) => v.value
-    );
+    transformedData.exampleVariables = formData.exampleVariables.map((v) => v.value);
   } else if (record?.bodyExampleValues) {
     // Fallback to record values if form doesn't have exampleVariables
     transformedData.bodyExampleValues = record.bodyExampleValues;
@@ -509,8 +477,7 @@ export const TemplateFormFields = ({ isEdit = false }) => (
       <FormDataConsumer>
         {({ record, formData }) => {
           // Map headerContent to headerText for form
-          const headerText =
-            formData?.headerText || record?.headerContent || "";
+          const headerText = formData?.headerText || record?.headerContent || "";
           return (
             <TextInput
               source="headerText"
@@ -574,13 +541,7 @@ export const TemplateFormFields = ({ isEdit = false }) => (
           {/* eslint-disable-next-line no-unused-vars */}
           {({ _, scopedFormData }) => {
             if (scopedFormData?.type === "QUICK_REPLY") {
-              return (
-                <TextInput
-                  source="text"
-                  label="Button Text"
-                  validate={required()}
-                />
-              );
+              return <TextInput source="text" label="Button Text" validate={required()} />;
             }
             if (scopedFormData?.type === "URL") {
               return (
@@ -594,11 +555,7 @@ export const TemplateFormFields = ({ isEdit = false }) => (
               return (
                 <>
                   <TextInput source="text" label="Button Text" />
-                  <TextInput
-                    source="phone_number"
-                    label="Phone Number"
-                    validate={required()}
-                  />
+                  <TextInput source="phone_number" label="Phone Number" validate={required()} />
                 </>
               );
             }

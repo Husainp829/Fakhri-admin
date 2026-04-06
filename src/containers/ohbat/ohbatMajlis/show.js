@@ -134,13 +134,19 @@ const OhbatMajlisShowActions = () => {
 
   return (
     <>
-      <TopToolbar>
-        {canEditMajlis && <EditButton />}
-      </TopToolbar>
+      <TopToolbar>{canEditMajlis && <EditButton />}</TopToolbar>
       {id && (
         <>
-          <ChangeSadaratDialog open={sadaratOpen} onClose={() => setSadaratOpen(false)} majlisId={id} />
-          <ChangeKhidmatDialog open={khidmatOpen} onClose={() => setKhidmatOpen(false)} majlisId={id} />
+          <ChangeSadaratDialog
+            open={sadaratOpen}
+            onClose={() => setSadaratOpen(false)}
+            majlisId={id}
+          />
+          <ChangeKhidmatDialog
+            open={khidmatOpen}
+            onClose={() => setKhidmatOpen(false)}
+            majlisId={id}
+          />
         </>
       )}
     </>

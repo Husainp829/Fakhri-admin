@@ -49,11 +49,7 @@ const StatusField = ({ record }) => {
   };
 
   return (
-    <Chip
-      label={record.status}
-      color={statusColors[record.status] || "default"}
-      size="small"
-    />
+    <Chip label={record.status} color={statusColors[record.status] || "default"} size="small" />
   );
 };
 
@@ -62,10 +58,7 @@ export default () => (
     <DatagridConfigurable rowClick="show" bulkActionButtons={false}>
       <TextField source="name" label="Broadcast Name" />
       <TextField source="templateName" label="Template" />
-      <FunctionField
-        label="Status"
-        render={(record) => <StatusField record={record} />}
-      />
+      <FunctionField label="Status" render={(record) => <StatusField record={record} />} />
       <NumberField source="totalRecipients" label="Total" />
       <NumberField source="successCount" label="Success" />
       <NumberField source="failureCount" label="Failed" />

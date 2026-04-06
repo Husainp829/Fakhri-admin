@@ -7,10 +7,7 @@ export default (props) => (
     <SimpleForm>
       <TextInput source="name" />
       <TextInput source="email" />
-      <GroupedPermissionsInput
-        source="permissions"
-        reference="admins/permissions/available"
-      />
+      <GroupedPermissionsInput source="permissions" reference="admins/permissions/available" />
     </SimpleForm>
   </Edit>
 );

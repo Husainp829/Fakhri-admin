@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  TextInput,
-  Create,
-  SimpleForm,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
+import { TextInput, Create, SimpleForm, ReferenceInput, SelectInput } from "react-admin";
 import NoArrowKeyNumberInput from "../../components/NoArrowKeyNumberInput";
 
 import LagatITSLookup from "./common/lagatItsLookup";

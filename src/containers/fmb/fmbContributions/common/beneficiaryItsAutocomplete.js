@@ -30,7 +30,7 @@ export function BeneficiaryItsAutocomplete(props) {
       pagination: { page: 1, perPage: 500 },
       sort: { field: "Full_Name", order: "ASC" },
     },
-    { enabled: Boolean(hofId) },
+    { enabled: Boolean(hofId) }
   );
 
   const { data: directoryRows = [], isPending: directoryPending } = useGetList(
@@ -40,7 +40,7 @@ export function BeneficiaryItsAutocomplete(props) {
       pagination: { page: 1, perPage: 50 },
       sort: { field: "Full_Name", order: "ASC" },
     },
-    { enabled: Boolean(searchText) },
+    { enabled: Boolean(searchText) }
   );
 
   const choices = useMemo(() => {

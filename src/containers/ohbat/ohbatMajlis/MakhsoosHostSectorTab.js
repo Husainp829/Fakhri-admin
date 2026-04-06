@@ -62,8 +62,8 @@ export default function MakhsoosHostSectorTab() {
   if (rows.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No makhsoos ITS records share the host&apos;s sector or sub-sector, or host ITS was not found in
-        itsdata.
+        No makhsoos ITS records share the host&apos;s sector or sub-sector, or host ITS was not
+        found in itsdata.
       </Typography>
     );
   }

@@ -187,7 +187,7 @@ function ChangeItsDialog({ open, onClose }) {
         return [];
       }
     },
-    [dataProvider],
+    [dataProvider]
   );
 
   React.useEffect(() => {
@@ -222,7 +222,7 @@ function ChangeItsDialog({ open, onClose }) {
   const options = React.useMemo(() => {
     const current = currentItsNoNorm;
     const famIds = new Set(
-      (family || []).map((r) => String(r?.ITS_ID ?? "").trim()).filter(Boolean),
+      (family || []).map((r) => String(r?.ITS_ID ?? "").trim()).filter(Boolean)
     );
     const dedup = (rows) => {
       const seen = new Set();

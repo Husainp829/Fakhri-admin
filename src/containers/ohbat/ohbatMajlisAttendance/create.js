@@ -115,7 +115,7 @@ export default function OhbatMajlisAttendanceCreate() {
         return null;
       }
     },
-    [dataProvider, itsFullNameByIts],
+    [dataProvider, itsFullNameByIts]
   );
 
   const addAndSave = useCallback(async () => {
@@ -210,7 +210,7 @@ export default function OhbatMajlisAttendanceCreate() {
                               .utc(majlis.date)
                               .format("dddd")} · ${fromGregorian(
                               dayjs.utc(majlis.date).toDate(),
-                              "code",
+                              "code"
                             )}`
                           : "—"}
                       </Typography>
@@ -289,7 +289,7 @@ export default function OhbatMajlisAttendanceCreate() {
                           const key = normalizeIts(its);
                           const fullName = Object.prototype.hasOwnProperty.call(
                             itsFullNameByIts,
-                            key,
+                            key
                           )
                             ? itsFullNameByIts[key]
                             : null;
@@ -420,7 +420,7 @@ export default function OhbatMajlisAttendanceCreate() {
                           const key = normalizeIts(its);
                           const fullName = Object.prototype.hasOwnProperty.call(
                             itsFullNameByIts,
-                            key,
+                            key
                           )
                             ? itsFullNameByIts[key]
                             : null;

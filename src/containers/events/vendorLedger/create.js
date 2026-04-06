@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  TextInput,
-  Create,
-  SimpleForm,
-  DateInput,
-  RadioButtonGroupInput,
-} from "react-admin";
+import { TextInput, Create, SimpleForm, DateInput, RadioButtonGroupInput } from "react-admin";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
 import CustomReferenceInput from "../../../components/CustomReferenceInput";
 

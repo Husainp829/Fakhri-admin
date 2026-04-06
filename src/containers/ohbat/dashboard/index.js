@@ -25,7 +25,16 @@ import {
 import { callApi } from "../../../dataprovider/miscApis";
 import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
 
-const COLORS = ["#2e7d32", "#1565c0", "#6a1b9a", "#00897b", "#c62828", "#6d4c41", "#455a64", "#7b1fa2"];
+const COLORS = [
+  "#2e7d32",
+  "#1565c0",
+  "#6a1b9a",
+  "#00897b",
+  "#c62828",
+  "#6d4c41",
+  "#455a64",
+  "#7b1fa2",
+];
 
 function fmt(n) {
   if (n === null || n === undefined) return "0";
@@ -89,7 +98,11 @@ export default function OhbatDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const resp = await callApi({ location: "ohbatMajalis", method: "GET", id: "stats/dashboard" });
+      const resp = await callApi({
+        location: "ohbatMajalis",
+        method: "GET",
+        id: "stats/dashboard",
+      });
       setStats(resp?.data ?? null);
     } catch (e) {
       setStats(null);
@@ -123,7 +136,7 @@ export default function OhbatDashboard() {
         name: typeDisplayName(r.type),
         value: r.count,
       })),
-    [stats],
+    [stats]
   );
 
   const linkCards = [];
@@ -225,10 +238,18 @@ export default function OhbatDashboard() {
                   />
                 </Grid>
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                  <StatCard title="Sadarats" value={fmt(stats.sadaratsCount)} subtitle="Active records" />
+                  <StatCard
+                    title="Sadarats"
+                    value={fmt(stats.sadaratsCount)}
+                    subtitle="Active records"
+                  />
                 </Grid>
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                  <StatCard title="Total majlis" value={fmt(stats.majlis?.total)} subtitle="All scheduled" />
+                  <StatCard
+                    title="Total majlis"
+                    value={fmt(stats.majlis?.total)}
+                    subtitle="All scheduled"
+                  />
                 </Grid>
               </Grid>
 
@@ -238,7 +259,12 @@ export default function OhbatDashboard() {
                     <Typography variant="subtitle1" gutterBottom>
                       Attendance by sector (ITS)
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ mb: 1 }}
+                    >
                       From itsdata match on attendee ITS; unknown if not in itsdata
                     </Typography>
                     {sectorChartData.length === 0 ? (
@@ -247,8 +273,18 @@ export default function OhbatDashboard() {
                       </Typography>
                     ) : (
                       <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={sectorChartData} margin={{ top: 8, right: 16, left: 0, bottom: 64 }}>
-                          <XAxis dataKey="name" interval={0} angle={-28} textAnchor="end" height={70} tick={{ fontSize: 11 }} />
+                        <BarChart
+                          data={sectorChartData}
+                          margin={{ top: 8, right: 16, left: 0, bottom: 64 }}
+                        >
+                          <XAxis
+                            dataKey="name"
+                            interval={0}
+                            angle={-28}
+                            textAnchor="end"
+                            height={70}
+                            tick={{ fontSize: 11 }}
+                          />
                           <YAxis allowDecimals={false} />
                           <Tooltip
                             formatter={(value) => [fmt(value), "Attendance"]}

@@ -309,10 +309,7 @@ export default () => {
               },
             }}
           >
-            <FunctionField
-              label="Period"
-              render={(entry) => <MonthYearField record={entry} />}
-            />
+            <FunctionField label="Period" render={(entry) => <MonthYearField record={entry} />} />
             <TextField source="financialYear" label="Financial Year" />
             <NumberField
               source="dueAmount"
@@ -368,12 +365,7 @@ export default () => {
                 );
               }}
             />
-            <DateField
-              source="createdAt"
-              label="Created"
-              showDate
-              sx={{ fontSize: "0.875rem" }}
-            />
+            <DateField source="createdAt" label="Created" showDate sx={{ fontSize: "0.875rem" }} />
           </Datagrid>
         </ReferenceManyField>
       </Paper>

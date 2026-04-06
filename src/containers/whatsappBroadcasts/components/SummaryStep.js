@@ -54,7 +54,7 @@ const SummaryStep = () => {
       parameters,
       filterCriteria,
     }),
-    [name, templateName, parameters, filterCriteria],
+    [name, templateName, parameters, filterCriteria]
   );
 
   return <SummaryContent formData={formData} />;
@@ -119,7 +119,7 @@ const SummaryContent = ({ formData }) => {
           return String(param).trim() !== "";
         })
         .sort((a, b) => parseInt(a, 10) - parseInt(b, 10)),
-    [parameters],
+    [parameters]
   );
 
   // Memoize template preview data
@@ -166,7 +166,7 @@ const SummaryContent = ({ formData }) => {
   // Memoize recipient count label
   const recipientCountLabel = useMemo(
     () => `${recipientCount} recipient${recipientCount !== 1 ? "s" : ""}`,
-    [recipientCount],
+    [recipientCount]
   );
 
   // Memoize preview message

@@ -1,6 +1,24 @@
 import React from "react";
-import { useShowContext, ReferenceManyField, useListContext, ReferenceField, TextField } from "react-admin";
-import { Grid, Paper, Typography, Box, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  useShowContext,
+  ReferenceManyField,
+  useListContext,
+  ReferenceField,
+  TextField,
+} from "react-admin";
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import BalanceSummary from "./BalanceSummary";
 
 const InfoSection = ({ title, children }) => (

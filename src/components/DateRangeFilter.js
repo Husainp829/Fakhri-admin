@@ -148,22 +148,12 @@ export default function DateRangeFilter({
             />
           </Grid>
           <Grid item size={{ xs: 12, sm: 2 }}>
-            <Button
-              variant="contained"
-              onClick={handleApply}
-              fullWidth
-              sx={{ height: "40px" }}
-            >
+            <Button variant="contained" onClick={handleApply} fullWidth sx={{ height: "40px" }}>
               Apply
             </Button>
           </Grid>
           <Grid item size={{ xs: 12, sm: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={handleClear}
-              fullWidth
-              sx={{ height: "40px" }}
-            >
+            <Button variant="outlined" onClick={handleClear} fullWidth sx={{ height: "40px" }}>
               Clear
             </Button>
           </Grid>

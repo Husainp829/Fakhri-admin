@@ -86,7 +86,7 @@ export default {
         ({ json: { count, rows } }) => ({
           data: convertRows(rows || []),
           total: count ?? (rows || []).length,
-        }),
+        })
       );
     }
 
@@ -250,8 +250,8 @@ export default {
         httpClient(`${getApiUrl(resource)}/${resource}/${id}`, {
           method: "DELETE",
           body: JSON.stringify(params.data),
-        }),
-      ),
+        })
+      )
     ).then(() => ({
       data: [],
     })),
@@ -273,7 +273,7 @@ export default {
         downloadLink.download = fileName;
         downloadLink.click();
         return { data: [] };
-      },
+      }
     );
   },
   previewRecipients: (resource, params) => {

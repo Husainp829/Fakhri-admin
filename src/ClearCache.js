@@ -9,7 +9,7 @@ const buildDateGreaterThan = (latestDate, currentDate) => {
   if (momLatestDateTime.isAfter(momCurrentDateTime)) {
     return true;
   }
-    return false;
+  return false;
 };
 
 function withClearCache(Component) {
@@ -23,10 +23,7 @@ function withClearCache(Component) {
           const latestVersionDate = meta.buildDate;
           const currentVersionDate = packageJson.buildDate;
 
-          const shouldForceRefresh = buildDateGreaterThan(
-            latestVersionDate,
-            currentVersionDate
-          );
+          const shouldForceRefresh = buildDateGreaterThan(latestVersionDate, currentVersionDate);
           if (shouldForceRefresh) {
             setIsLatestBuildDate(false);
             refreshCacheAndReload();
@@ -47,11 +44,7 @@ function withClearCache(Component) {
       window.location.reload(true);
     };
 
-    return (
-      <>
-        {isLatestBuildDate ? <Component {...props} /> : null}
-      </>
-    );
+    return <>{isLatestBuildDate ? <Component {...props} /> : null}</>;
   }
 
   return ClearCacheComponent;

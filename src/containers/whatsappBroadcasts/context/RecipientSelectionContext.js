@@ -18,9 +18,7 @@ const RecipientSelectionContext = createContext(null);
 export const useRecipientSelection = () => {
   const context = useContext(RecipientSelectionContext);
   if (context === null) {
-    throw new Error(
-      "useRecipientSelection must be used within a RecipientSelectionProvider"
-    );
+    throw new Error("useRecipientSelection must be used within a RecipientSelectionProvider");
   }
   return context;
 };
@@ -42,8 +40,7 @@ export const RecipientSelectionProvider = ({ children }) => {
 
   // Internal state for filter-based selection
   // Store recipient objects with ITS_ID and phone for accurate display
-  const [selectedRecipientsFromFilter, setSelectedRecipientsFromFilter] =
-    useState([]);
+  const [selectedRecipientsFromFilter, setSelectedRecipientsFromFilter] = useState([]);
   const [filterPreviewed, setFilterPreviewed] = useState(false);
 
   // Watch filter criteria to reset preview when filter changes (useWatch is more efficient)
@@ -68,10 +65,7 @@ export const RecipientSelectionProvider = ({ children }) => {
 
   // Clean selected recipients - handle both old format (phone strings) and new format (recipient objects)
   const cleanSelectedRecipients = useMemo(() => {
-    if (
-      !selectedRecipientsFromFilter ||
-      !Array.isArray(selectedRecipientsFromFilter)
-    ) {
+    if (!selectedRecipientsFromFilter || !Array.isArray(selectedRecipientsFromFilter)) {
       return [];
     }
 
@@ -105,10 +99,7 @@ export const RecipientSelectionProvider = ({ children }) => {
   );
 
   // Compute recipient count (memoized)
-  const recipientCount = useMemo(
-    () => cleanSelectedRecipients.length,
-    [cleanSelectedRecipients]
-  );
+  const recipientCount = useMemo(() => cleanSelectedRecipients.length, [cleanSelectedRecipients]);
 
   // Helper function to create a stable key from phone array for comparison
   const getPhonesKey = useCallback((phones) => {
@@ -176,9 +167,7 @@ export const RecipientSelectionProvider = ({ children }) => {
 
     // Check if it's the new format (objects) or old format (strings)
     const isNewFormat =
-      typeof recipients[0] === "object" &&
-      recipients[0] !== null &&
-      "phone" in recipients[0];
+      typeof recipients[0] === "object" && recipients[0] !== null && "phone" in recipients[0];
 
     if (isNewFormat) {
       // New format: store recipient objects directly

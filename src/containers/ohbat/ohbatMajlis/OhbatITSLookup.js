@@ -67,7 +67,7 @@ export default function OhbatITSLookup({ source, label, optional = false, filter
         })
         .finally(() => setLoading(false));
     },
-    [dataProvider, filter, notify, setValue, source],
+    [dataProvider, filter, notify, setValue, source]
   );
 
   const debouncedSearch = useMemo(() => debounce((q) => runSearch(q), 400), [runSearch]);

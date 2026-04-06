@@ -54,7 +54,7 @@ function MarkDoneCell({ record }) {
               refresh();
             },
             onError: (e) => notify(e?.message || "Could not update", { type: "error" }),
-          },
+          }
         )
       }
     />

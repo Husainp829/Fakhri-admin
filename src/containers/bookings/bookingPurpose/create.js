@@ -42,10 +42,20 @@ const BookingPurposeCreate = () => {
                 <NoArrowKeyNumberInput source="rent" label="Rent (₹)" min={0} defaultValue={0} />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                <NoArrowKeyNumberInput source="deposit" label="Deposit (₹)" min={0} defaultValue={0} />
+                <NoArrowKeyNumberInput
+                  source="deposit"
+                  label="Deposit (₹)"
+                  min={0}
+                  defaultValue={0}
+                />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 2 }}>
-                <NoArrowKeyNumberInput source="acCharges" label="AC Charges (₹)" min={0} defaultValue={0} />
+                <NoArrowKeyNumberInput
+                  source="acCharges"
+                  label="AC Charges (₹)"
+                  min={0}
+                  defaultValue={0}
+                />
               </Grid>
               <Grid item size={{ xs: 12, sm: 6, md: 2 }}>
                 <NoArrowKeyNumberInput
