@@ -1,9 +1,8 @@
-import React from "react";
-import { Datagrid, List, TextField, TextInput } from "react-admin";
+import { Datagrid, List, TextField, TextInput, type ListProps } from "react-admin";
 
 const filters = [<TextInput key="date" source="date" label="Date (YYYY-MM-DD)" alwaysOn />];
 
-export default function FmbThaliDistributionDailyRunList(props) {
+export default function FmbThaliDistributionDailyRunList(props: ListProps) {
   return (
     <List
       {...props}

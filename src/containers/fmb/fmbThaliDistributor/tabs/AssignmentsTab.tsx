@@ -1,12 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, useNotify, useRecordContext, useRefresh } from "react-admin";
 import { Box, Chip, Divider, Stack, TextField, Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 
-import { getApiUrl } from "../../../../constants";
-import httpClient from "../../../../dataprovider/httpClient";
+import { getApiUrl } from "@/constants";
+import httpClient from "@/dataprovider/http-client";
 
-function thaliLabel(t) {
+interface FmbThaliRow {
+  id?: string;
+  thaliNo?: string;
+  deliveryMohallah?: string;
+  fmb?: { itsNo?: string; name?: string };
+}
+
+interface AssignmentRow {
+  id?: string;
+  fmbThaliId?: string;
+  fmbThali?: FmbThaliRow;
+}
+
+function thaliLabel(t: FmbThaliRow): string {
   const thaliNo = t?.thaliNo ?? "—";
   const its = t?.fmb?.itsNo ?? "—";
   const name = t?.fmb?.name ?? "—";
@@ -14,17 +27,29 @@ function thaliLabel(t) {
   return `${thaliNo} · ITS ${its} · ${name} · ${moh}`;
 }
 
+function rowsFromResponse(json: unknown): unknown[] {
+  if (
+    json &&
+    typeof json === "object" &&
+    "rows" in json &&
+    Array.isArray((json as { rows: unknown }).rows)
+  ) {
+    return (json as { rows: unknown[] }).rows;
+  }
+  return [];
+}
+
 export default function AssignmentsTab() {
   const record = useRecordContext();
-  const distributorId = record?.id;
+  const distributorId = record?.id as string | number | undefined;
   const notify = useNotify();
   const refresh = useRefresh();
 
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [thaliOptions, setThaliOptions] = useState([]);
-  const [selectedThalis, setSelectedThalis] = useState([]);
-  const [assignments, setAssignments] = useState([]);
+  const [thaliOptions, setThaliOptions] = useState<FmbThaliRow[]>([]);
+  const [selectedThalis, setSelectedThalis] = useState<FmbThaliRow[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
 
   const loadAssignments = useCallback(async () => {
     if (!distributorId) return;
@@ -32,49 +57,49 @@ export default function AssignmentsTab() {
     try {
       const res = await httpClient(
         `${getApiUrl()}/fmbThaliDistribution/assignments?distributorId=${encodeURIComponent(
-          distributorId,
+          String(distributorId)
         )}`,
-        { method: "GET" },
+        { method: "GET" }
       );
-      setAssignments(Array.isArray(res?.json?.rows) ? res.json.rows : []);
-    } catch (e) {
-      notify(e?.message || "Failed to load assignments", { type: "warning" });
+      setAssignments(rowsFromResponse(res.json) as AssignmentRow[]);
+    } catch (e: unknown) {
+      notify(e instanceof Error ? e.message : "Failed to load assignments", { type: "warning" });
     } finally {
       setLoading(false);
     }
   }, [distributorId, notify]);
 
   useEffect(() => {
-    loadAssignments();
+    void loadAssignments();
   }, [loadAssignments]);
 
-  const fetchThalis = async (q) => {
+  const fetchThalis = async (q: string) => {
     if (!distributorId) return;
     setLoading(true);
     try {
       const res = await httpClient(
         `${getApiUrl()}/fmbThaliDistribution/thalis?search=${encodeURIComponent(q || "")}&limit=50`,
-        { method: "GET" },
+        { method: "GET" }
       );
-      setThaliOptions(Array.isArray(res?.json?.rows) ? res.json.rows : []);
-    } catch (e) {
-      notify(e?.message || "Failed to search thalis", { type: "warning" });
+      setThaliOptions(rowsFromResponse(res.json) as FmbThaliRow[]);
+    } catch (e: unknown) {
+      notify(e instanceof Error ? e.message : "Failed to search thalis", { type: "warning" });
     } finally {
       setLoading(false);
     }
   };
 
   const assignedThaliIdSet = useMemo(() => {
-    const set = new Set();
+    const next = new Set<string>();
     assignments.forEach((a) => {
-      if (a?.fmbThaliId) set.add(a.fmbThaliId);
-      if (a?.fmbThali?.id) set.add(a.fmbThali.id);
+      if (a?.fmbThaliId) next.add(String(a.fmbThaliId));
+      if (a?.fmbThali?.id) next.add(String(a.fmbThali.id));
     });
-    return set;
+    return next;
   }, [assignments]);
 
   const doAssign = async () => {
-    const ids = selectedThalis.map((t) => t?.id).filter(Boolean);
+    const ids = selectedThalis.map((t) => t?.id).filter(Boolean) as string[];
     if (!ids.length) {
       notify("Select at least one thali to assign", { type: "warning" });
       return;
@@ -90,14 +115,14 @@ export default function AssignmentsTab() {
       setSelectedThalis([]);
       await loadAssignments();
       refresh();
-    } catch (e) {
-      notify(e?.message || "Assign failed", { type: "error" });
+    } catch (e: unknown) {
+      notify(e instanceof Error ? e.message : "Assign failed", { type: "error" });
     } finally {
       setLoading(false);
     }
   };
 
-  const doUnassign = async (fmbThaliId) => {
+  const doUnassign = async (fmbThaliId: string) => {
     if (!fmbThaliId) return;
     setLoading(true);
     try {
@@ -108,8 +133,8 @@ export default function AssignmentsTab() {
       notify("Unassigned", { type: "info" });
       await loadAssignments();
       refresh();
-    } catch (e) {
-      notify(e?.message || "Unassign failed", { type: "error" });
+    } catch (e: unknown) {
+      notify(e instanceof Error ? e.message : "Unassign failed", { type: "error" });
     } finally {
       setLoading(false);
     }
@@ -124,7 +149,7 @@ export default function AssignmentsTab() {
 
       <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
         <Box sx={{ flex: 1, minWidth: 320 }}>
-          <Autocomplete
+          <Autocomplete<FmbThaliRow, true, false, false>
             multiple
             options={thaliOptions}
             value={selectedThalis}
@@ -134,10 +159,12 @@ export default function AssignmentsTab() {
             isOptionEqualToValue={(o, v) => o?.id === v?.id}
             onInputChange={(_, v) => {
               setSearch(v || "");
-              fetchThalis(v || "");
+              void fetchThalis(v || "");
             }}
             onChange={(_, v) => {
-              const filtered = (v || []).filter((t) => !assignedThaliIdSet.has(t?.id));
+              const filtered = (v || []).filter(
+                (t) => t?.id && !assignedThaliIdSet.has(String(t.id))
+              );
               setSelectedThalis(filtered);
             }}
             renderInput={(params) => (
@@ -149,8 +176,8 @@ export default function AssignmentsTab() {
             )}
           />
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-            <Button label="Assign selected" onClick={doAssign} disabled={loading} />
-            <Button label="Refresh" onClick={loadAssignments} disabled={loading} />
+            <Button label="Assign selected" onClick={() => void doAssign()} disabled={loading} />
+            <Button label="Refresh" onClick={() => void loadAssignments()} disabled={loading} />
           </Stack>
           {!!search && (
             <Typography variant="caption" color="text.secondary">
@@ -170,12 +197,12 @@ export default function AssignmentsTab() {
         {(assignments || []).map((a) => {
           const thali = a?.fmbThali;
           const thaliId = a?.fmbThaliId || thali?.id;
-          const label = thali ? thaliLabel(thali) : thaliId || "—";
+          const label = thali ? thaliLabel(thali) : String(thaliId ?? "—");
           return (
             <Chip
-              key={a?.id || thaliId}
+              key={a?.id || String(thaliId)}
               label={label}
-              onDelete={thaliId ? () => doUnassign(thaliId) : undefined}
+              onDelete={thaliId ? () => void doUnassign(String(thaliId)) : undefined}
               disabled={loading}
               variant="outlined"
               sx={{ mb: 1 }}

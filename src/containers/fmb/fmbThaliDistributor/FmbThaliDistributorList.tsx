@@ -8,6 +8,7 @@ import {
   Pagination,
   TextField,
   TopToolbar,
+  type ListProps,
 } from "react-admin";
 
 const ListActions = () => (
@@ -17,7 +18,7 @@ const ListActions = () => (
   </TopToolbar>
 );
 
-export default function FmbThaliDistributorList(props) {
+export default function FmbThaliDistributorList(props: ListProps) {
   return (
     <List
       {...props}

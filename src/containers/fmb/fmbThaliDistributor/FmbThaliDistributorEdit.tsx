@@ -1,9 +1,8 @@
-import React from "react";
-import { BooleanInput, Edit, TabbedForm, FormTab, TextInput } from "react-admin";
+import { BooleanInput, Edit, FormTab, TabbedForm, TextInput, type EditProps } from "react-admin";
 
-import AssignmentsTab from "./tabs/assignmentsTab";
+import AssignmentsTab from "./tabs/AssignmentsTab";
 
-export default function FmbThaliDistributorEdit(props) {
+export default function FmbThaliDistributorEdit(props: EditProps) {
   return (
     <Edit {...props} title="Edit thali distributor">
       <TabbedForm>

@@ -1,8 +1,8 @@
 import Icon from "@mui/icons-material/AssignmentTurnedIn";
-import List from "./list";
+import FmbThaliDistributionDailyRunList from "./FmbThaliDistributionDailyRunList";
 
 export default {
-  list: List,
+  list: FmbThaliDistributionDailyRunList,
   icon: Icon,
   label: "Thali distribution (daily)",
   options: { label: "Thali distribution (daily)" },

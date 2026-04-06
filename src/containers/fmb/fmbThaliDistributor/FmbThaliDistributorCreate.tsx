@@ -1,7 +1,6 @@
-import React from "react";
-import { BooleanInput, Create, SimpleForm, TextInput } from "react-admin";
+import { BooleanInput, Create, SimpleForm, TextInput, type CreateProps } from "react-admin";
 
-export default function FmbThaliDistributorCreate(props) {
+export default function FmbThaliDistributorCreate(props: CreateProps) {
   return (
     <Create {...props} title="Create thali distributor">
       <SimpleForm>
