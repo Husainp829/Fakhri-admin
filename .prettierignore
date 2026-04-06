@@ -1,0 +1,6 @@
+build
+dist
+node_modules
+package-lock.json
+coverage
+public/service-worker.js

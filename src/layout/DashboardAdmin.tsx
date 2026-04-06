@@ -1,0 +1,41 @@
+import type { ReactElement } from "react";
+import { usePermissions } from "react-admin";
+import { Navigate } from "react-router-dom";
+import { useBaseRoute, useRouteId } from "@/utils/route-utility";
+import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
+import { getModuleByPath } from "@/config/modules";
+import DefaultDashboard from "@/containers/default-dashboard";
+import type { PermissionRecord } from "@/types/permissions";
+
+const DashboardAdmin = (): ReactElement => {
+  const baseRoute = useBaseRoute();
+  const routeId = useRouteId();
+  const { permissions } = usePermissions<PermissionRecord>();
+  const module = baseRoute ? getModuleByPath(baseRoute) : undefined;
+
+  if (!module) {
+    return <DefaultDashboard />;
+  }
+
+  const dashboardPermission = module.dashboardPermission ?? module.permission;
+  const hasDashboardAccess = module.permissionsAny?.length
+    ? hasAnyPermission(permissions, module.permissionsAny)
+    : hasPermission(permissions, dashboardPermission);
+
+  if (!hasDashboardAccess) {
+    if (module.fallback.type === "navigate" && module.fallback.path) {
+      return <Navigate to={module.fallback.path} />;
+    }
+    return <DefaultDashboard />;
+  }
+
+  if (module.hasChildDashboard && routeId && module.childDashboard) {
+    const ChildDashboard = module.childDashboard;
+    return <ChildDashboard />;
+  }
+
+  const Dashboard = module.dashboard;
+  return <Dashboard />;
+};
+
+export default DashboardAdmin;
