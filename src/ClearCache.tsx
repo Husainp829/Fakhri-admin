@@ -29,6 +29,13 @@ function withClearCache<P extends object>(Component: ComponentType<P>): Componen
     };
 
     useEffect(() => {
+      // In dev, `public/meta.json` is often newer than the bundled `package.json` buildDate after a
+      // production build — comparing them would call `reload()` forever.
+      if (import.meta.env.DEV) {
+        setIsLatestBuildDate(true);
+        return;
+      }
+
       void fetch("/meta.json")
         .then((response) => response.json() as Promise<MetaJson>)
         .then((meta) => {

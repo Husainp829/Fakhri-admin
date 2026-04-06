@@ -18,6 +18,13 @@ function serviceWorkerBaseUrl(): string {
 }
 
 export function register(config?: ServiceWorkerRegisterConfig): void {
+  if (import.meta.env.DEV && "serviceWorker" in navigator) {
+    void navigator.serviceWorker.getRegistrations().then((registrations) => {
+      void Promise.all(registrations.map((r) => r.unregister()));
+    });
+    return;
+  }
+
   if (import.meta.env.PROD && "serviceWorker" in navigator) {
     const publicUrl = new URL(import.meta.env.BASE_URL, window.location.href);
     if (publicUrl.origin !== window.location.origin) {

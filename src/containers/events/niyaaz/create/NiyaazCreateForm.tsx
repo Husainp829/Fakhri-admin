@@ -33,6 +33,10 @@ export const NiyaazCreateForm = () => {
   const previousHistory = useWatch({ name: "previousHistory" });
   const familyMembers = useWatch({ name: "familyMembers" }) as FamilyMemberRow[] | undefined;
 
+  const previousHistoryRows = (previousHistory as { rows?: unknown[] } | null | undefined)?.rows;
+  const hasPreviousHistoryRows =
+    Array.isArray(previousHistoryRows) && previousHistoryRows.length > 0;
+
   const ez = currentEvent?.zabihat ?? 0;
   const ec = currentEvent?.chairs ?? 0;
 
@@ -293,13 +297,15 @@ export const NiyaazCreateForm = () => {
               <Typography variant="body1" sx={{ mb: 3 }}>
                 Previous Takhmeen History
               </Typography>
-              <ArrayField
-                record={previousHistory as Record<string, unknown>}
-                source="rows"
-                emptyText="No Previous Records Found"
-              >
-                <NiyaazDataGrid />
-              </ArrayField>
+              {hasPreviousHistoryRows ? (
+                <ArrayField record={previousHistory as Record<string, unknown>} source="rows">
+                  <NiyaazDataGrid />
+                </ArrayField>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  No Previous Records Found
+                </Typography>
+              )}
             </Grid>
           )}
           <Grid size={12}>

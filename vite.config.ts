@@ -1,22 +1,18 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   plugins: [react()],
-  // CRA-style JSX in `.js`: Vite's default esbuild step excludes `*.js`. Use `tsx` loader so `.tsx` and
-  // plain `.ts` stay valid alongside `.js` with JSX.
-  esbuild: {
-    jsx: "automatic",
-    loader: "tsx",
+  // CRA-style JSX in `.js`: treat app sources under `src` as TS/TSX-capable, and prebundle deps whose
+  // `.js` files contain JSX (Vite 8 uses Oxc + Rolldown instead of esbuild).
+  oxc: {
     include: /src\/.*\.[jt]sx?$/,
-    exclude: [],
+    jsx: { runtime: "automatic" },
   },
   optimizeDeps: {
-    esbuildOptions: {
-      target: "es2022",
-      loader: {
+    rolldownOptions: {
+      moduleTypes: {
         ".js": "jsx",
       },
     },
