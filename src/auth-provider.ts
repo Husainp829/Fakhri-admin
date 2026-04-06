@@ -1,124 +1,115 @@
-/* eslint-disable brace-style */
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut, getIdToken } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  getIdToken,
+  type User,
+} from "firebase/auth";
 import { LRUCache } from "lru-cache";
+import type { AuthProvider } from "ra-core";
 import { authObj } from "@/firebase-config";
 import { goToLogin } from "@/utils";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import { parsePermissionsArray } from "@/utils/permission-utils";
+import type { PermissionRecord } from "@/types/permissions";
 
-// --------------------
-// Helpers
-// --------------------
-const cache = new LRUCache({
-  max: 50, // max 50 users cached
-  ttl: 1000 * 60 * 5, // 5 min TTL
+const cache = new LRUCache<string, PermissionRecord>({
+  max: 50,
+  ttl: 1000 * 60 * 5,
 });
 
-// Cache for auth state promise to prevent multiple listeners
-let authStatePromise = null;
+let authStatePromise: Promise<User | null> | null = null;
 
-/**
- * Wait for auth state to be ready, reusing promise if already waiting
- * Returns null if user is not authenticated
- */
-const waitForAuthState = () => {
-  // If user is already available, return immediately
+const waitForAuthState = (): Promise<User | null> => {
   if (authObj.currentUser) {
     return Promise.resolve(authObj.currentUser);
   }
 
-  // Reuse existing promise if already waiting
   if (authStatePromise) {
     return authStatePromise;
   }
 
-  // Create new promise to wait for auth state
   authStatePromise = new Promise((resolve) => {
     const timeout = setTimeout(() => {
       authStatePromise = null;
       resolve(null);
-    }, 5000); // 5 second timeout
+    }, 5000);
 
     const unsubscribe = onAuthStateChanged(authObj, (authUser) => {
       clearTimeout(timeout);
       unsubscribe();
       authStatePromise = null;
-      resolve(authUser || null);
+      resolve(authUser ?? null);
     });
   });
 
   return authStatePromise;
 };
 
-const clearSession = async () => {
+const clearSession = async (): Promise<void> => {
   await signOut(authObj);
   localStorage.clear();
   sessionStorage.clear();
-  // Clear in-memory cache
   cache.clear();
-  // Force hard reload to refresh all caches (browser cache, service worker cache, etc.)
-  // Use replace to avoid adding to history and force cache bypass
   const { href } = window.location;
   const url = new URL(href);
   window.location.replace(`${url.origin}/#/login?reload=${Date.now()}`);
 };
 
-// --------------------
-// Core logic
-// --------------------
-/**
- * Fetch permissions from API endpoint
- * Returns array of permission strings (e.g., ["bookings.view", "bookings.edit"])
- */
-const fetchPermissionsFromAPI = async () => {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function httpLikeError(error: unknown): { status?: number; json?: unknown } | null {
+  if (!isRecord(error)) return null;
+  return error;
+}
+
+const fetchPermissionsFromAPI = async (): Promise<string[]> => {
   try {
     const url = `${getApiUrl()}/admins/me/permissions`;
     const response = await httpClient(url);
 
-    // API returns { count: number, rows: string[] } based on AdminsService.getAdminPermissions
-    // Handle both wrapped format and direct array format
     const { json } = response;
     if (!json) {
       return [];
     }
 
-    // Try to extract permissions array from various formats
-    const permissions =
-      (Array.isArray(json.rows) && json.rows) ||
-      (Array.isArray(json) && json) ||
-      (json.rows && Array.isArray(json.rows) && json.rows) ||
-      [];
+    const permissionsRaw = Array.isArray(json)
+      ? json
+      : isRecord(json) && Array.isArray(json.rows)
+        ? json.rows
+        : [];
 
-    if (!Array.isArray(permissions)) {
+    if (!Array.isArray(permissionsRaw)) {
       console.error("Invalid permissions format from API:", json);
       return [];
     }
 
-    return permissions;
-  } catch (error) {
-    // If 401, user is not authenticated - let checkError handle it
-    if (error?.status === 401 || error?.json?.statusCode === 401) {
+    return permissionsRaw.filter((p): p is string => typeof p === "string");
+  } catch (error: unknown) {
+    const err = httpLikeError(error);
+    const status = err?.status;
+    const jsonBody = err?.json;
+    const statusCode = isRecord(jsonBody) ? jsonBody.statusCode : undefined;
+    if (status === 401 || statusCode === 401) {
       throw error;
     }
-    // For other errors, log and return empty array to prevent app crash
     console.error("Error fetching permissions from API:", error);
     return [];
   }
 };
 
-const getCachedPermissions = async (force = false) => {
-  // Wait for auth state to be ready
+const getCachedPermissions = async (force = false): Promise<PermissionRecord> => {
   const user = await waitForAuthState();
 
-  // If no user after waiting, return empty permissions
   if (!user) {
     return {};
   }
 
   const cacheKey = user.uid;
 
-  // Check for cache bust flag
   let shouldForceRefresh = force;
   if (!shouldForceRefresh && typeof window !== "undefined") {
     const bustTimestamp = sessionStorage.getItem("permissionsCacheBust");
@@ -126,13 +117,11 @@ const getCachedPermissions = async (force = false) => {
       const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
       if (parseInt(bustTimestamp, 10) > fiveMinutesAgo) {
         shouldForceRefresh = true;
-        // Clear the cache entry
         cache.delete(cacheKey);
       }
     }
   }
 
-  // Check cache first (unless force refresh)
   if (!shouldForceRefresh) {
     const cached = cache.get(cacheKey);
     if (cached) {
@@ -140,10 +129,8 @@ const getCachedPermissions = async (force = false) => {
     }
   }
 
-  // Fetch permissions from API
   const permissionArray = await fetchPermissionsFromAPI();
 
-  // Parse and cache permissions (empty object if no permissions)
   const permissions =
     permissionArray && permissionArray.length > 0 ? parsePermissionsArray(permissionArray) : {};
 
@@ -151,38 +138,31 @@ const getCachedPermissions = async (force = false) => {
   return permissions;
 };
 
-// --------------------
-// Auth Provider
-// --------------------
-const authProvider = {
+const authProvider: AuthProvider = {
   login: async ({ username, password }) => {
     try {
       const { user } = await signInWithEmailAndPassword(authObj, username, password);
 
-      // Set the new user's token in storage before any API call so httpClient uses it (not a previous session's token)
       const idToken = await getIdToken(user, true);
       localStorage.setItem("AUTH_TOKEN", idToken);
-      localStorage.setItem("EXPIRE_TIME", String(Date.now() + 3000 * 1000)); // ~50 min, match httpClient
+      localStorage.setItem("EXPIRE_TIME", String(Date.now() + 3000 * 1000));
 
-      // Always fetch fresh permissions from API on login
       const permissionArray = await fetchPermissionsFromAPI();
 
       if (!permissionArray || permissionArray.length === 0) {
-        // User has no permissions - clear session
         await clearSession();
         throw new Error("Unauthorized: No permissions assigned");
       }
 
-      // Parse and warm cache
       const permissions = parsePermissionsArray(permissionArray);
       cache.set(user.uid, permissions);
-    } catch (error) {
-      // If it's already an Error with message, rethrow it
+    } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
       }
-      // Otherwise wrap it
-      throw new Error(error.message || "Login failed");
+      const message =
+        isRecord(error) && typeof error.message === "string" ? error.message : "Login failed";
+      throw new Error(message);
     }
   },
 
@@ -190,8 +170,9 @@ const authProvider = {
     await clearSession();
   },
 
-  checkError: async (error) => {
-    if (error?.status === 401) {
+  checkError: async (error: unknown) => {
+    const err = httpLikeError(error);
+    if (err?.status === 401) {
       await clearSession();
       throw error;
     }
@@ -206,16 +187,14 @@ const authProvider = {
     throw new Error("Not authenticated");
   },
 
-  getPermissions: async (force = false) => {
+  getPermissions: async () => {
     try {
-      return await getCachedPermissions(force);
-    } catch (error) {
-      // If error is 401, let checkError handle it
-      if (error?.status === 401) {
+      return await getCachedPermissions(false);
+    } catch (error: unknown) {
+      const err = httpLikeError(error);
+      if (err?.status === 401) {
         throw error;
       }
-      // For other errors, log and return empty permissions to prevent app crash
-      // waitForAuthState handles auth gracefully, so most errors are unexpected
       console.error("Error getting permissions:", error);
       return {};
     }

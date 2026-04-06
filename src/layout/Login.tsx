@@ -1,7 +1,4 @@
-/* eslint-disable no-shadow */
-/* eslint-disable no-console */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import { useState, type ReactElement } from "react";
 import { useLogin, useNotify } from "react-admin";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -9,13 +6,14 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/GridLegacy";
 import Typography from "@mui/material/Typography";
+import type { TypographyProps } from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 import background from "../assets/JameaAlAnwar.jpg";
 
-function Copyright(props) {
+function Copyright(props: TypographyProps): ReactElement {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       Copyright ©
@@ -27,14 +25,14 @@ function Copyright(props) {
   );
 }
 
-export default function Login() {
+export default function Login(): ReactElement {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const login = useLogin();
   const notify = useNotify();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     setLoading(true);
     login({ username, password })

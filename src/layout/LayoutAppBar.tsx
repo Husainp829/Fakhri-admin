@@ -1,13 +1,14 @@
-import React from "react";
+import type { ReactElement } from "react";
 import { AppBar, TitlePortal } from "react-admin";
+import type { AppBarProps } from "react-admin";
 import HomeIcon from "@mui/icons-material/Home";
 import { Button, IconButton } from "@mui/material";
 
 import { navigateToBaseRoute, useBaseRoute } from "@/utils/route-utility";
 
-const goToDashboard = () => navigateToBaseRoute();
+const goToDashboard = (): void => navigateToBaseRoute(null);
 
-export default (props) => {
+const LayoutAppBar = (props: AppBarProps): ReactElement => {
   const baseRoute = useBaseRoute();
   const showBackToDashboard = Boolean(baseRoute);
 
@@ -49,3 +50,5 @@ export default (props) => {
     </AppBar>
   );
 };
+
+export default LayoutAppBar;

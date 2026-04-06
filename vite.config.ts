@@ -25,7 +25,7 @@ export default defineConfig({
   build: {
     outDir: "build",
     sourcemap: true,
-    // TODO(post-migration): Revisit lru-cache usage in auth (see `authProvider.js`). v11 pulls top-level
+    // TODO(post-migration): Revisit lru-cache usage in auth (see `auth-provider.ts`). v11 pulls top-level
     // await + `node:diagnostics_channel` (Vite externalizes the latter for the browser). Options: pin
     // lru-cache@10, replace with a lighter cache, or keep `target: "es2022"` and accept current behavior.
     target: "es2022",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, type FormEvent, type ReactElement } from "react";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -9,12 +9,12 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNotify } from "react-admin";
 
-export default function ForgotPassword() {
+export default function ForgotPassword(): ReactElement {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const notify = useNotify();
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const auth = getAuth();
     setLoading(true);
@@ -23,12 +23,10 @@ export default function ForgotPassword() {
         setLoading(false);
         notify("Password Reset Link has been mailed to you on the above account.");
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         setLoading(false);
-        notify(error.message);
+        notify(error instanceof Error ? error.message : String(error));
       });
-
-    // const data = new FormData(event.currentTarget);
   };
 
   return (
@@ -67,7 +65,6 @@ export default function ForgotPassword() {
               mt: 5,
               mb: 1,
               mr: "auto",
-              //   width: "160px",
               height: "40px",
               borderRadius: 3,
             }}

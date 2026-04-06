@@ -9,14 +9,14 @@ import { checkAndClearCacheFromURL } from "@/utils/clear-permission-cache";
 import withClearCache from "./ClearCache";
 
 import dataProvider from "./dataprovider";
-import authProvider from "./authProvider";
+import authProvider from "./auth-provider";
 import layout from "./layout";
 import DashboardAdmin from "./layout/DashboardAdmin";
 import { ResourcesRenderer } from "./components/ResourcesRenderer";
 import { AUTHLESS_ROUTES } from "@/config/authless-routes";
 import i18nProvider from "@/config/i18n";
 import appTheme from "@/config/theme";
-import MyLoginPage from "./layout/login";
+import Login from "./layout/Login";
 
 dayjs.extend(utc);
 
@@ -37,7 +37,7 @@ const MainApp = () => {
       layout={layout}
       dashboard={DashboardAdmin}
       theme={appTheme}
-      loginPage={MyLoginPage}
+      loginPage={Login}
     >
       {(permissions) => ResourcesRenderer({ permissions, baseRoute, routeId })}
       <CustomRoutes noLayout>
