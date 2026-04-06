@@ -4,10 +4,18 @@ import { Route } from "react-router-dom";
 import { hasPermission } from "@/utils/permission-utils";
 import { MODULE_RESOURCES } from "@/config/module-resources";
 import { GLOBAL_RESOURCES } from "@/config/global-resources";
+import type { ResourceConfig } from "@/types/react-admin-config";
+import type { PermissionRecord } from "@/types/permissions";
 
 const renderResource = (
-  permissions,
-  { permission, permissionsAny, resource, createPermission, name }
+  permissions: PermissionRecord,
+  {
+    permission,
+    permissionsAny,
+    resource,
+    createPermission,
+    name,
+  }: ResourceConfig & { name?: string }
 ) => {
   if (permissionsAny?.length) {
     const allowed = permissionsAny.some((p) => hasPermission(permissions, p));
@@ -21,22 +29,32 @@ const renderResource = (
     createPermission === undefined || hasPermission(permissions, createPermission)
       ? resource.create
       : null;
-  const props = { ...resource, create };
+  const props: Record<string, unknown> = { ...resource, create };
   if (name) {
     props.name = name;
   }
-  return <Resource key={resource.name || name} {...props} />;
+  const resourceName = (resource as { name?: string }).name || name;
+  return (
+    <Resource
+      key={resourceName}
+      {...(props as unknown as React.ComponentPropsWithoutRef<typeof Resource>)}
+    />
+  );
+};
+
+export type ResourcesRendererProps = {
+  permissions: PermissionRecord;
+  baseRoute: string;
+  routeId?: string | null;
 };
 
 /**
- * Returns an array of Resource and CustomRoutes elements for react-admin to discover.
- * Must return a flat array (not wrapped in Fragment) so Admin's child inspector finds them.
- * baseRoute and routeId must be passed from a parent that calls useBaseRoute/useRouteId
- * (hooks cannot be called inside the render prop callback).
+ * Returns Resource and CustomRoutes elements for react-admin.
+ * baseRoute and routeId must be passed from a parent that calls useBaseRoute/useRouteId.
  */
-export const ResourcesRenderer = ({ permissions, baseRoute, routeId }) => {
+export const ResourcesRenderer = ({ permissions, baseRoute, routeId }: ResourcesRendererProps) => {
   const moduleConfig = MODULE_RESOURCES[baseRoute];
-  const elements = [];
+  const elements: React.ReactNode[] = [];
 
   if (moduleConfig) {
     moduleConfig.resources

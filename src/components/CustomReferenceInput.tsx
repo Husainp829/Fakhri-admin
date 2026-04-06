@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import React, { useState, useCallback } from "react";
+import { useState, useCallback, type ComponentProps } from "react";
 import {
   required,
   Button,
@@ -20,22 +19,50 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { makeStyles } from "@mui/styles";
 
-function CustomQuickCreateButton({ fields, source, name, title, onChange, defaultKey }) {
+type QuickCreateField = { source: string; label: string };
+
+type CustomQuickCreateButtonProps = {
+  fields: QuickCreateField[];
+  source: string;
+  name: string;
+  title: string;
+  onChange: () => void;
+  defaultKey: string;
+};
+
+function CustomQuickCreateButton({
+  fields,
+  source,
+  name,
+  title,
+  onChange,
+  defaultKey,
+}: CustomQuickCreateButtonProps) {
   const { filter, onCancel } = useCreateSuggestionContext();
   const [create, { isLoading }] = useCreate();
   const notify = useNotify();
   const { setValue } = useFormContext();
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
     const data = await create(name, { data: values }, { returnPromise: true }).catch(
-      ({ error }) => {
-        notify(error.message, "error");
+      (err: unknown) => {
+        const message =
+          err &&
+          typeof err === "object" &&
+          "error" in err &&
+          err.error &&
+          typeof err.error === "object"
+            ? String((err.error as { message?: string }).message ?? "Error")
+            : "Error";
+        notify(message, { type: "error" });
       }
     );
-    onChange();
-    setTimeout(() => {
-      setValue(source, data.id);
-    }, 1000);
+    if (data && typeof data === "object" && "id" in data) {
+      onChange();
+      setTimeout(() => {
+        setValue(source, (data as { id: unknown }).id);
+      }, 1000);
+    }
   };
 
   return (
@@ -74,26 +101,43 @@ const useStyles = makeStyles({
   },
 });
 
-const CustomReferenceInput = (props) => {
+export type CustomReferenceInputProps = ComponentProps<typeof ReferenceInput> & {
+  fields: QuickCreateField[];
+  title: string;
+  defaultKey: string;
+};
+
+const CustomReferenceInput = (props: CustomReferenceInputProps) => {
   const classes = useStyles();
   const [version, setVersion] = useState(0);
-  const handleChange = useCallback(() => setVersion(version + 1), [version]);
+  const handleChange = useCallback(() => setVersion((v) => v + 1), []);
+
+  const {
+    fields,
+    title,
+    defaultKey,
+    optionText,
+    optionValue,
+    reference,
+    source,
+    ...referenceInputProps
+  } = props;
 
   return (
     <div className={classes.root}>
-      <ReferenceInput key={version} {...props}>
+      <ReferenceInput key={version} reference={reference} source={source} {...referenceInputProps}>
         <AutocompleteInput
-          optionText={props.optionText}
-          optionValue={props.optionValue}
+          optionText={optionText}
+          optionValue={optionValue}
           fullWidth
           create={
             <CustomQuickCreateButton
               onChange={handleChange}
-              name={props.reference}
-              source={props.source}
-              fields={props.fields}
-              title={props.title}
-              defaultKey={props.defaultKey}
+              name={reference}
+              source={source}
+              fields={fields}
+              title={title}
+              defaultKey={defaultKey}
             />
           }
         />

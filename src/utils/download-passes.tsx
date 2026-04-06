@@ -1,16 +1,7 @@
-import type { ComponentType } from "react";
 import ReactPDF from "@react-pdf/renderer";
-import { Passes } from "@/components/pdf.js";
+import { Passes, type PassesProps } from "@/components/pdf";
 
-type PassesRow = {
-  familyMembers?: unknown[];
-  formNo?: string;
-  markaz?: unknown;
-  namaazVenue?: unknown;
-  event?: unknown;
-};
-
-const PassesPdf = Passes as unknown as ComponentType<Record<string, unknown>>;
+type PassesRow = Partial<PassesProps>;
 
 const downloadPDF = (blob: Blob): null => {
   const url = window.URL.createObjectURL(blob);
@@ -23,15 +14,7 @@ const downloadPDF = (blob: Blob): null => {
   return null;
 };
 
-export const downLoadPasses = async (row: PassesRow): Promise<null> => {
-  const blob = await ReactPDF.pdf(
-    <PassesPdf
-      familyMembers={row.familyMembers}
-      formNo={row.formNo}
-      markaz={row.markaz}
-      namaazVenue={row.namaazVenue}
-      event={row.event}
-    />
-  ).toBlob();
+export const downloadPasses = async (row: PassesRow): Promise<null> => {
+  const blob = await ReactPDF.pdf(<Passes {...(row as PassesProps)} />).toBlob();
   return downloadPDF(blob);
 };

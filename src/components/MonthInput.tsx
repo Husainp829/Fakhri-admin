@@ -1,21 +1,17 @@
-import React from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Box from "@mui/material/Box";
-import { useInput } from "react-admin";
+import { useInput, type InputProps } from "react-admin";
 import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 
-/**
- * Month/year picker for react-admin. MUI X + AdapterDayjs require a Dayjs (or null) `value`;
- * react-hook-form often stores a date string — convert both ways to avoid `value.isValid is not a function`.
- */
-function MonthInput(props) {
+function MonthInput(props: InputProps<string | null>) {
   const { field, fieldState, isRequired } = useInput(props);
   const { value: rawValue, onChange, onBlur, name, ref } = field;
 
   const isEmpty = rawValue === null || rawValue === undefined || rawValue === "";
-  let value = null;
+  let value: Dayjs | null = null;
   if (!isEmpty) {
     const parsed = dayjs(rawValue);
     if (parsed.isValid()) {
@@ -23,7 +19,7 @@ function MonthInput(props) {
     }
   }
 
-  const handleChange = (newValue) => {
+  const handleChange = (newValue: Dayjs | null) => {
     if (newValue == null) {
       onChange(null);
       return;

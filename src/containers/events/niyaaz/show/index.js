@@ -23,7 +23,7 @@ import { useMediaQuery } from "@mui/material";
 import FamilyMembers from "./familyMembers";
 import Receipt from "./receipts";
 import BasicInfo from "./basicInfo";
-import { downLoadPasses } from "@/utils";
+import { downloadPasses } from "@/utils";
 import { hasPermission } from "@/utils/permission-utils";
 
 const NiyaazActions = () => {
@@ -73,7 +73,7 @@ const NiyaazActions = () => {
         <Tooltip title="Print Passes">
           <IconButton
             color="info"
-            onClick={() => downLoadPasses(record)}
+            onClick={() => downloadPasses(record)}
             size="medium"
             aria-label="Print Passes"
           >
@@ -124,7 +124,7 @@ const NiyaazActions = () => {
       <Button
         color="info"
         variant="contained"
-        onClick={() => downLoadPasses(record)}
+        onClick={() => downloadPasses(record)}
         startIcon={<PrintIcon />}
         label="Print Passes"
       />

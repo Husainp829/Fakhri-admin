@@ -1,9 +1,24 @@
-import React from "react";
+import { type ComponentType, type ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import InboxIcon from "@mui/icons-material/Inbox";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 
-const CustomEmpty = ({ title, subtitle, action, actionText, icon: Icon = InboxIcon }) => (
+export type CustomEmptyProps = {
+  title?: ReactNode;
+  subtitle?: ReactNode;
+  action?: ReactNode;
+  actionText?: ReactNode;
+  icon?: ComponentType<SvgIconProps>;
+};
+
+const CustomEmpty = ({
+  title,
+  subtitle,
+  action,
+  actionText,
+  icon: Icon = InboxIcon,
+}: CustomEmptyProps) => (
   <Box
     sx={{
       flex: 1,

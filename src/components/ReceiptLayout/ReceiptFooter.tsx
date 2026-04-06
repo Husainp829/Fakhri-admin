@@ -1,7 +1,5 @@
 import "./receipt.css";
 
-import React from "react";
-
 const ReceiptFooter = () => (
   <>
     <div

@@ -6,24 +6,27 @@ import CircularProgress from "@mui/material/CircularProgress";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import { callApi } from "@/dataprovider/misc-apis";
 
-export default function ITSSyncUploadButton({ variant = "text" }) {
+export type ITSSyncUploadButtonProps = {
+  variant?: "text" | "outlined" | "contained";
+};
+
+export default function ITSSyncUploadButton({ variant = "text" }: ITSSyncUploadButtonProps) {
   const [loading, setLoading] = React.useState(false);
-  const fileInputRef = React.useRef(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const notify = useNotify();
 
-  const convertFileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
+  const convertFileToBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
+      reader.onload = () => resolve(String(reader.result));
       reader.onerror = (error) => reject(error);
     });
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (
       !file.name.endsWith(".xlsx") &&
       file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -35,12 +38,9 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
     setLoading(true);
 
     try {
-      // Convert file to base64
       const base64String = await convertFileToBase64(file);
-      // Remove the data URL prefix (data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,)
       const base64Data = base64String.split(",").pop();
 
-      // Call the sync API
       const response = await callApi({
         location: "itsdata/sync",
         method: "POST",
@@ -51,7 +51,8 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
         },
       });
 
-      const n = response?.data?.addressChangeQueueCount;
+      const data = response?.data as { addressChangeQueueCount?: number } | undefined;
+      const n = data?.addressChangeQueueCount;
       if (typeof n === "number" && n > 0) {
         notify(
           `Sync completed. ${n} address change${n === 1 ? "" : "s"} queued — update the external portal and mark them done under ITS address updates.`,
@@ -60,14 +61,13 @@ export default function ITSSyncUploadButton({ variant = "text" }) {
       } else {
         notify("File synced successfully", { type: "success" });
       }
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || "Failed to sync file";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const errorMessage = err.response?.data?.message || err.message || "Failed to sync file";
       notify(errorMessage, { type: "error" });
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

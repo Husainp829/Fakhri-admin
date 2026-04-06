@@ -1,10 +1,16 @@
 import "./receipt.css";
 
-import React from "react";
-import ReceiptHeader from "./receiptHeader";
-import ReceiptFooter from "./receiptFooter";
+import { type ReactNode } from "react";
+import ReceiptHeader from "./ReceiptHeader";
+import ReceiptFooter from "./ReceiptFooter";
 
-const ReceiptPrint = ({ children, title, subTitle }) => (
+export type ReceiptPrintProps = {
+  children: ReactNode;
+  title: ReactNode;
+  subTitle: ReactNode;
+};
+
+const ReceiptPrint = ({ children, title, subTitle }: ReceiptPrintProps) => (
   <>
     <div className="main-div">
       <div style={{ border: "5px solid #ccc", boxSizing: "border-box" }}>

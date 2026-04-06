@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, Grid, TextField, Button, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Card, CardContent, TextField, Button, Typography } from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
 
-/**
- * Common Date Range Filter Component
- * Syncs with URL params and provides date range filtering
- *
- * @param {Object} props
- * @param {string} props.defaultStartDate - Default start date (YYYY-MM-DD format)
- * @param {string} props.defaultEndDate - Default end date (YYYY-MM-DD format)
- * @param {Function} props.onDateChange - Callback when dates are applied: (startDate, endDate) => void
- * @param {boolean} props.showTitle - Whether to show the title (default: false)
- */
+export type DateRangeFilterProps = {
+  defaultStartDate?: string;
+  defaultEndDate?: string;
+  onDateChange?: (startDate: string, endDate: string) => void;
+  showTitle?: boolean;
+};
+
 export default function DateRangeFilter({
   defaultStartDate,
   defaultEndDate,
   onDateChange,
   showTitle = false,
-}) {
-  // Helper function to get date range from URL params
+}: DateRangeFilterProps) {
   const getDateRangeFromURL = () => {
     if (typeof window === "undefined") {
       return {
@@ -40,8 +37,7 @@ export default function DateRangeFilter({
     };
   };
 
-  // Helper function to update URL params with date range
-  const updateURLParams = (startDate, endDate) => {
+  const updateURLParams = (startDate: string, endDate: string) => {
     if (typeof window === "undefined") return;
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -65,31 +61,27 @@ export default function DateRangeFilter({
     window.history.replaceState({}, "", newUrl);
   };
 
-  // Initialize from URL params or defaults
   const initialDateRange = getDateRangeFromURL();
   const [startDate, setStartDate] = useState(initialDateRange.startDate);
   const [endDate, setEndDate] = useState(initialDateRange.endDate);
 
-  // Sync with URL params when they change (e.g., browser back/forward)
   useEffect(() => {
     const handlePopState = () => {
       const urlRange = getDateRangeFromURL();
       setStartDate(urlRange.startDate);
       setEndDate(urlRange.endDate);
-      if (onDateChange) {
-        onDateChange(urlRange.startDate, urlRange.endDate);
-      }
+      onDateChange?.(urlRange.startDate, urlRange.endDate);
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
+    // getDateRangeFromURL reads window + defaults; omitting avoids duplicate logic vs. initial state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDateChange, defaultStartDate, defaultEndDate]);
 
   const handleApply = () => {
     updateURLParams(startDate, endDate);
-    if (onDateChange) {
-      onDateChange(startDate, endDate);
-    }
+    onDateChange?.(startDate, endDate);
   };
 
   const handleClear = () => {
@@ -98,7 +90,6 @@ export default function DateRangeFilter({
     setStartDate(clearedStartDate);
     setEndDate(clearedEndDate);
 
-    // Remove date params from URL
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.delete("startDate");
@@ -111,9 +102,7 @@ export default function DateRangeFilter({
       window.history.replaceState({}, "", newUrl);
     }
 
-    if (onDateChange) {
-      onDateChange(clearedStartDate, clearedEndDate);
-    }
+    onDateChange?.(clearedStartDate, clearedEndDate);
   };
 
   return (
@@ -125,7 +114,7 @@ export default function DateRangeFilter({
           </Typography>
         )}
         <Grid container spacing={2} alignItems="center">
-          <Grid item size={{ xs: 12, sm: 4 }}>
+          <Grid item xs={12} sm={4}>
             <TextField
               label="Start Date"
               type="date"
@@ -136,7 +125,7 @@ export default function DateRangeFilter({
               size="small"
             />
           </Grid>
-          <Grid item size={{ xs: 12, sm: 4 }}>
+          <Grid item xs={12} sm={4}>
             <TextField
               label="End Date"
               type="date"
@@ -147,12 +136,12 @@ export default function DateRangeFilter({
               size="small"
             />
           </Grid>
-          <Grid item size={{ xs: 12, sm: 2 }}>
+          <Grid item xs={12} sm={2}>
             <Button variant="contained" onClick={handleApply} fullWidth sx={{ height: "40px" }}>
               Apply
             </Button>
           </Grid>
-          <Grid item size={{ xs: 12, sm: 2 }}>
+          <Grid item xs={12} sm={2}>
             <Button variant="outlined" onClick={handleClear} fullWidth sx={{ height: "40px" }}>
               Clear
             </Button>

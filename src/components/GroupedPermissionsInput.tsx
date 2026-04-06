@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback, useState } from "react";
+import { useMemo, useEffect, useCallback, useState } from "react";
 import { useDataProvider } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import {
@@ -14,42 +14,43 @@ import { onAuthStateChanged } from "firebase/auth";
 import { authObj } from "@/firebase-config";
 import { isWildcard, buildResourceGroups } from "@/utils/permission-utils";
 import { shouldBustCache } from "@/utils/clear-permission-cache";
+import type { PermissionChoice } from "@/utils/permission-utils";
 
-// Module-level cache for permissions to prevent refetching
-let permissionsCache = null;
-let permissionsCachePromise = null;
+let permissionsCache: PermissionChoice[] | null = null;
+let permissionsCachePromise: Promise<PermissionChoice[] | null> | null = null;
 
-// Export function to clear cache (for development/debugging)
 export const clearPermissionsCache = () => {
   permissionsCache = null;
   permissionsCachePromise = null;
 };
 
-// Listen for cache clear events
 if (typeof window !== "undefined") {
   window.addEventListener("permissionsCacheCleared", () => {
     clearPermissionsCache();
   });
 }
 
-/**
- * Pure function: Check if a permission should be displayed as checked
- * This only checks if the permission is directly in the stored value
- */
-const isPermissionChecked = (permissionId, storedValue) => storedValue.includes(permissionId);
+const isPermissionChecked = (permissionId: string, storedValue: string[]) =>
+  storedValue.includes(permissionId);
 
-const GroupedPermissionsInput = (props) => {
+const EMPTY_PERMISSIONS: string[] = [];
+
+export type GroupedPermissionsInputProps = {
+  reference?: string;
+  source?: string;
+};
+
+const GroupedPermissionsInput = (props: GroupedPermissionsInputProps) => {
   const { reference = "admins/permissions/available" } = props;
   const dataProvider = useDataProvider();
   const { getValues, setValue, watch } = useFormContext();
   const source = props.source || "permissions";
-  const value = watch(source) || [];
+  const value = (watch(source) as string[] | undefined) ?? EMPTY_PERMISSIONS;
 
   const [localChoices, setLocalChoices] = useState(permissionsCache);
   const [isLoading, setIsLoading] = useState(!permissionsCache);
   const [isAuthReady, setIsAuthReady] = useState(!!authObj.currentUser);
 
-  // Wait for authentication to be ready
   useEffect(() => {
     if (authObj.currentUser) {
       setIsAuthReady(true);
@@ -62,13 +63,11 @@ const GroupedPermissionsInput = (props) => {
     return unsubscribe;
   }, []);
 
-  // Fetch permissions once and cache them (only when auth is ready)
   useEffect(() => {
     if (!isAuthReady) {
       return;
     }
 
-    // Check if cache should be busted
     const bustCache = shouldBustCache();
 
     if (permissionsCache && !bustCache) {
@@ -77,7 +76,6 @@ const GroupedPermissionsInput = (props) => {
       return;
     }
 
-    // If cache should be busted, clear it
     if (bustCache) {
       permissionsCache = null;
     }
@@ -101,13 +99,14 @@ const GroupedPermissionsInput = (props) => {
         sort: { field: "id", order: "ASC" },
       })
       .then(({ data }) => {
-        permissionsCache = data;
+        const rows = data as PermissionChoice[];
+        permissionsCache = rows;
         permissionsCachePromise = null;
-        setLocalChoices(data);
+        setLocalChoices(rows);
         setIsLoading(false);
-        return data;
+        return rows;
       })
-      .catch((error) => {
+      .catch((error: { status?: number; message?: string }) => {
         if (error?.status !== 401 && error?.message !== "No user") {
           console.error("Failed to fetch permissions:", error);
         }
@@ -119,13 +118,11 @@ const GroupedPermissionsInput = (props) => {
 
   const choices = useMemo(() => localChoices || [], [localChoices]);
 
-  // Memoize resource groups structure for efficient lookups
   const resourceGroups = useMemo(() => buildResourceGroups(choices, isWildcard), [choices]);
 
-  // Simple permission change handler - just add/remove the permission
   const handlePermissionChange = useCallback(
-    (permissionId, checked) => {
-      const currentValue = getValues(source) || [];
+    (permissionId: string, checked: boolean) => {
+      const currentValue = (getValues(source) as string[] | undefined) || [];
       const newValue = checked
         ? [...currentValue, permissionId]
         : currentValue.filter((id) => id !== permissionId);
@@ -135,9 +132,8 @@ const GroupedPermissionsInput = (props) => {
     [source, getValues, setValue]
   );
 
-  // Memoized checkbox checked state
   const getCheckboxChecked = useCallback(
-    (permissionId) => isPermissionChecked(permissionId, value),
+    (permissionId: string) => isPermissionChecked(permissionId, value),
     [value]
   );
 

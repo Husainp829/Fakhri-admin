@@ -23,7 +23,7 @@ import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "@/utils/dayjs-localizer";
-import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
+import CustomCalendarToolbar from "@/components/CustomCalendarToolbar";
 import { buildOhbatMajlisEventDetailsText } from "../ohbatMajlisEventDetailsClipboard";
 import { formatMajlisStartTimeLabel } from "../ohbatMajlisTime";
 import { useBaseRoute } from "@/utils/route-utility";

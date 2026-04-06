@@ -23,7 +23,7 @@ import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjsLocalizer from "@/utils/dayjs-localizer";
-import CustomCalendarToolbar from "../../../../components/CustomCalenderToolbar";
+import CustomCalendarToolbar from "@/components/CustomCalendarToolbar";
 import { hallColorMap, slotTimeRanges } from "@/constants";
 import { useBaseRoute } from "@/utils/route-utility";
 import { fromGregorian } from "@/utils/hijri-date-utils";

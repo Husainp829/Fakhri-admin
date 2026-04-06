@@ -1,12 +1,22 @@
-import React from "react";
 import { Box, Typography, Divider, Stack, Paper } from "@mui/material";
 import QRCode from "react-qr-code";
 import dayjs from "dayjs";
 
-/**
- * Reusable Receipt Line Component
- */
-const ReceiptLine = ({ left, right, bold = false, capitalize = false }) => (
+export type ReceiptLineItem = {
+  left: string;
+  right?: string;
+  bold?: boolean;
+  capitalize?: boolean;
+};
+
+type ReceiptLineProps = {
+  left: string;
+  right?: string;
+  bold?: boolean;
+  capitalize?: boolean;
+};
+
+const ReceiptLine = ({ left, right, bold = false, capitalize = false }: ReceiptLineProps) => (
   <Box display="grid" gridTemplateColumns="280px 1fr" py={0.8}>
     <Typography fontSize={16} color="text.secondary">
       {left}
@@ -21,25 +31,24 @@ const ReceiptLine = ({ left, right, bold = false, capitalize = false }) => (
   </Box>
 );
 
-/**
- * Common Receipt Component - A5 Size
- *
- * @param {Object} props
- * @param {string} props.title - Main title (e.g., "DAWOODI BOHRA JAMAAT TRUST")
- * @param {string} props.subTitle - Subtitle (e.g., "Trust Reg No E/7038(P)")
- * @param {string} props.logoUrl - Logo image URL (default: "/logo512.png")
- * @param {string} props.receiptNo - Receipt number
- * @param {string|Date} props.date - Receipt date (will be formatted if Date object)
- * @param {string} props.dateFormat - Date format (default: "DD/MM/YYYY")
- * @param {Array<{left: string, right: string, bold?: boolean}>} props.receiptLines - Array of receipt line objects
- * @param {number} props.amount - Total amount
- * @param {string} props.currency - Currency symbol (default: "₹")
- * @param {string} props.digitalSignatureValue - Value for QR code
- * @param {number} props.qrCodeSize - QR code size in pixels (default: 90)
- * @param {string} props.digitalSignatureText - Text below QR code (default: "Digitally Verified")
- * @param {string} props.footerNote - Footer note text
- * @param {boolean} props.showReceiptBadge - Show "RECEIPT" badge (default: true)
- */
+export type CommonReceiptA5Props = {
+  title?: string;
+  subTitle?: string;
+  logoUrl?: string;
+  receiptNo?: string;
+  date?: string | Date;
+  dateFormat?: string;
+  receiptLines?: ReceiptLineItem[];
+  amount?: number;
+  currency?: string;
+  digitalSignatureValue?: string;
+  qrCodeSize?: number;
+  digitalSignatureText?: string;
+  footerNote?: string;
+  showReceiptBadge?: boolean;
+  receiptHeaderText?: string;
+};
+
 const CommonReceiptA5 = ({
   title,
   subTitle,
@@ -56,8 +65,7 @@ const CommonReceiptA5 = ({
   footerNote = "This receipt is computer generated and does not require a physical signature.",
   showReceiptBadge = true,
   receiptHeaderText = "RECEIPT",
-}) => {
-  // Format date if it's a Date object or string
+}: CommonReceiptA5Props) => {
   const formattedDate = date ? dayjs(date).format(dateFormat) : date || "-";
 
   return (
@@ -71,7 +79,6 @@ const CommonReceiptA5 = ({
         background: "transparent",
       }}
     >
-      {/* Header */}
       <Stack direction="row" spacing={1} alignItems="center">
         <Box>
           <img src={logoUrl} alt="Logo" width={90} />
@@ -93,7 +100,6 @@ const CommonReceiptA5 = ({
 
       <Divider sx={{ my: 0.5, borderBottomWidth: 2 }} />
 
-      {/* Meta - Receipt No and Date */}
       <Stack direction="row" justifyContent="space-between" mb={2}>
         {receiptNo && (
           <Typography fontSize={16}>
@@ -107,7 +113,6 @@ const CommonReceiptA5 = ({
         )}
       </Stack>
 
-      {/* Content - Receipt Lines */}
       <Box>
         {receiptLines.map((line, index) => (
           <ReceiptLine
@@ -120,7 +125,6 @@ const CommonReceiptA5 = ({
         ))}
       </Box>
 
-      {/* Footer - Amount and QR Code */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" mt={3}>
         {amount !== undefined && amount !== null && (
           <Box px={3} py={2} bgcolor="#f3f3f3aa" borderLeft="5px solid #000">
@@ -141,7 +145,6 @@ const CommonReceiptA5 = ({
         )}
       </Stack>
 
-      {/* Footer Note */}
       {footerNote && (
         <>
           <Divider sx={{ my: 1.5 }} />

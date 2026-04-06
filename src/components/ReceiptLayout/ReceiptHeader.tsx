@@ -1,8 +1,13 @@
 import "./receipt.css";
 
-import React from "react";
+import { type ReactNode } from "react";
 
-const ReceiptHeader = ({ title, subTitle }) => (
+export type ReceiptHeaderProps = {
+  title: ReactNode;
+  subTitle: ReactNode;
+};
+
+const ReceiptHeader = ({ title, subTitle }: ReceiptHeaderProps) => (
   <>
     <div className="u-row" style={{ margin: "0 auto", display: "flex" }}>
       <div className="u-col u-col-21p13">
@@ -10,7 +15,7 @@ const ReceiptHeader = ({ title, subTitle }) => (
           src="https://assets.unlayer.com/stock-templates/1699793316187-logo512.png"
           alt="Fakhri Logo"
           style={{ height: "auto", width: "100%", maxWidth: "110px" }}
-          width="50"
+          width={50}
         />
       </div>
 

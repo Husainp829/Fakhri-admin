@@ -42,7 +42,7 @@ During migration, renaming `list.js` → `SabilReceiptList.tsx` (or domain-appro
 - Prefer **absolute** imports with the **`@/`** alias for anything under `src/` (configured in `tsconfig.json` as `@/*` → `src/*`). Example: `import { hasPermission } from "@/utils/permission-utils"`.
 - **Colocated modules** in the same folder (e.g. feature `constants.js` or `utils.js` next to the screen) should stay **`./constants`**, **`./utils`**, etc. — do not use **`@/constants`** or **`@/utils`** for those, because **`@/constants`** is **`src/constants.ts`** and **`@/utils`** is **`src/utils/index.ts`** (app-wide).
 - **Same-folder** barrels may use `./` re-exports if it keeps the barrel obvious; otherwise use `@/…` for consistency.
-- Use **extensionless** specifiers. Vite + TypeScript resolve `.ts` / `.tsx`. (Exception: the legacy folder `components/pdf.js` keeps that segment in the path until renamed.)
+- Use **extensionless** specifiers. Vite + TypeScript resolve `.ts` / `.tsx`.
 
 ## Barrel exports (`index.ts` / `index.tsx`)
 

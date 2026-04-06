@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
-import React from "react";
 import { Button, useCreate } from "react-admin";
-import { forms } from "./forms";
 
-export default () => {
+const forms: Record<string, unknown>[] = [];
+
+export default function FormUploadButton() {
   const [create] = useCreate();
 
   const onUploadITS = () => {
@@ -20,4 +19,4 @@ export default () => {
   };
 
   return <Button onClick={onUploadITS}> upload Forms</Button>;
-};
+}
