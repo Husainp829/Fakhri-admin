@@ -26,7 +26,7 @@ import {
 import { format, parseISO } from "date-fns";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import DateRangeFilter from "../../../components/DateRangeFilter";
 
 dayjs.extend(utc);

@@ -17,7 +17,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/GridLegacy";
 import NoArrowKeyNumberInput from "../../../components/NoArrowKeyNumberInput";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import { formatINR } from "@/utils";
 import { BeneficiaryItsAutocomplete } from "./common/beneficiaryItsAutocomplete";

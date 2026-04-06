@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
 export default function DailySummarySection() {

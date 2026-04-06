@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Title, useRedirect } from "react-admin";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { COLORS } from "./constants";
 import DashboardHeader from "./components/DashboardHeader";
 import FmbMetrics from "./components/FmbMetrics";

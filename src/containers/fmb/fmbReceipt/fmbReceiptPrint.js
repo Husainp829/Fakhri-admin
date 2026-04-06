@@ -5,7 +5,7 @@ import { ToWords } from "to-words";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "@/utils";
-import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
+import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
 /** Query string from hash route `#/fmb-receipt?receiptId=…` (not `window.location.search`). */
 function getReceiptIdFromLocation() {

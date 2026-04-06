@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "@/utils";
 import { MARKAZ_LIST } from "@/constants";
-import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
+import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 import { getHijriYear } from "@/utils/hijri-date-utils";
 
 const Receipt = () => {

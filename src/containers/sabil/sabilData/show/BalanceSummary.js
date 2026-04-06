@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from "react";
 import { useShowContext } from "react-admin";
 import { Grid, Paper, Typography, Box } from "@mui/material";
-import { callApi } from "../../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 // Summary item configuration
 const SUMMARY_ITEMS = [

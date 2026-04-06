@@ -19,7 +19,7 @@ import BalanceIcon from "@mui/icons-material/Balance";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import CloseBookingModal from "./CloseBookingModal";
-import { callApi } from "../../../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { useShowTotals } from "../context";
 import { hasPermission } from "@/utils/permission-utils";
 

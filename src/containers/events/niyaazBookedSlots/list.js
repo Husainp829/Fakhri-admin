@@ -23,7 +23,7 @@ import {
   Tab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
 // Capacity per booking type: QUARTER = 0.25, HALF = 0.5, FULL = 1 (used to sum slot usage).

@@ -16,7 +16,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useGetList } from "react-admin";
-import { callApi } from "../../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { fromGregorian } from "@/utils/hijri-date-utils";
 import { slotNameMap } from "@/constants";
 

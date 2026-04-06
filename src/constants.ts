@@ -11,7 +11,8 @@ function resolveApiBaseUrl(): string {
 /** API origin including `/api` path (no trailing slash). Set `VITE_API_URL` at build time (e.g. CI). */
 export const apiUrl = resolveApiBaseUrl();
 
-export const getApiUrl = (): string => apiUrl;
+/** @param _resource Ignored; API base is single origin. Kept for call-site compatibility. */
+export const getApiUrl = (_resource?: string): string => apiUrl;
 
 export const MARKAZ_LIST: Record<string, string> = {
   FM: "Fakhri Manzil",

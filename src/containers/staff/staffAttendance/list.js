@@ -19,7 +19,7 @@ import {
 import dayjs from "dayjs";
 
 import { EMPLOYEE_TYPE } from "@/constants";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 const StaffAttendanceList = () => {
   const [month, setMonth] = useState(dayjs().format("YYYY-MM"));

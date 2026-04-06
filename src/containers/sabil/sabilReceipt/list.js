@@ -18,7 +18,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
 import { Box, Card, CardContent, Grid, Typography, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl, SABIL_TYPE_OPTIONS } from "@/constants";
 import CommonTabs from "../../../components/CommonTabs";
 import { exportToExcel } from "@/utils/export-to-excel";

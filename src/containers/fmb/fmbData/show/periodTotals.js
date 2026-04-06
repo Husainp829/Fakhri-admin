@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useShowContext } from "react-admin";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
-import { callApi } from "../../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { formatINR } from "@/utils";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 

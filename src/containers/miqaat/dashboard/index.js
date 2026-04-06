@@ -26,7 +26,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import CommonTabs from "../../../components/CommonTabs";
 
 const MiqaatNiyaazDashboard = () => {

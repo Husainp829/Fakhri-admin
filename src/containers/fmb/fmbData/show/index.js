@@ -21,7 +21,7 @@ import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { getApiUrl } from "@/constants";
-import httpClient from "../../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 
 import TakhmeenHistory from "./takhmeenHistory";
 import FamilyMembers from "./familyMembers";

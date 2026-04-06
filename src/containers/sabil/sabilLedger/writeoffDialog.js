@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNotify, useRefresh } from "react-admin";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 export default function WriteoffDialog({ open, onClose, selectedIds }) {
   const [authorizedBy, setAuthorizedBy] = useState("");

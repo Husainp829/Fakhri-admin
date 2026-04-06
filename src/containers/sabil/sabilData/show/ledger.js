@@ -29,7 +29,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import UpdateIcon from "@mui/icons-material/Update";
 import WriteoffDialog from "../../sabilLedger/writeoffDialog";
 import BalanceSummary from "./BalanceSummary";
-import { callApi } from "../../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 const UpdateTakhmeenDialog = ({ open, onClose, selectedIds, sabilId, onSuccess }) => {
   const [loading, setLoading] = useState(false);

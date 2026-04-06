@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword, onAuthStateChanged, signOut, getIdToken } f
 import { LRUCache } from "lru-cache";
 import { authObj } from "@/firebase-config";
 import { goToLogin } from "@/utils";
-import httpClient from "./dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import { parsePermissionsArray } from "@/utils/permission-utils";
 

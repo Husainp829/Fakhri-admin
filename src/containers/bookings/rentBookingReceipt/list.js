@@ -31,7 +31,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { hasPermission } from "@/utils/permission-utils";
 import CommonTabs from "../../../components/CommonTabs";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
 const SUMMARY_CONFIG = [

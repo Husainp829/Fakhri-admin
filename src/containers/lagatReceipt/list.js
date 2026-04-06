@@ -26,7 +26,7 @@ import {
 } from "@mui/material";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { hasPermission } from "@/utils/permission-utils";
-import httpClient from "../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import CommonTabs from "../../components/CommonTabs";
 

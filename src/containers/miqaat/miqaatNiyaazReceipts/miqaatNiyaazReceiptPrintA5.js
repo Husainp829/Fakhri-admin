@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { ToWords } from "to-words";
 import { Box } from "@mui/material";
-import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
+import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 import CommonReceiptA5 from "../../../components/CommonReceipt/CommonReceiptA5";
 
 const MiqaatNiyaazReceiptA5 = () => {

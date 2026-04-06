@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { ToWords } from "to-words";
 import { useParams } from "react-router";
 import CommonReceiptA5 from "../../components/CommonReceipt/CommonReceiptA5";
-import { callApiWithoutAuth } from "../../dataprovider/miscApis";
+import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
 const LagatReceiptPrint = () => {
   const { id } = useParams();

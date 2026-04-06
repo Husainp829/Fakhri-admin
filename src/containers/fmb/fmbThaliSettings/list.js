@@ -5,7 +5,7 @@ import Grid from "@mui/material/GridLegacy";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezonePlugin from "dayjs/plugin/timezone";
-import httpClient from "../../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
 dayjs.extend(utc);

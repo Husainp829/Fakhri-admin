@@ -7,7 +7,7 @@ import { ToWords } from "to-words";
 import { Box } from "@mui/material";
 import ReceiptPrint from "../../../components/ReceiptLayout";
 import { formatDate } from "@/utils";
-import { callApiWithoutAuth } from "../../../dataprovider/miscApis";
+import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
 dayjs.extend(utc);
 

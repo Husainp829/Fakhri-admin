@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { getApiUrl } from "@/constants";
-import httpClient from "../../dataprovider/httpClient";
+import httpClient from "@/dataprovider/http-client";
 
 const toChoices = (arr) => (arr || []).map((s) => ({ id: s, name: s }));
 

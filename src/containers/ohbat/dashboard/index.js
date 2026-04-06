@@ -22,7 +22,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
 
 const COLORS = [

@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 export default function ITSSyncUploadButton({ variant = "text" }) {
   const [loading, setLoading] = React.useState(false);

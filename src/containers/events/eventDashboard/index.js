@@ -5,7 +5,7 @@ import { Title, useNotify, useStore } from "react-admin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import GridList from "./gridList";
-import { callApi } from "../../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 import { MARKAZ_LIST } from "@/constants";
 import NamaazStats from "./namaazStats";
 import { useRouteId } from "@/utils/route-utility";

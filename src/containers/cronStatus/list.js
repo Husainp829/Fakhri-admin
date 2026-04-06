@@ -24,7 +24,7 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { hasPermission } from "@/utils/permission-utils";
 import CustomEmpty from "../../components/CustomEmpty";
-import { callApi } from "../../dataprovider/miscApis";
+import { callApi } from "@/dataprovider/misc-apis";
 
 const TriggerCronButton = () => {
   const notify = useNotify();
