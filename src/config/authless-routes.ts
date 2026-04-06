@@ -1,13 +1,13 @@
 /**
  * Auth-less routes (noLayout) - receipt prints, forgot password, etc.
  */
-import Receipt from "@/containers/events/receipt/receiptPrint";
-import RentReceiptPrint from "@/containers/bookings/rentBookingReceipt/rentReceiptPrint";
-import LagatReceiptPrint from "@/containers/lagatReceipt/lagatReceiptPrint";
-import MiqaatNiyaazReceiptPrint from "@/containers/miqaat/miqaatNiyaazReceipts/miqaatNiyaazReceiptPrintA5";
+import Receipt from "@/containers/events/receipt/ReceiptPrint";
+import RentReceiptPrint from "@/containers/bookings/rent-booking-receipt/RentReceiptPrint";
+import LagatReceiptPrint from "@/containers/lagat-receipt/LagatReceiptPrint";
+import MiqaatNiyaazReceiptPrint from "@/containers/miqaat/miqaat-niyaaz-receipts/MiqaatNiyaazReceiptPrintA5";
 import ForgotPassword from "@/layout/ForgotPassword";
-import SabilReceipt from "@/containers/sabil/sabilReceipt/sabilReceiptPrint";
-import FmbReceipt from "@/containers/fmb/fmbReceipt/fmbReceiptPrint";
+import SabilReceipt from "@/containers/sabil/sabil-receipt/SabilReceiptPrint";
+import FmbReceipt from "@/containers/fmb/fmb-receipt/FmbReceiptPrint";
 
 import type { AuthlessRouteConfig } from "@/types/react-admin-config";
 

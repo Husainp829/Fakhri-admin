@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, IconButton, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -9,7 +9,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { fromGregorian } from "@/utils/hijri-date-utils";
-import ViewToggle from "@/containers/bookings/hallBookings/list/viewToggle";
+import HallBookingsViewToggle from "@/containers/bookings/hall-bookings/list/HallBookingsViewToggle";
 
 export type CustomCalendarToolbarProps = {
   label: string;
@@ -38,7 +38,7 @@ const CustomCalendarToolbar = ({
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Box px={2} pb={2}>
       <Grid container alignItems="center" spacing={2} justifyContent="space-between">
-        <Grid item container alignItems="center" justifyContent="start">
+        <Grid container alignItems="center" justifyContent="start">
           <DatePicker
             label="Jump to date"
             value={selectedDate}
@@ -64,13 +64,13 @@ const CustomCalendarToolbar = ({
           </IconButton>
         </Grid>
 
-        <Grid item>
+        <Grid>
           <Typography variant="subtitle2" align="center">
             {view === "day" ? `${label} | ${fromGregorian(new Date(date), "short")}` : label}
           </Typography>
         </Grid>
 
-        <Grid item container alignItems="center" justifyContent="space-between">
+        <Grid container alignItems="center" justifyContent="space-between">
           <ToggleButtonGroup
             value={view}
             exclusive
@@ -88,7 +88,7 @@ const CustomCalendarToolbar = ({
             (ListToggleComponent ? (
               <ListToggleComponent />
             ) : (
-              <ViewToggle hideCreateButton={false} />
+              <HallBookingsViewToggle hideCreateButton={false} />
             ))}
         </Grid>
       </Grid>

@@ -3,9 +3,9 @@
  */
 import admin from "@/containers/admin";
 import itsdata from "@/containers/itsdata";
-import itsdataAddressChangeQueue from "@/containers/itsdataAddressChangeQueue";
-import whatsappBroadcasts from "@/containers/whatsappBroadcasts";
-import cronStatus from "@/containers/cronStatus";
+import itsdataAddressChangeQueue from "@/containers/itsdata-address-change-queue";
+import whatsappBroadcasts from "@/containers/whatsapp-broadcasts";
+import cronStatus from "@/containers/cron-status";
 import sequences from "@/containers/sequences";
 
 import type { GlobalResourceConfig } from "@/types/react-admin-config";

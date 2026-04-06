@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import type { TypographyProps } from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -49,15 +49,16 @@ export default function Login(): ReactElement {
     <Grid container component="main" sx={{ height: "100vh" }}>
       <CssBaseline />
       <Grid
-        item
-        xs={false}
-        sm={4}
-        md={8}
         sx={{
           backgroundImage: `url(${background})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundPosition: "center",
+        }}
+        size={{
+          xs: false,
+          sm: 4,
+          md: 8,
         }}
       >
         <div
@@ -69,7 +70,15 @@ export default function Login(): ReactElement {
           }}
         ></div>
       </Grid>
-      <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6}>
+      <Grid
+        component={Paper}
+        elevation={6}
+        size={{
+          xs: 12,
+          sm: 8,
+          md: 4,
+        }}
+      >
         <Box
           sx={{
             my: 8,

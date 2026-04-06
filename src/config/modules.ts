@@ -12,7 +12,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 
 import BookingDashboard from "@/containers/bookings/dashboard";
 import EventsDashboard from "@/containers/events/dashboard";
-import ActiveEventDashboard from "@/containers/events/eventDashboard";
+import ActiveEventDashboard from "@/containers/events/event-dashboard";
 import StaffDashboard from "@/containers/staff/dashboard";
 import SabilDashboard from "@/containers/sabil/dashboard";
 import FmbDashboard from "@/containers/fmb/dashboard";

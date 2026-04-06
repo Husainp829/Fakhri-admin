@@ -1,0 +1,47 @@
+import type { EditProps } from "react-admin";
+import { useFormContext } from "react-hook-form";
+import { Edit, SimpleForm, TextInput, DateInput, SelectInput } from "react-admin";
+import MiqaatNiyaazItLookup from "./common/MiqaatNiyaazItLookup";
+import MiqaatNiyaazPaymentModeInput from "./common/MiqaatNiyaazPaymentModeInput";
+import NoArrowKeyNumberInput from "@/components/NoArrowKeyNumberInput";
+
+const ReceiptTypeDependentFields = () => {
+  const { watch } = useFormContext();
+  const receiptType = watch("receiptType");
+
+  return (
+    <>
+      {receiptType === "CREDIT" && <MiqaatNiyaazItLookup />}
+      <TextInput source="name" label="Name" fullWidth isRequired />
+      {receiptType === "DEBIT" && (
+        <TextInput source="itsNo" label="ITS No (Optional - for external vendors)" fullWidth />
+      )}
+    </>
+  );
+};
+
+const MiqaatNiyaazReceiptEdit = (props: EditProps) => (
+  <Edit {...props} mutationMode="optimistic" redirect="/">
+    <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 700 }}>
+      <SelectInput
+        source="receiptType"
+        label="Entry Type"
+        choices={[
+          { id: "CREDIT", name: "CREDIT (Income)" },
+          { id: "DEBIT", name: "DEBIT (Expense)" },
+        ]}
+        fullWidth
+        isRequired
+      />
+      <ReceiptTypeDependentFields />
+      <TextInput source="purpose" label="Purpose" fullWidth isRequired />
+      <NoArrowKeyNumberInput source="amount" label="Amount" fullWidth isRequired />
+      <DateInput source="receiptDate" label="Receipt Date" fullWidth isRequired />
+      <MiqaatNiyaazPaymentModeInput />
+      <TextInput source="paymentRef" label="Payment Reference" fullWidth />
+      <TextInput source="remarks" label="Remarks" fullWidth multiline rows={3} />
+    </SimpleForm>
+  </Edit>
+);
+
+export default MiqaatNiyaazReceiptEdit;

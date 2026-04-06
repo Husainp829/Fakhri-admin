@@ -1,51 +1,51 @@
 /**
  * Resource configuration per module.
- * Used by App.js to render Resources based on baseRoute.
+ * Used by App.tsx to render Resources based on baseRoute.
  */
-import hallBookings, { bookings } from "@/containers/bookings/hallBookings";
-import bookingPurpose from "@/containers/bookings/bookingPurpose";
+import hallBookings, { bookings } from "@/containers/bookings/hall-bookings";
+import bookingPurpose from "@/containers/bookings/booking-purpose";
 import halls from "@/containers/bookings/halls";
-import blockedHallDates from "@/containers/bookings/blockedHallDates";
-import rentBookingReceipt from "@/containers/bookings/rentBookingReceipt";
-import lagatReceipt from "@/containers/lagatReceipt";
-import DepositReceiptPrint from "@/containers/bookings/rentBookingReceipt/depositReceiptPrint";
-import RazaPrint from "@/containers/bookings/hallBookings/razaPrint";
-import ConfirmationVoucher from "@/containers/bookings/hallBookings/confirmationReceiptPrint";
+import blockedHallDates from "@/containers/bookings/blocked-hall-dates";
+import rentBookingReceipt from "@/containers/bookings/rent-booking-receipt";
+import lagatReceipt from "@/containers/lagat-receipt";
+import DepositReceiptPrint from "@/containers/bookings/rent-booking-receipt/DepositReceiptPrint";
+import RazaPrint from "@/containers/bookings/hall-bookings/HallBookingsRazaPrint";
+import ConfirmationVoucher from "@/containers/bookings/hall-bookings/HallBookingsConfirmationVoucher";
 
 import niyaaz from "@/containers/events/niyaaz";
-import niyaazBookedSlots from "@/containers/events/niyaazBookedSlots";
+import niyaazBookedSlots from "@/containers/events/niyaaz-booked-slots";
 import receipt from "@/containers/events/receipt";
-import vendorLedger from "@/containers/events/vendorLedger";
+import vendorLedger from "@/containers/events/vendor-ledger";
 import vendor from "@/containers/events/vendor";
-import vendorType from "@/containers/events/vendorType";
+import vendorType from "@/containers/events/vendor-type";
 import event from "@/containers/events/event";
 
 import staff from "@/containers/staff/staff";
-import staffAttendance from "@/containers/staff/staffAttendance";
+import staffAttendance from "@/containers/staff/staff-attendance";
 
-import sabilData from "@/containers/sabil/sabilData";
-import sabilReceipt from "@/containers/sabil/sabilReceipt";
-import sabilTakhmeen from "@/containers/sabil/sabilTakhmeen";
-import sabilChangeRequests from "@/containers/sabil/sabilChangeRequest";
-import sabilLedger from "@/containers/sabil/sabilLedger";
+import sabilData from "@/containers/sabil/sabil-data";
+import sabilReceipt from "@/containers/sabil/sabil-receipt";
+import sabilTakhmeen from "@/containers/sabil/sabil-takhmeen";
+import sabilChangeRequests from "@/containers/sabil/sabil-change-request";
+import sabilLedger from "@/containers/sabil/sabil-ledger";
 
-import fmbData from "@/containers/fmb/fmbData";
-import fmbReceipt from "@/containers/fmb/fmbReceipt";
-import fmbTakhmeen from "@/containers/fmb/fmbTakhmeen";
-import fmbContributions from "@/containers/fmb/fmbContributions";
-import fmbDeliveryScheduleProfile from "@/containers/fmb/fmbDeliveryScheduleProfile";
-import fmbThaliSettings from "@/containers/fmb/fmbThaliSettings";
-import fmbHoliday from "@/containers/fmb/fmbHoliday";
-import fmbThaliSuspension from "@/containers/fmb/fmbThaliSuspension";
-import fmbThaliType from "@/containers/fmb/fmbThaliType";
+import fmbData from "@/containers/fmb/fmb-data";
+import fmbReceipt from "@/containers/fmb/fmb-receipt";
+import fmbTakhmeen from "@/containers/fmb/fmb-takhmeen";
+import fmbContributions from "@/containers/fmb/fmb-contributions";
+import fmbDeliveryScheduleProfile from "@/containers/fmb/fmb-delivery-schedule-profile";
+import fmbThaliSettings from "@/containers/fmb/fmb-thali-settings";
+import fmbHoliday from "@/containers/fmb/fmb-holiday";
+import fmbThaliSuspension from "@/containers/fmb/fmb-thali-suspension";
+import fmbThaliType from "@/containers/fmb/fmb-thali-type";
 
-import miqaatNiyaazReceipts from "@/containers/miqaat/miqaatNiyaazReceipts";
+import miqaatNiyaazReceipts from "@/containers/miqaat/miqaat-niyaaz-receipts";
 
-import ohbatMajlis from "@/containers/ohbat/ohbatMajlis";
-import ohbatMajlisUpcoming from "@/containers/ohbat/ohbatMajlisUpcoming";
-import ohbatMajlisAttendance from "@/containers/ohbat/ohbatMajlisAttendance";
+import ohbatMajlis from "@/containers/ohbat/ohbat-majlis";
+import ohbatMajlisUpcoming from "@/containers/ohbat/ohbat-majlis-upcoming";
+import ohbatMajlisAttendance from "@/containers/ohbat/ohbat-majlis-attendance";
 import sadarats from "@/containers/ohbat/sadarats";
-import makhsoosItsData from "@/containers/ohbat/makhsoosItsData";
+import makhsoosItsData from "@/containers/ohbat/makhsoos-its-data";
 
 import type { ModuleResourcesValue } from "@/types/react-admin-config";
 

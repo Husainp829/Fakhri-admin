@@ -34,7 +34,15 @@
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css}\"",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --no-warn-ignored",
+      "prettier --check"
+    ],
+    "*.css": "prettier --check"
   },
   "browserslist": {
     "production": [
@@ -48,7 +56,7 @@
       "last 1 safari version"
     ]
   },
-  "buildDate": 1775445721205,
+  "buildDate": 1775475795934,
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -66,7 +74,9 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.0.1",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.58.0",

@@ -42,18 +42,19 @@ const renderResource = (
   );
 };
 
-export type ResourcesRendererProps = {
-  permissions: PermissionRecord;
-  baseRoute: string;
-  routeId?: string | null;
-};
-
 /**
- * Returns Resource and CustomRoutes elements for react-admin.
- * baseRoute and routeId must be passed from a parent that calls useBaseRoute/useRouteId.
+ * Build `<Resource>` / `<CustomRoutes>` nodes for `<Admin>`'s function child.
+ * Must return these elements directly — not wrapped in another component. React-admin's router only
+ * walks the immediate return value of `(permissions) => …` and ignores unknown element types.
+ *
+ * `baseRoute` / `routeId` come from a parent that uses `useBaseRoute` / `useRouteId`.
  */
-export const ResourcesRenderer = ({ permissions, baseRoute, routeId }: ResourcesRendererProps) => {
-  const moduleConfig = MODULE_RESOURCES[baseRoute];
+export function buildAdminResourceChildren(
+  permissions: PermissionRecord,
+  baseRoute: string | null,
+  routeId: string | null | undefined
+): React.ReactNode[] {
+  const moduleConfig = baseRoute != null ? MODULE_RESOURCES[baseRoute] : undefined;
   const elements: React.ReactNode[] = [];
 
   if (moduleConfig) {
@@ -84,4 +85,4 @@ export const ResourcesRenderer = ({ permissions, baseRoute, routeId }: Resources
   });
 
   return elements;
-};
+}

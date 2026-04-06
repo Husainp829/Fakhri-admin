@@ -8,8 +8,11 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
+  // Standalone `ignores` object so global ignores apply even when ESLint is invoked with explicit paths (lint-staged).
   {
-    ignores: ["build/**", "dist/**", "node_modules/**"],
+    ignores: ["build/**", "dist/**", "node_modules/**", "public/service-worker.js"],
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: "off",
     },
@@ -34,7 +37,6 @@ export default tseslint.config(
       },
     },
     settings: {
-      react: { version: "detect" },
       "import/resolver": {
         typescript: {
           alwaysTryTypes: true,
@@ -89,6 +91,16 @@ export default tseslint.config(
       "react/self-closing-comp": "off",
       "react/sort-comp": "off",
       "react/no-array-index-key": "off",
+    },
+  },
+  {
+    files: [
+      "src/containers/fmb/fmb-receipt/FmbReceiptCreate.tsx",
+      "src/containers/fmb/fmb-thali-settings/FmbThaliSettingsList.tsx",
+      "src/containers/whatsapp-templates/WhatsappTemplateShared.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
   eslintConfigPrettier

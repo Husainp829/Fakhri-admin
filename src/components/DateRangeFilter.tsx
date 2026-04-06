@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, TextField, Button, Typography } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
+import Grid from "@mui/material/Grid";
 
 export type DateRangeFilterProps = {
   defaultStartDate?: string;
@@ -114,7 +114,12 @@ export default function DateRangeFilter({
           </Typography>
         )}
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <TextField
               label="Start Date"
               type="date"
@@ -125,7 +130,12 @@ export default function DateRangeFilter({
               size="small"
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <TextField
               label="End Date"
               type="date"
@@ -136,12 +146,22 @@ export default function DateRangeFilter({
               size="small"
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 2,
+            }}
+          >
             <Button variant="contained" onClick={handleApply} fullWidth sx={{ height: "40px" }}>
               Apply
             </Button>
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 2,
+            }}
+          >
             <Button variant="outlined" onClick={handleClear} fullWidth sx={{ height: "40px" }}>
               Clear
             </Button>
