@@ -1,5 +1,15 @@
-export const apiUrl = "https://jms.anjumanefakhripoona.org/api";
-// export const apiUrl = "http://localhost:3012";
+const DEFAULT_API_URL = "https://jms.anjumanefakhripoona.org/api";
+
+function resolveApiBaseUrl() {
+  const fromEnv = import.meta.env.VITE_API_URL;
+  if (fromEnv != null && String(fromEnv).trim() !== "") {
+    return String(fromEnv).replace(/\/$/, "");
+  }
+  return DEFAULT_API_URL;
+}
+
+/** API origin including `/api` path (no trailing slash). Set `VITE_API_URL` at build time (e.g. CI). */
+export const apiUrl = resolveApiBaseUrl();
 
 export const getApiUrl = () => apiUrl;
 

@@ -26,8 +26,8 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-          # Add other build-time environment variables as needed
+          # Create/rename GitHub secret `VITE_API_URL` (same value you used for `REACT_APP_API_URL`).
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Create build archive
         run: |

@@ -1,13 +1,24 @@
-{
-  "env": {
-    "node": true,
-    "es6": true,
-    "browser": true
+module.exports = {
+  env: {
+    node: true,
+    es6: true,
+    browser: true,
   },
-  "parser": "babel-eslint",
-  "extends": ["airbnb", "plugin:react/recommended"],
-  "plugins": ["react", "react-hooks", "jsx-a11y"],
-  "rules": {
+  parser: "babel-eslint",
+  extends: ["airbnb", "plugin:react/recommended"],
+  plugins: ["react", "react-hooks", "jsx-a11y"],
+  settings: {
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+        project: "./tsconfig.json",
+      },
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+      },
+    },
+  },
+  rules: {
     "linebreak-style": 0,
     "arrow-body-style": [2, "as-needed"],
     "class-methods-use-this": 0,
@@ -17,16 +28,26 @@
     "import/no-extraneous-dependencies": 0,
     "import/no-named-as-default": 0,
     "import/no-unresolved": 2,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
     "import/no-webpack-loader-syntax": 0,
     "import/prefer-default-export": 0,
-    "indent": 0,
+    indent: 0,
     "jsx-a11y/aria-props": 2,
     "jsx-a11y/heading-has-content": 0,
     "jsx-a11y/label-has-associated-control": [
       2,
       {
-        "controlComponents": ["Input"]
-      }
+        controlComponents: ["Input"],
+      },
     ],
     "jsx-a11y/label-has-for": 0,
     "jsx-a11y/mouse-events-have-key-events": 2,
@@ -35,10 +56,11 @@
     "max-len": 0,
     "newline-per-chained-call": 0,
     "no-confusing-arrow": 0,
-    "no-console": ["error", { "allow": ["error"] }],
+    "no-console": ["error", { allow: ["error"] }],
     "no-unused-vars": 2,
     "no-use-before-define": 0,
     "prefer-template": 2,
+    "react/react-in-jsx-scope": 0,
     "react/display-name": 0,
     "react/destructuring-assignment": 0,
     "react-hooks/rules-of-hooks": "error",
@@ -56,7 +78,7 @@
     "react/prop-types": 0,
     "react/jsx-indent": 0,
     "require-yield": 0,
-    "quotes": [1, "double"],
+    quotes: [1, "double"],
     "object-curly-newline": 0,
     "comma-dangle": 0,
     "implicit-arrow-linebreak": 0,
@@ -66,6 +88,6 @@
     "function-paren-newline": 0,
     "react/jsx-wrap-multilines": 0,
     "react/no-array-index-key": 0,
-    "template-curly-spacing": 0
-  }
-}
+    "template-curly-spacing": 0,
+  },
+};

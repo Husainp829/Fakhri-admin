@@ -25,8 +25,10 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "node ./update-build.js && react-scripts build",
+    "start": "vite",
+    "dev": "vite",
+    "build": "node ./update-build.js && vite build",
+    "preview": "vite preview",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.js src/**/*.jsx"
@@ -46,14 +48,21 @@
       "last 1 safari version"
     ]
   },
-  "buildDate": 1774866778351,
+  "buildDate": 1775445721205,
   "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.6.0",
     "eslint-config-airbnb": "^18.2.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.5",
-    "eslint-plugin-react-hooks": "^4.0.8"
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
   }
 }
