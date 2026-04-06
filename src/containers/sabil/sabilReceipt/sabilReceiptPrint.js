@@ -60,7 +60,7 @@ const formatYearlyPeriod = (periodStart, periodEnd) => {
   };
 };
 
-const SabilReceipt = ({ ...props }) => {
+const SabilReceipt = () => {
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);

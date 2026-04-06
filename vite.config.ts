@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
@@ -23,6 +24,10 @@ export default defineConfig({
   build: {
     outDir: "build",
     sourcemap: true,
+    // TODO(post-migration): Revisit lru-cache usage in auth (see `authProvider.js`). v11 pulls top-level
+    // await + `node:diagnostics_channel` (Vite externalizes the latter for the browser). Options: pin
+    // lru-cache@10, replace with a lighter cache, or keep `target: "es2022"` and accept current behavior.
+    target: "es2022",
   },
   resolve: {
     alias: {
@@ -32,5 +37,11 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./vitest.setup.ts"],
+    passWithNoTests: true,
+    include: ["src/**/*.{test,spec}.{js,jsx,ts,tsx}"],
   },
 });

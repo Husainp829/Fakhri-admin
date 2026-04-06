@@ -65,12 +65,12 @@ function SabilLedgerDatagrid() {
       key="period"
       render={(record) => {
         const isEstablishment = record?.sabilData?.sabilType === "ESTABLISHMENT";
-        
+
         // For establishment, if month is April (4), show range April {year} to March {year+1}
         if (isEstablishment && record.month === 4) {
           return `${fullMonthNames[3]} ${record.year} to ${fullMonthNames[2]} ${record.year + 1}`;
         }
-        
+
         return `${monthNames[record.month - 1]} ${record.year}`;
       }}
     />,
