@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
 import "./register-fonts";
 
 const toWords = new ToWords();

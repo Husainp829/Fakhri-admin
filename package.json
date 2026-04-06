@@ -20,7 +20,7 @@
     "react-dom": "^19.2.4",
     "react-qr-code": "^2.0.18",
     "recharts": "^3.8.1",
-    "to-words": "^3.5.1",
+    "to-words": "^5.4.0",
     "xlsx": "^0.18.5"
   },
   "scripts": {

@@ -2,7 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
 import { Box } from "@mui/material";
 import ReceiptPrint from "@/components/receipt-layout";
 import { formatDate } from "@/utils";
