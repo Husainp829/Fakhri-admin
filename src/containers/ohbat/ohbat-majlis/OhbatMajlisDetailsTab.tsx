@@ -17,6 +17,7 @@ import { hasPermission } from "@/utils/permission-utils";
 import {
   openOhbatMajlisKhidmatDialog,
   openOhbatMajlisSadaratDialog,
+  openOhbatMajlisZakereenDialog,
 } from "./OhbatMajlisShowDialogOpeners";
 import { buildOhbatMajlisEventDetailsText } from "./OhbatMajlisEventDetailsClipboard";
 import { formatMajlisStartTimeLabel } from "./OhbatMajlisTime";
@@ -96,6 +97,8 @@ export function OhbatMajlisDetailsTab() {
 
   const khidmatguzar = record.khidmatguzar as { ITS_ID?: string } | undefined;
   const khidmatIts = khidmatguzar?.ITS_ID ?? (record.khidmatguzarItsNo as string | undefined);
+  const zakereenRow = record.zakereen as { ITS_ID?: string } | undefined;
+  const zakereenIts = zakereenRow?.ITS_ID ?? (record.zakereenItsNo as string | undefined);
 
   const sadaratEditIcon = canEditMajlis ? (
     <Tooltip title="Change sadarat assignment">
@@ -123,8 +126,22 @@ export function OhbatMajlisDetailsTab() {
     </Tooltip>
   ) : null;
 
+  const zakereenEditIcon = canEditMajlis ? (
+    <Tooltip title="Change zakereen">
+      <IconButton
+        size="small"
+        aria-label="Change zakereen"
+        onClick={() => openOhbatMajlisZakereenDialog()}
+        edge="end"
+      >
+        <EditIcon fontSize="small" />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
   const sadarat = record.sadarat as { name?: string; itsNo?: string; mobile?: string } | undefined;
   const khidmat = record.khidmatguzar as { Full_Name?: string; Mobile?: string } | undefined;
+  const zakereen = record.zakereen as { Full_Name?: string; Mobile?: string } | undefined;
 
   return (
     <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, pb: 2 }}>
@@ -224,6 +241,19 @@ export function OhbatMajlisDetailsTab() {
             <SummaryRow label="ITS" value={dash(khidmatIts)} />
             <SummaryRow label="Name" value={dash(khidmat?.Full_Name)} />
             <SummaryRow label="Mobile" value={dash(khidmat?.Mobile)} />
+          </SummaryTable>
+        </Grid>
+
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
+          <SummaryTable title="Zakereen (itsdata)" titleAddon={zakereenEditIcon}>
+            <SummaryRow label="ITS" value={dash(zakereenIts)} />
+            <SummaryRow label="Name" value={dash(zakereen?.Full_Name)} />
+            <SummaryRow label="Mobile" value={dash(zakereen?.Mobile)} />
           </SummaryTable>
         </Grid>
       </Grid>

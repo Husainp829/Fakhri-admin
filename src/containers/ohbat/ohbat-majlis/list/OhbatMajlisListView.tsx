@@ -56,6 +56,14 @@ const columns = [
       ),
     width: 28,
   },
+  {
+    header: "Zakereen",
+    field: (rec: RaRecord) =>
+      String(
+        (rec.zakereen as { Full_Name?: string } | undefined)?.Full_Name ?? rec.zakereenItsNo ?? ""
+      ),
+    width: 28,
+  },
   { header: "Contact", field: "mobileNo", width: 14 },
 ];
 
@@ -129,6 +137,9 @@ export default function OhbatMajlisListView() {
                 r.khidmatguzarItsNo
                   ? `Khidmat: ${(r.khidmatguzar as { Full_Name?: string })?.Full_Name || String(r.khidmatguzarItsNo)}`
                   : null,
+                (r.zakereen as { Full_Name?: string } | undefined)?.Full_Name || r.zakereenItsNo
+                  ? `Zakereen: ${(r.zakereen as { Full_Name?: string })?.Full_Name || String(r.zakereenItsNo)}`
+                  : null,
                 r.mobileNo ? `Contact: ${String(r.mobileNo)}` : null,
                 [r.hostSector, r.hostSubSector].filter(Boolean).join(" · ") || null,
               ]
@@ -142,7 +153,7 @@ export default function OhbatMajlisListView() {
             <Datagrid
               rowClick={false}
               bulkActionButtons={false}
-              sx={{ minWidth: 1280 }}
+              sx={{ minWidth: 1380 }}
               rowSx={(record, _index) =>
                 !majlisHasSadarat(record) ? { borderLeft: missingSadaratBorderLeft } : {}
               }
@@ -170,6 +181,10 @@ export default function OhbatMajlisListView() {
               <FunctionField
                 label="Khidmatguzar"
                 render={(r) => r?.khidmatguzar?.Full_Name || r?.khidmatguzarItsNo || "—"}
+              />
+              <FunctionField
+                label="Zakereen"
+                render={(r) => r?.zakereen?.Full_Name || r?.zakereenItsNo || "—"}
               />
               <TextField source="mobileNo" label="Contact" />
               <FunctionField

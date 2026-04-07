@@ -218,6 +218,12 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }: QuickAttendance
                     "—"}
                 </Typography>
                 <Typography variant="body2">
+                  <strong>Zakereen:</strong>{" "}
+                  {(majlis.zakereen as { Full_Name?: string } | undefined)?.Full_Name ||
+                    (majlis.zakereenItsNo as string) ||
+                    "—"}
+                </Typography>
+                <Typography variant="body2">
                   <strong>Date:</strong>{" "}
                   {majlis.date ? dayjs.utc(String(majlis.date)).format("DD - MMM - YYYY") : "—"}
                 </Typography>

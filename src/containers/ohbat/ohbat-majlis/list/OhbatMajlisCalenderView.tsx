@@ -369,6 +369,19 @@ export function OhbatMajlisCalenderView() {
                     (selectedEvent?.khidmatguzar as { Mobile?: string } | undefined)?.Mobile ?? "—"
                   )}
                 />
+                <LabelValue
+                  label="Zakereen name"
+                  value={String(
+                    (selectedEvent?.zakereen as { Full_Name?: string } | undefined)?.Full_Name ??
+                      "—"
+                  )}
+                />
+                <LabelValue
+                  label="Zakereen mobile"
+                  value={String(
+                    (selectedEvent?.zakereen as { Mobile?: string } | undefined)?.Mobile ?? "—"
+                  )}
+                />
               </Grid>
             </Box>
           )}
