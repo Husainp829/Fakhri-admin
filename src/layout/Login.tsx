@@ -10,6 +10,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import type { TypographyProps } from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { alpha } from "@mui/material/styles";
 
 import background from "../assets/JameaAlAnwar.jpg";
 
@@ -46,7 +47,17 @@ export default function Login(): ReactElement {
   };
 
   return (
-    <Grid container component="main" sx={{ height: "100vh" }}>
+    <Grid
+      container
+      component="main"
+      sx={{
+        height: "100vh",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundImage: { xs: `url(${background})`, md: "none" },
+      }}
+    >
       <CssBaseline />
       <Grid
         sx={{
@@ -55,29 +66,18 @@ export default function Login(): ReactElement {
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
-        size={{
-          xs: false,
-          sm: 4,
-          md: 8,
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            textAlign: "center",
-            padding: "35px",
-          }}
-        ></div>
-      </Grid>
+        size={{ xs: false, sm: false, md: 8 }}
+      />
       <Grid
         component={Paper}
         elevation={6}
-        size={{
-          xs: 12,
-          sm: 8,
-          md: 4,
-        }}
+        sx={(theme) => ({
+          bgcolor: {
+            xs: alpha(theme.palette.background.paper, 0.88),
+            md: theme.palette.background.paper,
+          },
+        })}
+        size={{ xs: 12, sm: 12, md: 4 }}
       >
         <Box
           sx={{
@@ -101,7 +101,7 @@ export default function Login(): ReactElement {
               label="Email Address"
               name="email"
               autoComplete="email"
-              variant="standard"
+              variant="outlined"
               autoFocus
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -113,7 +113,7 @@ export default function Login(): ReactElement {
               label="Password"
               type="password"
               id="password"
-              variant="standard"
+              variant="outlined"
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
             />

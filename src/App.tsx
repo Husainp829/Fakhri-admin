@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Admin, CustomRoutes, bwDarkTheme, bwLightTheme } from "react-admin";
+import { Admin, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useBaseRoute, useRouteId } from "@/utils/route-utility";
 import { checkAndClearCacheFromURL } from "@/utils/clear-permission-cache";
+import { useTenantBrandedThemes } from "@/hooks/useTenantBrandedThemes";
 
 import withClearCache from "@/ClearCache";
 import dataProvider from "@/dataprovider";
@@ -22,6 +23,7 @@ dayjs.extend(utc);
 const MainApp = () => {
   const baseRoute = useBaseRoute();
   const routeId = useRouteId();
+  const themes = useTenantBrandedThemes();
 
   useEffect(() => {
     checkAndClearCacheFromURL();
@@ -51,8 +53,8 @@ const MainApp = () => {
       i18nProvider={i18nProvider}
       layout={layout}
       dashboard={DashboardAdmin}
-      theme={bwLightTheme}
-      darkTheme={bwDarkTheme}
+      theme={themes.light}
+      darkTheme={themes.dark}
       loginPage={Login}
     >
       {renderResources}

@@ -31,6 +31,7 @@ import { useBaseRoute } from "@/utils/route-utility";
 import { fromGregorian } from "@/utils/hijri-date-utils";
 import { OhbatMajlisViewToggle } from "./OhbatMajlisViewToggle";
 import { majlisHasSadarat, missingSadaratBorderLeft } from "./MissingSadaratHighlight";
+import { reactBigCalendarWrapperSx } from "@/theme/reactBigCalendarThemeSx";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -121,9 +122,13 @@ function MonthDateHeader({ date, onDrillDown }: { date: Date; onDrillDown: () =>
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   return (
     <Button variant="text" size="small" onClick={onDrillDown}>
-      <span style={{ fontSize: isMobile ? "0.6rem" : "0.8rem" }}>
+      <Typography
+        component="span"
+        variant="caption"
+        sx={{ fontSize: isMobile ? "0.6rem" : "0.8rem" }}
+      >
         {gregorianDay} | {hijriDay}
-      </span>
+      </Typography>
     </Button>
   );
 }
@@ -267,7 +272,7 @@ export function OhbatMajlisCalenderView() {
       };
 
   return (
-    <div>
+    <Box sx={(theme) => reactBigCalendarWrapperSx(theme)}>
       <Calendar
         localizer={localizer}
         events={events}
@@ -425,7 +430,7 @@ export function OhbatMajlisCalenderView() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }
 

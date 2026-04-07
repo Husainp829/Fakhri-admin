@@ -33,6 +33,7 @@ import CustomCalendarToolbar from "@/components/CustomCalendarToolbar";
 import { hallColorMap, slotTimeRanges } from "@/constants";
 import { useBaseRoute } from "@/utils/route-utility";
 import { fromGregorian } from "@/utils/hijri-date-utils";
+import { reactBigCalendarWrapperSx } from "@/theme/reactBigCalendarThemeSx";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -93,9 +94,13 @@ const MonthDateHeader = ({ date, onDrillDown }: { date: Date; onDrillDown: () =>
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   return (
     <Button variant="text" size="small" onClick={onDrillDown}>
-      <span style={{ fontSize: isMobile ? "0.6rem" : "0.8rem" }}>
-        {isMobile ? `${gregorianDay} | ${hijriDay}` : `${gregorianDay} | ${hijriDay}`}
-      </span>
+      <Typography
+        component="span"
+        variant="caption"
+        sx={{ fontSize: isMobile ? "0.6rem" : "0.8rem" }}
+      >
+        {gregorianDay} | {hijriDay}
+      </Typography>
     </Button>
   );
 };
@@ -272,7 +277,7 @@ export const HallBookingsCalendarView = () => {
       };
 
   return (
-    <div>
+    <Box sx={(theme) => reactBigCalendarWrapperSx(theme)}>
       <Calendar
         localizer={localizer}
         events={events}
@@ -372,7 +377,7 @@ export const HallBookingsCalendarView = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 };
 

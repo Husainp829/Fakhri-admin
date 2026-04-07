@@ -11,6 +11,9 @@ function resolveApiBaseUrl(): string {
 /** API origin including `/api` path (no trailing slash). Set `VITE_API_URL` at build time (e.g. CI). */
 export const apiUrl = resolveApiBaseUrl();
 
+/** Cached raw `themeOptions` from `GET /tenant-branding/me` (session only). */
+export const TENANT_BRANDING_THEME_STORAGE_KEY = "tenantBrandingThemeOptions";
+
 /** @param _resource Ignored; API base is single origin. Kept for call-site compatibility. */
 export const getApiUrl = (_resource?: string): string => apiUrl;
 
