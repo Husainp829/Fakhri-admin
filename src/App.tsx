@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { Admin, CustomRoutes } from "react-admin";
+import { useCallback, useEffect, useMemo } from "react";
+import { Admin, CustomRoutes, bwDarkTheme, bwLightTheme } from "react-admin";
 import { Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -15,7 +15,6 @@ import Login from "@/layout/Login";
 import { buildAdminResourceChildren } from "@/components/ResourcesRenderer";
 import { AUTHLESS_ROUTES } from "@/config/authless-routes";
 import i18nProvider from "@/config/i18n";
-import appTheme from "@/config/theme";
 import type { PermissionRecord } from "@/types/permissions";
 
 dayjs.extend(utc);
@@ -52,7 +51,8 @@ const MainApp = () => {
       i18nProvider={i18nProvider}
       layout={layout}
       dashboard={DashboardAdmin}
-      theme={appTheme}
+      theme={bwLightTheme}
+      darkTheme={bwDarkTheme}
       loginPage={Login}
     >
       {renderResources}
