@@ -19,7 +19,12 @@ export const ITSInput = (props: AutocompleteInputProps) => {
   useEffect(() => {
     if (selectedChoice?.id) {
       const selIts = selectedChoice?.itsdata as Record<string, unknown> | undefined;
-      setValue("name", (selIts?.Full_Name as string | undefined) ?? selectedChoice.name ?? "");
+      const displayName =
+        (selIts?.Full_Name as string | undefined)?.trim() ||
+        (typeof selectedChoice.name === "string" ? selectedChoice.name.trim() : "") ||
+        "";
+      setValue("name", displayName);
+      setValue("beneficiaryName", displayName);
       setValue("fmbTakhmeenId", selectedChoice?.fmbTakhmeenCurrent?.id ?? null);
       setValue("hijriYearStart", selectedChoice?.fmbTakhmeenCurrent?.hijriYearStart ?? "");
       const hofIts = householdItsFromChoice(selectedChoice);
@@ -29,6 +34,7 @@ export const ITSInput = (props: AutocompleteInputProps) => {
       setValue("fmbTakhmeenId", null);
       setValue("hijriYearStart", "");
       setValue("name", "");
+      setValue("beneficiaryName", "");
     }
   }, [selectedChoice, setValue]);
 

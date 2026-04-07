@@ -33,6 +33,7 @@ export function ContributionReceiptAutocomplete(props: AutocompleteInputProps) {
 export function contributionReceiptOptionText(choice: {
   contributionType?: string;
   beneficiaryItsNo?: string;
+  beneficiaryName?: string | null;
   amount?: number;
   receiptsPaidTotal?: number;
   contributionPendingAmount?: number | null;
@@ -42,5 +43,7 @@ export function contributionReceiptOptionText(choice: {
     choice.contributionPendingAmount != null
       ? choice.contributionPendingAmount
       : Math.max(0, (choice.amount ?? 0) - paid);
-  return `${choice.contributionType} · Beneficiary ${choice.beneficiaryItsNo} · ${formatINR(choice.amount, { empty: "—" })} (paid ${formatINR(paid)}, due ${formatINR(pending)})`;
+  const bn = choice.beneficiaryName?.trim();
+  const who = bn ? `${choice.beneficiaryItsNo} (${bn})` : String(choice.beneficiaryItsNo ?? "—");
+  return `${choice.contributionType} · Beneficiary ${who} · ${formatINR(choice.amount, { empty: "—" })} (paid ${formatINR(paid)}, due ${formatINR(pending)})`;
 }

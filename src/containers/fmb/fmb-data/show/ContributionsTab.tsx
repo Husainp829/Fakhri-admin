@@ -29,6 +29,7 @@ export default function ContributionsTab() {
           render={(record) => formatFmbHijriPeriod(record?.hijriYearStart, null) ?? "—"}
         />
         <TextField source="beneficiaryItsNo" label="Beneficiary ITS" />
+        <TextField source="beneficiaryName" label="Beneficiary name" emptyText="—" />
         <NumberField source="quantity" />
         <FunctionField
           label="Unit amount"

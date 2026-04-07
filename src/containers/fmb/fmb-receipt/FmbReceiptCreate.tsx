@@ -186,7 +186,9 @@ function contributionRowLabel(c) {
     c?.contributionPendingAmount != null
       ? c.contributionPendingAmount
       : Math.max(0, (c?.amount ?? 0) - paid);
-  return `${c?.contributionType ?? "—"} · ITS ${c?.beneficiaryItsNo ?? "—"} · due ${formatINR(pending)}`;
+  const bn = typeof c?.beneficiaryName === "string" ? c.beneficiaryName.trim() : "";
+  const who = bn ? `${c?.beneficiaryItsNo ?? "—"} (${bn})` : (c?.beneficiaryItsNo ?? "—");
+  return `${c?.contributionType ?? "—"} · ITS ${who} · due ${formatINR(pending)}`;
 }
 
 /** @returns {{ rows: object[], meta: { kind: string, record: object }[] }} */

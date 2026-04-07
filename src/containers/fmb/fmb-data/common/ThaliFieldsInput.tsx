@@ -6,6 +6,7 @@ import {
   ReferenceInput,
   SimpleFormIterator,
   TextInput,
+  required,
 } from "react-admin";
 import Grid from "@mui/material/Grid";
 import { validateThalis } from "./thali-map";
@@ -36,22 +37,10 @@ export function ThaliFieldsInput() {
         }}
       >
         <Grid container spacing={1} sx={{ width: "100%", alignItems: "center" }}>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 5,
-            }}
-          >
-            <TextInput source="thaliNo" label="Thali number" required fullWidth />
+          <Grid size={{ xs: 12, sm: 6, md: 5 }}>
+            <TextInput source="thaliNo" label="Thali number" validate={[required()]} fullWidth />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 5,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6, md: 5 }}>
             <ReferenceInput
               source="thaliTypeId"
               reference="fmbThaliType"
@@ -62,25 +51,15 @@ export function ThaliFieldsInput() {
                 optionText={(r) => `${r.code} — ${r.name}`}
                 fullWidth
                 debounce={250}
+                validate={[required()]}
               />
             </ReferenceInput>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 2,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6, md: 2 }}>
             <BooleanInput source="isActive" label="Active" />
           </Grid>
 
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
             <DateInput
               source="startedAt"
               label="Service from"
@@ -88,12 +67,7 @@ export function ThaliFieldsInput() {
               helperText="First day on schedule (inclusive). Empty = no start limit."
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
             <DateInput
               source="deactivatedAt"
               label="Service through"
@@ -102,12 +76,7 @@ export function ThaliFieldsInput() {
             />
           </Grid>
 
-          <Grid
-            size={{
-              xs: 12,
-              md: 12,
-            }}
-          >
+          <Grid size={{ xs: 12, md: 12 }}>
             <ReferenceInput
               source="deliveryScheduleProfileId"
               reference="fmbDeliveryScheduleProfile"
@@ -130,6 +99,14 @@ export function ThaliFieldsInput() {
               fullWidth
               multiline
               minRows={3}
+            />
+          </Grid>
+          <Grid size={12}>
+            <TextInput
+              source="deliveryMohallah"
+              label="Delivery mohallah"
+              fullWidth
+              helperText="Usually prefilled from ITS directory (Jamaat); enter manually if ITS is not in directory."
             />
           </Grid>
         </Grid>

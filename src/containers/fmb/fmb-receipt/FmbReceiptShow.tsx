@@ -39,7 +39,7 @@ const ShowActions = () => {
 
 function AllocationTable() {
   const record = useRecordContext();
-  const allocations = Array.isArray(record?.allocations) ? record.allocations : [];
+  const allocations = Array.isArray(record?.allocations) ? record!.allocations : [];
 
   if (!allocations.length) {
     return (
@@ -65,7 +65,16 @@ function AllocationTable() {
             const kind = a?.fmbContributionId ? "Contribution" : "Annual";
             let target = a?.fmbContributionId ?? a?.fmbTakhmeenId ?? "—";
             if (a?.fmbContribution?.contributionType != null) {
-              target = `${a.fmbContribution.contributionType} · ITS ${a.fmbContribution.beneficiaryItsNo ?? "—"}`;
+              const bc = a.fmbContribution as {
+                contributionType?: string;
+                beneficiaryItsNo?: string;
+                beneficiaryName?: string | null;
+              };
+              const bn = typeof bc.beneficiaryName === "string" ? bc.beneficiaryName.trim() : "";
+              const who = bn
+                ? `${bc.beneficiaryItsNo ?? "—"} (${bn})`
+                : (bc.beneficiaryItsNo ?? "—");
+              target = `${bc.contributionType} · ITS ${who}`;
             } else if (a?.fmbTakhmeen) {
               target = `${a.fmbTakhmeen.hijriYearStart ?? "—"}–${a.fmbTakhmeen.hijriYearEnd ?? "—"}`;
             }
