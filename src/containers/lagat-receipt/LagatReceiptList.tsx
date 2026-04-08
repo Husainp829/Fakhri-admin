@@ -17,50 +17,31 @@ import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
 import {
   Box,
-  Typography,
+  Divider,
+  Paper,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Tabs,
+  Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { hasPermission } from "@/utils/permission-utils";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
-import CommonTabs from "@/components/common-tabs";
 
-const SUMMARY_CONFIG = [
-  {
-    key: "cash",
-    label: "CASH",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "online",
-    label: "ONLINE",
-    backgroundColor: "#d1ecf1",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "cheque",
-    label: "CHEQUE",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "grandTotal",
-    label: "GRAND TOTAL",
-    backgroundColor: "#d4edda",
-    borderColor: "2px solid #28a745",
-    textColor: "#155724",
-  },
+type SummaryTone = "warning" | "info" | "success";
+
+const SUMMARY_CONFIG: { key: string; label: string; tone: SummaryTone }[] = [
+  { key: "cash", label: "CASH", tone: "warning" },
+  { key: "online", label: "ONLINE", tone: "info" },
+  { key: "cheque", label: "CHEQUE", tone: "warning" },
+  { key: "grandTotal", label: "GRAND TOTAL", tone: "success" },
 ];
 
 type PaymentSummaryJson = Record<string, { total: number; count: number } | undefined> & {
@@ -154,14 +135,14 @@ const PaymentSummary = () => {
             {/* Show Grand Total at the top if no mode filter is applied */}
             {!filterValues?.paymentMode && grandTotalData && (
               <TableRow
-                sx={{
-                  backgroundColor: "#d4edda",
+                sx={(theme) => ({
+                  bgcolor: alpha(theme.palette.success.main, 0.12),
                   "& td": {
                     fontWeight: 600,
-                    color: "#155724",
-                    borderTop: "2px solid #28a745",
+                    color: theme.palette.success.dark,
+                    borderTop: `2px solid ${theme.palette.success.main}`,
                   },
-                }}
+                })}
               >
                 <TableCell sx={{ fontWeight: 600 }}>GRAND TOTAL</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>
@@ -177,7 +158,11 @@ const PaymentSummary = () => {
               const data = summary[config.key];
               if (!data) return null;
               return (
-                <TableRow key={config.key} hover>
+                <TableRow
+                  key={config.key}
+                  hover
+                  sx={(theme) => ({ bgcolor: alpha(theme.palette[config.tone].main, 0.12) })}
+                >
                   <TableCell>{config.label}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600, fontSize: "1.2rem" }}>
                     {formatCurrency(data.total)}
@@ -230,15 +215,16 @@ const PaymentModeTabs = () => {
   }, [filterValues]);
 
   return (
-    <CommonTabs
-      options={TAB_OPTIONS.map((option) => ({
-        id: option.id,
-        name: option.name,
-      }))}
-      value={tabValue}
-      onChange={handleChange}
-      showDivider
-    />
+    <>
+      <Box sx={{ mb: 0 }}>
+        <Tabs value={tabValue} onChange={handleChange}>
+          {TAB_OPTIONS.map((option) => (
+            <Tab key={option.id} label={option.name} value={option.id} />
+          ))}
+        </Tabs>
+      </Box>
+      <Divider />
+    </>
   );
 };
 

@@ -9,6 +9,7 @@ import {
   Paper,
   Chip,
   Divider,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
@@ -28,10 +29,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { callApi } from "@/dataprovider/misc-apis";
 import DateRangeFilter from "@/components/DateRangeFilter";
+import { getChartColorSequence } from "@/theme/chartPalette";
 
 dayjs.extend(utc);
-
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#8dd1e1", "#a4de6c"];
 
 function fmt(n: number | null | undefined) {
   if (n === null || n === undefined) return "0";
@@ -92,6 +92,8 @@ type BookingStatsJson = {
 };
 
 export default function BookingDashboard() {
+  const theme = useTheme();
+  const chartColors = useMemo(() => getChartColorSequence(theme), [theme]);
   const now = dayjs.utc();
   const defaultStartDate = now.startOf("month").format("YYYY-MM-DD");
   const defaultEndDate = now.endOf("month").format("YYYY-MM-DD");
@@ -317,7 +319,7 @@ export default function BookingDashboard() {
                     <XAxis dataKey="name" angle={-35} textAnchor="end" height={70} interval={0} />
                     <YAxis />
                     <Tooltip formatter={(v) => `₹${Number(v).toLocaleString()}`} />
-                    <Bar dataKey="rent" name="Rent" fill="#8884d8" />
+                    <Bar dataKey="rent" name="Rent" fill={theme.palette.primary.main} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -349,7 +351,7 @@ export default function BookingDashboard() {
                     <XAxis dataKey="name" angle={-35} textAnchor="end" height={70} interval={0} />
                     <YAxis domain={[0, 100]} />
                     <Tooltip formatter={(v) => `${v}%`} />
-                    <Bar dataKey="occupancy" name="Occupancy" fill="#82ca9d" />
+                    <Bar dataKey="occupancy" name="Occupancy" fill={theme.palette.success.main} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -388,7 +390,7 @@ export default function BookingDashboard() {
                       {bookingBreakdown.map((entry, idx) => (
                         <Cell
                           key={`cell-${entry.name}-${idx}`}
-                          fill={COLORS[idx % COLORS.length]}
+                          fill={chartColors[idx % chartColors.length]}
                         />
                       ))}
                     </Pie>

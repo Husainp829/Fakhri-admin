@@ -18,9 +18,6 @@ const LayoutAppBar = (props: AppBarProps): ReactElement => {
         "& .RaAppBar-menuButton": {
           display: "",
         },
-        "& .RaAppBar-menuButton svg": {
-          color: (theme) => theme.palette.primary.main,
-        },
       }}
       elevation={2}
       {...props}
@@ -29,7 +26,7 @@ const LayoutAppBar = (props: AppBarProps): ReactElement => {
       {showBackToDashboard && (
         <>
           <IconButton
-            color="primary"
+            color="inherit"
             aria-label="Back to Dashboard"
             onClick={goToDashboard}
             sx={{ display: { xs: "inline-flex", sm: "none" } }}
@@ -37,7 +34,7 @@ const LayoutAppBar = (props: AppBarProps): ReactElement => {
             <HomeIcon />
           </IconButton>
           <Button
-            color="primary"
+            color="inherit"
             startIcon={<HomeIcon />}
             onClick={goToDashboard}
             size="small"

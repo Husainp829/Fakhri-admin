@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import {
+  Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Box,
-  TextField,
-  Button,
   CircularProgress,
-  MenuItem,
   IconButton,
+  MenuItem,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -27,7 +29,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { callApi } from "@/dataprovider/misc-apis";
-import CommonTabs from "@/components/common-tabs";
 
 type LedgerReport = {
   creditTotalCash?: number;
@@ -211,14 +212,15 @@ const MiqaatNiyaazDashboard = () => {
       {reportData && (
         <>
           {/* Payment Mode Tabs */}
-          <CommonTabs
-            options={[
-              { id: "CASH", name: "CASH" },
-              { id: "ONLINE", name: "ONLINE" },
-            ]}
-            value={paymentModeTab}
-            onChange={(_e, newValue) => setPaymentModeTab(String(newValue))}
-          />
+          <Box sx={{ mb: 3 }}>
+            <Tabs
+              value={paymentModeTab}
+              onChange={(_e, newValue) => setPaymentModeTab(String(newValue))}
+            >
+              <Tab label="CASH" value="CASH" />
+              <Tab label="ONLINE" value="ONLINE" />
+            </Tabs>
+          </Box>
 
           {/* Summary Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>

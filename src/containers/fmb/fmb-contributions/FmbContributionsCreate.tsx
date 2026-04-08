@@ -24,6 +24,7 @@ import { ITSInput } from "./common/FmbContributionsItsInput";
 import { BeneficiaryItsAutocomplete } from "./common/BeneficiaryItsAutocomplete";
 import { formatINR } from "@/utils";
 import {
+  validateBeneficiaryDisplayName,
   validateContributionFmbOrPeriod,
   validatePositiveContributionTotal,
 } from "./common/contribution-form-validators";
@@ -48,6 +49,12 @@ const transform = (data: Record<string, unknown>) => {
         ? data.remarks.trim() || undefined
         : (data.remarks ?? undefined),
   };
+  if (typeof data.beneficiaryName === "string") {
+    const bn = data.beneficiaryName.trim();
+    if (bn) {
+      out.beneficiaryName = bn;
+    }
+  }
 
   if (data.fmbId) {
     out.fmbId = data.fmbId;
@@ -70,6 +77,7 @@ const transform = (data: Record<string, unknown>) => {
 function validateContributionForm(values: Record<string, unknown>) {
   return {
     ...validateContributionFmbOrPeriod(values),
+    ...validateBeneficiaryDisplayName(values),
     ...validatePositiveContributionTotal(values),
   };
 }
@@ -120,15 +128,11 @@ export default function FmbContributionsCreate(props: CreateProps) {
                 fullWidth
                 debounce={300}
                 filterToQuery={(q) => ({ search: q })}
+                helperText={false}
               />
             </ReferenceInput>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextInput source="name" label="Account name" fullWidth disabled />
           </Grid>
           <FormDataConsumer>
@@ -140,6 +144,7 @@ export default function FmbContributionsCreate(props: CreateProps) {
                     reference="fmbTakhmeen"
                     filter={{ fmbId: formData.fmbId }}
                     perPage={200}
+                    helperText={false}
                   >
                     <AutocompleteInput
                       fullWidth
@@ -152,108 +157,86 @@ export default function FmbContributionsCreate(props: CreateProps) {
                       }
                       shouldRenderSuggestions={(val: string) => val.trim().length >= 0}
                       noOptionsText="No annual periods for this FMB"
+                      helperText={false}
                     />
                   </ReferenceInput>
                 </Grid>
               ) : null
             }
           </FormDataConsumer>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <SelectInput
               source="contributionType"
               label="Contribution type"
               choices={TYPE_CHOICES}
               fullWidth
               validate={[required()]}
+              helperText={false}
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <NoArrowKeyNumberInput
               source="hijriYearStart"
-              label="Hijri year start (required if no FMB record)"
+              label="Hijri year start"
               fullWidth
+              helperText="Required if no FMB record"
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
             <BeneficiaryItsAutocomplete />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextInput
+              source="beneficiaryName"
+              label="Beneficiary name"
+              fullWidth
+              helperText="Auto-filled from ITS directory when available. Enter manually if ITS is not in directory."
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <NoArrowKeyNumberInput
               source="quantity"
               label="Quantity"
               fullWidth
               validate={[required(), minValue(1)]}
+              helperText={false}
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <NoArrowKeyNumberInput
               source="unitAmount"
-              label="Unit amount (optional for Zabihat)"
+              label="Unit amount"
               fullWidth
+              helperText={false}
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <CalculatedTotalAmountField />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
-            <BooleanInput source="isAmountOverridden" label="Override total amount" />
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <BooleanInput
+              source="isAmountOverridden"
+              label="Override total amount"
+              helperText={false}
+            />
           </Grid>
           <FormDataConsumer>
             {({ formData }) =>
               formData?.isAmountOverridden ? (
-                <Grid
-                  size={{
-                    xs: 12,
-                    sm: 6,
-                  }}
-                >
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <NoArrowKeyNumberInput
                     source="amount"
                     label="Amount (override)"
                     fullWidth
                     validate={[required(), minValue(1)]}
+                    helperText={false}
                   />
                 </Grid>
               ) : null
             }
           </FormDataConsumer>
           <Grid size={12}>
-            <TextInput source="remarks" fullWidth multiline minRows={2} />
+            <TextInput source="remarks" fullWidth multiline minRows={3} />
           </Grid>
         </Grid>
       </SimpleForm>
@@ -314,6 +297,12 @@ function PrefetchFmbItsDefaults({ prefFmbId }: { prefFmbId: string }) {
       return;
     }
     setValue("beneficiaryItsNo", hofIts, { shouldDirty: false, shouldTouch: false });
+    const accountName =
+      fmb?.name != null && String(fmb.name).trim() !== "" ? String(fmb.name).trim() : "";
+    const currentBn = getValues("beneficiaryName");
+    if (accountName && (currentBn == null || String(currentBn).trim() === "")) {
+      setValue("beneficiaryName", accountName, { shouldDirty: false, shouldTouch: false });
+    }
     didPrefillRef.current = true;
   }, [fmb, prefFmbId, getValues, setValue]);
 

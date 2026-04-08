@@ -18,20 +18,23 @@ import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
 import {
   Box,
-  Typography,
+  Divider,
+  Link,
+  Paper,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Link,
+  Tabs,
+  Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { hasPermission } from "@/utils/permission-utils";
-import CommonTabs from "@/components/common-tabs";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
@@ -44,36 +47,14 @@ type PaymentSummaryJson = {
   grandTotal?: SummaryModeRow;
 };
 
+type SummaryTone = "warning" | "info" | "success";
+
 const SUMMARY_CONFIG = [
-  {
-    key: "cash",
-    label: "CASH",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "online",
-    label: "ONLINE",
-    backgroundColor: "#d1ecf1",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "cheque",
-    label: "CHEQUE",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "grandTotal",
-    label: "GRAND TOTAL",
-    backgroundColor: "#d4edda",
-    borderColor: "2px solid #28a745",
-    textColor: "#155724",
-  },
-] as const;
+  { key: "cash", label: "CASH", tone: "warning" },
+  { key: "online", label: "ONLINE", tone: "info" },
+  { key: "cheque", label: "CHEQUE", tone: "warning" },
+  { key: "grandTotal", label: "GRAND TOTAL", tone: "success" },
+] as const satisfies ReadonlyArray<{ key: string; label: string; tone: SummaryTone }>;
 
 const PaymentSummary = () => {
   const { filterValues } = useListContext();
@@ -168,7 +149,11 @@ const PaymentSummary = () => {
                 | undefined;
               if (!data) return null;
               return (
-                <TableRow key={config.key} hover>
+                <TableRow
+                  key={config.key}
+                  hover
+                  sx={(theme) => ({ bgcolor: alpha(theme.palette[config.tone].main, 0.12) })}
+                >
                   <TableCell>{config.label}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600, fontSize: "1.2rem" }}>
                     {formatCurrency(data.total)}
@@ -223,15 +208,16 @@ const ReceiptTypeTabs = () => {
   }, [filterValues]);
 
   return (
-    <CommonTabs
-      options={TAB_OPTIONS.map((option) => ({
-        id: option.id,
-        name: option.name,
-      }))}
-      value={tabValue}
-      onChange={handleChange}
-      showDivider
-    />
+    <>
+      <Box sx={{ mb: 0 }}>
+        <Tabs value={tabValue} onChange={handleChange}>
+          {TAB_OPTIONS.map((option) => (
+            <Tab key={option.id} label={option.name} value={option.id} />
+          ))}
+        </Tabs>
+      </Box>
+      <Divider />
+    </>
   );
 };
 

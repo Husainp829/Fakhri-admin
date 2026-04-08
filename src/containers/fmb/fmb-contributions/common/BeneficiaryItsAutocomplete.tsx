@@ -20,7 +20,7 @@ function choiceLabel(c: { ITS_ID?: string; Full_Name?: string }) {
  */
 export function BeneficiaryItsAutocomplete(props: AutocompleteInputProps) {
   const { helperText, ...rest } = props;
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
   const [searchText, setSearchText] = useState("");
   const fmbId = useWatch({ control, name: "fmbId" });
   const beneficiaryItsNo = useWatch({ control, name: "beneficiaryItsNo" });
@@ -87,6 +87,15 @@ export function BeneficiaryItsAutocomplete(props: AutocompleteInputProps) {
       loading={(Boolean(hofId) && familyPending) || (Boolean(searchText) && directoryPending)}
       clearOnBlur={false}
       onInputChange={(_, value) => setSearchText(value?.trim?.() ?? "")}
+      onChange={(_value, record) => {
+        if (record === "" || record == null) {
+          setValue("beneficiaryName", "");
+          return;
+        }
+        const r = record as { Full_Name?: string };
+        const n = r.Full_Name?.trim() ?? "";
+        setValue("beneficiaryName", n);
+      }}
       fullWidth
       helperText={
         helperText ??

@@ -1,6 +1,7 @@
 import { AutocompleteInput, DateInput, ReferenceInput, SelectInput, TextInput } from "react-admin";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { OhbatItsdataItsPickerInput } from "./OhbatItsdataItsPickerInput";
 import OhbatITSLookup from "./OhbatITSLookup";
 import { MAJLIS_START_TIME_CHOICES } from "./OhbatMajlisTime";
 
@@ -65,6 +66,11 @@ export function OhbatMajlisFormFields() {
             fullWidth
           />
         </ReferenceInput>
+        <OhbatItsdataItsPickerInput
+          source="zakereenItsNo"
+          label="Zakereen (optional)"
+          helperText="Search by name or ITS; must exist in itsdata"
+        />
         <DateInput source="date" label="Majlis date" fullWidth />
         <SelectInput
           source="startTime"

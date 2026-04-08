@@ -19,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -253,6 +254,7 @@ const SlotDaySelector = ({ onSelect, eventId }: SlotDaySelectorProps) => {
 };
 
 export default function NiyaazBookedSlotsInput() {
+  const theme = useTheme();
   const { setValue } = useFormContext();
   const [currentEvent] = useStore<CurrentEvent | null>("currentEvent");
   const bookedSlots = (useWatch({ name: "bookedSlots" }) as BookedSlotRow[] | undefined) || [];
@@ -319,7 +321,7 @@ export default function NiyaazBookedSlotsInput() {
                         style={{
                           padding: "4px 8px",
                           borderRadius: "4px",
-                          border: "1px solid #ccc",
+                          border: `1px solid ${theme.palette.divider}`,
                         }}
                       >
                         {TYPES.map((type) => (

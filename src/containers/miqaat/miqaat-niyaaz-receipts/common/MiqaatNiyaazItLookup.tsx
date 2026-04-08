@@ -7,25 +7,9 @@ import Search from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 
-const useStyles = makeStyles(() => ({
-  input: {
-    width: "100%",
-    marginRight: 2,
-    marginTop: 2,
-  },
-  button: {
-    marginTop: 2,
-  },
-  row: {
-    cursor: "pointer",
-  },
-}));
-
 function MiqaatNiyaazItLookup() {
-  const classes = useStyles();
   const { setValue } = useFormContext();
   const dataProvider = useDataProvider();
   const [itsNo, setIts] = useState<string | undefined>();
@@ -64,21 +48,20 @@ function MiqaatNiyaazItLookup() {
 
   return (
     <>
-      <Box sx={{ display: "flex", width: "100%" }}>
+      <Box sx={{ display: "flex", alignItems: "flex-start", width: "100%" }}>
         <TextInput
           source="itsNo"
           label="ITS No"
           onChange={(e) => onChangeDetails(e)}
-          className={classes.input}
           helperText={false}
           fullWidth
-          sx={{ mr: 2 }}
+          sx={{ flex: 1, minWidth: 0, mr: 2, mt: 2 }}
           isRequired
         />
         <Search
           onClick={searchITS}
           variant="contained"
-          className={classes.button}
+          sx={{ mt: 2, flexShrink: 0 }}
           disabled={loading}
         >
           {!loading ? <SearchIcon /> : <CircularProgress size={20} />}

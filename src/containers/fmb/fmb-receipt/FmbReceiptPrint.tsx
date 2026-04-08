@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
 import { Box } from "@mui/material";
 import ReceiptPrint from "@/components/receipt-layout";
+import { useHardcopyBorders } from "@/theme/useHardcopyBorders";
 import { formatDate } from "@/utils";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
@@ -25,13 +26,15 @@ function LabelValue({
   label,
   value,
   noBorder,
+  borderBottom,
 }: {
   label: string;
   value: ReactNode;
   noBorder?: boolean;
+  borderBottom: string;
 }) {
   return (
-    <div style={{ borderBottom: noBorder ? undefined : "1px solid #ccc" }}>
+    <div style={{ borderBottom: noBorder ? undefined : borderBottom }}>
       <div style={{ textAlign: "right", padding: "10px", fontSize: "14px" }}>{label}</div>
       <div style={{ textAlign: "right", padding: "10px" }}>{value}</div>
     </div>
@@ -39,6 +42,7 @@ function LabelValue({
 }
 
 const FmbReceipt = () => {
+  const { solid1, solid1Soft, solid5 } = useHardcopyBorders();
   const receiptId = getReceiptIdFromLocation();
   const [data, setData] = useState<FmbPrintRow | null>(null);
   const [error, setError] = useState(false);
@@ -102,29 +106,29 @@ const FmbReceipt = () => {
       <div style={{ display: "flex", width: "100%" }}>
         <div
           className="u-col u-col-82p27"
-          style={{ boxSizing: "border-box", padding: "0", borderTop: "5px solid #ccc" }}
+          style={{ boxSizing: "border-box", padding: "0", borderTop: solid5 }}
         >
           <div style={{ padding: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
-              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>
+              <div style={{ flex: "3", borderBottom: solid1Soft }}>
                 {String(itsdata.Full_Name ?? "")}
               </div>
               <div style={{ paddingLeft: "10px" }}>حفظ الله تعالى</div>
             </div>
           </div>
-          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+          <div style={{ padding: "10px", borderBottom: solid1 }}>
             {String(itsdata.Address ?? "")}, {String(itsdata.City ?? "")} -{" "}
             {String(itsdata.Pincode ?? "")}, {String(itsdata.State ?? "")}
           </div>
           <div style={{ textAlign: "center", padding: "10px" }}>بعد السلام الجميل</div>
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ flex: "3", paddingRight: "10px", borderBottom: "1px solid #cfcfcf" }}>
+              <div style={{ flex: "3", paddingRight: "10px", borderBottom: solid1Soft }}>
                 {toWords.convert(amountNum)} Only
               </div>
               <div style={{ flex: "0.5", paddingRight: "10px", textAlign: "center" }}>انكه</div>
-              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>
+              <div style={{ flex: "1", borderBottom: solid1Soft }}>
                 {String(receiptData.amount ?? "")}
               </div>
               <div style={{ flex: "2", paddingLeft: "10px", textAlign: "right" }}>
@@ -140,7 +144,7 @@ const FmbReceipt = () => {
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ paddingRight: "10px" }}>ما وصول تهيا چهے</div>
-              <div style={{ borderBottom: "1px solid #cfcfcf" }}>{fmbPeriodLabel}</div>
+              <div style={{ borderBottom: solid1Soft }}>{fmbPeriodLabel}</div>
             </div>
           </div>
         </div>
@@ -149,14 +153,31 @@ const FmbReceipt = () => {
           className="u-col u-col-17p73"
           style={{
             boxSizing: "border-box",
-            borderTop: "5px solid #ccc",
-            borderLeft: "5px solid #ccc",
+            borderTop: solid5,
+            borderLeft: solid5,
           }}
         >
-          <LabelValue label="تاريخ" value={formatDate(receiptData.createdAt as string)} />
-          <LabelValue label="رسيد نمبر" value={String(receiptData.receiptNo ?? "")} />
-          <LabelValue label="Thaali No." value={String(fmbData?.fileNo ?? "")} />
-          <LabelValue label="HOF ITS" value={String(itsdata.ITS_ID ?? "")} noBorder />
+          <LabelValue
+            borderBottom={solid1}
+            label="تاريخ"
+            value={formatDate(receiptData.createdAt as string)}
+          />
+          <LabelValue
+            borderBottom={solid1}
+            label="رسيد نمبر"
+            value={String(receiptData.receiptNo ?? "")}
+          />
+          <LabelValue
+            borderBottom={solid1}
+            label="Thaali No."
+            value={String(fmbData?.fileNo ?? "")}
+          />
+          <LabelValue
+            borderBottom={solid1}
+            label="HOF ITS"
+            value={String(itsdata.ITS_ID ?? "")}
+            noBorder
+          />
         </div>
       </div>
     </ReceiptPrint>

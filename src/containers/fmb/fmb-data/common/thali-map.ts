@@ -87,6 +87,13 @@ export const validateThalis = (value: unknown): string | undefined => {
     return "Each thali requires a thali number";
   }
 
+  const missingType = value.some(
+    (thali) => thali?.thaliTypeId == null || String(thali.thaliTypeId).trim() === ""
+  );
+  if (missingType) {
+    return "Each thali must have a thali type";
+  }
+
   const activeCount = value.filter((thali) => thali?.isActive !== false).length;
   if (activeCount === 0) {
     return "Keep at least one active thali";

@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Admin, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useBaseRoute, useRouteId } from "@/utils/route-utility";
 import { checkAndClearCacheFromURL } from "@/utils/clear-permission-cache";
+import { useTenantBrandedThemes } from "@/hooks/useTenantBrandedThemes";
 
 import withClearCache from "@/ClearCache";
 import dataProvider from "@/dataprovider";
@@ -15,7 +16,6 @@ import Login from "@/layout/Login";
 import { buildAdminResourceChildren } from "@/components/ResourcesRenderer";
 import { AUTHLESS_ROUTES } from "@/config/authless-routes";
 import i18nProvider from "@/config/i18n";
-import appTheme from "@/config/theme";
 import type { PermissionRecord } from "@/types/permissions";
 
 dayjs.extend(utc);
@@ -23,6 +23,7 @@ dayjs.extend(utc);
 const MainApp = () => {
   const baseRoute = useBaseRoute();
   const routeId = useRouteId();
+  const themes = useTenantBrandedThemes();
 
   useEffect(() => {
     checkAndClearCacheFromURL();
@@ -52,7 +53,8 @@ const MainApp = () => {
       i18nProvider={i18nProvider}
       layout={layout}
       dashboard={DashboardAdmin}
-      theme={appTheme}
+      theme={themes.light}
+      darkTheme={themes.dark}
       loginPage={Login}
     >
       {renderResources}

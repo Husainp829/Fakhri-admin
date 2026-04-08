@@ -57,6 +57,12 @@ export function buildOhbatMajlisEventDetailsText(record: RaRecord | null | undef
   const sadarat = record.sadarat as { name?: string; mobile?: string } | undefined;
   const sadaratName = clip(sadarat?.name);
   const sadaratPhone = formatMobileForMessage(sadarat?.mobile);
+  const khidmat = record.khidmatguzar as { Full_Name?: string; Mobile?: string } | undefined;
+  const khidmatName = clip(khidmat?.Full_Name || record.khidmatguzarItsNo);
+  const khidmatPhone = formatMobileForMessage(khidmat?.Mobile);
+  const zakereen = record.zakereen as { Full_Name?: string; Mobile?: string } | undefined;
+  const zakereenName = clip(zakereen?.Full_Name || record.zakereenItsNo);
+  const zakereenPhone = formatMobileForMessage(zakereen?.Mobile);
 
   const parts = [
     "Salaam-e-Jameel,",
@@ -70,6 +76,12 @@ export function buildOhbatMajlisEventDetailsText(record: RaRecord | null | undef
     "",
     `*Sadarat:* ${sadaratName}`,
     ...(sadaratPhone ? [`📞 ${sadaratPhone}`] : []),
+    ...(khidmatName
+      ? ["", `*Toloba:* ${khidmatName}`, ...(khidmatPhone ? [`📞 ${khidmatPhone}`] : [])]
+      : []),
+    ...(zakereenName
+      ? ["", `*Zakereen:* ${zakereenName}`, ...(zakereenPhone ? [`📞 ${zakereenPhone}`] : [])]
+      : []),
     "",
     "We request you to formally invite the Saheb and coordinate with him at your earliest for pick and drop arrangements.",
   ];

@@ -20,6 +20,22 @@ export function validateContributionFmbOrPeriod(values: ContributionFormValues) 
  * Blocks zero (or negative) contribution amounts — aligned with API
  * (`Contribution amount must be greater than zero`).
  */
+/**
+ * Beneficiary name is required for save when ITS is not in directory (server enforces the same).
+ * Directory picks auto-fill this field; adhoc / missing ITS rows leave it empty until the user types.
+ */
+export function validateBeneficiaryDisplayName(values: ContributionFormValues) {
+  const errors: Record<string, string> = {};
+  const itsRaw = values.beneficiaryItsNo;
+  const its = typeof itsRaw === "string" ? itsRaw.trim() : "";
+  const nameRaw = values.beneficiaryName;
+  const bn = typeof nameRaw === "string" ? nameRaw.trim() : "";
+  if (its && !bn) {
+    errors.beneficiaryName = "Enter beneficiary name (required when ITS is not in the directory)";
+  }
+  return errors;
+}
+
 export function validatePositiveContributionTotal(values: ContributionFormValues) {
   const errors: Record<string, string> = {};
 

@@ -26,6 +26,7 @@ import {
   DialogActions,
   Alert,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import CancelIcon from "@mui/icons-material/Cancel";
 import UpdateIcon from "@mui/icons-material/Update";
 import WriteoffDialog from "@/containers/sabil/sabil-ledger/WriteoffDialog";
@@ -311,12 +312,12 @@ const Ledger = () => {
               />
             }
             isRowSelectable={(ledgerEntry) => ledgerEntry.status !== "WRITTEN_OFF"}
-            sx={{
+            sx={(theme) => ({
               "& .RaDatagrid-headerCell": {
                 fontWeight: 600,
-                backgroundColor: "#f5f5f5",
+                bgcolor: alpha(theme.palette.text.primary, 0.06),
               },
-            }}
+            })}
           >
             <FunctionField
               label="Period"

@@ -24,6 +24,7 @@ import { formatINR } from "@/utils";
 import { BeneficiaryItsAutocomplete } from "./common/BeneficiaryItsAutocomplete";
 import { ITSInput } from "./common/FmbContributionsItsInput";
 import {
+  validateBeneficiaryDisplayName,
   validateContributionFmbOrPeriod,
   validatePositiveContributionTotal,
 } from "./common/contribution-form-validators";
@@ -81,6 +82,12 @@ const transform = (data: Record<string, unknown>) => {
     remarks:
       typeof data.remarks === "string" ? data.remarks.trim() || null : (data.remarks ?? null),
   };
+  if (typeof data.beneficiaryName === "string") {
+    const bn = data.beneficiaryName.trim();
+    if (bn) {
+      out.beneficiaryName = bn;
+    }
+  }
   if (data.fmbId) {
     out.fmbId = data.fmbId;
     out.fmbTakhmeenId = data.fmbTakhmeenId ?? null;
@@ -100,6 +107,7 @@ const transform = (data: Record<string, unknown>) => {
 function validateContributionForm(values: Record<string, unknown>) {
   return {
     ...validateContributionFmbOrPeriod(values),
+    ...validateBeneficiaryDisplayName(values),
     ...validatePositiveContributionTotal(values),
   };
 }
@@ -132,8 +140,12 @@ export default function FmbContributionsEdit(props: EditProps) {
                 fullWidth
                 debounce={300}
                 filterToQuery={(q) => ({ search: q })}
+                helperText={false}
               />
             </ReferenceInput>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextInput source="name" label="Account name" fullWidth disabled />
           </Grid>
           <FormDataConsumer>
             {({ formData }) =>
@@ -144,6 +156,7 @@ export default function FmbContributionsEdit(props: EditProps) {
                     reference="fmbTakhmeen"
                     filter={{ fmbId: formData.fmbId }}
                     perPage={200}
+                    helperText={false}
                   >
                     <AutocompleteInput
                       fullWidth
@@ -156,6 +169,7 @@ export default function FmbContributionsEdit(props: EditProps) {
                       }
                       shouldRenderSuggestions={(val: string) => val.trim().length >= 0}
                       noOptionsText="No annual periods for this FMB"
+                      helperText={false}
                     />
                   </ReferenceInput>
                 </Grid>
@@ -163,98 +177,79 @@ export default function FmbContributionsEdit(props: EditProps) {
             }
           </FormDataConsumer>
           <FmbHouseholdSummaryAndItsSync />
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <SelectInput
               source="contributionType"
               label="Contribution type"
               choices={TYPE_CHOICES}
               fullWidth
               validate={[required()]}
+              helperText={false}
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <NoArrowKeyNumberInput
               source="hijriYearStart"
-              label="Hijri year start (required if no FMB record)"
+              label="Hijri year start"
               fullWidth
+              helperText="Required if no FMB record"
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 12,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
             <BeneficiaryItsAutocomplete />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 4,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextInput
+              source="beneficiaryName"
+              label="Beneficiary name"
+              fullWidth
+              helperText="Auto-filled from ITS directory when available. Enter manually if ITS is not in directory."
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <NoArrowKeyNumberInput
               source="quantity"
               label="Quantity"
               fullWidth
               validate={[required(), minValue(1)]}
+              helperText={false}
             />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 4,
-            }}
-          >
-            <NoArrowKeyNumberInput source="unitAmount" label="Unit amount" fullWidth />
+          <Grid size={{ xs: 12, sm: 3 }}>
+            <NoArrowKeyNumberInput
+              source="unitAmount"
+              label="Unit amount"
+              fullWidth
+              helperText={false}
+            />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 4,
-            }}
-          >
+          <Grid size={{ xs: 12, sm: 3 }}>
             <CalculatedTotalAmountField />
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-            }}
-          >
-            <BooleanInput source="isAmountOverridden" label="Override total amount" />
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <BooleanInput
+              source="isAmountOverridden"
+              label="Override total amount"
+              helperText={false}
+            />
           </Grid>
           <FormDataConsumer>
             {({ formData }) =>
               formData?.isAmountOverridden ? (
-                <Grid
-                  size={{
-                    xs: 12,
-                    sm: 6,
-                  }}
-                >
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <NoArrowKeyNumberInput
                     source="amount"
                     label="Amount (override)"
                     fullWidth
                     validate={[required(), minValue(1)]}
+                    helperText={false}
                   />
                 </Grid>
               ) : null
             }
           </FormDataConsumer>
           <Grid size={12}>
-            <TextInput source="remarks" fullWidth multiline minRows={2} />
+            <TextInput source="remarks" fullWidth multiline minRows={3} />
           </Grid>
         </Grid>
       </SimpleForm>
@@ -272,6 +267,20 @@ function FmbHouseholdSummaryAndItsSync() {
   const { data: fmb } = useGetOne("fmbData", { id: fmbId }, { enabled: Boolean(fmbId) });
 
   useEffect(() => {
+    if (!fmbId) {
+      setValue("name", "", { shouldDirty: false, shouldTouch: false });
+    }
+  }, [fmbId, setValue]);
+
+  useEffect(() => {
+    if (!fmbId || fmb?.name == null) return;
+    const n = String(fmb.name).trim();
+    if (n) {
+      setValue("name", n, { shouldDirty: false, shouldTouch: false });
+    }
+  }, [fmb?.name, fmbId, setValue]);
+
+  useEffect(() => {
     const raw = fmb?.itsNo;
     if (raw == null || raw === "") return;
     const hofIts = String(raw).trim();
@@ -280,6 +289,12 @@ function FmbHouseholdSummaryAndItsSync() {
     const bEmpty = b == null || String(b).trim() === "";
     if (bEmpty) {
       setValue("beneficiaryItsNo", hofIts, { shouldDirty: false, shouldTouch: false });
+      const accountName =
+        fmb?.name != null && String(fmb.name).trim() !== "" ? String(fmb.name).trim() : "";
+      const currentBn = getValues("beneficiaryName");
+      if (accountName && (currentBn == null || String(currentBn).trim() === "")) {
+        setValue("beneficiaryName", accountName, { shouldDirty: false, shouldTouch: false });
+      }
     }
   }, [fmb, fmbId, getValues, setValue]);
 
@@ -299,12 +314,7 @@ function FmbHouseholdSummaryAndItsSync() {
 
   return (
     <>
-      <Grid
-        size={{
-          xs: 12,
-          sm: 6,
-        }}
-      >
+      <Grid size={{ xs: 12, sm: 6 }}>
         <TextField
           label="File no."
           value={fmb?.fileNo != null && fmb.fileNo !== "" ? String(fmb.fileNo) : ""}
@@ -313,12 +323,7 @@ function FmbHouseholdSummaryAndItsSync() {
           InputProps={{ readOnly: true }}
         />
       </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          sm: 6,
-        }}
-      >
+      <Grid size={{ xs: 12, sm: 6 }}>
         <TextField
           label="HOF ITS"
           value={fmb?.itsNo != null && fmb.itsNo !== "" ? String(fmb.itsNo) : ""}

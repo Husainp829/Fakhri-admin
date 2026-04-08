@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
+import { getReactPdfColors } from "@/theme/reactPdfColors";
 import "./register-fonts";
 
 const toWords = new ToWords();
@@ -27,6 +28,7 @@ export type ReceiptsPdfProps = {
 };
 
 export function ReceiptsPDF({ receipt, HOFITS, HOFName, markaz = "", total }: ReceiptsPdfProps) {
+  const pdfColors = getReactPdfColors();
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -54,7 +56,7 @@ export function ReceiptsPDF({ receipt, HOFITS, HOFName, markaz = "", total }: Re
               fontFamily: "Roboto-Bold",
               fontSize: "18px",
               alignSelf: "center",
-              color: "#800000",
+              color: pdfColors.heading,
             }}
           >
             NIYAAZ TANZEEM1
@@ -85,7 +87,7 @@ export function ReceiptsPDF({ receipt, HOFITS, HOFName, markaz = "", total }: Re
               fontFamily: "Roboto-Bold",
               fontSize: "16px",
               alignSelf: "flex-start",
-              color: "#000080",
+              color: pdfColors.accentText,
             }}
           >
             {`ITS ID : ${HOFITS}`}
@@ -140,7 +142,7 @@ export function ReceiptsPDF({ receipt, HOFITS, HOFName, markaz = "", total }: Re
               fontFamily: "Roboto-Italic",
               fontSize: "8px",
               alignSelf: "flex-start",
-              color: "#BEBEBE",
+              color: pdfColors.muted,
             }}
           >
             This is a computer generated receipt and does not require a signature

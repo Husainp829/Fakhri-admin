@@ -20,6 +20,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { hasPermission } from "@/utils/permission-utils";
 import { MakhsoosHostSectorTab } from "./MakhsoosHostSectorTab";
+import { OhbatItsdataItsPickerInput } from "./OhbatItsdataItsPickerInput";
 import { OhbatMajlisDetailsTab } from "./OhbatMajlisDetailsTab";
 import {
   registerOhbatMajlisShowDialogOpeners,
@@ -136,12 +137,54 @@ function ChangeKhidmatDialog({
   );
 }
 
+function ChangeZakereenDialog({
+  open,
+  onClose,
+  majlisId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  majlisId: string | number;
+}) {
+  const refresh = useRefresh();
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Change zakereen</DialogTitle>
+      <DialogContent sx={{ pt: 2 }}>
+        <Edit
+          key={`zakereen-${majlisId}`}
+          resource="ohbatMajalis"
+          id={majlisId}
+          mutationMode="pessimistic"
+          redirect={false}
+          actions={false}
+          transform={(data: Record<string, unknown>) => ({
+            zakereenItsNo:
+              typeof data.zakereenItsNo === "string" ? data.zakereenItsNo.trim() || null : null,
+          })}
+          mutationOptions={{
+            onSuccess: () => {
+              refresh();
+              onClose();
+            },
+          }}
+        >
+          <SimpleForm toolbar={<PartialEditToolbar onCancel={onClose} />}>
+            <OhbatItsdataItsPickerInput source="zakereenItsNo" label="Zakereen" />
+          </SimpleForm>
+        </Edit>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function OhbatMajlisShowActions() {
   const record = useRecordContext();
 
   const { permissions } = usePermissions();
   const [sadaratOpen, setSadaratOpen] = useState(false);
   const [khidmatOpen, setKhidmatOpen] = useState(false);
+  const [zakereenOpen, setZakereenOpen] = useState(false);
 
   const canEditMajlis = hasPermission(permissions, "ohbatMajalis.edit");
 
@@ -151,6 +194,7 @@ function OhbatMajlisShowActions() {
     registerOhbatMajlisShowDialogOpeners({
       openSadarat: () => setSadaratOpen(true),
       openKhidmat: () => setKhidmatOpen(true),
+      openZakereen: () => setZakereenOpen(true),
     });
     return () => unregisterOhbatMajlisShowDialogOpeners();
   }, []);
@@ -168,6 +212,11 @@ function OhbatMajlisShowActions() {
           <ChangeKhidmatDialog
             open={khidmatOpen}
             onClose={() => setKhidmatOpen(false)}
+            majlisId={id}
+          />
+          <ChangeZakereenDialog
+            open={zakereenOpen}
+            onClose={() => setZakereenOpen(false)}
             majlisId={id}
           />
         </>

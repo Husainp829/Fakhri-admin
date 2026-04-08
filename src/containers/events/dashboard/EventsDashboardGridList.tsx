@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
 import { useStore } from "react-admin";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import dayjs from "dayjs";
 import { navigateToBaseRoute } from "@/utils/route-utility";
 import type { CurrentEvent, EventsListRecord } from "@/containers/events/types";
@@ -74,13 +75,13 @@ const CardGridList = ({ data }: CardGridListProps) => {
     >
       <Card sx={styles.card}>
         <CardActionArea onClick={handleClick}>
-          <div
-            style={{
+          <Box
+            sx={{
               display: "flex",
               aspectRatio: "2 / 1",
               justifyContent: "center",
-              background: "#fff",
-              padding: "1em",
+              bgcolor: "background.paper",
+              p: 2,
             }}
           >
             <img
@@ -90,15 +91,13 @@ const CardGridList = ({ data }: CardGridListProps) => {
               style={{ maxWidth: "100%", maxHeight: "100%", height: "auto", alignSelf: "center" }}
               alt={data.name}
             />
-          </div>
+          </Box>
         </CardActionArea>
-        <CardContent style={{ background: "#0a1f31" }}>
-          <Typography component="div" color="white">
-            {data.name}
-          </Typography>
-          <Typography color="white">{`${dayjs(data.fromDate).format("D")} - ${dayjs(
-            data.toDate
-          ).format("D MMMM YYYY")}`}</Typography>
+        <CardContent sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}>
+          <Typography component="div">{data.name}</Typography>
+          <Typography>{`${dayjs(data.fromDate).format("D")} - ${dayjs(data.toDate).format(
+            "D MMMM YYYY"
+          )}`}</Typography>
         </CardContent>
         <CardActions>
           <Button size="small" color="primary" onClick={handleClick}>

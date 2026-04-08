@@ -12,7 +12,9 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  useTheme,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { ITS_COLUMNS, type FilterGroupData } from "./constants";
 import { usePreviewRecipients } from "@/containers/whatsapp-broadcasts/components/hooks";
 import type { RaRecord } from "react-admin";
@@ -43,6 +45,7 @@ const RecipientsPreview = memo(
     shouldFetchMap,
     setShouldFetchMap,
   }: RecipientsPreviewProps) => {
+    const theme = useTheme();
     const [validationError, setValidationError] = useState<string | null>(null);
 
     const filterKey = useMemo(() => JSON.stringify(filterGroup), [filterGroup]);
@@ -230,9 +233,13 @@ const RecipientsPreview = memo(
                             <TableRow
                               key={rid}
                               sx={{
-                                backgroundColor: isSkipped ? "#ffebee" : "inherit",
+                                bgcolor: isSkipped
+                                  ? alpha(theme.palette.error.main, 0.08)
+                                  : "inherit",
                                 "&:hover": {
-                                  backgroundColor: isSkipped ? "#ffcdd2" : "action.hover",
+                                  bgcolor: isSkipped
+                                    ? alpha(theme.palette.error.main, 0.18)
+                                    : "action.hover",
                                 },
                               }}
                             >

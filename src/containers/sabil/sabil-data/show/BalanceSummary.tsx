@@ -2,6 +2,7 @@ import { useState, useEffect, useImperativeHandle, forwardRef, type ReactNode } 
 import type { RaRecord } from "react-admin";
 import { useShowContext } from "react-admin";
 import { Paper, Typography, Box } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { callApi } from "@/dataprovider/misc-apis";
 
@@ -170,13 +171,13 @@ const BalanceSummary = forwardRef<BalanceSummaryHandle>((_props, ref) => {
   return (
     <Paper
       elevation={2}
-      sx={{
+      sx={(theme) => ({
         p: 2,
         mb: 2,
-        backgroundColor: "#f8f9fa",
+        bgcolor: alpha(theme.palette.primary.main, 0.06),
         borderLeft: "4px solid",
         borderColor: "primary.main",
-      }}
+      })}
     >
       <Typography
         variant="h6"

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Alert, Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Paper, Typography, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import {
   Datagrid,
   DateField,
@@ -106,8 +107,9 @@ const ThaliTodaySuspensionStatus = ({ thaliId }: { thaliId: string }) => {
 };
 
 export default function SuspensionsTab() {
+  const theme = useTheme();
   const record = useRecordContext();
-  const thalis = Array.isArray(record?.thalis) ? (record.thalis as ThaliRow[]) : [];
+  const thalis = Array.isArray(record?.thalis) ? (record!.thalis as ThaliRow[]) : [];
 
   if (!thalis.length) {
     return (
@@ -147,7 +149,7 @@ export default function SuspensionsTab() {
               rowSx={(row, _index) =>
                 isActiveOnDate(row, new Date())
                   ? {
-                      backgroundColor: "#fff8e1",
+                      bgcolor: alpha(theme.palette.warning.main, 0.18),
                       "& td": { fontWeight: 600 },
                     }
                   : {}

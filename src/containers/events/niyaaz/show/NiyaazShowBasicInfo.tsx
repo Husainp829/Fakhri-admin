@@ -76,7 +76,7 @@ export const NiyaazShowBasicInfo = () => {
         </SimpleShowLayout>
       </Grid>
       <Grid
-        sx={{ pt: 2, borderTop: "1px solid #efefef" }}
+        sx={{ pt: 2, borderTop: 1, borderTopColor: "divider" }}
         size={{
           xs: 12,
           sm: 12,

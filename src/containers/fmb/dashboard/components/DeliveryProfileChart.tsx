@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, useTheme } from "@mui/material";
 import {
   PieChart,
   Pie,
@@ -19,6 +19,7 @@ type DeliveryProfileChartProps = {
 };
 
 export default function DeliveryProfileChart({ data }: DeliveryProfileChartProps) {
+  const theme = useTheme();
   const renderLabel = (props: PieLabelRenderProps) => {
     const { name, value, percent } = props;
     const pct = typeof percent === "number" ? (percent * 100).toFixed(0) : "0";
@@ -45,7 +46,7 @@ export default function DeliveryProfileChart({ data }: DeliveryProfileChartProps
                 labelLine={false}
                 label={renderLabel}
                 outerRadius={80}
-                fill="#8884d8"
+                fill={theme.palette.primary.main}
                 dataKey="value"
               >
                 {data.map((entry, index) => (

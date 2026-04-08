@@ -2,9 +2,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
 import { Box } from "@mui/material";
 import ReceiptPrint from "@/components/receipt-layout";
+import { useHardcopyBorders } from "@/theme/useHardcopyBorders";
 import { formatDate } from "@/utils";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
@@ -72,6 +73,7 @@ type ReceiptApiRow = {
 };
 
 const SabilReceiptPrint = () => {
+  const { solid1, solid1Soft, solid5 } = useHardcopyBorders();
   const { href } = window.location;
   const params = href.split("?")[1];
   const searchParams = new URLSearchParams(params);
@@ -141,7 +143,7 @@ const SabilReceiptPrint = () => {
     value: ReactNode;
     noBorder?: boolean;
   }) => (
-    <div style={{ borderBottom: !noBorder ? "1px solid #ccc" : undefined }}>
+    <div style={{ borderBottom: !noBorder ? solid1 : undefined }}>
       <div style={{ textAlign: "right", padding: "10px" }}>{label}</div>
       <div style={{ fontSize: "13px", textAlign: "right", padding: "10px" }}>{value}</div>
     </div>
@@ -167,27 +169,25 @@ const SabilReceiptPrint = () => {
       <div style={{ display: "flex", width: "100%" }}>
         <div
           className="u-col u-col-82p27"
-          style={{ boxSizing: "border-box", padding: "0", borderTop: "5px solid #ccc" }}
+          style={{ boxSizing: "border-box", padding: "0", borderTop: solid5 }}
         >
           <div style={{ padding: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ paddingRight: "10px" }}>نام</div>
-              <div style={{ flex: "3", borderBottom: "1px solid #cfcfcf" }}>{displayName}</div>
+              <div style={{ flex: "3", borderBottom: solid1Soft }}>{displayName}</div>
               <div style={{ paddingLeft: "10px" }}>حفظ الله تعالى</div>
             </div>
           </div>
-          <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>{displayAddress}</div>
+          <div style={{ padding: "10px", borderBottom: solid1 }}>{displayAddress}</div>
 
           <div style={{ textAlign: "center", padding: "10px" }}>بعد السلام الجميل</div>
           <div style={{ padding: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ flex: "3", paddingRight: "10px", borderBottom: "1px solid #cfcfcf" }}>
+              <div style={{ flex: "3", paddingRight: "10px", borderBottom: solid1Soft }}>
                 {toWords.convert(receiptData.amount || 0)} Only
               </div>
               <div style={{ flex: "0.5", paddingRight: "10px", textAlign: "center" }}>انكه</div>
-              <div style={{ flex: "1", borderBottom: "1px solid #cfcfcf" }}>
-                {receiptData.amount}
-              </div>
+              <div style={{ flex: "1", borderBottom: solid1Soft }}>{receiptData.amount}</div>
               <div style={{ flex: "2", paddingLeft: "10px", textAlign: "right" }}>
                 اٰپ طرف سي روپية
               </div>
@@ -203,14 +203,12 @@ const SabilReceiptPrint = () => {
               <div style={{ flex: "3", paddingRight: "10px" }}>سنة عيسوي وصول تهيا چهے</div>
               {periodEnd && (
                 <>
-                  <div style={{ flex: "1.5", borderBottom: "1px solid #cfcfcf" }}>{periodEnd}</div>
+                  <div style={{ flex: "1.5", borderBottom: solid1Soft }}>{periodEnd}</div>
                   <div style={{ flex: "1", textAlign: "center" }}>إلى</div>
                 </>
               )}
               {periodStart && (
-                <div
-                  style={{ flex: isYearlySabil ? "3" : "1.5", borderBottom: "1px solid #cfcfcf" }}
-                >
+                <div style={{ flex: isYearlySabil ? "3" : "1.5", borderBottom: solid1Soft }}>
                   {periodStart}
                 </div>
               )}
@@ -222,14 +220,14 @@ const SabilReceiptPrint = () => {
             <div
               style={{
                 padding: "20px 10px",
-                borderTop: "1px solid #ccc",
+                borderTop: solid1,
                 display: "flex",
                 alignItems: "baseline",
                 textAlign: "left",
               }}
             >
               <span style={{ whiteSpace: "nowrap", marginRight: "8px" }}>Remarks:</span>
-              <span style={{ flex: 1, borderBottom: "1px solid #cfcfcf", minWidth: 0 }}>
+              <span style={{ flex: 1, borderBottom: solid1Soft, minWidth: 0 }}>
                 {receiptData.remarks}
               </span>
             </div>
@@ -240,8 +238,8 @@ const SabilReceiptPrint = () => {
           className="u-col u-col-17p73"
           style={{
             boxSizing: "border-box",
-            borderTop: "5px solid #ccc",
-            borderLeft: "5px solid #ccc",
+            borderTop: solid5,
+            borderLeft: solid5,
           }}
         >
           <LabelValue label="تاريخ" value={formatDate(receiptData.receiptDate ?? "")} />

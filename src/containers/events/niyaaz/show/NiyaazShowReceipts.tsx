@@ -29,7 +29,7 @@ export const NiyaazShowReceipts = () => {
           )}
           tertiaryText={(record) => String(record.markaz || "—")}
           linkType="edit"
-          rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+          rowSx={() => ({ borderBottom: 1, borderBottomColor: "divider" })}
         />
       ) : (
         <Box sx={{ overflowX: "auto", width: "100%" }}>

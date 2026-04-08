@@ -44,10 +44,10 @@ export const HallBookingsViewToggle = ({ hideCreateButton }: HallBookingsViewTog
           sx={{ ml: 3, display: "flex", alignItems: "center" }}
           size="small"
         >
-          <ToggleButton value="CALENDAR" aria-label="calendar" sx={{ height: 40 }}>
+          <ToggleButton value="CALENDAR" aria-label="calendar">
             <CalendarMonthIcon />
           </ToggleButton>
-          <ToggleButton value="LIST" aria-label="list" sx={{ height: 40 }}>
+          <ToggleButton value="LIST" aria-label="list">
             <ViewListIcon />
           </ToggleButton>
         </ToggleButtonGroup>

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNotify, useRecordContext } from "react-admin";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,6 +11,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { alpha, type Theme } from "@mui/material/styles";
 import { getApiUrl } from "@/constants";
 import httpClient from "@/dataprovider/http-client";
 
@@ -20,10 +23,86 @@ type MakhsoosMatchRow = {
   Sub_Sector?: string;
   Mobile?: string;
   Address?: string;
+  hasAttendedOhbatMajlis?: boolean;
 };
+
+function attendedHighlightStyle(theme: Theme, attended: boolean) {
+  if (!attended) {
+    return {};
+  }
+  return {
+    bgcolor: alpha(theme.palette.info.main, theme.palette.mode === "dark" ? 0.18 : 0.1),
+    boxShadow: `inset 4px 0 0 ${theme.palette.info.main}`,
+  };
+}
 
 function isMakhsoosRowsPayload(json: unknown): json is { rows: unknown } {
   return typeof json === "object" && json !== null && "rows" in json;
+}
+
+function displayText(v: string | undefined, trim = true) {
+  const s = trim ? v?.trim() : v;
+  return s ? s : "—";
+}
+
+function MakhsoosRowCard({ r }: { r: MakhsoosMatchRow }) {
+  const attended = Boolean(r.hasAttendedOhbatMajlis);
+  return (
+    <Box
+      sx={(theme) => ({
+        border: 1,
+        borderColor: "divider",
+        borderRadius: 1,
+        p: 1.5,
+        ...attendedHighlightStyle(theme, attended),
+      })}
+    >
+      <Typography variant="body2" component="div" sx={{ wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          ITS:{" "}
+        </Box>
+        {displayText(r.ITS_ID, false)}
+      </Typography>
+      <Typography variant="body2" component="div" sx={{ mt: 0.75, wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          Name:{" "}
+        </Box>
+        {displayText(r.Full_Name)}
+      </Typography>
+      <Typography variant="body2" component="div" sx={{ mt: 0.75, wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          Sector:{" "}
+        </Box>
+        {displayText(r.Sector)}
+      </Typography>
+      <Typography variant="body2" component="div" sx={{ mt: 0.75, wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          Sub-sector:{" "}
+        </Box>
+        {displayText(r.Sub_Sector)}
+      </Typography>
+      <Typography variant="body2" component="div" sx={{ mt: 0.75, wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          Mobile:{" "}
+        </Box>
+        {displayText(r.Mobile)}
+      </Typography>
+      <Typography variant="body2" component="div" sx={{ mt: 0.75, wordBreak: "break-word" }}>
+        <Box component="span" sx={{ color: "text.secondary", fontWeight: 600 }}>
+          Address:{" "}
+        </Box>
+        {displayText(r.Address)}
+      </Typography>
+      {attended && (
+        <Typography
+          variant="caption"
+          sx={{ mt: 1, display: "block", color: "info.main", fontWeight: 600 }}
+        >
+          Attended an ohbat majlis before
+        </Typography>
+      )}
+    </Box>
+  );
 }
 
 /**
@@ -32,6 +111,7 @@ function isMakhsoosRowsPayload(json: unknown): json is { rows: unknown } {
 export function MakhsoosHostSectorTab() {
   const record = useRecordContext();
   const notify = useNotify();
+  const isNarrow = useMediaQuery((theme) => theme.breakpoints.down("md"), { noSsr: true });
   const [rows, setRows] = useState<MakhsoosMatchRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,38 +163,87 @@ export function MakhsoosHostSectorTab() {
     );
   }
 
-  return (
-    <TableContainer sx={{ maxWidth: "100%" }}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>ITS</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Sector</TableCell>
-            <TableCell>Sub-sector</TableCell>
-            <TableCell>Mobile</TableCell>
-            <TableCell>Address</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+  const legend = (
+    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+      Rows with a blue tint have attended at least one ohbat majlis before (any date).
+    </Typography>
+  );
+
+  if (isNarrow) {
+    return (
+      <>
+        {legend}
+        <Stack component="ul" spacing={1.5} sx={{ listStyle: "none", m: 0, p: 0 }}>
           {rows.map((r) => (
-            <TableRow key={r.id}>
-              <TableCell>{r.ITS_ID ?? "—"}</TableCell>
-              <TableCell>{r.Full_Name?.trim() || "—"}</TableCell>
-              <TableCell sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                {r.Sector?.trim() || "—"}
-              </TableCell>
-              <TableCell sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                {r.Sub_Sector?.trim() || "—"}
-              </TableCell>
-              <TableCell>{r.Mobile?.trim() || "—"}</TableCell>
-              <TableCell sx={{ maxWidth: 360, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                {r.Address?.trim() || "—"}
-              </TableCell>
-            </TableRow>
+            <Box key={r.id} component="li">
+              <MakhsoosRowCard r={r} />
+            </Box>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </Stack>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {legend}
+      <TableContainer
+        sx={{
+          maxWidth: "100%",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        <Table size="small" aria-label="Makhsoos matches by host sector" sx={{ minWidth: 720 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ width: 1, whiteSpace: "nowrap" }}>Attended before</TableCell>
+              <TableCell>ITS</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Sector</TableCell>
+              <TableCell>Sub-sector</TableCell>
+              <TableCell>Mobile</TableCell>
+              <TableCell>Address</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((r) => {
+              const attended = Boolean(r.hasAttendedOhbatMajlis);
+              return (
+                <TableRow key={r.id} sx={(theme) => attendedHighlightStyle(theme, attended)}>
+                  <TableCell
+                    sx={{ whiteSpace: "nowrap", color: attended ? "info.main" : "text.secondary" }}
+                  >
+                    {attended ? "Yes" : "—"}
+                  </TableCell>
+                  <TableCell>{displayText(r.ITS_ID, false)}</TableCell>
+                  <TableCell
+                    sx={{ maxWidth: 200, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {displayText(r.Full_Name)}
+                  </TableCell>
+                  <TableCell
+                    sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {displayText(r.Sector)}
+                  </TableCell>
+                  <TableCell
+                    sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {displayText(r.Sub_Sector)}
+                  </TableCell>
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>{displayText(r.Mobile)}</TableCell>
+                  <TableCell
+                    sx={{ maxWidth: 360, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {displayText(r.Address)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

@@ -111,7 +111,7 @@ const ItsdataList = () => {
             [record.id && `ITS ${record.id}`, record.HOF_FM_TYPE].filter(Boolean).join(" · ")
           }
           linkType="show"
-          rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+          rowSx={() => ({ borderBottom: 1, borderBottomColor: "divider" })}
         />
       ) : (
         <Box sx={{ overflowX: "auto", width: "100%" }}>

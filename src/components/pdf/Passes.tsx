@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import { MARKAZ_LIST } from "@/constants";
+import { getReactPdfColors } from "@/theme/reactPdfColors";
 import "./register-fonts";
 
 const styles = StyleSheet.create({
@@ -39,29 +40,29 @@ const styles = StyleSheet.create({
   },
 });
 
-const getBgColorByMarkaz = (markaz: string): string => {
+const getBgColorByMarkaz = (markaz: string, c: ReturnType<typeof getReactPdfColors>): string => {
   switch (markaz) {
     case "ZM":
-      return "#C4D5A7";
+      return c.passZmBg;
     case "BH":
-      return "#FEC7C1";
+      return c.passBhBg;
     case "JM":
-      return "#D4AF37";
+      return c.passJmBg;
     default:
-      return "#C4D5A7";
+      return c.passZmBg;
   }
 };
 
-const getTextColorByMarkaz = (markaz: string): string => {
+const getTextColorByMarkaz = (markaz: string, c: ReturnType<typeof getReactPdfColors>): string => {
   switch (markaz) {
     case "ZM":
-      return "#3c4136";
+      return c.passZmFg;
     case "BH":
-      return "#610C04";
+      return c.passBhFg;
     case "JM":
-      return "#390500";
+      return c.passJmFg;
     default:
-      return "#3c4136";
+      return c.passZmFg;
   }
 };
 
@@ -83,6 +84,7 @@ export type PassesProps = {
 
 export function Passes({ familyMembers = [], formNo, markaz, namaazVenue, event }: PassesProps) {
   const markazLabel = MARKAZ_LIST[markaz] ?? markaz;
+  const pdfColors = getReactPdfColors();
 
   return (
     <Document>
@@ -92,7 +94,7 @@ export function Passes({ familyMembers = [], formNo, markaz, namaazVenue, event 
             <View
               style={{
                 ...styles.passHead,
-                backgroundColor: getBgColorByMarkaz(markaz),
+                backgroundColor: getBgColorByMarkaz(markaz, pdfColors),
               }}
             >
               <Image src="/logo.png" style={styles.logo} />
@@ -101,7 +103,7 @@ export function Passes({ familyMembers = [], formNo, markaz, namaazVenue, event 
                   style={{
                     ...styles.headTextCommon,
                     ...styles.headText,
-                    color: getTextColorByMarkaz(markaz),
+                    color: getTextColorByMarkaz(markaz, pdfColors),
                   }}
                 >
                   Anjuman-E-Fakhri Pune
@@ -109,7 +111,7 @@ export function Passes({ familyMembers = [], formNo, markaz, namaazVenue, event 
                 <Text
                   style={{
                     ...styles.headTextCommon,
-                    color: getTextColorByMarkaz(markaz),
+                    color: getTextColorByMarkaz(markaz, pdfColors),
                   }}
                 >{`${markazLabel} ${event.slug}`}</Text>
               </View>

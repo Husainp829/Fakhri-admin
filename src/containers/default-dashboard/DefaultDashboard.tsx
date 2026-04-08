@@ -4,6 +4,7 @@ import Grid from "@mui/material/Grid";
 import type { SvgIconComponent } from "@mui/icons-material";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import { Title, usePermissions } from "react-admin";
+import { useTenantName } from "@/hooks/useTenantName";
 import { navigateToBaseRoute } from "@/utils/route-utility";
 import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
 import { MODULE_REGISTRY } from "@/config/modules";
@@ -31,24 +32,18 @@ const DashboardCard = ({ icon: Icon, title, description, path }: DashboardCardPr
 
 export default function DefaultDashboard() {
   const { permissions } = usePermissions();
+  const tenantName = useTenantName();
 
   return (
     <>
-      <Title title="Fakhri Mohalla Poona" />
+      <Title title={tenantName || "Dashboard"} />
       <Grid container spacing={2} mt={1}>
         {MODULE_REGISTRY.filter((m) =>
           m.permissionsAny?.length
             ? hasAnyPermission(permissions, m.permissionsAny)
             : hasPermission(permissions, m.permission)
         ).map((m) => (
-          <Grid
-            key={m.path}
-            size={{
-              xs: 6,
-              sm: 6,
-              md: 3,
-            }}
-          >
+          <Grid key={m.path} size={{ xs: 6, sm: 6, md: 3 }}>
             <DashboardCard
               icon={m.icon as SvgIconComponent}
               title={m.label}

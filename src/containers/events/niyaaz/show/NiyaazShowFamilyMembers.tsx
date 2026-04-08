@@ -13,7 +13,7 @@ export const NiyaazShowFamilyMembers = () => {
             `${record.age} yrs · ${record.its || "—"} · ${record.gender || "—"}`
           }
           linkType={false}
-          rowSx={() => ({ borderBottom: "1px solid #e0e0e0" })}
+          rowSx={() => ({ borderBottom: 1, borderBottomColor: "divider" })}
         />
       ) : (
         <Box sx={{ overflowX: "auto", width: "100%" }}>

@@ -1,0 +1,31 @@
+---
+description: Fakhri-admin UI must use MUI theme for colors, spacing, and layout—no ad-hoc literals in components
+alwaysApply: true
+---
+
+# MUI theme: colors, spacing, dimensions
+
+The admin shell uses **react-admin** + **MUI** with tenant-merged themes (`useTenantBrandedThemes` → `<Admin theme={…} />`). New and edited UI should **not** hard-code visual tokens; derive them from the active theme.
+
+## Colors
+
+- **Do not** use raw hex (`#…`), `rgb`/`rgba`, or named CSS colors in `sx`, `style`, or CSS-in-JS (except documented single-source brand literals, if any).
+- **Do** use palette keys: `color="text.secondary"`, `bgcolor: "background.paper"`, `borderColor: "divider"`, `primary.main`, `error.light`, etc.
+- **Do** use `alpha()` from `@mui/material/styles` with **theme palette inputs** (e.g. `alpha(theme.palette.primary.main, 0.12)`), or shared helpers such as `@/theme/surfaceAlpha` (`alphaOnSurface`) where the codebase already does.
+- Use **`useTheme()`** or **`sx={(theme) => ({ … })}`** so values respect light/dark and tenant overrides.
+
+## Spacing and size
+
+- **Spacing** (padding, margin, gap): MUI spacing scale — `theme.spacing(n)`, or `sx` shorthands (`p: 2`, `mt: 1`, `gap: 1.5`). Avoid raw `px`/`rem` unless there is a strong reason (e.g. third-party print constraints).
+- **Layout width/height**: prefer **`theme.breakpoints`** / **`useMediaQuery`**, `maxWidth`, flex, and `%`/`vh` tied to layout needs; avoid magic pixel stacks for spacing rhythm.
+- **Typography**: prefer **`Typography`** `variant` / `component` and theme-driven `fontSize` via `sx` from `theme.typography`, not one-off pixel font sizes unless matching a fixed print spec.
+
+## Exceptions (keep centralized)
+
+- **`@react-pdf/renderer`**: no `ThemeProvider` — use **`getReactPdfColors()`** from `@/theme/reactPdfColors` (built from the same merged light theme as tenant branding).
+- **HTML print / plain `style={{}}` receipts**: use **`useHardcopyBorders()`** from `@/theme/useHardcopyBorders` for borders instead of `#ccc` literals.
+- **SVG / data-URI assets** built from palette: derive strokes/fills from **`getBrandedThemeOptions()`** + `createTheme(…).palette` (or a dedicated helper), not duplicate hex lists in feature code.
+
+## When adding shared behavior
+
+- Reusable palette logic → small module under **`src/theme/`** (e.g. calendar sector colors, chart sequences) that takes **`Theme`** or **`Palette`**, not scattered literals.

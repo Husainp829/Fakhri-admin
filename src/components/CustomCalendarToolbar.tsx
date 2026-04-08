@@ -36,7 +36,7 @@ const CustomCalendarToolbar = ({
   listToggleComponent: ListToggleComponent,
 }: CustomCalendarToolbarProps) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <Box px={2} pb={2}>
+    <Box p={1}>
       <Grid container alignItems="center" spacing={2} justifyContent="space-between">
         <Grid container alignItems="center" justifyContent="start">
           <DatePicker

@@ -33,7 +33,7 @@ export default function OhbatMajlisUpcomingList() {
   const toAttendance = (majlisId: string | number) =>
     `${attendanceBase}?ohbatMajalisId=${encodeURIComponent(String(majlisId))}`;
 
-  const listRowSx = () => ({ borderBottom: "1px solid #e0e0e0" });
+  const listRowSx = () => ({ borderBottom: 1, borderBottomColor: "divider" });
 
   const isPast = attendanceTab === "past";
   const title = isPast ? "Past ohbat majlis" : "Upcoming ohbat majlis";
@@ -105,6 +105,9 @@ export default function OhbatMajlisUpcomingList() {
                 (r.khidmatguzar as { Full_Name?: string } | undefined)?.Full_Name ||
                 r.khidmatguzarItsNo
                   ? `Khidmat: ${(r.khidmatguzar as { Full_Name?: string })?.Full_Name || String(r.khidmatguzarItsNo)}`
+                  : null,
+                (r.zakereen as { Full_Name?: string } | undefined)?.Full_Name || r.zakereenItsNo
+                  ? `Zakereen: ${(r.zakereen as { Full_Name?: string })?.Full_Name || String(r.zakereenItsNo)}`
                   : null,
                 r.mobileNo ? `Contact: ${String(r.mobileNo)}` : null,
                 [r.hostSector, r.hostSubSector].filter(Boolean).join(" · ") || null,

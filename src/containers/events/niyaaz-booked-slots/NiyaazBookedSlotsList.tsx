@@ -21,7 +21,9 @@ import {
   DialogActions,
   Tabs,
   Tab,
+  useTheme,
 } from "@mui/material";
+import { alpha, type Theme } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
@@ -60,17 +62,13 @@ function isCalendarPayload(json: unknown): json is CalendarPayload {
 // Capacity per booking type: QUARTER = 0.25, HALF = 0.5, FULL = 1 (used to sum slot usage).
 const TYPE_MULTIPLIER = { QUARTER: 0.25, HALF: 0.5, FULL: 1 };
 
-// Day status colors and legend (single source of truth).
-const DAY_COLORS = {
-  empty: "#ffcdd2",
-  full: "#c8e6c9",
-  notFull: "#fff8e1",
-};
-
-const LEGEND_ITEMS = [
-  { color: DAY_COLORS.empty, label: "Empty" },
-  { color: DAY_COLORS.full, label: "Full (niyaaz ≥1 e.g. 1 full / 2 half / 4 quarter + 1 iftari)" },
-  { color: DAY_COLORS.notFull, label: "Not full" },
+const getLegendItems = (theme: Theme) => [
+  { color: alpha(theme.palette.error.main, 0.2), label: "Empty" },
+  {
+    color: alpha(theme.palette.success.main, 0.2),
+    label: "Full (niyaaz ≥1 e.g. 1 full / 2 half / 4 quarter + 1 iftari)",
+  },
+  { color: alpha(theme.palette.warning.main, 0.2), label: "Not full" },
 ];
 
 const getDayLabel = (day: number) => (day === 31 ? "EID Ul Fitr" : `Raat ${day}`);
@@ -106,18 +104,18 @@ const isDayFull = (dayData: DayData) => {
 };
 
 /** Returns day color, status label, and booked slots for calendar/table views. */
-const getDayColor = (dayData: DayData) => {
+const getDayColor = (dayData: DayData, theme: Theme) => {
   const slots = dayData.slots || [];
   const bookedSlots = slots.filter((s) => (s.bookings?.length ?? 0) > 0);
   const hasAnyBookings = bookedSlots.length > 0;
   const full = isDayFull(dayData);
-  let paperBgcolor = DAY_COLORS.notFull;
+  let paperBgcolor = alpha(theme.palette.warning.main, 0.2);
   let statusLabel = "Not full";
   if (!hasAnyBookings) {
-    paperBgcolor = DAY_COLORS.empty;
+    paperBgcolor = alpha(theme.palette.error.main, 0.2);
     statusLabel = "Empty";
   } else if (full) {
-    paperBgcolor = DAY_COLORS.full;
+    paperBgcolor = alpha(theme.palette.success.main, 0.2);
     statusLabel = "Full";
   }
   return { paperBgcolor, statusLabel, bookedSlots };
@@ -132,6 +130,7 @@ type SlotCellProps = {
 };
 
 const SlotCell = React.memo(({ day, slot, type, bookings, onEdit }: SlotCellProps) => {
+  const theme = useTheme();
   const count = bookings.length;
   const hasBookings = count > 0;
   const handleClick = () => {
@@ -143,11 +142,12 @@ const SlotCell = React.memo(({ day, slot, type, bookings, onEdit }: SlotCellProp
       sx={{
         p: 0.5,
         minHeight: 60,
-        border: "1px solid #e0e0e0",
+        border: 1,
+        borderColor: "divider",
         borderRadius: 1,
         cursor: hasBookings ? "pointer" : "default",
-        bgcolor: hasBookings ? "#e3f2fd" : "transparent",
-        "&:hover": hasBookings ? { bgcolor: "#bbdefb" } : {},
+        bgcolor: hasBookings ? alpha(theme.palette.primary.main, 0.08) : "transparent",
+        "&:hover": hasBookings ? { bgcolor: alpha(theme.palette.primary.main, 0.14) } : {},
       }}
       onClick={handleClick}
     >
@@ -360,6 +360,7 @@ type SelectedCell = {
 type SelectedRaat = { day: number; dayData: DayData };
 
 function NiyaazBookedSlotsList() {
+  const theme = useTheme();
   const [currentEvent] = useStore<CurrentEvent | null>("currentEvent");
   const [calendarData, setCalendarData] = useState<CalendarPayload | null>(null);
   const [loading, setLoading] = useState(false);
@@ -367,6 +368,8 @@ function NiyaazBookedSlotsList() {
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null);
   const [selectedRaat, setSelectedRaat] = useState<SelectedRaat | null>(null);
   const notify = useNotify();
+
+  const legendItems = useMemo(() => getLegendItems(theme), [theme]);
 
   const loadCalendarData = useCallback(async () => {
     if (!currentEvent?.id) {
@@ -442,7 +445,7 @@ function NiyaazBookedSlotsList() {
         <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
           Legend:
         </Typography>
-        {LEGEND_ITEMS.map(({ color, label }) => (
+        {legendItems.map(({ color, label }) => (
           <Box key={label} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Box sx={{ width: 16, height: 16, borderRadius: 0.5, bgcolor: color }} />
             <Typography variant="body2">{label}</Typography>
@@ -462,7 +465,7 @@ function NiyaazBookedSlotsList() {
             </TableHead>
             <TableBody>
               {calendarData.days.map((dayData) => {
-                const { paperBgcolor, statusLabel, bookedSlots } = getDayColor(dayData);
+                const { paperBgcolor, statusLabel, bookedSlots } = getDayColor(dayData, theme);
                 return (
                   <TableRow key={dayData.day} sx={{ bgcolor: paperBgcolor }}>
                     <TableCell sx={{ fontWeight: 500 }}>{getDayLabel(dayData.day)}</TableCell>
@@ -506,7 +509,7 @@ function NiyaazBookedSlotsList() {
               <CardContent>
                 <Grid container spacing={1}>
                   {week.map((dayData) => {
-                    const { paperBgcolor, bookedSlots } = getDayColor(dayData);
+                    const { paperBgcolor, bookedSlots } = getDayColor(dayData, theme);
                     return (
                       <Grid
                         size={{ xs: 12, sm: 6, md: 12 / 7 }}

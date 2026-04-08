@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { ToWords } from "to-words";
+import { ToWords } from "to-words/en-IN";
 import { useParams } from "react-router";
 import CommonReceiptA5 from "@/components/common-receipt/CommonReceiptA5";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";

@@ -29,7 +29,7 @@ export const VendorLedgerList = (props: ListProps) => {
             </>
           )}
           linkType="edit"
-          rowSx={() => ({ borderBottom: "1px solid #afafaf" })}
+          rowSx={() => ({ borderBottom: 1, borderBottomColor: "divider" })}
         />
       ) : (
         <Datagrid rowClick="edit">

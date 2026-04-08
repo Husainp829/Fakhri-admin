@@ -17,6 +17,7 @@ import { hasPermission } from "@/utils/permission-utils";
 import {
   openOhbatMajlisKhidmatDialog,
   openOhbatMajlisSadaratDialog,
+  openOhbatMajlisZakereenDialog,
 } from "./OhbatMajlisShowDialogOpeners";
 import { buildOhbatMajlisEventDetailsText } from "./OhbatMajlisEventDetailsClipboard";
 import { formatMajlisStartTimeLabel } from "./OhbatMajlisTime";
@@ -61,7 +62,7 @@ function SummaryTable({
         </Typography>
         {titleAddon}
       </Box>
-      <Table size="small" aria-label={title} sx={{ borderTop: "1px solid #efefef" }}>
+      <Table size="small" aria-label={title} sx={{ borderTop: 1, borderTopColor: "divider" }}>
         <TableBody>{children}</TableBody>
       </Table>
     </>
@@ -71,7 +72,7 @@ function SummaryTable({
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <TableRow>
-      <TableCell sx={{ py: 1, verticalAlign: "top", borderColor: "#f0f0f0" }}>
+      <TableCell sx={{ py: 1, verticalAlign: "top", borderColor: "divider" }}>
         <LabelValue label={label} value={value} />
       </TableCell>
     </TableRow>
@@ -96,6 +97,8 @@ export function OhbatMajlisDetailsTab() {
 
   const khidmatguzar = record.khidmatguzar as { ITS_ID?: string } | undefined;
   const khidmatIts = khidmatguzar?.ITS_ID ?? (record.khidmatguzarItsNo as string | undefined);
+  const zakereenRow = record.zakereen as { ITS_ID?: string } | undefined;
+  const zakereenIts = zakereenRow?.ITS_ID ?? (record.zakereenItsNo as string | undefined);
 
   const sadaratEditIcon = canEditMajlis ? (
     <Tooltip title="Change sadarat assignment">
@@ -123,8 +126,22 @@ export function OhbatMajlisDetailsTab() {
     </Tooltip>
   ) : null;
 
+  const zakereenEditIcon = canEditMajlis ? (
+    <Tooltip title="Change zakereen">
+      <IconButton
+        size="small"
+        aria-label="Change zakereen"
+        onClick={() => openOhbatMajlisZakereenDialog()}
+        edge="end"
+      >
+        <EditIcon fontSize="small" />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
   const sadarat = record.sadarat as { name?: string; itsNo?: string; mobile?: string } | undefined;
   const khidmat = record.khidmatguzar as { Full_Name?: string; Mobile?: string } | undefined;
+  const zakereen = record.zakereen as { Full_Name?: string; Mobile?: string } | undefined;
 
   return (
     <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, pb: 2 }}>
@@ -146,12 +163,7 @@ export function OhbatMajlisDetailsTab() {
         </Button>
       </Box>
       <Grid container spacing={3}>
-        <Grid
-          size={{
-            xs: 12,
-            md: 6,
-          }}
-        >
+        <Grid size={{ xs: 12, md: 6 }}>
           <SummaryTable title="Host & venue">
             <SummaryRow label="Host ITS" value={dash(record.hostItsNo)} />
             <SummaryRow label="Host name" value={dash(record.hostName)} />
@@ -160,7 +172,7 @@ export function OhbatMajlisDetailsTab() {
             <SummaryRow label="Venue address" value={dash(record.address)} />
             <SummaryRow label="Contact mobile" value={dash(record.mobileNo)} />
             <TableRow>
-              <TableCell sx={{ py: 1, verticalAlign: "top", borderColor: "#f0f0f0" }}>
+              <TableCell sx={{ py: 1, verticalAlign: "top", borderColor: "divider" }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                   Notes
                 </Typography>
@@ -182,14 +194,11 @@ export function OhbatMajlisDetailsTab() {
           </SummaryTable>
         </Grid>
         <Grid
-          sx={{
-            borderRight: { md: "1px solid #efefef" },
+          sx={(theme) => ({
+            borderRight: { md: `1px solid ${theme.palette.divider}` },
             pr: { md: 2 },
-          }}
-          size={{
-            xs: 12,
-            md: 6,
-          }}
+          })}
+          size={{ xs: 12, md: 6 }}
         >
           <SummaryTable title="Majlis & schedule">
             <SummaryRow label="Date" value={dateLabel} />
@@ -198,14 +207,11 @@ export function OhbatMajlisDetailsTab() {
           </SummaryTable>
         </Grid>
         <Grid
-          sx={{
-            borderRight: { md: "1px solid #efefef" },
+          sx={(theme) => ({
+            borderRight: { md: `1px solid ${theme.palette.divider}` },
             pr: { md: 2 },
-          }}
-          size={{
-            xs: 12,
-            md: 6,
-          }}
+          })}
+          size={{ xs: 12, md: 6 }}
         >
           <SummaryTable title="Sadarat (linked)" titleAddon={sadaratEditIcon}>
             <SummaryRow label="Name" value={dash(sadarat?.name)} />
@@ -214,16 +220,19 @@ export function OhbatMajlisDetailsTab() {
           </SummaryTable>
         </Grid>
 
-        <Grid
-          size={{
-            xs: 12,
-            md: 6,
-          }}
-        >
+        <Grid size={{ xs: 12, md: 6 }}>
           <SummaryTable title="Khidmatguzar (itsdata)" titleAddon={khidmatEditIcon}>
             <SummaryRow label="ITS" value={dash(khidmatIts)} />
             <SummaryRow label="Name" value={dash(khidmat?.Full_Name)} />
             <SummaryRow label="Mobile" value={dash(khidmat?.Mobile)} />
+          </SummaryTable>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SummaryTable title="Zakereen (itsdata)" titleAddon={zakereenEditIcon}>
+            <SummaryRow label="ITS" value={dash(zakereenIts)} />
+            <SummaryRow label="Name" value={dash(zakereen?.Full_Name)} />
+            <SummaryRow label="Mobile" value={dash(zakereen?.Mobile)} />
           </SummaryTable>
         </Grid>
       </Grid>
