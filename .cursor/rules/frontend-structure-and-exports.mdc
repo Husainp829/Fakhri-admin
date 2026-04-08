@@ -12,15 +12,16 @@ Use these conventions for **new and migrated** code under `src/`. Apply them **w
 
 Keep the existing **react-admin–aligned** layout unless a change is explicitly scoped:
 
-| Area                                  | Purpose                                                            |
-| ------------------------------------- | ------------------------------------------------------------------ |
-| `src/config/`                         | Module registry, theme, i18n, routes                               |
-| `src/dataprovider/`                   | HTTP client, `DataProvider`, upload helpers                        |
-| `src/layout/`                         | Shell: menu, app bar, login                                        |
-| `src/components/`                     | Shared UI reused across domains                                    |
-| `src/containers/<domain>/<resource>/` | Resource screens (list, create, show, edit, …)                     |
-| `src/utils/`                          | Pure helpers, formatters (no React when possible)                  |
-| `src/types/`                          | Shared TypeScript types and ambient `*.d.ts` (grow as you migrate) |
+| Area                                  | Purpose                                                             |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| `src/config/`                         | Module registry, i18n, routes                                       |
+| `src/theme/`                          | MUI theme helpers, tenant merge (`brandedThemeOptions`), PDF colors |
+| `src/dataprovider/`                   | HTTP client, `DataProvider`, upload helpers                         |
+| `src/layout/`                         | Shell: menu, app bar, login                                         |
+| `src/components/`                     | Shared UI reused across domains                                     |
+| `src/containers/<domain>/<resource>/` | Resource screens (list, create, show, edit, …)                      |
+| `src/utils/`                          | Pure helpers, formatters (no React when possible)                   |
+| `src/types/`                          | Shared TypeScript types and ambient `*.d.ts` (grow as you migrate)  |
 
 Optional later rename: `containers/` → `features/` for clarity—only in a dedicated PR with team agreement.
 

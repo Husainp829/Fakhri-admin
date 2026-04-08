@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@mui/icons-material": "^7.3.9",
-    "@mui/styles": "^5.8.7",
     "@mui/x-date-pickers": "^8.27.2",
     "@react-pdf/renderer": "^4.3.3",
     "axios": "^1.14.0",

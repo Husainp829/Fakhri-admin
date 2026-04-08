@@ -1,4 +1,8 @@
-import { getApiUrl, TENANT_BRANDING_THEME_STORAGE_KEY } from "@/constants";
+import {
+  getApiUrl,
+  TENANT_BRANDING_NAME_STORAGE_KEY,
+  TENANT_BRANDING_THEME_STORAGE_KEY,
+} from "@/constants";
 import httpClient from "@/dataprovider/http-client";
 
 /** Fired after `themeOptions` is written to sessionStorage (login or refresh). */
@@ -22,6 +26,16 @@ export async function fetchAndStoreTenantBrandingTheme(): Promise<unknown | unde
   if (!isRecord(first) || !("themeOptions" in first)) return undefined;
   const themeOptions = first.themeOptions ?? {};
   sessionStorage.setItem(TENANT_BRANDING_THEME_STORAGE_KEY, JSON.stringify(themeOptions));
+  const tenantNameRaw = first.tenantName;
+  const tenantName =
+    typeof tenantNameRaw === "string" && tenantNameRaw.trim() !== ""
+      ? tenantNameRaw.trim()
+      : undefined;
+  if (tenantName) {
+    sessionStorage.setItem(TENANT_BRANDING_NAME_STORAGE_KEY, tenantName);
+  } else {
+    sessionStorage.removeItem(TENANT_BRANDING_NAME_STORAGE_KEY);
+  }
   window.dispatchEvent(new Event(TENANT_BRANDING_UPDATED_EVENT));
   return themeOptions;
 }
@@ -33,5 +47,13 @@ export function readStoredTenantBrandingTheme(): unknown {
     return JSON.parse(s) as unknown;
   } catch {
     return undefined;
+  }
+}
+
+export function readStoredTenantName(): string {
+  try {
+    return sessionStorage.getItem(TENANT_BRANDING_NAME_STORAGE_KEY) ?? "";
+  } catch {
+    return "";
   }
 }

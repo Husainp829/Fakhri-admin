@@ -69,7 +69,7 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         createPermission: "bookingReceipts.create",
       },
       { permission: "halls.view", resource: bookingPurpose },
-      { permission: "halls.view", resource: halls },
+      { permission: "halls.view", resource: halls, createPermission: "halls.create" },
       { permission: "bookings.view", resource: blockedHallDates },
     ],
     customRoutes: [

@@ -95,7 +95,10 @@ export default function ITSSyncUploadButton({ variant = "text" }: ITSSyncUploadB
           disabled={loading}
         />
       </Button>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+      <Backdrop
+        sx={(t) => ({ color: t.palette.common.white, zIndex: t.zIndex.drawer + 1 })}
+        open={loading}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
     </>

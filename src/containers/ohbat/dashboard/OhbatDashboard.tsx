@@ -8,6 +8,7 @@ import {
   Typography,
   CircularProgress,
   Divider,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
@@ -24,17 +25,7 @@ import {
 } from "recharts";
 import { callApi } from "@/dataprovider/misc-apis";
 import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
-
-const COLORS = [
-  "#2e7d32",
-  "#1565c0",
-  "#6a1b9a",
-  "#00897b",
-  "#c62828",
-  "#6d4c41",
-  "#455a64",
-  "#7b1fa2",
-];
+import { getChartColorSequence } from "@/theme/chartPalette";
 
 function fmt(n: unknown): string {
   if (n === null || n === undefined) return "0";
@@ -122,6 +113,8 @@ function isOhbatDashboardStats(data: unknown): data is OhbatDashboardStats {
 }
 
 export default function OhbatDashboard() {
+  const theme = useTheme();
+  const chartColors = useMemo(() => getChartColorSequence(theme), [theme]);
   const redirect = useRedirect();
   const { permissions } = usePermissions();
   const [stats, setStats] = useState<OhbatDashboardStats | null>(null);
@@ -384,7 +377,12 @@ export default function OhbatDashboard() {
                               return String(row?.fullName ?? "");
                             }}
                           />
-                          <Bar dataKey="count" fill="#1565c0" name="Count" radius={[4, 4, 0, 0]} />
+                          <Bar
+                            dataKey="count"
+                            fill={theme.palette.primary.main}
+                            name="Count"
+                            radius={[4, 4, 0, 0]}
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -417,7 +415,10 @@ export default function OhbatDashboard() {
                             label={false}
                           >
                             {typePieData.map((entry, index) => (
-                              <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                              <Cell
+                                key={entry.name}
+                                fill={chartColors[index % chartColors.length]}
+                              />
                             ))}
                           </Pie>
                           <Tooltip formatter={(value) => fmt(value)} />

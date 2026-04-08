@@ -4,7 +4,8 @@ import type { SxProps } from "@mui/material";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 
 const listRowSx = (): SxProps => ({
-  borderBottom: "1px solid #e0e0e0",
+  borderBottom: 1,
+  borderBottomColor: "divider",
 });
 
 export default function SadaratsList() {

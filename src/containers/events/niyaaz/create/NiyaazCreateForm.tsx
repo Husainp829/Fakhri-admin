@@ -54,26 +54,14 @@ export const NiyaazCreateForm = () => {
 
   return (
     <Grid container sx={{ mt: 3 }}>
-      <Grid
-        sx={{ pr: { xs: 0, md: 1 } }}
-        size={{
-          xs: 12,
-          md: 6,
-        }}
-      >
+      <Grid sx={{ pr: { xs: 0, md: 1 } }} size={{ xs: 12, md: 6 }}>
         <Grid container>
           <Grid size={12}>
             <Typography variant="body1" sx={{ mb: 3 }}>
               HOF Details <NiyaazHofLookup />
             </Typography>
           </Grid>
-          <Grid
-            sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 3 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 3 } }} size={{ xs: 12, md: 6 }}>
             <SelectInput
               source="markaz"
               label="Jaman Venue"
@@ -87,13 +75,7 @@ export const NiyaazCreateForm = () => {
               sx={{ mb: 0 }}
             />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 3 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 3 } }} size={{ xs: 12, md: 6 }}>
             <SelectInput
               source="namaazVenue"
               label="Namaaz Venue"
@@ -107,34 +89,16 @@ export const NiyaazCreateForm = () => {
               sx={{ mb: 0 }}
             />
           </Grid>
-          <Grid
-            sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <TextInput source="HOFId" label="HOF ITS" fullWidth isRequired />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <TextInput source="HOFName" label="Full Name" fullWidth isRequired />
           </Grid>
           <Grid sx={{ mb: { xs: 2, md: 0 } }} size={12}>
             <TextInput source="HOFAddress" label="Address" fullWidth isRequired />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <TextInput source="HOFPhone" label="Phone" fullWidth isRequired />
           </Grid>
           <Grid sx={{ mb: 2 }} size={12}>
@@ -151,32 +115,14 @@ export const NiyaazCreateForm = () => {
           <Grid sx={{ mb: 2, mt: { xs: 1, md: 0 } }} size={12}>
             <Typography variant="body1">Takhmeen Details</Typography>
           </Grid>
-          <Grid
-            sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <NoArrowKeyNumberInput source="takhmeenAmount" fullWidth defaultValue={0} />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <NoArrowKeyNumberInput source="iftaari" fullWidth defaultValue={0} />
           </Grid>
 
-          <Grid
-            sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ pr: { xs: 0, md: 1 }, mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <NoArrowKeyNumberInput
               source="zabihat"
               fullWidth
@@ -184,13 +130,7 @@ export const NiyaazCreateForm = () => {
               helperText={`${zabihat} X ₹${ez} = ₹${Number(zabihat) * ez}`}
             />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <NoArrowKeyNumberInput
               source="chairs"
               fullWidth
@@ -242,13 +182,7 @@ export const NiyaazCreateForm = () => {
               defaultValue={0}
             />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <RadioButtonGroupInput
               source="mode"
               choices={[
@@ -259,13 +193,7 @@ export const NiyaazCreateForm = () => {
               fullWidth
             />
           </Grid>
-          <Grid
-            sx={{ mb: { xs: 2, md: 0 } }}
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
+          <Grid sx={{ mb: { xs: 2, md: 0 } }} size={{ xs: 12, md: 6 }}>
             <TextInput source="details" label="Payment Details" fullWidth />
           </Grid>
 
@@ -279,17 +207,14 @@ export const NiyaazCreateForm = () => {
         </Grid>
       </Grid>
       <Grid
-        sx={{
-          borderLeft: { xs: "none", md: "1px solid #cccccc" },
+        sx={(theme) => ({
+          borderLeft: { xs: "none", md: `1px solid ${theme.palette.divider}` },
           pl: { xs: 0, md: 1 },
           mt: { xs: 3, md: 0 },
           pt: { xs: 2, md: 0 },
-          borderTop: { xs: "1px solid #e0e0e0", md: "none" },
-        }}
-        size={{
-          xs: 12,
-          md: 6,
-        }}
+          borderTop: { xs: `1px solid ${theme.palette.divider}`, md: "none" },
+        })}
+        size={{ xs: 12, md: 6 }}
       >
         <Grid container>
           {previousHistory && (
@@ -318,13 +243,7 @@ export const NiyaazCreateForm = () => {
                       <Grid sx={{ mb: 1 }} size={12}>
                         <TextInput source="name" helperText={false} fullWidth isRequired />
                       </Grid>
-                      <Grid
-                        sx={{ mb: { xs: 1, md: 0 } }}
-                        size={{
-                          xs: 12,
-                          md: 3,
-                        }}
-                      >
+                      <Grid sx={{ mb: { xs: 1, md: 0 } }} size={{ xs: 12, md: 3 }}>
                         <TextInput
                           source="its"
                           label="ITS"
@@ -333,22 +252,10 @@ export const NiyaazCreateForm = () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid
-                        sx={{ mb: { xs: 1, md: 0 } }}
-                        size={{
-                          xs: 12,
-                          md: 3,
-                        }}
-                      >
+                      <Grid sx={{ mb: { xs: 1, md: 0 } }} size={{ xs: 12, md: 3 }}>
                         <TextInput source="age" helperText={false} fullWidth isRequired />
                       </Grid>
-                      <Grid
-                        sx={{ mb: { xs: 1, md: 0 } }}
-                        size={{
-                          xs: 12,
-                          md: 3,
-                        }}
-                      >
+                      <Grid sx={{ mb: { xs: 1, md: 0 } }} size={{ xs: 12, md: 3 }}>
                         <SelectInput
                           source="gender"
                           label="Gender"
@@ -361,12 +268,7 @@ export const NiyaazCreateForm = () => {
                           isRequired
                         />
                       </Grid>
-                      <Grid
-                        size={{
-                          xs: 12,
-                          md: 3,
-                        }}
-                      >
+                      <Grid size={{ xs: 12, md: 3 }}>
                         <BooleanInput
                           source="hasChair"
                           label="Chair"

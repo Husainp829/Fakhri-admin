@@ -17,7 +17,7 @@ import {
   type RaRecord,
 } from "react-admin";
 import type { SxProps } from "@mui/material";
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { formatMajlisStartTimeLabel } from "../OhbatMajlisTime";
 import { exportToExcel } from "@/utils/export-to-excel";
@@ -74,7 +74,9 @@ const exportOhbatMajlis = (records: RaRecord[]) =>
   });
 
 export default function OhbatMajlisListView() {
-  const isNarrow = useMediaQuery((theme) => theme.breakpoints.down("md"), { noSsr: true });
+  const theme = useTheme();
+  const isNarrow = useMediaQuery((t) => t.breakpoints.down("md"), { noSsr: true });
+  const sadaratMissingBorder = missingSadaratBorderLeft(theme);
 
   const OhbatMajlisFilters = [
     <DateInput source="start" label="from" alwaysOn key="ohbat-filter-start" />,
@@ -100,8 +102,9 @@ export default function OhbatMajlisListView() {
   );
 
   const listRowSx = (record: RaRecord): SxProps => ({
-    borderBottom: "1px solid #e0e0e0",
-    ...(!majlisHasSadarat(record) ? { borderLeft: missingSadaratBorderLeft } : {}),
+    borderBottom: 1,
+    borderBottomColor: "divider",
+    ...(!majlisHasSadarat(record) ? { borderLeft: sadaratMissingBorder } : {}),
   });
 
   return (
@@ -155,7 +158,7 @@ export default function OhbatMajlisListView() {
               bulkActionButtons={false}
               sx={{ minWidth: 1380 }}
               rowSx={(record, _index) =>
-                !majlisHasSadarat(record) ? { borderLeft: missingSadaratBorderLeft } : {}
+                !majlisHasSadarat(record) ? { borderLeft: sadaratMissingBorder } : {}
               }
             >
               <DateField

@@ -95,7 +95,7 @@ export function HallBookingsBookingForm() {
   return (
     <Grid container spacing={1} sx={{ mt: 3 }}>
       <Grid
-        sx={{ pr: 1, borderRight: "1px solid #efefef" }}
+        sx={{ pr: 1, borderRight: 1, borderRightColor: "divider" }}
         size={{
           md: 5,
           xs: 12,

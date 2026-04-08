@@ -84,7 +84,7 @@ export const EventDashboardGridList = ({
   selectedMarkaz = "",
 }: EventDashboardGridListProps) =>
   isLoading ? (
-    <Backdrop sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })} open>
+    <Backdrop sx={(t) => ({ color: t.palette.common.white, zIndex: t.zIndex.drawer + 1 })} open>
       <CircularProgress color="inherit" />
     </Backdrop>
   ) : (

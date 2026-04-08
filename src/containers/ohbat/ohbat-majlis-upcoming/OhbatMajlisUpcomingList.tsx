@@ -33,7 +33,7 @@ export default function OhbatMajlisUpcomingList() {
   const toAttendance = (majlisId: string | number) =>
     `${attendanceBase}?ohbatMajalisId=${encodeURIComponent(String(majlisId))}`;
 
-  const listRowSx = () => ({ borderBottom: "1px solid #e0e0e0" });
+  const listRowSx = () => ({ borderBottom: 1, borderBottomColor: "divider" });
 
   const isPast = attendanceTab === "past";
   const title = isPast ? "Past ohbat majlis" : "Upcoming ohbat majlis";

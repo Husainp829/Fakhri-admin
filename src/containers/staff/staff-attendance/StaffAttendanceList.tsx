@@ -130,7 +130,8 @@ const StaffAttendanceList = () => {
         sx={{
           borderCollapse: "collapse",
           "& th, & td": {
-            border: "1px solid #ccc",
+            border: 1,
+            borderColor: "divider",
           },
         }}
       >

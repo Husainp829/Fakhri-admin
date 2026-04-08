@@ -153,7 +153,8 @@ const GroupedPermissionsInput = (props: GroupedPermissionsInputProps) => {
         sx={{
           maxHeight: 500,
           overflowY: "auto",
-          border: "1px solid #e0e0e0",
+          border: 1,
+          borderColor: "divider",
           borderRadius: 1,
           p: 1,
         }}

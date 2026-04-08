@@ -10,7 +10,8 @@ import {
   useRecordContext,
 } from "react-admin";
 import { useWatch } from "react-hook-form";
-import { Box, Typography, Divider, Card, CardContent, Paper } from "@mui/material";
+import { Box, Typography, Divider, Card, CardContent, Paper, useTheme } from "@mui/material";
+import { alpha, lighten } from "@mui/material/styles";
 import { format } from "@/utils/whatsapp-formatter";
 
 /**
@@ -18,6 +19,8 @@ import { format } from "@/utils/whatsapp-formatter";
  * Shows WhatsApp-style preview of the template
  */
 export const TemplatePreview = ({ formData }) => {
+  const theme = useTheme();
+
   if (!formData) {
     return (
       <Box
@@ -64,7 +67,7 @@ export const TemplatePreview = ({ formData }) => {
           <Paper
             elevation={0}
             sx={{
-              bgcolor: "#DCF8C6",
+              bgcolor: lighten(theme.palette.success.main, 0.82),
               borderRadius: "7.5px",
               borderBottomRightRadius: "0px",
               p: 2,
@@ -79,7 +82,7 @@ export const TemplatePreview = ({ formData }) => {
                 right: -8,
                 width: 0,
                 height: 0,
-                borderLeft: "8px solid #DCF8C6",
+                borderLeft: `8px solid ${lighten(theme.palette.success.main, 0.82)}`,
                 borderTop: "8px solid transparent",
                 borderBottom: "8px solid transparent",
               },
@@ -91,7 +94,7 @@ export const TemplatePreview = ({ formData }) => {
                 sx={{
                   mb: 1.5,
                   pb: 1.5,
-                  borderBottom: "1px solid rgba(0,0,0,0.1)",
+                  borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
                 }}
               >
                 {headerComponent.format === "TEXT" && headerComponent.text ? (
@@ -100,7 +103,7 @@ export const TemplatePreview = ({ formData }) => {
                     component="div"
                     sx={{
                       fontWeight: 600,
-                      color: "#000",
+                      color: "text.primary",
                       "& strong": {
                         fontWeight: 700,
                       },
@@ -112,7 +115,7 @@ export const TemplatePreview = ({ formData }) => {
                       },
                       "& code": {
                         fontFamily: "monospace",
-                        backgroundColor: "rgba(0,0,0,0.05)",
+                        backgroundColor: alpha(theme.palette.text.primary, 0.05),
                         padding: "2px 4px",
                         borderRadius: "3px",
                       },
@@ -124,7 +127,7 @@ export const TemplatePreview = ({ formData }) => {
                 ) : (
                   <Box
                     sx={{
-                      bgcolor: "#E5E5E5",
+                      bgcolor: "grey.200",
                       borderRadius: 1,
                       p: 2,
                       textAlign: "center",
@@ -144,7 +147,7 @@ export const TemplatePreview = ({ formData }) => {
                 variant="body2"
                 component="div"
                 sx={{
-                  color: "#000",
+                  color: "text.primary",
                   whiteSpace: "pre-wrap",
                   mb: footerComponent || buttonsComponent ? 1.5 : 0,
                   lineHeight: 1.5,
@@ -159,7 +162,7 @@ export const TemplatePreview = ({ formData }) => {
                   },
                   "& code": {
                     fontFamily: "monospace",
-                    backgroundColor: "rgba(0,0,0,0.05)",
+                    backgroundColor: alpha(theme.palette.text.primary, 0.05),
                     padding: "2px 4px",
                     borderRadius: "3px",
                   },
@@ -202,13 +205,15 @@ export const TemplatePreview = ({ formData }) => {
                 sx={{
                   mt: 1.5,
                   pt: 1,
-                  borderTop: buttonsComponent ? "1px solid rgba(0,0,0,0.1)" : "none",
+                  borderTop: buttonsComponent
+                    ? `1px solid ${alpha(theme.palette.text.primary, 0.1)}`
+                    : "none",
                 }}
               >
                 <Typography
                   variant="caption"
                   sx={{
-                    color: "#667781",
+                    color: "text.secondary",
                     fontSize: "0.75rem",
                   }}
                 >
@@ -226,21 +231,21 @@ export const TemplatePreview = ({ formData }) => {
                   key={index}
                   elevation={0}
                   sx={{
-                    bgcolor: "#FFFFFF",
-                    border: "1px solid #E5E5E5",
+                    bgcolor: "background.paper",
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: "8px",
                     p: 1.5,
                     mb: 1,
                     cursor: "pointer",
                     "&:hover": {
-                      bgcolor: "#F5F5F5",
+                      bgcolor: "action.hover",
                     },
                   }}
                 >
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "#0084FF",
+                      color: "info.main",
                       fontWeight: 500,
                       textAlign: "center",
                     }}

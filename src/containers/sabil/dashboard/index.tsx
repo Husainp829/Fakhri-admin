@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Title, useRedirect } from "react-admin";
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Paper, Typography, useTheme } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { callApi } from "@/dataprovider/misc-apis";
-import { COLORS } from "./constants";
+import { getChartColorSequence } from "@/theme/chartPalette";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import DashboardHeader from "./components/DashboardHeader";
 import FinancialMetrics from "./components/FinancialMetrics";
@@ -52,6 +52,8 @@ const getDateRangeFromURL = () => {
 };
 
 export default function SabilDashboard() {
+  const theme = useTheme();
+  const chartColors = useMemo(() => getChartColorSequence(theme), [theme]);
   const redirect = useRedirect();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<SabilDashboardStats | null>(null);
@@ -109,28 +111,28 @@ export default function SabilDashboard() {
     () =>
       stats
         ? [
-            { name: "Forecast", value: stats.sabilForecast || 0, color: COLORS[0] },
-            { name: "Received", value: stats.paymentsReceived || 0, color: COLORS[1] },
-            { name: "Pending", value: stats.paymentsPending || 0, color: COLORS[2] },
-            { name: "Written Off", value: stats.writeoffAmount || 0, color: COLORS[3] },
+            { name: "Forecast", value: stats.sabilForecast || 0, color: chartColors[0] },
+            { name: "Received", value: stats.paymentsReceived || 0, color: chartColors[1] },
+            { name: "Pending", value: stats.paymentsPending || 0, color: chartColors[2] },
+            { name: "Written Off", value: stats.writeoffAmount || 0, color: chartColors[3] },
           ]
         : [],
-    [stats]
+    [stats, chartColors]
   );
 
   const sabilTypeData = useMemo(
     () =>
       stats
         ? [
-            { name: "CHULA", value: stats.activeSabils?.chula || 0, color: COLORS[0] },
+            { name: "CHULA", value: stats.activeSabils?.chula || 0, color: chartColors[0] },
             {
               name: "ESTABLISHMENT",
               value: stats.activeSabils?.establishment || 0,
-              color: COLORS[1],
+              color: chartColors[1],
             },
           ]
         : [],
-    [stats]
+    [stats, chartColors]
   );
 
   const collectionPercentage = useMemo(() => {

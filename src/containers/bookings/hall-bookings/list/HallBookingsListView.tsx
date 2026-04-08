@@ -16,6 +16,8 @@ import {
   type RaRecord,
 } from "react-admin";
 import dayjs from "dayjs";
+import { useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { slotNameMap } from "@/constants";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { HallBookingsViewToggle } from "./HallBookingsViewToggle";
@@ -45,6 +47,8 @@ const exportBookings = (records: RaRecord[]): void => {
 };
 
 export const HallBookingsListView = () => {
+  const theme = useTheme();
+
   const BookingFilters = [
     <TextInput
       label="Search By Organiser, ItsNo, Booking No"
@@ -87,9 +91,13 @@ export const HallBookingsListView = () => {
               | undefined;
             const haPaidSomething = (b?.paidAmount ?? 0) + (b?.depositPaidAmount ?? 0) > 0;
             return {
-              backgroundColor: haPaidSomething ? "#ffffff55" : "#ff000055",
+              bgcolor: haPaidSomething
+                ? alpha(theme.palette.primary.main, 0.06)
+                : alpha(theme.palette.error.main, 0.1),
               "&&:hover": {
-                backgroundColor: haPaidSomething ? "#00000011" : "#ff000066",
+                bgcolor: haPaidSomething
+                  ? alpha(theme.palette.primary.main, 0.1)
+                  : alpha(theme.palette.error.main, 0.16),
               },
             };
           }}

@@ -17,7 +17,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import { makeStyles } from "@mui/styles";
+import Box from "@mui/material/Box";
 
 type QuickCreateField = { source: string; label: string };
 
@@ -93,14 +93,6 @@ function CustomQuickCreateButton({
   );
 }
 
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    alignItems: "flex-start",
-    width: "100%",
-  },
-});
-
 export type CustomReferenceInputProps = ComponentProps<typeof ReferenceInput> & {
   fields: QuickCreateField[];
   title: string;
@@ -108,7 +100,6 @@ export type CustomReferenceInputProps = ComponentProps<typeof ReferenceInput> & 
 };
 
 const CustomReferenceInput = (props: CustomReferenceInputProps) => {
-  const classes = useStyles();
   const [version, setVersion] = useState(0);
   const handleChange = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -124,7 +115,7 @@ const CustomReferenceInput = (props: CustomReferenceInputProps) => {
   } = props;
 
   return (
-    <div className={classes.root}>
+    <Box sx={{ display: "flex", alignItems: "flex-start", width: "100%" }}>
       <ReferenceInput key={version} reference={reference} source={source} {...referenceInputProps}>
         <AutocompleteInput
           optionText={optionText}
@@ -142,7 +133,7 @@ const CustomReferenceInput = (props: CustomReferenceInputProps) => {
           }
         />
       </ReferenceInput>
-    </div>
+    </Box>
   );
 };
 

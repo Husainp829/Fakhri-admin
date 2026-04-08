@@ -6,22 +6,9 @@ import Search from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 
-const useStyles = makeStyles(() => ({
-  input: {
-    width: "100%",
-    marginRight: 2,
-    marginTop: 2,
-  },
-  button: {
-    marginTop: 2,
-  },
-}));
-
 function HallBookingsItsLookup() {
-  const classes = useStyles();
   const { setValue } = useFormContext();
   const dataProvider = useDataProvider();
   const [itsNo, setIts] = useState<string | undefined>();
@@ -59,19 +46,19 @@ function HallBookingsItsLookup() {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", alignItems: "flex-start" }}>
         <TextInput
           source="itsNo"
           label="ITS No"
           onChange={(e) => onChangeDetails(e)}
-          className={classes.input}
+          sx={{ flex: 1, minWidth: 0, mr: 2, mt: 2 }}
           helperText={false}
           isRequired
         />
         <Search
           onClick={searchITS}
           variant="contained"
-          className={classes.button}
+          sx={{ mt: 2, flexShrink: 0 }}
           disabled={loading}
         >
           {!loading ? <SearchIcon /> : <CircularProgress size={20} />}

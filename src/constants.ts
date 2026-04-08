@@ -14,6 +14,9 @@ export const apiUrl = resolveApiBaseUrl();
 /** Cached raw `themeOptions` from `GET /tenant-branding/me` (session only). */
 export const TENANT_BRANDING_THEME_STORAGE_KEY = "tenantBrandingThemeOptions";
 
+/** Cached `tenantName` from the same response (session only). */
+export const TENANT_BRANDING_NAME_STORAGE_KEY = "tenantBrandingTenantName";
+
 /** @param _resource Ignored; API base is single origin. Kept for call-site compatibility. */
 export const getApiUrl = (_resource?: string): string => apiUrl;
 
@@ -61,13 +64,6 @@ export const slotNameMap: Record<string, string> = {
   morning: "Morning",
   afternoon: "Afternoon",
   evening: "Evening",
-};
-
-export const hallColorMap: Record<string, string> = {
-  BH: "#32CD32",
-  "FM-G": "#FF8C00",
-  "FM-1": "#FF4500",
-  "FM-2": "#1E90FF",
 };
 
 export const dateFilterOptions: { id: string; name: string }[] = [

@@ -14,24 +14,9 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
 import { useFormContext } from "react-hook-form";
 import { callApi } from "@/dataprovider/misc-apis";
 import NoArrowKeyNumberInput from "@/components/NoArrowKeyNumberInput";
-
-const useStyles = makeStyles(() => ({
-  input: {
-    width: "100%",
-    marginRight: 2,
-    marginTop: 2,
-  },
-  button: {
-    marginTop: 2,
-  },
-  row: {
-    cursor: "pointer",
-  },
-}));
 
 type ItsdataFamilyMember = {
   HOF_FM_TYPE: string;
@@ -55,7 +40,6 @@ function isPreviousHistoryPayload(data: unknown): data is { rows?: unknown[] } {
 }
 
 export default function NiyaazHofLookup() {
-  const classes = useStyles();
   const notify = useNotify();
   const { setValue } = useFormContext();
   const [showDialog, setShowDialog] = useState(false);
@@ -152,19 +136,19 @@ export default function NiyaazHofLookup() {
         <DialogTitle>HOF Lookup</DialogTitle>
 
         <DialogContent>
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start" }}>
             <NoArrowKeyNumberInput
               source="HofITsNo"
               label="HOF ITS"
               onChange={onChangeDetails}
               onKeyDown={handleKeyPress}
-              className={classes.input}
+              sx={{ flex: 1, minWidth: 0, mr: 2, mt: 2 }}
               helperText={false}
             />
             <Search
               onClick={searchITS}
               variant="contained"
-              className={classes.button}
+              sx={{ mt: 2, flexShrink: 0 }}
               disabled={loading}
             >
               {!loading ? <SearchIcon /> : <CircularProgress size={20} />}
@@ -184,7 +168,12 @@ export default function NiyaazHofLookup() {
               </TableHead>
               <TableBody>
                 {itsData.map((r) => (
-                  <TableRow className={classes.row} key={r.id} onClick={() => selectITS(r)} hover>
+                  <TableRow
+                    key={r.id}
+                    onClick={() => selectITS(r)}
+                    hover
+                    sx={{ cursor: "pointer" }}
+                  >
                     <TableCell>{r.Full_Name}</TableCell>
                     <TableCell>{r.ITS_ID}</TableCell>
                     <TableCell>

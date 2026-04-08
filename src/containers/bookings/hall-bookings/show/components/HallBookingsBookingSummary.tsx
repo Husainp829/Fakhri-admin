@@ -87,7 +87,7 @@ export const HallBookingsBookingSummary = () => {
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
       <Grid
-        sx={{ borderRight: "1px solid #efefef", pr: 2 }}
+        sx={{ borderRight: 1, borderRightColor: "divider", pr: 2 }}
         size={{
           xs: 12,
           md: 6,
@@ -96,7 +96,7 @@ export const HallBookingsBookingSummary = () => {
         <Typography variant="h6" gutterBottom>
           Summary
         </Typography>
-        <Table size="small" aria-label="summary" sx={{ borderTop: "1px solid #efefef" }}>
+        <Table size="small" aria-label="summary" sx={{ borderTop: 1, borderTopColor: "divider" }}>
           <TableBody>
             {labelValueConfig.map(({ label, value }) => (
               <TableRow key={label}>
@@ -119,11 +119,15 @@ export const HallBookingsBookingSummary = () => {
             Payments
           </Typography>
 
-          <Table size="small" aria-label="payments" sx={{ borderTop: "1px solid #efefef" }}>
+          <Table
+            size="small"
+            aria-label="payments"
+            sx={{ borderTop: 1, borderTopColor: "divider" }}
+          >
             <TableBody>
               {amountsLeft.map((item, i) => (
                 <TableRow key={item.label}>
-                  <TableCell sx={{ borderRight: "1px solid #efefef" }}>
+                  <TableCell sx={{ borderRight: 1, borderRightColor: "divider" }}>
                     <LabelValue label={item.label} value={`₹${item.value ?? "0.00"}`} />
                   </TableCell>
                   <TableCell>

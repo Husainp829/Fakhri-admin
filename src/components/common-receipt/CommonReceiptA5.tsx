@@ -1,4 +1,5 @@
-import { Box, Typography, Divider, Stack, Paper } from "@mui/material";
+import { Box, Typography, Divider, Stack, Paper, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import QRCode from "react-qr-code";
 import dayjs from "dayjs";
 
@@ -16,20 +17,24 @@ type ReceiptLineProps = {
   capitalize?: boolean;
 };
 
-const ReceiptLine = ({ left, right, bold = false, capitalize = false }: ReceiptLineProps) => (
-  <Box display="grid" gridTemplateColumns="280px 1fr" py={0.8}>
-    <Typography fontSize={16} color="text.secondary">
-      {left}
-    </Typography>
-    <Typography
-      fontSize={16}
-      fontWeight={bold ? 600 : 400}
-      sx={{ borderBottom: "1px dotted #999", textTransform: capitalize ? "capitalize" : "none" }}
-    >
-      {right || "-"}
-    </Typography>
-  </Box>
-);
+const ReceiptLine = ({ left, right, bold = false, capitalize = false }: ReceiptLineProps) => {
+  const theme = useTheme();
+  const dottedLine = `1px dotted ${alpha(theme.palette.text.primary, 0.38)}`;
+  return (
+    <Box display="grid" gridTemplateColumns="280px 1fr" py={0.8}>
+      <Typography fontSize={16} color="text.secondary">
+        {left}
+      </Typography>
+      <Typography
+        fontSize={16}
+        fontWeight={bold ? 600 : 400}
+        sx={{ borderBottom: dottedLine, textTransform: capitalize ? "capitalize" : "none" }}
+      >
+        {right || "-"}
+      </Typography>
+    </Box>
+  );
+};
 
 export type CommonReceiptA5Props = {
   title?: string;
@@ -66,7 +71,11 @@ const CommonReceiptA5 = ({
   showReceiptBadge = true,
   receiptHeaderText = "RECEIPT",
 }: CommonReceiptA5Props) => {
+  const theme = useTheme();
   const formattedDate = date ? dayjs(date).format(dateFormat) : date || "-";
+  const frameBorder = `1px solid ${theme.palette.text.primary}`;
+  const totalBandBg = alpha(theme.palette.text.primary, 0.06);
+  const totalAccent = `5px solid ${theme.palette.text.primary}`;
 
   return (
     <Paper
@@ -92,7 +101,7 @@ const CommonReceiptA5 = ({
         </Box>
 
         {showReceiptBadge && (
-          <Box px={2} py={1} border="1px solid #000" fontSize={14} letterSpacing={2}>
+          <Box px={2} py={1} sx={{ border: frameBorder, fontSize: 14, letterSpacing: 2 }}>
             {receiptHeaderText || "RECEIPT"}
           </Box>
         )}
@@ -127,7 +136,7 @@ const CommonReceiptA5 = ({
 
       <Stack direction="row" justifyContent="space-between" alignItems="center" mt={3}>
         {amount !== undefined && amount !== null && (
-          <Box px={3} py={2} bgcolor="#f3f3f3aa" borderLeft="5px solid #000">
+          <Box px={3} py={2} sx={{ bgcolor: totalBandBg, borderLeft: totalAccent }}>
             <Typography fontSize={13}>Total Amount Received</Typography>
             <Typography fontSize={28} fontWeight={700}>
               {currency} {amount} /-

@@ -17,12 +17,12 @@ import {
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import dayjs from "dayjs";
-import { Box, Card, CardContent, Typography, Link } from "@mui/material";
+import { Box, Card, CardContent, Divider, Link, Tab, Tabs, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { Link as RouterLink } from "react-router-dom";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl, SABIL_TYPE_OPTIONS } from "@/constants";
-import CommonTabs from "@/components/common-tabs";
 import { exportToExcel } from "@/utils/export-to-excel";
 import type { ExcelColumn } from "@/types/excel";
 import { hasPermission } from "@/utils/permission-utils";
@@ -36,41 +36,17 @@ type PaymentSummaryResponse = {
   grandTotal?: PaymentModeSummary;
 };
 
+type SummaryTone = "warning" | "info" | "success";
+
 const SUMMARY_CONFIG: {
   key: keyof PaymentSummaryResponse;
   label: string;
-  backgroundColor: string;
-  borderColor: string | null;
-  textColor: string | null;
+  tone: SummaryTone;
 }[] = [
-  {
-    key: "cash",
-    label: "CASH",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "online",
-    label: "ONLINE",
-    backgroundColor: "#d1ecf1",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "cheque",
-    label: "CHEQUE",
-    backgroundColor: "#fff3cd",
-    borderColor: null,
-    textColor: null,
-  },
-  {
-    key: "grandTotal",
-    label: "GRAND TOTAL",
-    backgroundColor: "#d4edda",
-    borderColor: "2px solid #28a745",
-    textColor: "#155724",
-  },
+  { key: "cash", label: "CASH", tone: "warning" },
+  { key: "online", label: "ONLINE", tone: "info" },
+  { key: "cheque", label: "CHEQUE", tone: "warning" },
+  { key: "grandTotal", label: "GRAND TOTAL", tone: "success" },
 ];
 
 const PaymentSummary = () => {
@@ -134,17 +110,15 @@ const PaymentSummary = () => {
           const data = summary[config.key];
           if (!data) return null;
           return (
-            <Grid
-              key={config.key}
-              size={{
-                xs: 6,
-                md: 3,
-              }}
-            >
+            <Grid key={config.key} size={{ xs: 6, md: 3 }}>
               <Card
-                sx={{
+                sx={(theme) => ({
                   p: 0,
-                }}
+                  bgcolor: alpha(theme.palette[config.tone].main, 0.12),
+                  ...(config.tone === "success"
+                    ? { borderTop: `2px solid ${theme.palette.success.main}` }
+                    : {}),
+                })}
               >
                 <CardContent>
                   <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -152,10 +126,10 @@ const PaymentSummary = () => {
                   </Typography>
                   <Typography
                     variant="h6"
-                    sx={{
+                    sx={(theme) => ({
                       fontWeight: "bold",
-                      ...(config.textColor && { color: config.textColor }),
-                    }}
+                      ...(config.tone === "success" ? { color: theme.palette.success.dark } : {}),
+                    })}
                   >
                     {formatCurrency(data.total)}
                   </Typography>
@@ -205,16 +179,16 @@ const SabilTypeTabs = () => {
   }, [filterValues]);
 
   return (
-    <CommonTabs
-      options={SABIL_TYPE_OPTIONS.map((option, index) => ({
-        id: index,
-        name: option.name,
-      }))}
-      value={tabValue}
-      onChange={handleChange}
-      showDivider
-      sx={{ indicatorColor: "primary" }}
-    />
+    <>
+      <Box sx={{ mb: 0 }}>
+        <Tabs value={tabValue} onChange={handleChange} indicatorColor="primary">
+          {SABIL_TYPE_OPTIONS.map((option, index) => (
+            <Tab key={option.id} label={option.name} value={index} />
+          ))}
+        </Tabs>
+      </Box>
+      <Divider />
+    </>
   );
 };
 

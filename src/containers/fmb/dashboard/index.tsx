@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Title, useRedirect } from "react-admin";
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Paper, Typography, useTheme } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { callApi } from "@/dataprovider/misc-apis";
-import { COLORS } from "./constants";
+import { getChartColorSequence } from "@/theme/chartPalette";
 import DashboardHeader from "./components/DashboardHeader";
 import FmbMetrics from "./components/FmbMetrics";
 import FmbChartsRow from "./components/FmbChartsRow";
@@ -34,6 +34,8 @@ type FmbDashboardStats = {
 };
 
 export default function FmbDashboard() {
+  const theme = useTheme();
+  const chartColors = useMemo(() => getChartColorSequence(theme), [theme]);
   const redirect = useRedirect();
   const [periodsLoading, setPeriodsLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -131,25 +133,25 @@ export default function FmbDashboard() {
       {
         name: "Annual",
         value: annualCommitted,
-        color: COLORS[0],
+        color: chartColors[0],
       },
       {
         name: "Contributions",
         value: zabihatCommitted + voluntaryCommitted,
-        color: COLORS[1],
+        color: chartColors[1],
       },
       {
         name: "Received",
         value: stats.paymentsReceived || 0,
-        color: COLORS[2],
+        color: chartColors[2],
       },
       {
         name: "Pending",
         value: stats.paymentsPending || 0,
-        color: COLORS[3],
+        color: chartColors[3],
       },
     ];
-  }, [stats]);
+  }, [stats, chartColors]);
 
   const deliveryProfileData = useMemo(() => {
     if (!stats?.deliveryProfileDistribution?.length) {
@@ -157,9 +159,9 @@ export default function FmbDashboard() {
     }
     return stats.deliveryProfileDistribution.map((row, i) => ({
       ...row,
-      color: COLORS[i % COLORS.length],
+      color: chartColors[i % chartColors.length],
     }));
-  }, [stats]);
+  }, [stats, chartColors]);
 
   const collectionPercentage = useMemo(() => {
     if (!stats?.fmbForecast || stats.fmbForecast === 0) return 0;
