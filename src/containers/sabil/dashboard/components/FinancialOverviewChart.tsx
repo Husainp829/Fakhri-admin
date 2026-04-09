@@ -14,15 +14,20 @@ import type { ChartDatum } from "./ChartsRow";
 
 type FinancialOverviewChartProps = {
   data: ChartDatum[];
+  /** Defaults to "Financial Overview" (used by FMB dashboard for a clearer label). */
+  title?: string;
 };
 
-const FinancialOverviewChart = ({ data }: FinancialOverviewChartProps) => {
+const FinancialOverviewChart = ({
+  data,
+  title = "Financial Overview",
+}: FinancialOverviewChartProps) => {
   const theme = useTheme();
   return (
     <Card elevation={2}>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-          Financial Overview
+          {title}
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>

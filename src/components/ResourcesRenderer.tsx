@@ -7,6 +7,25 @@ import { GLOBAL_RESOURCES } from "@/config/global-resources";
 import type { ResourceConfig } from "@/types/react-admin-config";
 import type { PermissionRecord } from "@/types/permissions";
 
+/** View/route visibility for module resources (matches `renderResource` permission checks). */
+export function filterVisibleResourceConfigs(
+  permissions: PermissionRecord,
+  configs: ResourceConfig[],
+  routeId: string | null | undefined
+): ResourceConfig[] {
+  return configs
+    .filter((r) => !r.requireRouteId || routeId)
+    .filter((r) => {
+      if (r.permissionsAny?.length) {
+        return r.permissionsAny.some((p) => hasPermission(permissions, p));
+      }
+      if (r.permission != null && !hasPermission(permissions, r.permission)) {
+        return false;
+      }
+      return true;
+    });
+}
+
 const renderResource = (
   permissions: PermissionRecord,
   {

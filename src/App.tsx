@@ -15,6 +15,7 @@ import DashboardAdmin from "@/layout/DashboardAdmin";
 import Login from "@/layout/Login";
 import { buildAdminResourceChildren } from "@/components/ResourcesRenderer";
 import { AUTHLESS_ROUTES } from "@/config/authless-routes";
+import FmbDistributorPortalPage from "@/containers/fmb/fmb-distributor-portal/FmbDistributorPortalPage";
 import i18nProvider from "@/config/i18n";
 import type { PermissionRecord } from "@/types/permissions";
 
@@ -46,6 +47,15 @@ const MainApp = () => {
     []
   );
 
+  const distributorPortalRoute = useMemo(
+    () => (
+      <CustomRoutes noLayout key="fmb-distributor-portal-routes">
+        <Route path="/fmb-distributor-portal" element={<FmbDistributorPortalPage />} />
+      </CustomRoutes>
+    ),
+    []
+  );
+
   return (
     <Admin
       dataProvider={dataProvider}
@@ -59,6 +69,7 @@ const MainApp = () => {
     >
       {renderResources}
       {authlessCustomRoutes}
+      {distributorPortalRoute}
     </Admin>
   );
 };

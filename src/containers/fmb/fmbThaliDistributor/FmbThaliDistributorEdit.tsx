@@ -1,6 +1,7 @@
 import { BooleanInput, Edit, FormTab, TabbedForm, TextInput, type EditProps } from "react-admin";
 
 import AssignmentsTab from "./tabs/AssignmentsTab";
+import FmbDistributorPortalAdminTab from "./tabs/FmbDistributorPortalAdminTab";
 
 export default function FmbThaliDistributorEdit(props: EditProps) {
   return (
@@ -15,6 +16,9 @@ export default function FmbThaliDistributorEdit(props: EditProps) {
         </FormTab>
         <FormTab label="Assigned thalis">
           <AssignmentsTab />
+        </FormTab>
+        <FormTab label="Portal login">
+          <FmbDistributorPortalAdminTab />
         </FormTab>
       </TabbedForm>
     </Edit>

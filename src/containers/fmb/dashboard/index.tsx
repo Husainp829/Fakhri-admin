@@ -20,6 +20,7 @@ type FmbDashboardStats = {
   paymentsReceived?: number;
   paymentsPending?: number;
   fmbForecast?: number;
+  vendorPaymentVoucherTotal?: number;
   takhmeenAmountCountsByType?: Record<
     string,
     { amount: number; count: number; fmbIds?: string[] }[]
@@ -129,26 +130,33 @@ export default function FmbDashboard() {
     const annualCommitted = sumType("ANNUAL");
     const zabihatCommitted = sumType("ZABIHAT");
     const voluntaryCommitted = sumType("VOLUNTARY");
+    const income = stats.paymentsReceived || 0;
+    const vendorExpenses = stats.vendorPaymentVoucherTotal || 0;
     return [
       {
-        name: "Annual",
-        value: annualCommitted,
+        name: "Income (receipts)",
+        value: income,
         color: chartColors[0],
+      },
+      {
+        name: "Vendor expenses",
+        value: vendorExpenses,
+        color: chartColors[1],
+      },
+      {
+        name: "Annual committed",
+        value: annualCommitted,
+        color: chartColors[2],
       },
       {
         name: "Contributions",
         value: zabihatCommitted + voluntaryCommitted,
-        color: chartColors[1],
-      },
-      {
-        name: "Received",
-        value: stats.paymentsReceived || 0,
-        color: chartColors[2],
+        color: chartColors[3],
       },
       {
         name: "Pending",
         value: stats.paymentsPending || 0,
-        color: chartColors[3],
+        color: chartColors[4 % chartColors.length],
       },
     ];
   }, [stats, chartColors]);

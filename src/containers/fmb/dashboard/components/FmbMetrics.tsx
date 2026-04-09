@@ -4,6 +4,8 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import PendingIcon from "@mui/icons-material/Pending";
 import CategoryIcon from "@mui/icons-material/Category";
 import WarningIcon from "@mui/icons-material/Warning";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import StatCard from "@/containers/sabil/dashboard/components/StatCard";
 
 type TakhmeenRow = { amount?: unknown; count?: unknown };
@@ -12,6 +14,7 @@ type FmbDashboardStats = {
   takhmeenAmountCountsByType?: Record<string, TakhmeenRow[] | undefined>;
   paymentsReceived?: number;
   paymentsPending?: number;
+  vendorPaymentVoucherTotal?: number;
   fmbNotPaid2Years?: { count?: number };
 };
 
@@ -30,6 +33,9 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
   const voluntaryCommitted = sumType("VOLUNTARY");
   const zabihatCommitted = sumType("ZABIHAT");
   const contributionCommitted = voluntaryCommitted + zabihatCommitted;
+  const vendorOut = stats.vendorPaymentVoucherTotal || 0;
+  const netAfterVendor = (stats.paymentsReceived || 0) - vendorOut;
+  const netColor = netAfterVendor >= 0 ? ("success" as const) : ("error" as const);
 
   return (
     <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -37,7 +43,7 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
         }}
       >
         <StatCard
@@ -52,7 +58,7 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
         }}
       >
         <StatCard
@@ -67,7 +73,7 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
         }}
       >
         <StatCard
@@ -82,11 +88,11 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
         }}
       >
         <StatCard
-          title="Receipts (period)"
+          title="Income (receipts)"
           value={stats.paymentsReceived || 0}
           icon={PaymentIcon}
           color="success"
@@ -97,7 +103,37 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
+        }}
+      >
+        <StatCard
+          title="Vendor expenses"
+          value={vendorOut}
+          icon={ReceiptLongIcon}
+          color="secondary"
+          subtitle="Payment vouchers for this Hijri period"
+        />
+      </Grid>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          md: 3,
+        }}
+      >
+        <StatCard
+          title="Net after vendor payouts"
+          value={netAfterVendor}
+          icon={AccountBalanceIcon}
+          color={netColor}
+          subtitle="Receipts minus vendor vouchers (same period)"
+        />
+      </Grid>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          md: 3,
         }}
       >
         <StatCard
@@ -112,7 +148,7 @@ export default function FmbMetrics({ stats }: FmbMetricsProps) {
         size={{
           xs: 12,
           sm: 6,
-          md: 2,
+          md: 3,
         }}
       >
         <StatCard

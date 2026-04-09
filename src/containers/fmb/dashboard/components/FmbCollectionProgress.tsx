@@ -3,7 +3,11 @@ import Grid from "@mui/material/Grid";
 import { formatINR } from "@/utils";
 
 type FmbCollectionProgressProps = {
-  stats: { paymentsReceived?: number; paymentsPending?: number };
+  stats: {
+    paymentsReceived?: number;
+    paymentsPending?: number;
+    vendorPaymentVoucherTotal?: number;
+  };
   collectionPercentage: number;
 };
 
@@ -17,6 +21,10 @@ export default function FmbCollectionProgress({
   stats,
   collectionPercentage,
 }: FmbCollectionProgressProps) {
+  const receipts = stats.paymentsReceived || 0;
+  const vendorOut = stats.vendorPaymentVoucherTotal || 0;
+  const netAfterVendor = receipts - vendorOut;
+
   return (
     <Card elevation={2}>
       <CardContent>
@@ -49,10 +57,10 @@ export default function FmbCollectionProgress({
         <Grid container spacing={2}>
           <Grid size={6}>
             <Typography variant="caption" color="text.secondary">
-              Receipts (period)
+              Income — receipts (period)
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600, color: "success.main" }}>
-              {formatINR(stats.paymentsReceived || 0)}
+              {formatINR(receipts)}
             </Typography>
           </Grid>
           <Grid size={6}>
@@ -61,6 +69,28 @@ export default function FmbCollectionProgress({
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600, color: "error.main" }}>
               {formatINR(stats.paymentsPending || 0)}
+            </Typography>
+          </Grid>
+          <Grid size={6}>
+            <Typography variant="caption" color="text.secondary">
+              Vendor expenses (period)
+            </Typography>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: "secondary.main" }}>
+              {formatINR(vendorOut)}
+            </Typography>
+          </Grid>
+          <Grid size={6}>
+            <Typography variant="caption" color="text.secondary">
+              Net after vendor payouts
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: netAfterVendor >= 0 ? "success.main" : "error.main",
+              }}
+            >
+              {formatINR(netAfterVendor)}
             </Typography>
           </Grid>
         </Grid>

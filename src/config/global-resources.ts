@@ -11,10 +11,15 @@ import sequences from "@/containers/sequences";
 import type { GlobalResourceConfig } from "@/types/react-admin-config";
 
 export const GLOBAL_RESOURCES: GlobalResourceConfig[] = [
-  { permission: "admins.view", resource: admin },
-  { permission: "itsdata.dump", resource: itsdata },
-  { permission: "itsdata.dump", resource: itsdataAddressChangeQueue },
-  { permission: "admins.view", resource: whatsappBroadcasts },
-  { permission: "cronStatus.view", resource: cronStatus, name: "cronStatus" },
-  { permission: "sequences.view", resource: sequences },
+  { permission: "admins.view", resource: admin, sidebarGroup: "admin" },
+  { permission: "itsdata.dump", resource: itsdata, sidebarGroup: "admin" },
+  { permission: "itsdata.dump", resource: itsdataAddressChangeQueue, sidebarGroup: "admin" },
+  { permission: "admins.view", resource: whatsappBroadcasts, sidebarGroup: "admin" },
+  {
+    permission: "cronStatus.view",
+    resource: cronStatus,
+    name: "cronStatus",
+    sidebarGroup: "admin",
+  },
+  { permission: "sequences.view", resource: sequences, sidebarGroup: "admin" },
 ];

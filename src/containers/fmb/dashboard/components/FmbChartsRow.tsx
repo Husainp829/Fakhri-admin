@@ -17,7 +17,10 @@ export default function FmbChartsRow({ financialData, deliveryProfileData }: Fmb
           md: 8,
         }}
       >
-        <FinancialOverviewChart data={financialData} />
+        <FinancialOverviewChart
+          data={financialData}
+          title="Income, vendor expenses & commitments"
+        />
       </Grid>
       <Grid
         size={{

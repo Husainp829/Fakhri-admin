@@ -4,7 +4,7 @@ import FmbThaliDistributionDailyRunList from "./FmbThaliDistributionDailyRunList
 export default {
   list: FmbThaliDistributionDailyRunList,
   icon: Icon,
-  label: "Thali distribution (daily)",
-  options: { label: "Thali distribution (daily)" },
+  label: "Thali roster (daily)",
+  options: { label: "Thali roster (daily)" },
   name: "fmbThaliDistributionDailyRun",
 };

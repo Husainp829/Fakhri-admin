@@ -38,8 +38,12 @@ import fmbThaliSettings from "@/containers/fmb/fmb-thali-settings";
 import fmbHoliday from "@/containers/fmb/fmb-holiday";
 import fmbThaliSuspension from "@/containers/fmb/fmb-thali-suspension";
 import fmbThaliType from "@/containers/fmb/fmb-thali-type";
+import fmbDish from "@/containers/fmb/fmb-dish";
+import fmbDailyMenu from "@/containers/fmb/fmb-daily-menu";
 import fmbThaliDistributor from "@/containers/fmb/fmbThaliDistributor";
 import fmbThaliDistributionDailyRun from "@/containers/fmb/fmbThaliDistributionDailyRun";
+import fmbVendor from "@/containers/fmb/fmb-vendor";
+import fmbVendorPaymentVoucher from "@/containers/fmb/fmb-vendor-payment-voucher";
 
 import miqaatNiyaazReceipts from "@/containers/miqaat/miqaat-niyaaz-receipts";
 
@@ -171,6 +175,18 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         createPermission: "fmbThaliType.create",
       },
       {
+        permission: "fmbDish.view",
+        resource: fmbDish,
+        createPermission: "fmbDish.create",
+        menuGroup: "kitchen",
+      },
+      {
+        permission: "fmbDailyMenu.view",
+        resource: fmbDailyMenu,
+        createPermission: "fmbDailyMenu.create",
+        menuGroup: "kitchen",
+      },
+      {
         permission: "fmbThaliDistributor.view",
         resource: fmbThaliDistributor,
         createPermission: "fmbThaliDistributor.create",
@@ -180,6 +196,18 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         resource: fmbThaliDistributionDailyRun,
       },
       { permission: "fmbThaliSettings.view", resource: fmbThaliSettings },
+      {
+        permission: "fmbVendor.view",
+        resource: fmbVendor,
+        createPermission: "fmbVendor.create",
+        menuGroup: "vendors",
+      },
+      {
+        permission: "fmbVendorPaymentVoucher.view",
+        resource: fmbVendorPaymentVoucher,
+        createPermission: "fmbVendorPaymentVoucher.create",
+        menuGroup: "vendors",
+      },
     ],
   },
   miqaat: {
