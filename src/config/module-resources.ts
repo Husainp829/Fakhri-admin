@@ -126,6 +126,15 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
       { permission: "sabil.view", resource: sabilLedger },
     ],
   },
+  lagat: {
+    resources: [
+      {
+        permission: "lagatReceipts.view",
+        resource: lagatReceipt,
+        createPermission: "lagatReceipts.create",
+      },
+    ],
+  },
   fmb: {
     resources: [
       { permission: "fmbData.view", resource: fmbData, createPermission: "fmbData.create" },
