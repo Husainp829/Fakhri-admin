@@ -194,16 +194,47 @@ export function MakhsoosHostSectorTab() {
           WebkitOverflowScrolling: "touch",
         }}
       >
-        <Table size="small" aria-label="Makhsoos matches by host sector" sx={{ minWidth: 720 }}>
+        <Table
+          size="small"
+          aria-label="Makhsoos matches by host sector"
+          sx={{ tableLayout: "fixed", width: "100%", minWidth: 720 }}
+        >
           <TableHead>
             <TableRow>
-              <TableCell sx={{ width: 1, whiteSpace: "nowrap" }}>Attended before</TableCell>
-              <TableCell>ITS</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Sector</TableCell>
-              <TableCell>Sub-sector</TableCell>
-              <TableCell>Mobile</TableCell>
-              <TableCell>Address</TableCell>
+              <TableCell
+                sx={(theme) => ({
+                  width: theme.spacing(18),
+                  maxWidth: theme.spacing(18),
+                  whiteSpace: "nowrap",
+                  verticalAlign: "bottom",
+                })}
+              >
+                Attended before
+              </TableCell>
+              <TableCell
+                sx={(theme) => ({
+                  width: theme.spacing(16),
+                  maxWidth: theme.spacing(20),
+                  whiteSpace: "nowrap",
+                  verticalAlign: "bottom",
+                })}
+              >
+                ITS
+              </TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>Name</TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>Sector</TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>Sub-sector</TableCell>
+              <TableCell
+                sx={(theme) => ({
+                  width: theme.spacing(14),
+                  maxWidth: theme.spacing(18),
+                  whiteSpace: "nowrap",
+                  verticalAlign: "bottom",
+                })}
+              >
+                Mobile
+              </TableCell>
+              <TableCell sx={{ width: "32%", verticalAlign: "bottom" }}>Address</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -212,29 +243,68 @@ export function MakhsoosHostSectorTab() {
               return (
                 <TableRow key={r.id} sx={(theme) => attendedHighlightStyle(theme, attended)}>
                   <TableCell
-                    sx={{ whiteSpace: "nowrap", color: attended ? "info.main" : "text.secondary" }}
+                    sx={(theme) => ({
+                      width: theme.spacing(18),
+                      maxWidth: theme.spacing(18),
+                      whiteSpace: "nowrap",
+                      verticalAlign: "top",
+                      color: attended ? "info.main" : "text.secondary",
+                    })}
                   >
                     {attended ? "Yes" : "—"}
                   </TableCell>
-                  <TableCell>{displayText(r.ITS_ID, false)}</TableCell>
                   <TableCell
-                    sx={{ maxWidth: 200, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                    sx={(theme) => ({
+                      maxWidth: theme.spacing(20),
+                      whiteSpace: "nowrap",
+                      verticalAlign: "top",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    })}
+                    title={r.ITS_ID?.trim() || undefined}
+                  >
+                    {displayText(r.ITS_ID, false)}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      minWidth: 0,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      verticalAlign: "top",
+                    }}
                   >
                     {displayText(r.Full_Name)}
                   </TableCell>
                   <TableCell
-                    sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                    sx={{
+                      minWidth: 0,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      verticalAlign: "top",
+                    }}
                   >
                     {displayText(r.Sector)}
                   </TableCell>
                   <TableCell
-                    sx={{ maxWidth: 220, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                    sx={{
+                      minWidth: 0,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      verticalAlign: "top",
+                    }}
                   >
                     {displayText(r.Sub_Sector)}
                   </TableCell>
-                  <TableCell sx={{ whiteSpace: "nowrap" }}>{displayText(r.Mobile)}</TableCell>
+                  <TableCell sx={{ whiteSpace: "nowrap", verticalAlign: "top" }}>
+                    {displayText(r.Mobile)}
+                  </TableCell>
                   <TableCell
-                    sx={{ maxWidth: 360, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                    sx={{
+                      minWidth: 0,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                      verticalAlign: "top",
+                    }}
                   >
                     {displayText(r.Address)}
                   </TableCell>

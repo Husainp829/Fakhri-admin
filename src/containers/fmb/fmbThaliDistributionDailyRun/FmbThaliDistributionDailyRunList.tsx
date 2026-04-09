@@ -1,13 +1,17 @@
+import { useMemo } from "react";
 import { Datagrid, List, TextField, TextInput, type ListProps } from "react-admin";
 
 const filters = [<TextInput key="date" source="date" label="Date (YYYY-MM-DD)" alwaysOn />];
 
 export default function FmbThaliDistributionDailyRunList(props: ListProps) {
+  const filterDefaultValues = useMemo(() => ({ date: new Date().toISOString().slice(0, 10) }), []);
+
   return (
     <List
       {...props}
       title="Daily thali distribution"
       perPage={50}
+      filterDefaultValues={filterDefaultValues}
       filters={filters}
       sort={{ field: "code", order: "ASC" }}
       exporter={false}

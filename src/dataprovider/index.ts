@@ -110,6 +110,29 @@ const dataProvider = {
       });
     }
 
+    if (resource === "fmbThaliDistributionDailyRun") {
+      const filter = params.filter ?? {};
+      const flat = fetchUtils.flattenObject(filter) as Record<string, unknown>;
+      const raw = typeof flat.date === "string" ? flat.date.trim() : "";
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : new Date().toISOString().slice(0, 10);
+      const url = `${getApiUrl()}/fmbThaliDistribution/dashboard?${stringify({ date })}`;
+      return httpClient(url).then(({ json }) => {
+        const body = json as {
+          count?: number;
+          rows?: Array<Record<string, unknown> & { distributorId?: string }>;
+        };
+        const rows = body.rows ?? [];
+        const withIds = rows.map((row) => ({
+          ...row,
+          id: String(row.distributorId ?? ""),
+        }));
+        return {
+          data: convertRows(withIds),
+          total: body.count ?? rows.length,
+        };
+      });
+    }
+
     const pagination = params.pagination ?? { page: 1, perPage: 10 };
     const filter = params.filter ?? {};
     const sort = params.sort ?? { field: "id", order: "DESC" as const };
