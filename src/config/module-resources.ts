@@ -43,6 +43,11 @@ import fmbThaliDistributionDailyRun from "@/containers/fmb/fmbThaliDistributionD
 
 import miqaatNiyaazReceipts from "@/containers/miqaat/miqaat-niyaaz-receipts";
 
+import yearlyNiyaaz from "@/containers/yearly-niyaaz/yearly-niyaaz";
+import yearlyNiyaazReceipts from "@/containers/yearly-niyaaz/yearly-niyaaz-receipts";
+import yearlyNiyaazSettings from "@/containers/yearly-niyaaz/yearly-niyaaz-settings";
+import YearlyNiyaazReceiptPrint from "@/containers/yearly-niyaaz/yearly-niyaaz-receipts/YearlyNiyaazReceiptPrint";
+
 import ohbatMajlis from "@/containers/ohbat/ohbat-majlis";
 import ohbatMajlisUpcoming from "@/containers/ohbat/ohbat-majlis-upcoming";
 import ohbatMajlisAttendance from "@/containers/ohbat/ohbat-majlis-attendance";
@@ -203,6 +208,25 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         createPermission: "makhsoosItsData.create",
       },
     ],
+  },
+  yearlyNiyaaz: {
+    resources: [
+      {
+        permission: "yearlyNiyaaz.view",
+        resource: yearlyNiyaaz,
+        createPermission: "yearlyNiyaaz.create",
+      },
+      {
+        permission: "yearlyNiyaazReceipts.view",
+        resource: yearlyNiyaazReceipts,
+        createPermission: "yearlyNiyaazReceipts.create",
+      },
+      {
+        permission: "yearlyNiyaaz.view",
+        resource: yearlyNiyaazSettings,
+      },
+    ],
+    customRoutes: [{ path: "/yn-rcpt/:id", element: YearlyNiyaazReceiptPrint }],
   },
   accounts: {
     resources: [

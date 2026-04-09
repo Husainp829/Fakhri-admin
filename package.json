@@ -2,6 +2,9 @@
   "name": "jmsadmin",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@mui/icons-material": "^7.3.9",
     "@mui/x-date-pickers": "^8.27.2",
@@ -55,7 +58,7 @@
       "last 1 safari version"
     ]
   },
-  "buildDate": 1775481202993,
+  "buildDate": 1775626042230,
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@testing-library/jest-dom": "^6.9.1",

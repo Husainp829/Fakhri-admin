@@ -8,6 +8,7 @@ import MiqaatNiyaazReceiptPrint from "@/containers/miqaat/miqaat-niyaaz-receipts
 import ForgotPassword from "@/layout/ForgotPassword";
 import SabilReceipt from "@/containers/sabil/sabil-receipt/SabilReceiptPrint";
 import FmbReceipt from "@/containers/fmb/fmb-receipt/FmbReceiptPrint";
+import YearlyNiyaazReceiptPrint from "@/containers/yearly-niyaaz/yearly-niyaaz-receipts/YearlyNiyaazReceiptPrint";
 
 import type { AuthlessRouteConfig } from "@/types/react-admin-config";
 
@@ -19,4 +20,5 @@ export const AUTHLESS_ROUTES: AuthlessRouteConfig[] = [
   { path: "/forgot-password", element: ForgotPassword },
   { path: "/sabil-receipt", element: SabilReceipt },
   { path: "/fmb-receipt", element: FmbReceipt },
+  { path: "/yn-rcpt/:id", element: YearlyNiyaazReceiptPrint },
 ];

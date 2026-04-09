@@ -9,6 +9,7 @@ import TableRowsIcon from "@mui/icons-material/TableRows";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import GroupsIcon from "@mui/icons-material/Groups";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
 import BookingDashboard from "@/containers/bookings/dashboard";
 import EventsDashboard from "@/containers/events/dashboard";
@@ -20,6 +21,7 @@ import FmbDashboard from "@/containers/fmb/dashboard";
 import MiqaatDashboard from "@/containers/miqaat/dashboard";
 import AccountsDashboard from "@/containers/accounts/dashboard";
 import OhbatDashboard from "@/containers/ohbat/dashboard";
+import YearlyNiyaazDashboard from "@/containers/yearly-niyaaz/dashboard";
 
 import type { ModuleFallback, ModuleRegistryEntry } from "@/types/react-admin-config";
 
@@ -132,6 +134,17 @@ export const MODULE_REGISTRY: ModuleRegistryEntry[] = [
     dashboardPermission: null,
     fallback: FALLBACK_NAVIGATE("/ohbatMajlisUpcoming"),
     dashboard: OhbatDashboard,
+  },
+  {
+    id: "yearlyNiyaaz",
+    path: "yearlyNiyaaz",
+    label: "Yearly Niyaaz",
+    description: "View and manage yearly niyaaz and receipts",
+    icon: VolunteerActivismIcon,
+    permission: "yearlyNiyaaz.view",
+    dashboardPermission: null,
+    fallback: FALLBACK_NAVIGATE("/yearlyNiyaaz"),
+    dashboard: YearlyNiyaazDashboard,
   },
 ];
 

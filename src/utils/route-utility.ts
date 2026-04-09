@@ -13,7 +13,7 @@ export function parsePathname(pathname: string = window.location.pathname): {
     return { baseRoute: null, routeId: null };
   }
 
-  const baseRoute = segments[0].toLowerCase();
+  const baseRoute = segments[0];
   const routeId = segments.length >= 2 ? segments[1] : null;
 
   return { baseRoute, routeId };
