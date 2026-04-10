@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { useMemo, type ReactElement } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import type { Theme } from "@mui/material/styles";
 import { useHasDashboard } from "ra-core";
@@ -6,16 +6,13 @@ import { Menu, usePermissions } from "react-admin";
 import type { MenuProps } from "react-admin";
 import { filterVisibleResourceConfigs } from "@/components/ResourcesRenderer";
 import { GLOBAL_RESOURCES } from "@/config/global-resources";
-import { MODULE_RESOURCES } from "@/config/module-resources";
-import type { FmbMenuGroup, GlobalSidebarGroup } from "@/types/react-admin-config";
+import { getModuleRuntimeShape } from "@/config/module-resources";
+import type { GlobalSidebarGroup, ModuleResourceRow } from "@/types/react-admin-config";
 import type { PermissionRecord } from "@/types/permissions";
 import { hasPermission } from "@/utils/permission-utils";
 import { useBaseRoute, useRouteId } from "@/utils/route-utility";
 
-const FMB_MENU_GROUP_LABEL: Record<FmbMenuGroup, string> = {
-  kitchen: "Kitchen",
-  vendors: "Vendors",
-};
+const EMPTY_PERMISSIONS = {} as PermissionRecord;
 
 const GLOBAL_SIDEBAR_GROUP_LABEL: Record<GlobalSidebarGroup, string> = {
   admin: "Admin",
@@ -37,39 +34,46 @@ const menuSectionSubheaderSx = (theme: Theme) => ({
   bgcolor: "transparent",
 });
 
-function FmbGroupedResourceItems(): ReactElement {
-  const { permissions } = usePermissions<PermissionRecord>();
-  const routeId = useRouteId();
-  const perms = permissions ?? ({} as PermissionRecord);
-  const configs = filterVisibleResourceConfigs(perms, MODULE_RESOURCES.fmb.resources, routeId);
-
-  const nodes: React.ReactNode[] = [];
-  let currentGroup: FmbMenuGroup | undefined;
-
-  for (const config of configs) {
+/** Renders module resource links; subheaders when `menuSection` + parent `menuSections` are set. */
+function appendModuleResourceMenuItems(
+  nodes: React.ReactNode[],
+  moduleResources: readonly ModuleResourceRow[],
+  menuSections: Record<string, string> | undefined,
+  menuRouteKey: string
+): void {
+  let currentSection: string | undefined;
+  let subheaderOrdinal = 0;
+  for (const config of moduleResources) {
+    if (config.hideFromMenu) {
+      continue;
+    }
     const name = (config.resource as { name?: string }).name;
     if (!name) {
       continue;
     }
-    const g = config.menuGroup;
-    if (g !== currentGroup) {
-      currentGroup = g;
-      if (g) {
+    const section = config.menuSection;
+    if (section !== currentSection) {
+      currentSection = section;
+      if (section) {
+        const label = menuSections?.[section] ?? section;
         nodes.push(
           <ListSubheader
-            key={`fmb-sub-${g}`}
+            key={`${menuRouteKey}-sec-${section}-${subheaderOrdinal}`}
             disableGutters
             disableSticky
             sx={(theme) => menuSectionSubheaderSx(theme)}
           >
-            {FMB_MENU_GROUP_LABEL[g]}
+            {label}
           </ListSubheader>
         );
+        subheaderOrdinal += 1;
       }
     }
     nodes.push(<Menu.ResourceItem key={name} name={name} />);
   }
+}
 
+function appendGlobalMenuItems(nodes: React.ReactNode[], perms: PermissionRecord): void {
   let currentGlobalGroup: GlobalSidebarGroup | undefined;
   for (const g of GLOBAL_RESOURCES) {
     if (!hasPermission(perms, g.permission)) {
@@ -97,22 +101,44 @@ function FmbGroupedResourceItems(): ReactElement {
     }
     nodes.push(<Menu.ResourceItem key={globalName} name={globalName} />);
   }
+}
+
+function GroupedMenuContent(): ReactElement {
+  const { permissions } = usePermissions<PermissionRecord>();
+  const baseRoute = useBaseRoute();
+  const routeId = useRouteId();
+  const perms = permissions ?? EMPTY_PERMISSIONS;
+
+  const { moduleResources, menuSections, menuRouteKey } = useMemo(() => {
+    const moduleRuntime = getModuleRuntimeShape(baseRoute);
+    if (!moduleRuntime) {
+      return {
+        moduleResources: [] as ModuleResourceRow[],
+        menuSections: undefined as Record<string, string> | undefined,
+        menuRouteKey: baseRoute ?? "root",
+      };
+    }
+    return {
+      moduleResources: filterVisibleResourceConfigs(perms, moduleRuntime.resources, routeId),
+      menuSections: moduleRuntime.menuSections,
+      menuRouteKey: baseRoute ?? "root",
+    };
+  }, [baseRoute, perms, routeId]);
+
+  const nodes: React.ReactNode[] = [];
+  appendModuleResourceMenuItems(nodes, moduleResources, menuSections, menuRouteKey);
+  appendGlobalMenuItems(nodes, perms);
 
   return <>{nodes}</>;
 }
 
 const LayoutMenu = (props: MenuProps): ReactElement => {
-  const baseRoute = useBaseRoute();
   const hasDashboard = useHasDashboard();
-
-  if (baseRoute !== "fmb") {
-    return <Menu sx={menuSx} {...props} />;
-  }
 
   return (
     <Menu sx={menuSx} {...props}>
       {hasDashboard ? <Menu.DashboardItem /> : null}
-      <FmbGroupedResourceItems />
+      <GroupedMenuContent />
     </Menu>
   );
 };

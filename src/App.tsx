@@ -7,7 +7,7 @@ import { useBaseRoute, useRouteId } from "@/utils/route-utility";
 import { checkAndClearCacheFromURL } from "@/utils/clear-permission-cache";
 import { useTenantBrandedThemes } from "@/hooks/useTenantBrandedThemes";
 
-import withClearCache from "@/ClearCache";
+import withClientVersionCheck from "@/components/ClientVersionCheck";
 import dataProvider from "@/dataprovider";
 import authProvider from "@/auth-provider";
 import layout from "@/layout";
@@ -74,8 +74,8 @@ const MainApp = () => {
   );
 };
 
-const MainAppWithClearCache = withClearCache(MainApp);
+const MainAppWithClientVersionCheck = withClientVersionCheck(MainApp);
 
 export default function App() {
-  return <MainAppWithClearCache />;
+  return <MainAppWithClientVersionCheck />;
 }

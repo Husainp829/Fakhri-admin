@@ -58,37 +58,58 @@ import ohbatMajlisAttendance from "@/containers/ohbat/ohbat-majlis-attendance";
 import sadarats from "@/containers/ohbat/sadarats";
 import makhsoosItsData from "@/containers/ohbat/makhsoos-its-data";
 
-import type { ModuleResourcesValue } from "@/types/react-admin-config";
+import {
+  moduleWithSections,
+  type ModuleResourcesRegistry,
+  type ModuleRuntimeShape,
+} from "@/types/react-admin-config";
 
 /**
  * Module resources keyed by baseRoute path.
- * Each entry: { resources: ResourceConfig[], customRoutes?: CustomRouteConfig[] }
+ * Checked with `ModuleResourcesRegistry` so `menuSection` keys match each module’s `menuSections`.
  */
-export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
-  bookings: {
+export const MODULE_RESOURCES = {
+  bookings: moduleWithSections({
+    menuSections: {
+      bookings: "Bookings",
+      receipts: "Receipts",
+      setup: "Setup",
+    },
     resources: [
-      { permission: "bookings.view", resource: bookings },
-      { permission: "bookings.view", resource: hallBookings },
+      {
+        permission: "bookings.view",
+        resource: bookings,
+        menuSection: "bookings",
+        hideFromMenu: true,
+      },
+      { permission: "bookings.view", resource: hallBookings, menuSection: "bookings" },
+      { permission: "bookings.view", resource: blockedHallDates, menuSection: "bookings" },
       {
         permission: "bookingReceipts.view",
         resource: rentBookingReceipt,
         createPermission: "bookingReceipts.create",
+        menuSection: "receipts",
       },
       {
         permission: "lagatReceipts.view",
         resource: lagatReceipt,
         createPermission: "bookingReceipts.create",
+        menuSection: "receipts",
       },
-      { permission: "halls.view", resource: bookingPurpose },
-      { permission: "halls.view", resource: halls, createPermission: "halls.create" },
-      { permission: "bookings.view", resource: blockedHallDates },
+      { permission: "halls.view", resource: bookingPurpose, menuSection: "setup" },
+      {
+        permission: "halls.view",
+        resource: halls,
+        createPermission: "halls.create",
+        menuSection: "setup",
+      },
     ],
     customRoutes: [
       { path: "/dep-rcpt/:id", element: DepositReceiptPrint },
       { path: "/raza-print/:id", element: RazaPrint },
       { path: "/confirmation-voucher/:id", element: ConfirmationVoucher },
     ],
-  },
+  }),
   events: {
     resources: [
       {
@@ -144,7 +165,11 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
       },
     ],
   },
-  fmb: {
+  fmb: moduleWithSections({
+    menuSections: {
+      kitchen: "Kitchen",
+      vendors: "Vendors",
+    },
     resources: [
       { permission: "fmbData.view", resource: fmbData, createPermission: "fmbData.create" },
       {
@@ -178,13 +203,13 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         permission: "fmbDish.view",
         resource: fmbDish,
         createPermission: "fmbDish.create",
-        menuGroup: "kitchen",
+        menuSection: "kitchen",
       },
       {
         permission: "fmbDailyMenu.view",
         resource: fmbDailyMenu,
         createPermission: "fmbDailyMenu.create",
-        menuGroup: "kitchen",
+        menuSection: "kitchen",
       },
       {
         permission: "fmbThaliDistributor.view",
@@ -200,16 +225,16 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
         permission: "fmbVendor.view",
         resource: fmbVendor,
         createPermission: "fmbVendor.create",
-        menuGroup: "vendors",
+        menuSection: "vendors",
       },
       {
         permission: "fmbVendorPaymentVoucher.view",
         resource: fmbVendorPaymentVoucher,
         createPermission: "fmbVendorPaymentVoucher.create",
-        menuGroup: "vendors",
+        menuSection: "vendors",
       },
     ],
-  },
+  }),
   miqaat: {
     resources: [{ permission: "miqaatNiyaazReceipts.view", resource: miqaatNiyaazReceipts }],
   },
@@ -275,4 +300,20 @@ export const MODULE_RESOURCES: Record<string, ModuleResourcesValue> = {
       },
     ],
   },
-};
+} satisfies ModuleResourcesRegistry;
+
+export type ModuleResourcesKey = keyof typeof MODULE_RESOURCES;
+
+export function isModuleResourcesKey(s: string): s is ModuleResourcesKey {
+  return Object.prototype.hasOwnProperty.call(MODULE_RESOURCES, s);
+}
+
+/** Resolved module bundle for `baseRoute`, or `undefined` if not a configured module. */
+export function getModuleRuntimeShape(
+  baseRoute: string | null | undefined
+): ModuleRuntimeShape | undefined {
+  if (baseRoute == null || !isModuleResourcesKey(baseRoute)) {
+    return undefined;
+  }
+  return MODULE_RESOURCES[baseRoute] as ModuleRuntimeShape;
+}

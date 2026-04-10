@@ -38,7 +38,9 @@ The app uses a config-driven architecture. Add or change modules/resources by ed
 - **Config**: `src/config/module-resources.ts` → `MODULE_RESOURCES` (keyed by baseRoute)
 - **Renderer**: `src/components/ResourcesRenderer.tsx`
 - Resources are shown only when `baseRoute` matches the module.
-- Each entry: `{ permission, resource, createPermission?, requireRouteId? }`
+- Each entry: `{ permission, resource, createPermission?, requireRouteId?, menuSection?, hideFromMenu? }` — `hideFromMenu: true` keeps `<Resource>` mounted but hides the link in `LayoutMenu`.
+- Optional `menuSections` on the module value maps `menuSection` keys to labels (`LayoutMenu`). For grouped modules, wrap the module in `moduleWithSections({ menuSections: { … }, resources: […] })` from `react-admin-config.ts` so `menuSection` on each row is inferred from those keys. `MODULE_RESOURCES` uses `} satisfies ModuleResourcesRegistry`. Keep same-key resources contiguous.
+- Dynamic access: `getModuleRuntimeShape(baseRoute)` in `module-resources.ts` (used by `ResourcesRenderer`, `LayoutMenu`). Module row visibility: `isModuleResourceRowVisible` in `ResourcesRenderer.tsx` (shared with menu filtering).
 - `requireRouteId: true`: show only when `routeId` exists (e.g. events).
 - `customRoutes`: module-specific noLayout routes (prints, vouchers).
 
