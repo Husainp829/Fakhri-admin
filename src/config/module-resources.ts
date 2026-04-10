@@ -151,9 +151,17 @@ export const MODULE_RESOURCES = {
         resource: sabilReceipt,
         createPermission: "sabilReceipts.create",
       },
-      { permission: "sabil.view", resource: sabilTakhmeen },
+      {
+        permission: "sabil.view",
+        resource: sabilTakhmeen,
+        hideFromMenu: true,
+      },
       { permission: "sabil.view", resource: sabilChangeRequests },
-      { permission: "sabil.view", resource: sabilLedger },
+      {
+        permission: "sabil.view",
+        resource: sabilLedger,
+        hideFromMenu: true,
+      },
     ],
   },
   lagat: {
@@ -167,38 +175,62 @@ export const MODULE_RESOURCES = {
   },
   fmb: moduleWithSections({
     menuSections: {
-      kitchen: "Kitchen",
+      households: "Households",
       vendors: "Vendors",
+      distribution: "Distribution",
+      kitchen: "Kitchen",
+      setup: "Setup",
     },
     resources: [
-      { permission: "fmbData.view", resource: fmbData, createPermission: "fmbData.create" },
+      {
+        permission: "fmbData.view",
+        resource: fmbData,
+        createPermission: "fmbData.create",
+        menuSection: "households",
+      },
       {
         permission: "fmbReceipt.view",
         resource: fmbReceipt,
         createPermission: "fmbReceipt.create",
+        menuSection: "households",
       },
-      { permission: "fmbData.view", resource: fmbContributions, createPermission: "fmbData.edit" },
-      { permission: "fmbData.view", resource: fmbTakhmeen, createPermission: "fmbData.edit" },
+      {
+        permission: "fmbData.view",
+        resource: fmbContributions,
+        createPermission: "fmbData.edit",
+        menuSection: "households",
+      },
+      {
+        permission: "fmbData.view",
+        resource: fmbTakhmeen,
+        createPermission: "fmbData.edit",
+        menuSection: "households",
+      },
       {
         permission: "fmbThaliSuspension.view",
         resource: fmbThaliSuspension,
         createPermission: "fmbThaliSuspension.create",
+        menuSection: "distribution",
       },
       {
         permission: "fmbDeliveryScheduleProfile.view",
         resource: fmbDeliveryScheduleProfile,
         createPermission: "fmbDeliveryScheduleProfile.create",
+        menuSection: "setup",
       },
       {
         permission: "fmbHoliday.view",
         resource: fmbHoliday,
         createPermission: "fmbHoliday.create",
+        menuSection: "setup",
       },
       {
         permission: "fmbThaliType.view",
         resource: fmbThaliType,
         createPermission: "fmbThaliType.create",
+        menuSection: "setup",
       },
+      { permission: "fmbThaliSettings.view", resource: fmbThaliSettings, menuSection: "setup" },
       {
         permission: "fmbDish.view",
         resource: fmbDish,
@@ -215,12 +247,13 @@ export const MODULE_RESOURCES = {
         permission: "fmbThaliDistributor.view",
         resource: fmbThaliDistributor,
         createPermission: "fmbThaliDistributor.create",
+        menuSection: "distribution",
       },
       {
         permission: "fmbThaliDistribution.view",
         resource: fmbThaliDistributionDailyRun,
+        menuSection: "distribution",
       },
-      { permission: "fmbThaliSettings.view", resource: fmbThaliSettings },
       {
         permission: "fmbVendor.view",
         resource: fmbVendor,

@@ -34,42 +34,116 @@ const menuSectionSubheaderSx = (theme: Theme) => ({
   bgcolor: "transparent",
 });
 
-/** Renders module resource links; subheaders when `menuSection` + parent `menuSections` are set. */
+/**
+ * Renders module resource links.
+ * When `menuSections` is set, **group order** follows `Object.keys(menuSections)` (insertion order in the config object).
+ * Within each group, resources keep their order in `module-resources`. Leading rows without `menuSection` render first;
+ * remaining ungrouped rows render after all keyed sections.
+ */
 function appendModuleResourceMenuItems(
   nodes: React.ReactNode[],
   moduleResources: readonly ModuleResourceRow[],
   menuSections: Record<string, string> | undefined,
   menuRouteKey: string
 ): void {
-  let currentSection: string | undefined;
-  let subheaderOrdinal = 0;
-  for (const config of moduleResources) {
+  const withName = moduleResources.filter((config) => {
     if (config.hideFromMenu) {
+      return false;
+    }
+    return Boolean((config.resource as { name?: string }).name);
+  });
+
+  if (!menuSections || Object.keys(menuSections).length === 0) {
+    let currentSection: string | undefined;
+    let subheaderOrdinal = 0;
+    for (const config of withName) {
+      const name = (config.resource as { name?: string }).name!;
+      const section = config.menuSection;
+      if (section !== currentSection) {
+        currentSection = section;
+        if (section) {
+          nodes.push(
+            <ListSubheader
+              key={`${menuRouteKey}-sec-${section}-${subheaderOrdinal}`}
+              disableGutters
+              disableSticky
+              sx={(theme) => menuSectionSubheaderSx(theme)}
+            >
+              {section}
+            </ListSubheader>
+          );
+          subheaderOrdinal += 1;
+        }
+      }
+      nodes.push(<Menu.ResourceItem key={name} name={name} />);
+    }
+    return;
+  }
+
+  const emitted = new WeakSet<ModuleResourceRow>();
+  const pushResourceItem = (config: ModuleResourceRow) => {
+    if (emitted.has(config)) {
+      return;
+    }
+    emitted.add(config);
+    const name = (config.resource as { name?: string }).name!;
+    nodes.push(<Menu.ResourceItem key={name} name={name} />);
+  };
+
+  let subheaderOrdinal = 0;
+  let i = 0;
+  while (i < withName.length && !withName[i].menuSection) {
+    pushResourceItem(withName[i]);
+    i += 1;
+  }
+
+  for (const sectionKey of Object.keys(menuSections)) {
+    const inSection = withName.filter((r) => r.menuSection === sectionKey);
+    if (inSection.length === 0) {
       continue;
     }
-    const name = (config.resource as { name?: string }).name;
-    if (!name) {
-      continue;
+    nodes.push(
+      <ListSubheader
+        key={`${menuRouteKey}-sec-${sectionKey}-${subheaderOrdinal}`}
+        disableGutters
+        disableSticky
+        sx={(theme) => menuSectionSubheaderSx(theme)}
+      >
+        {menuSections[sectionKey]}
+      </ListSubheader>
+    );
+    subheaderOrdinal += 1;
+    for (const r of inSection) {
+      pushResourceItem(r);
     }
-    const section = config.menuSection;
-    if (section !== currentSection) {
-      currentSection = section;
-      if (section) {
-        const label = menuSections?.[section] ?? section;
+  }
+
+  for (const r of withName) {
+    if (!r.menuSection) {
+      pushResourceItem(r);
+    }
+  }
+
+  const orphanSectionHeaderEmitted = new Set<string>();
+  for (const r of withName) {
+    if (!emitted.has(r)) {
+      const orphanKey = r.menuSection;
+      if (orphanKey && !orphanSectionHeaderEmitted.has(orphanKey)) {
+        orphanSectionHeaderEmitted.add(orphanKey);
         nodes.push(
           <ListSubheader
-            key={`${menuRouteKey}-sec-${section}-${subheaderOrdinal}`}
+            key={`${menuRouteKey}-sec-orphan-${orphanKey}-${subheaderOrdinal}`}
             disableGutters
             disableSticky
             sx={(theme) => menuSectionSubheaderSx(theme)}
           >
-            {label}
+            {orphanKey}
           </ListSubheader>
         );
         subheaderOrdinal += 1;
       }
+      pushResourceItem(r);
     }
-    nodes.push(<Menu.ResourceItem key={name} name={name} />);
   }
 }
 
