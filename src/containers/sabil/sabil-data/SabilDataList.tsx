@@ -16,12 +16,36 @@ import {
   FunctionField,
   DateField,
   SelectInput,
+  NumberInput,
 } from "react-admin";
 import Divider from "@mui/material/Divider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
 type SabilTypeTab = { id: string; name: string };
+
+const GRADE_FILTER_CHOICES = (
+  [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+  ] as const
+).map((g) => ({ id: g, name: g }));
 
 const getTabIdFromFilters = (filters: Record<string, unknown>, statuses: SabilTypeTab[]) => {
   const t = statuses.findIndex((s) => s.id === filters?.sabilType);
@@ -71,7 +95,15 @@ function TabbedDatagrid() {
     <TextField
       source="sabilTakhmeenCurrent.takhmeenAmount"
       label="Takhmeen"
+      sortBy="sabilTakhmeenCurrent.takhmeenAmount"
       key="takhmeenAmount"
+    />,
+    <TextField
+      source="currentTakhmeenGrade"
+      label="Grade"
+      sortBy="currentTakhmeenGrade"
+      emptyText="—"
+      key="currentTakhmeenGrade"
     />,
     <TextField source="mohallah" label="Mohallah" key="itsdata" />,
     <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />,
@@ -107,26 +139,6 @@ function TabbedDatagrid() {
   );
 }
 
-const RegistrationFilters = [
-  <TextInput
-    label="Search By HOF ITS OR Sabil No..."
-    source="search"
-    alwaysOn
-    key={0}
-    sx={{ minWidth: 300 }}
-  />,
-  <SelectInput
-    label="Status"
-    source="status"
-    key={1}
-    choices={[
-      { id: "ACTIVE", name: "Active" },
-      { id: "CLOSED", name: "Closed" },
-    ]}
-    sx={{ marginBottom: 0 }}
-  />,
-];
-
 const getFilterFromURL = () => {
   if (typeof window === "undefined") return { sabilType: "CHULA" };
 
@@ -144,6 +156,49 @@ const getFilterFromURL = () => {
 
   return { sabilType: "CHULA" };
 };
+
+/** Base keys help the default FilterForm register fields; URL/deep-link values merge on top. */
+const getListFilterDefaults = () => ({
+  search: "",
+  takhmeenGrade: "",
+  ...getFilterFromURL(),
+});
+
+const RegistrationFilters = [
+  <TextInput
+    label="Search By HOF ITS OR Sabil No..."
+    source="search"
+    alwaysOn
+    key="search"
+    sx={{ minWidth: 300 }}
+  />,
+  <NumberInput
+    label="Takhmeen amount"
+    source="takhmeenAmount"
+    key="takhmeenAmount"
+    helperText="Exact match; clear to remove"
+    parse={(v) => (v === "" || v == null ? undefined : Number(v))}
+    format={(v) => (v == null || Number.isNaN(v as number) ? "" : v)}
+  />,
+  <SelectInput
+    label="Grade"
+    source="takhmeenGrade"
+    key="takhmeenGrade"
+    alwaysOn
+    choices={GRADE_FILTER_CHOICES}
+    emptyText="Any grade"
+  />,
+  <SelectInput
+    label="Status"
+    source="status"
+    key="status"
+    choices={[
+      { id: "ACTIVE", name: "Active" },
+      { id: "CLOSED", name: "Closed" },
+    ]}
+    sx={{ marginBottom: 0 }}
+  />,
+];
 
 const ListActions = () => (
   <TopToolbar sx={{ justifyContent: "start" }}>
@@ -166,7 +221,7 @@ export default function SabilDataList(props: ListProps) {
     <List
       {...props}
       sort={{ field: "updatedAt", order: "DESC" }}
-      filterDefaultValues={getFilterFromURL()}
+      filterDefaultValues={getListFilterDefaults()}
       perPage={25}
       pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
       filters={RegistrationFilters}
