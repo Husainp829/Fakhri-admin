@@ -110,6 +110,30 @@ const dataProvider = {
       });
     }
 
+    if (resource === "fmbThaliDeliveryToggleLog") {
+      const pagination = params.pagination ?? { page: 1, perPage: 10 };
+      const filter = params.filter ?? {};
+      const sort = params.sort ?? { field: "createdAt", order: "DESC" as const };
+      const page = pagination.page ?? 1;
+      const perPage = pagination.perPage ?? 10;
+      const query = {
+        ...fetchUtils.flattenObject(filter),
+        orderBy: sort.field,
+        order: sort.order,
+        limit: perPage,
+        startAfter: (page - 1) * perPage,
+      };
+      const url = `${getApiUrl()}/fmbThaliDelivery/history?${stringify(query)}`;
+      return httpClient(url).then(({ json }) => {
+        const body = json as { count?: number; rows?: unknown[] };
+        const rows = body.rows ?? [];
+        return {
+          data: convertRows(rows),
+          total: body.count ?? rows.length,
+        };
+      });
+    }
+
     if (resource === "fmbThaliDistributionDailyRun") {
       const filter = params.filter ?? {};
       const flat = fetchUtils.flattenObject(filter) as Record<string, unknown>;
@@ -229,6 +253,27 @@ const dataProvider = {
   getManyReference: (resource: string, params: Parameters<DataProvider["getManyReference"]>[1]) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
+
+    if (resource === "fmbThaliDeliveryToggleLog") {
+      const query = {
+        ...fetchUtils.flattenObject(params.filter),
+        [params.target]: params.id,
+        orderBy: field,
+        order,
+        limit: perPage,
+        startAfter: (page - 1) * perPage,
+      };
+      const url = `${getApiUrl()}/fmbThaliDelivery/history?${stringify(query)}`;
+      return httpClient(url).then(({ json }) => {
+        const body = json as { rows?: unknown[]; count?: number };
+        const rows = body.rows ?? [];
+        return {
+          data: convertRows(rows),
+          total: body.count ?? rows.length,
+        };
+      });
+    }
+
     const query = {
       ...fetchUtils.flattenObject(params.filter),
       [params.target]: params.id,

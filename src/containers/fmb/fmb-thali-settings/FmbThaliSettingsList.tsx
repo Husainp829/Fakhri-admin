@@ -67,10 +67,10 @@ function computeCutoffPreview(tzRaw, offsetDaysRaw, cutoffMinutesRaw) {
   }
 
   const serviceDay = nextIsoWeekdayInTz(nowInTz, 3);
-  const serviceCivil = serviceDay.format("YYYY-MM-DD");
+  const serviceDayYmd = serviceDay.format("YYYY-MM-DD");
 
   const cutoff = dayjs
-    .tz(serviceCivil, tz)
+    .tz(serviceDayYmd, tz)
     .subtract(offsetDays, "day")
     .startOf("day")
     .add(cutoffMinutes, "minute");
@@ -79,10 +79,10 @@ function computeCutoffPreview(tzRaw, offsetDaysRaw, cutoffMinutesRaw) {
     return { error: "Could not compute cut-off for these values." };
   }
 
-  const anchorMidnight = dayjs.tz(serviceCivil, tz).subtract(offsetDays, "day").startOf("day");
+  const anchorMidnight = dayjs.tz(serviceDayYmd, tz).subtract(offsetDays, "day").startOf("day");
 
   return {
-    serviceCivil,
+    serviceDayYmd,
     serviceDayFormatted: formatInTz(serviceDay, tz),
     cutoffFormatted: formatInTz(cutoff, tz),
     anchorDayFormatted: formatInTz(anchorMidnight, tz),
@@ -217,7 +217,7 @@ export default function FmbThaliSettingsPage() {
                     <strong>{cutoffPreview.tz}</strong>):{" "}
                     <strong>{cutoffPreview.serviceDayFormatted}</strong>{" "}
                     <Box component="span" sx={{ typography: "caption", color: "text.secondary" }}>
-                      ({cutoffPreview.serviceCivil})
+                      ({cutoffPreview.serviceDayYmd})
                     </Box>
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 0.75 }}>
