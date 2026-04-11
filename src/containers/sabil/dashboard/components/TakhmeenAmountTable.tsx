@@ -13,7 +13,7 @@ import {
   TablePagination,
 } from "@mui/material";
 
-export type TakhmeenAmountRow = { amount: number; count: number };
+export type TakhmeenAmountRow = { amount: number; count: number; grade?: string | null };
 
 type TakhmeenAmountTableProps = {
   sabilType: string;
@@ -64,6 +64,7 @@ const TakhmeenAmountTable = ({ sabilType, data, redirect }: TakhmeenAmountTableP
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 600 }}>Takhmeen Amount</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Grade</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Count</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
@@ -74,6 +75,11 @@ const TakhmeenAmountTable = ({ sabilType, data, redirect }: TakhmeenAmountTableP
                 <TableCell>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     ₹{item.amount.toLocaleString("en-IN")}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {item.grade ?? "—"}
                   </Typography>
                 </TableCell>
                 <TableCell>
