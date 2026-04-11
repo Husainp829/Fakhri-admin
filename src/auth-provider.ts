@@ -12,7 +12,7 @@ import { goToLogin } from "@/utils";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import { fetchAndStoreTenantBrandingTheme } from "@/utils/tenant-branding-cache";
-import { parsePermissionsArray } from "@/utils/permission-utils";
+import { parsePermissionsArray, shouldRedirectToDistributorPortal } from "@/utils/permission-utils";
 import type { PermissionRecord } from "@/types/permissions";
 
 const cache = new LRUCache<string, PermissionRecord>({
@@ -161,6 +161,14 @@ const authProvider: AuthProvider = {
       await fetchAndStoreTenantBrandingTheme().catch(() => {
         /* optional; theme falls back to code defaults */
       });
+
+      if (shouldRedirectToDistributorPortal(permissions)) {
+        return { redirectTo: "/fmb-distributor-portal" };
+      }
+
+      // Avoid react-admin sending the user back to a saved `from` route (e.g. portal) after
+      // switching accounts — non-distributor logins always land on the main dashboard.
+      return { redirectTo: "/" };
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;

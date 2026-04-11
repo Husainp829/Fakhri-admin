@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Identifier, RaRecord } from "react-admin";
 import {
   Button,
@@ -31,6 +31,8 @@ import {
 import { getApiUrl } from "@/constants";
 import httpClient from "@/dataprovider/http-client";
 
+import { useReportAssignmentsTabTotal } from "../AssignmentsTabCountContext";
+
 const SEARCH_DEBOUNCE_MS = 400;
 const DEFAULT_SEARCH_ROWS_PER_PAGE = 25;
 const SEARCH_ROWS_PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
@@ -42,6 +44,7 @@ interface FmbThaliRow {
   id?: string;
   thaliNo?: string;
   deliveryMohallah?: string;
+  thaliType?: { id?: string; name?: string | null; code?: string | null } | null;
   fmb?: { itsNo?: string; name?: string };
 }
 
@@ -64,6 +67,42 @@ function thaliLabel(t: FmbThaliRow): string {
 function assignmentThaliId(a: AssignmentRow): string | undefined {
   const id = a?.fmbThaliId ?? a?.fmbThali?.id;
   return id ? String(id) : undefined;
+}
+
+/**
+ * Stable group key for thali type breakdown. When `thaliType.id` is omitted from the API
+ * payload, every row must not share a single `__none` bucket — use name/code so Medium vs
+ * Small stay distinct.
+ */
+function assignmentThaliTypeGroupKey(tt: FmbThaliRow["thaliType"] | null | undefined): string {
+  if (!tt) return "__none";
+  const rawId = tt.id != null ? String(tt.id).trim() : "";
+  if (rawId) return `id:${rawId}`;
+  const name = (tt.name ?? "").trim().toLowerCase();
+  const code = (tt.code ?? "").trim().toLowerCase();
+  if (name || code) return `label:${name}\0${code}`;
+  return "__none";
+}
+
+/** Counts assigned thalis by `fmbThali.thaliType`. */
+function buildAssignedThaliTypeBreakdown(
+  rows: AssignmentRow[]
+): { id: string; name: string; count: number }[] {
+  const byKey = new Map<string, { name: string; count: number }>();
+  for (const a of rows) {
+    const tt = a?.fmbThali?.thaliType;
+    const key = assignmentThaliTypeGroupKey(tt);
+    const label = (tt?.name?.trim() || tt?.code?.trim() || "Unspecified").trim() || "Unspecified";
+    const prev = byKey.get(key);
+    if (prev) {
+      prev.count += 1;
+    } else {
+      byKey.set(key, { name: label, count: 1 });
+    }
+  }
+  return [...byKey.entries()]
+    .map(([id, v]) => ({ id, name: v.name, count: v.count }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function rowsFromResponse(json: unknown): unknown[] {
@@ -136,6 +175,7 @@ export default function AssignmentsTab() {
   const distributorId = record?.id as string | number | undefined;
   const notify = useNotify();
   const refresh = useRefresh();
+  const setTabTotalAssigned = useReportAssignmentsTabTotal();
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -152,6 +192,7 @@ export default function AssignmentsTab() {
   const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
   const [assignedFilter, setAssignedFilter] = useState("");
   const [selectedToUnassign, setSelectedToUnassign] = useState<Set<string>>(new Set());
+  const assignmentsLoadForIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedSearch(searchInput), SEARCH_DEBOUNCE_MS);
@@ -164,6 +205,11 @@ export default function AssignmentsTab() {
 
   const loadAssignments = useCallback(async () => {
     if (!distributorId) return;
+    const sid = String(distributorId);
+    if (assignmentsLoadForIdRef.current !== sid) {
+      assignmentsLoadForIdRef.current = sid;
+      setAssignments([]);
+    }
     setBusy(true);
     try {
       const res = await httpClient(
@@ -183,6 +229,10 @@ export default function AssignmentsTab() {
   useEffect(() => {
     void loadAssignments();
   }, [loadAssignments]);
+
+  useEffect(() => {
+    setTabTotalAssigned(assignments.length);
+  }, [assignments.length, setTabTotalAssigned]);
 
   const fetchThalis = useCallback(
     async (search: string, page: number, pageSize: number) => {
@@ -377,12 +427,24 @@ export default function AssignmentsTab() {
     });
   }, [assignments]);
 
+  const assignedByThaliType = useMemo(
+    () => buildAssignedThaliTypeBreakdown(assignments),
+    [assignments]
+  );
+
   const filteredAssignments = useMemo(() => {
     const q = assignedFilter.trim().toLowerCase();
     if (!q) return assignments;
     return assignments.filter((a) => {
       const t = a?.fmbThali;
-      const haystack = t ? thaliLabel(t).toLowerCase() : String(a?.fmbThaliId ?? "").toLowerCase();
+      const typeHay = (
+        t?.thaliType?.name?.trim() ||
+        t?.thaliType?.code?.trim() ||
+        ""
+      ).toLowerCase();
+      const haystack = t
+        ? `${thaliLabel(t)} ${typeHay}`.toLowerCase()
+        : String(a?.fmbThaliId ?? "").toLowerCase();
       return haystack.includes(q);
     });
   }, [assignments, assignedFilter]);
@@ -668,6 +730,52 @@ export default function AssignmentsTab() {
 
       <Divider sx={{ my: 2 }} />
 
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+          Assigned by thali type
+        </Typography>
+        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+          Totals across all thalis currently linked to this distributor.
+        </Typography>
+        {assignments.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            Assign thalis above to see counts by type.
+          </Typography>
+        ) : (
+          <TableContainer
+            sx={{
+              border: 1,
+              borderColor: "divider",
+              borderRadius: 1,
+              maxWidth: { xs: "100%", sm: 440 },
+            }}
+          >
+            <Table size="small" sx={{ minWidth: 280 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Thali type</TableCell>
+                  <TableCell align="right">Count</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {assignedByThaliType.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell align="right">{row.count.toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "medium" }}>Total</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: "medium" }}>
+                    {assignments.length.toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Box>
+
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
@@ -685,7 +793,7 @@ export default function AssignmentsTab() {
             size="small"
             fullWidth
             label="Filter assigned"
-            placeholder="Thali no, ITS, name, mohallah…"
+            placeholder="Thali no, ITS, name, mohallah, thali type…"
             value={assignedFilter}
             onChange={(e) => setAssignedFilter(e.target.value)}
             disabled={busy}
@@ -711,7 +819,7 @@ export default function AssignmentsTab() {
             maxWidth: "100%",
           }}
         >
-          <Table size="small" sx={{ minWidth: 520 }}>
+          <Table size="small" sx={{ minWidth: 600 }}>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
@@ -728,6 +836,7 @@ export default function AssignmentsTab() {
                 <TableCell>ITS</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Mohallah</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -753,6 +862,9 @@ export default function AssignmentsTab() {
                     <TableCell>{thali?.fmb?.itsNo ?? "—"}</TableCell>
                     <TableCell>{thali?.fmb?.name ?? "—"}</TableCell>
                     <TableCell>{thali?.deliveryMohallah ?? "—"}</TableCell>
+                    <TableCell>
+                      {thali?.thaliType?.name?.trim() || thali?.thaliType?.code?.trim() || "—"}
+                    </TableCell>
                     <TableCell align="right">
                       <Button
                         label="Remove"

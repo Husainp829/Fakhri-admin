@@ -64,6 +64,36 @@ export const hasAllPermissions = (
   return permissionList.every((permission) => hasPermission(permissions, permission));
 };
 
+/**
+ * True when the user should land on the FMB distributor portal after login (portal-only account).
+ */
+export const shouldRedirectToDistributorPortal = (
+  permissions: PermissionRecord | null | undefined
+): boolean => {
+  if (!permissions || !hasPermission(permissions, "fmbThaliDistribution.distributorPortal")) {
+    return false;
+  }
+  if (permissions["*"]) {
+    return false;
+  }
+
+  for (const [resource, actions] of Object.entries(permissions)) {
+    if (resource === "*" || !actions || typeof actions !== "object") {
+      continue;
+    }
+    for (const [action, granted] of Object.entries(actions)) {
+      if (!granted) {
+        continue;
+      }
+      if (resource === "fmbThaliDistribution" && action === "distributorPortal") {
+        continue;
+      }
+      return false;
+    }
+  }
+  return true;
+};
+
 export const getResourcePermissions = (
   permissions: PermissionRecord | null | undefined,
   resource: string

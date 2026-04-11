@@ -1,30 +1,53 @@
 import React from "react";
 import { Resource, CustomRoutes } from "react-admin";
 import { Route } from "react-router-dom";
-import { hasPermission } from "@/utils/permission-utils";
-import { MODULE_RESOURCES } from "@/config/module-resources";
+import { getModuleRuntimeShape } from "@/config/module-resources";
 import { GLOBAL_RESOURCES } from "@/config/global-resources";
-import type { ResourceConfig } from "@/types/react-admin-config";
+import type { ModuleResourceRow } from "@/types/react-admin-config";
 import type { PermissionRecord } from "@/types/permissions";
+import { hasPermission } from "@/utils/permission-utils";
+
+/**
+ * Whether a module resource row should appear in the menu and be registered as a `<Resource>`.
+ * Shared by {@link filterVisibleResourceConfigs}, {@link buildAdminResourceChildren}, and {@link renderResource}.
+ */
+export function isModuleResourceRowVisible(
+  permissions: PermissionRecord,
+  row: Pick<ModuleResourceRow, "permission" | "permissionsAny" | "requireRouteId">,
+  routeId: string | null | undefined
+): boolean {
+  if (row.requireRouteId && !routeId) {
+    return false;
+  }
+  if (row.permissionsAny?.length) {
+    return row.permissionsAny.some((p) => hasPermission(permissions, p));
+  }
+  if (row.permission != null && !hasPermission(permissions, row.permission)) {
+    return false;
+  }
+  return true;
+}
+
+/** View/route visibility for module resources (uses {@link isModuleResourceRowVisible}). */
+export function filterVisibleResourceConfigs(
+  permissions: PermissionRecord,
+  configs: readonly ModuleResourceRow[],
+  routeId: string | null | undefined
+): ModuleResourceRow[] {
+  return configs.filter((r) => isModuleResourceRowVisible(permissions, r, routeId));
+}
+
+type ResourceRenderInput = ModuleResourceRow & { name?: string };
 
 const renderResource = (
   permissions: PermissionRecord,
-  {
-    permission,
-    permissionsAny,
-    resource,
-    createPermission,
-    name,
-  }: ResourceConfig & { name?: string }
+  row: ResourceRenderInput,
+  routeId: string | null | undefined
 ) => {
-  if (permissionsAny?.length) {
-    const allowed = permissionsAny.some((p) => hasPermission(permissions, p));
-    if (!allowed) {
-      return null;
-    }
-  } else if (permission != null && !hasPermission(permissions, permission)) {
+  if (!isModuleResourceRowVisible(permissions, row, routeId)) {
     return null;
   }
+  const { resource, createPermission, name } = row;
   const create =
     createPermission === undefined || hasPermission(permissions, createPermission)
       ? resource.create
@@ -54,20 +77,21 @@ export function buildAdminResourceChildren(
   baseRoute: string | null,
   routeId: string | null | undefined
 ): React.ReactNode[] {
-  const moduleConfig = baseRoute != null ? MODULE_RESOURCES[baseRoute] : undefined;
+  const moduleRuntime = getModuleRuntimeShape(baseRoute);
   const elements: React.ReactNode[] = [];
 
-  if (moduleConfig) {
-    moduleConfig.resources
-      .filter((r) => !r.requireRouteId || routeId)
-      .forEach((r) => {
-        const el = renderResource(permissions, r);
-        if (el) elements.push(el);
-      });
-    if (moduleConfig.customRoutes && moduleConfig.customRoutes.length > 0) {
+  if (moduleRuntime) {
+    const { resources, customRoutes } = moduleRuntime;
+    resources.forEach((r) => {
+      const el = renderResource(permissions, r, routeId);
+      if (el) {
+        elements.push(el);
+      }
+    });
+    if (customRoutes && customRoutes.length > 0) {
       elements.push(
         <CustomRoutes key="module-custom-routes" noLayout>
-          {moduleConfig.customRoutes.map(({ path, element: Element }) => (
+          {customRoutes.map(({ path, element: Element }) => (
             <Route key={path} path={path} element={<Element />} />
           ))}
         </CustomRoutes>
@@ -76,12 +100,18 @@ export function buildAdminResourceChildren(
   }
 
   GLOBAL_RESOURCES.filter((g) => hasPermission(permissions, g.permission)).forEach((g) => {
-    const el = renderResource(permissions, {
-      permission: g.permission,
-      resource: g.resource,
-      name: g.name,
-    });
-    if (el) elements.push(el);
+    const el = renderResource(
+      permissions,
+      {
+        permission: g.permission,
+        resource: g.resource,
+        name: g.name,
+      },
+      routeId
+    );
+    if (el) {
+      elements.push(el);
+    }
   });
 
   return elements;

@@ -2,7 +2,11 @@ import type { ReactElement } from "react";
 import { usePermissions } from "react-admin";
 import { Navigate } from "react-router-dom";
 import { useBaseRoute, useRouteId } from "@/utils/route-utility";
-import { hasAnyPermission, hasPermission } from "@/utils/permission-utils";
+import {
+  hasAnyPermission,
+  hasPermission,
+  shouldRedirectToDistributorPortal,
+} from "@/utils/permission-utils";
 import { getModuleByPath } from "@/config/modules";
 import DefaultDashboard from "@/containers/default-dashboard";
 import type { PermissionRecord } from "@/types/permissions";
@@ -12,6 +16,10 @@ const DashboardAdmin = (): ReactElement => {
   const routeId = useRouteId();
   const { permissions } = usePermissions<PermissionRecord>();
   const module = baseRoute ? getModuleByPath(baseRoute) : undefined;
+
+  if (shouldRedirectToDistributorPortal(permissions)) {
+    return <Navigate to="/fmb-distributor-portal" replace />;
+  }
 
   if (!module) {
     return <DefaultDashboard />;

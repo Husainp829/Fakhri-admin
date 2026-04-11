@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNotify, useRecordContext } from "react-admin";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Table from "@mui/material/Table";
@@ -10,6 +16,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
 import Typography from "@mui/material/Typography";
 import { alpha, type Theme } from "@mui/material/styles";
 import { getApiUrl } from "@/constants";
@@ -25,6 +32,15 @@ type MakhsoosMatchRow = {
   Address?: string;
   hasAttendedOhbatMajlis?: boolean;
 };
+
+type MakhsoosSortField = "Full_Name" | "Sector" | "Sub_Sector";
+
+function compareMakhsoosText(a: string | undefined, b: string | undefined, order: "asc" | "desc") {
+  const va = (a ?? "").trim().toLocaleLowerCase();
+  const vb = (b ?? "").trim().toLocaleLowerCase();
+  const c = va.localeCompare(vb, undefined, { sensitivity: "base" });
+  return order === "asc" ? c : -c;
+}
 
 function attendedHighlightStyle(theme: Theme, attended: boolean) {
   if (!attended) {
@@ -114,6 +130,31 @@ export function MakhsoosHostSectorTab() {
   const isNarrow = useMediaQuery((theme) => theme.breakpoints.down("md"), { noSsr: true });
   const [rows, setRows] = useState<MakhsoosMatchRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortField, setSortField] = useState<MakhsoosSortField>("Full_Name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const sortedRows = useMemo(
+    () =>
+      [...rows].sort((a, b) => {
+        if (sortField === "Full_Name") {
+          return compareMakhsoosText(a.Full_Name, b.Full_Name, sortOrder);
+        }
+        if (sortField === "Sector") {
+          return compareMakhsoosText(a.Sector, b.Sector, sortOrder);
+        }
+        return compareMakhsoosText(a.Sub_Sector, b.Sub_Sector, sortOrder);
+      }),
+    [rows, sortField, sortOrder]
+  );
+
+  const handleSort = (field: MakhsoosSortField) => {
+    if (field === sortField) {
+      setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   useEffect(() => {
     const id = record?.id;
@@ -154,7 +195,7 @@ export function MakhsoosHostSectorTab() {
     );
   }
 
-  if (rows.length === 0) {
+  if (sortedRows.length === 0 && rows.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
         No makhsoos ITS records share the host&apos;s sector or sub-sector, or host ITS was not
@@ -169,12 +210,43 @@ export function MakhsoosHostSectorTab() {
     </Typography>
   );
 
+  const narrowSortBar = (
+    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1, flexWrap: "wrap" }}>
+      <FormControl size="small" sx={{ minWidth: (theme) => theme.spacing(22) }}>
+        <InputLabel id="makhsoos-sort-field-label">Sort by</InputLabel>
+        <Select
+          labelId="makhsoos-sort-field-label"
+          label="Sort by"
+          value={sortField}
+          onChange={(e) => {
+            setSortField(e.target.value as MakhsoosSortField);
+            setSortOrder("asc");
+          }}
+        >
+          <MenuItem value="Full_Name">Name</MenuItem>
+          <MenuItem value="Sector">Sector</MenuItem>
+          <MenuItem value="Sub_Sector">Sub-sector</MenuItem>
+        </Select>
+      </FormControl>
+      <IconButton
+        aria-label={sortOrder === "asc" ? "Switch to descending sort" : "Switch to ascending sort"}
+        onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
+        size="small"
+        color="primary"
+        edge="end"
+      >
+        <SwapVertIcon fontSize="small" />
+      </IconButton>
+    </Stack>
+  );
+
   if (isNarrow) {
     return (
       <>
         {legend}
+        {narrowSortBar}
         <Stack component="ul" spacing={1.5} sx={{ listStyle: "none", m: 0, p: 0 }}>
-          {rows.map((r) => (
+          {sortedRows.map((r) => (
             <Box key={r.id} component="li">
               <MakhsoosRowCard r={r} />
             </Box>
@@ -221,9 +293,33 @@ export function MakhsoosHostSectorTab() {
               >
                 ITS
               </TableCell>
-              <TableCell sx={{ verticalAlign: "bottom" }}>Name</TableCell>
-              <TableCell sx={{ verticalAlign: "bottom" }}>Sector</TableCell>
-              <TableCell sx={{ verticalAlign: "bottom" }}>Sub-sector</TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>
+                <TableSortLabel
+                  active={sortField === "Full_Name"}
+                  direction={sortField === "Full_Name" ? sortOrder : "asc"}
+                  onClick={() => handleSort("Full_Name")}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>
+                <TableSortLabel
+                  active={sortField === "Sector"}
+                  direction={sortField === "Sector" ? sortOrder : "asc"}
+                  onClick={() => handleSort("Sector")}
+                >
+                  Sector
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sx={{ verticalAlign: "bottom" }}>
+                <TableSortLabel
+                  active={sortField === "Sub_Sector"}
+                  direction={sortField === "Sub_Sector" ? sortOrder : "asc"}
+                  onClick={() => handleSort("Sub_Sector")}
+                >
+                  Sub-sector
+                </TableSortLabel>
+              </TableCell>
               <TableCell
                 sx={(theme) => ({
                   width: theme.spacing(14),
@@ -238,7 +334,7 @@ export function MakhsoosHostSectorTab() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((r) => {
+            {sortedRows.map((r) => {
               const attended = Boolean(r.hasAttendedOhbatMajlis);
               return (
                 <TableRow key={r.id} sx={(theme) => attendedHighlightStyle(theme, attended)}>

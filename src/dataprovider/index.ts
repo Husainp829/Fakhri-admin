@@ -113,13 +113,25 @@ const dataProvider = {
     if (resource === "fmbThaliDistributionDailyRun") {
       const filter = params.filter ?? {};
       const flat = fetchUtils.flattenObject(filter) as Record<string, unknown>;
-      const raw = typeof flat.date === "string" ? flat.date.trim() : "";
-      const date = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : new Date().toISOString().slice(0, 10);
+      const rawDate = flat.date;
+      let dateStr = "";
+      if (typeof rawDate === "string") {
+        dateStr = rawDate.trim();
+      } else if (rawDate instanceof Date && !Number.isNaN(rawDate.getTime())) {
+        dateStr = rawDate.toISOString().slice(0, 10);
+      }
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
+        ? dateStr
+        : new Date().toISOString().slice(0, 10);
       const url = `${getApiUrl()}/fmbThaliDistribution/dashboard?${stringify({ date })}`;
       return httpClient(url).then(({ json }) => {
         const body = json as {
           count?: number;
           rows?: Array<Record<string, unknown> & { distributorId?: string }>;
+          isTenantHoliday?: boolean;
+          holidayName?: string | null;
+          date?: string;
+          timezone?: string;
         };
         const rows = body.rows ?? [];
         const withIds = rows.map((row) => ({
@@ -129,6 +141,12 @@ const dataProvider = {
         return {
           data: convertRows(withIds),
           total: body.count ?? rows.length,
+          meta: {
+            isTenantHoliday: Boolean(body.isTenantHoliday),
+            holidayName: body.holidayName ?? null,
+            dashboardDate: body.date ?? date,
+            timezone: body.timezone,
+          },
         };
       });
     }
@@ -159,7 +177,17 @@ const dataProvider = {
   getOne: (resource: string, params: Parameters<DataProvider["getOne"]>[1]) =>
     httpClient(`${getApiUrl(resource)}/${resource}/${params.id}`).then(({ json }) => {
       const body = json as { rows?: Record<string, unknown>[] };
-      return { data: body.rows![0] };
+      const row = body.rows![0];
+      if (resource === "fmbDailyMenu" && row && Array.isArray(row.dishIds)) {
+        const dishIds = row.dishIds as string[];
+        return {
+          data: {
+            ...row,
+            menuLines: dishIds.map((dishId) => ({ dishId })),
+          },
+        };
+      }
+      return { data: row };
     }),
 
   getMany: (resource: string, params: Parameters<DataProvider["getMany"]>[1]) => {
