@@ -8,7 +8,19 @@ type StatCardProps = {
   color?: "primary" | "success" | "error" | "warning" | "secondary";
   subtitle?: string;
   onClick?: () => void;
+  /** Default: currency (₹). Use "count" for integers like number of sabils. */
+  valueType?: "currency" | "count";
 };
+
+function formatStatValue(value: number | string, valueType: "currency" | "count"): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (valueType === "count") {
+    return value.toLocaleString("en-IN");
+  }
+  return `₹${value.toLocaleString("en-IN")}`;
+}
 
 const StatCard = ({
   title,
@@ -17,6 +29,7 @@ const StatCard = ({
   color = "primary",
   subtitle,
   onClick,
+  valueType = "currency",
 }: StatCardProps) => (
   <Card
     elevation={2}
@@ -46,7 +59,7 @@ const StatCard = ({
               color: `${color}.main`,
             }}
           >
-            {typeof value === "number" ? `₹${value.toLocaleString("en-IN")}` : value}
+            {formatStatValue(value, valueType)}
           </Typography>
           {subtitle && (
             <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>

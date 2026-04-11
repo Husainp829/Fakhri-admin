@@ -94,6 +94,7 @@ const FinancialMetrics = ({ stats, onViewNotPaidSabils }: FinancialMetricsProps)
         icon={WarningIcon}
         color="error"
         subtitle="Sabils overdue"
+        valueType="count"
         onClick={onViewNotPaidSabils}
       />
     </Grid>
