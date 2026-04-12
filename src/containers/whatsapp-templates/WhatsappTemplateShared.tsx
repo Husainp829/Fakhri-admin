@@ -49,6 +49,12 @@ export const TemplatePreview = ({ formData }) => {
   const footerComponent = formData.components?.find((c) => c.type === "FOOTER");
   const buttonsComponent = formData.components?.find((c) => c.type === "BUTTONS");
 
+  const isDark = theme.palette.mode === "dark";
+  const bubbleFill = isDark
+    ? alpha(theme.palette.success.main, 0.32)
+    : lighten(theme.palette.success.main, 0.82);
+  const headerMediaBg = isDark ? alpha(theme.palette.common.white, 0.1) : theme.palette.grey[200];
+
   return (
     <Box
       sx={{
@@ -67,13 +73,14 @@ export const TemplatePreview = ({ formData }) => {
           <Paper
             elevation={0}
             sx={{
-              bgcolor: lighten(theme.palette.success.main, 0.82),
+              bgcolor: bubbleFill,
               borderRadius: "7.5px",
               borderBottomRightRadius: "0px",
               p: 2,
               mb: 1,
               maxWidth: "320px",
               position: "relative",
+              color: "text.primary",
               "&::after": {
                 // eslint-disable-next-line quotes
                 content: '""',
@@ -82,7 +89,7 @@ export const TemplatePreview = ({ formData }) => {
                 right: -8,
                 width: 0,
                 height: 0,
-                borderLeft: `8px solid ${lighten(theme.palette.success.main, 0.82)}`,
+                borderLeft: `8px solid ${bubbleFill}`,
                 borderTop: "8px solid transparent",
                 borderBottom: "8px solid transparent",
               },
@@ -127,7 +134,7 @@ export const TemplatePreview = ({ formData }) => {
                 ) : (
                   <Box
                     sx={{
-                      bgcolor: "grey.200",
+                      bgcolor: headerMediaBg,
                       borderRadius: 1,
                       p: 2,
                       textAlign: "center",

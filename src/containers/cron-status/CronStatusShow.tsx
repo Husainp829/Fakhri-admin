@@ -8,6 +8,7 @@ import {
   usePermissions,
 } from "react-admin";
 import { Chip, Box, Typography, Paper } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { hasPermission } from "@/utils/permission-utils";
 
 type CronStatusRecord = RaRecord & {
@@ -68,14 +69,20 @@ const CronStatusShow = () => {
                 Metadata:
               </Typography>
               <Paper
-                sx={{
+                variant="outlined"
+                sx={(theme) => ({
                   p: 2,
-                  bgcolor: "grey.100",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.common.white, 0.06)
+                      : theme.palette.grey[100],
+                  borderColor: "divider",
+                  color: "text.primary",
                   fontFamily: "monospace",
                   fontSize: "0.875rem",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word",
-                }}
+                })}
               >
                 {record.metadata ? JSON.stringify(record.metadata, null, 2) : "No metadata"}
               </Paper>

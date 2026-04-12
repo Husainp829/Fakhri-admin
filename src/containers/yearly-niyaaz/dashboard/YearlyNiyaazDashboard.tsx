@@ -330,7 +330,17 @@ const YearlyNiyaazDashboard = () => {
               <Typography variant="h6" gutterBottom>
                 Collection Progress
               </Typography>
-              <Box sx={{ position: "relative", height: 40, bgcolor: "grey.200", borderRadius: 2 }}>
+              <Box
+                sx={(theme) => ({
+                  position: "relative",
+                  height: 40,
+                  borderRadius: 2,
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.common.white, 0.12)
+                      : theme.palette.grey[200],
+                })}
+              >
                 <Box
                   sx={(theme) => ({
                     position: "absolute",
