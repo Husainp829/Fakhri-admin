@@ -27,7 +27,7 @@ import TakhmeenHistory from "./TakhmeenHistory";
 import FamilyMembers from "./FamilyMembers";
 import ReceiptsTab from "./ReceiptsTab";
 import BasicInfo from "./BasicInfo";
-import SuspensionsTab from "./SuspensionsTab";
+import DeliveryTab from "./DeliveryTab";
 import ContributionsTab from "./ContributionsTab";
 import PeriodTotalsTab from "./PeriodTotalsTab";
 
@@ -184,8 +184,6 @@ const FmbShowActions = () => {
   const [mergeOpen, setMergeOpen] = useState(false);
   const open = Boolean(anchorEl);
   const id = record?.id;
-  const thalis = record?.thalis as { isActive?: boolean; id?: string }[] | undefined;
-  const defaultThaliId = thalis?.find((thali) => thali?.isActive)?.id || thalis?.[0]?.id;
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -226,11 +224,8 @@ const FmbShowActions = () => {
         <MenuItem disabled={!id} onClick={() => go(`/fmbContributions/create?fmbId=${id}`)}>
           Add contribution
         </MenuItem>
-        <MenuItem
-          disabled={!defaultThaliId}
-          onClick={() => go(`/fmbThaliSuspension/create?fmbId=${id}&fmbThaliId=${defaultThaliId}`)}
-        >
-          Add thali suspension
+        <MenuItem disabled={!id} onClick={() => go(`/fmbData/${id}/show/delivery`)}>
+          Thali delivery (pause / resume)
         </MenuItem>
         <MenuItem
           disabled={!id}
@@ -269,8 +264,8 @@ export default function FmbDataShow(props: ShowProps) {
         <TabbedShowLayout.Tab label="Period totals" path="periodTotals">
           <PeriodTotalsTab />
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label="Suspensions" path="suspensions">
-          <SuspensionsTab />
+        <TabbedShowLayout.Tab label="Delivery" path="delivery">
+          <DeliveryTab />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Show>

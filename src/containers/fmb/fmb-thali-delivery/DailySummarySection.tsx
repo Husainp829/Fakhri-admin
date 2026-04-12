@@ -18,6 +18,7 @@ import { getApiUrl } from "@/constants";
 
 type DailySummaryRow = {
   fmbThaliId?: string;
+  name?: string;
   thaliNo?: string;
   thaliType?: string;
   fileNo?: string;
@@ -44,7 +45,7 @@ export default function DailySummarySection() {
   const load = useCallback(() => {
     setLoading(true);
     setError(null);
-    const q = `${getApiUrl()}/fmbThaliSuspension/daily-summary?date=${encodeURIComponent(date)}`;
+    const q = `${getApiUrl()}/fmbThaliDelivery/daily-summary?date=${encodeURIComponent(date)}`;
     httpClient(q)
       .then(({ json }) => setPayload(json as DailySummaryPayload))
       .catch((e: { message?: string }) => setError(e?.message || "Request failed"))
@@ -107,6 +108,7 @@ export default function DailySummarySection() {
               <TableRow>
                 <TableCell>Thali</TableCell>
                 <TableCell>FMB</TableCell>
+                <TableCell>Name</TableCell>
                 <TableCell>Address</TableCell>
                 <TableCell>Schedule</TableCell>
               </TableRow>
@@ -119,6 +121,7 @@ export default function DailySummarySection() {
                     {row.thaliType ? ` (${row.thaliType})` : ""}
                   </TableCell>
                   <TableCell>{row.fileNo ?? "—"}</TableCell>
+                  <TableCell>{row.name ?? "—"}</TableCell>
                   <TableCell>
                     {row.deliveryAddress || row.deliveryMohallah
                       ? [row.deliveryAddress, row.deliveryMohallah].filter(Boolean).join(" — ")
@@ -134,7 +137,7 @@ export default function DailySummarySection() {
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4}>
-                    No deliveries (non-service day, inactive thali, or all suspended).
+                    No deliveries (non-service day, inactive thali, paused, or before resume date).
                   </TableCell>
                 </TableRow>
               ) : null}

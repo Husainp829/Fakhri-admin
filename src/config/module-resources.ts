@@ -36,7 +36,8 @@ import fmbContributions from "@/containers/fmb/fmb-contributions";
 import fmbDeliveryScheduleProfile from "@/containers/fmb/fmb-delivery-schedule-profile";
 import fmbThaliSettings from "@/containers/fmb/fmb-thali-settings";
 import fmbHoliday from "@/containers/fmb/fmb-holiday";
-import fmbThaliSuspension from "@/containers/fmb/fmb-thali-suspension";
+import fmbThaliDelivery from "@/containers/fmb/fmb-thali-delivery";
+import fmbThaliDeliveryToggleLogResource from "@/containers/fmb/fmb-thali-delivery/fmbThaliDeliveryToggleLogResource";
 import fmbThaliType from "@/containers/fmb/fmb-thali-type";
 import fmbDish from "@/containers/fmb/fmb-dish";
 import fmbDailyMenu from "@/containers/fmb/fmb-daily-menu";
@@ -207,10 +208,14 @@ export const MODULE_RESOURCES = {
         menuSection: "households",
       },
       {
-        permission: "fmbThaliSuspension.view",
-        resource: fmbThaliSuspension,
-        createPermission: "fmbThaliSuspension.create",
+        permission: "fmbThaliDelivery.view",
+        resource: fmbThaliDelivery,
         menuSection: "distribution",
+      },
+      {
+        permission: "fmbThaliDelivery.view",
+        resource: fmbThaliDeliveryToggleLogResource,
+        hideFromMenu: true,
       },
       {
         permission: "fmbDeliveryScheduleProfile.view",
