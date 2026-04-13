@@ -24,8 +24,8 @@ export const ACCOUNTS_DASHBOARD_CARDS: AccountsDashboardCard[] = [
   {
     permission: "lagatReceipts.view",
     icon: ReceiptIcon,
-    label: "Lagat Receipts",
-    description: "View and manage all lagat receipts",
+    label: "Lagat receipts",
+    description: "Lagat receipts (also under Raza module)",
     path: "lagatReceipts",
   },
   {

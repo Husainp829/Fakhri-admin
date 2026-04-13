@@ -87,7 +87,7 @@ export type ModuleResourcesRegistry = {
   events: ModuleRuntimeShape;
   staff: ModuleRuntimeShape;
   sabil: ModuleRuntimeShape;
-  lagat: ModuleRuntimeShape;
+  raza: ModuleRuntimeShape;
   fmb: ModuleRuntimeShape;
   miqaat: ModuleRuntimeShape;
   ohbat: ModuleRuntimeShape;

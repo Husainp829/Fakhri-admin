@@ -1,8 +1,8 @@
 /* eslint-env serviceworker */
 /* eslint-disable no-restricted-globals, no-console */
 // Service Worker for JMS Admin PWA
-const CACHE_NAME = "jms-admin-26042230";
-const RUNTIME_CACHE = "jms-admin-runtime-26042230";
+const CACHE_NAME = "jms-admin-69627552";
+const RUNTIME_CACHE = "jms-admin-runtime-69627552";
 
 // Assets to cache on install (only essential files that should exist)
 const PRECACHE_URLS = [

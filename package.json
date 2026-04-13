@@ -59,7 +59,7 @@
       "last 1 safari version"
     ]
   },
-  "buildDate": 1775626042230,
+  "buildDate": 1776069627552,
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@testing-library/jest-dom": "^6.9.1",

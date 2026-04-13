@@ -10,6 +10,8 @@ import rentBookingReceipt from "@/containers/bookings/rent-booking-receipt";
 import lagatReceipt from "@/containers/lagat-receipt";
 import DepositReceiptPrint from "@/containers/bookings/rent-booking-receipt/DepositReceiptPrint";
 import RazaPrint from "@/containers/bookings/hall-bookings/HallBookingsRazaPrint";
+import razaRequests from "@/containers/raza-requests";
+import RazaRequestRazaPrint from "@/containers/raza-requests/RazaRequestRazaPrint";
 import ConfirmationVoucher from "@/containers/bookings/hall-bookings/HallBookingsConfirmationVoucher";
 
 import niyaaz from "@/containers/events/niyaaz";
@@ -165,15 +167,33 @@ export const MODULE_RESOURCES = {
       },
     ],
   },
-  lagat: {
+  raza: moduleWithSections({
+    menuSections: {
+      requests: "Raza requests",
+      receipts: "Lagat receipts",
+      setup: "Setup",
+    },
     resources: [
+      {
+        permission: "razaRequests.view",
+        resource: razaRequests,
+        createPermission: "razaRequests.create",
+        menuSection: "requests",
+      },
       {
         permission: "lagatReceipts.view",
         resource: lagatReceipt,
         createPermission: "lagatReceipts.create",
+        menuSection: "receipts",
+      },
+      {
+        permission: "halls.view",
+        resource: bookingPurpose,
+        menuSection: "setup",
       },
     ],
-  },
+    customRoutes: [{ path: "/raza-request-print/:id", element: RazaRequestRazaPrint }],
+  }),
   fmb: moduleWithSections({
     menuSections: {
       households: "Households",

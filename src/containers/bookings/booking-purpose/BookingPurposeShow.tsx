@@ -78,7 +78,7 @@ const HallChargesTable = () => {
 export const BookingPurposeShow = () => (
   <Show>
     <SimpleShowLayout>
-      <Title title="Booking Purpose Details" />
+      <Title title="Purpose Details" />
       <TextField source="name" label="Name" />
       <Box sx={{ mt: 3 }}>
         <Typography variant="h6" gutterBottom>

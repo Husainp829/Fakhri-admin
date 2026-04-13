@@ -16,7 +16,7 @@ import EventsDashboard from "@/containers/events/dashboard";
 import ActiveEventDashboard from "@/containers/events/event-dashboard";
 import StaffDashboard from "@/containers/staff/dashboard";
 import SabilDashboard from "@/containers/sabil/dashboard";
-import LagatDashboard from "@/containers/lagat/dashboard";
+import RazaDashboard from "@/containers/raza/dashboard";
 import FmbDashboard from "@/containers/fmb/dashboard";
 import MiqaatDashboard from "@/containers/miqaat/dashboard";
 import AccountsDashboard from "@/containers/accounts/dashboard";
@@ -80,15 +80,15 @@ export const MODULE_REGISTRY: ModuleRegistryEntry[] = [
     dashboard: SabilDashboard,
   },
   {
-    id: "lagat",
-    path: "lagat",
-    label: "Lagat",
-    description: "View and manage all lagat data",
+    id: "raza",
+    path: "raza",
+    label: "Raza Requests",
+    description: "Raza requests and lagat receipts",
     icon: ReceiptIcon,
-    permission: "lagatReceipts.view",
-    dashboardPermission: "lagatReceipts.view",
-    fallback: FALLBACK_NAVIGATE("/lagatReceipts"),
-    dashboard: LagatDashboard,
+    permission: "razaRequests.view",
+    dashboardPermission: "razaRequests.view",
+    fallback: FALLBACK_NAVIGATE("/razaRequests"),
+    dashboard: RazaDashboard,
   },
   {
     id: "fmb",
