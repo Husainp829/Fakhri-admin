@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -43,7 +42,7 @@ type LedgerReport = {
   entryCount?: number;
 };
 
-const MiqaatNiyaazDashboard = () => {
+const TamiraatDashboard = () => {
   const redirect = useRedirect();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -64,7 +63,7 @@ const MiqaatNiyaazDashboard = () => {
     setLoading(true);
     try {
       const response = await callApi({
-        location: "miqaatNiyaazReceipts",
+        location: "tamiraatReceipts",
         method: "GET",
         id: `ledger/report${financialYear ? `?financialYear=${financialYear}` : ""}${
           paymentMode ? `&paymentMode=${paymentMode}` : ""
@@ -82,6 +81,7 @@ const MiqaatNiyaazDashboard = () => {
 
   useEffect(() => {
     fetchLedgerReport(paymentModeTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [financialYear, paymentModeTab]);
 
   const generateFinancialYearOptions = () => {
@@ -182,7 +182,7 @@ const MiqaatNiyaazDashboard = () => {
           minHeight: "400px",
         }}
       >
-        <Title title="Miqaat Niyaaz Ledger Dashboard" />
+        <Title title="Tamiraat Ledger Dashboard" />
         <CircularProgress />
       </Box>
     );
@@ -190,7 +190,7 @@ const MiqaatNiyaazDashboard = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Title title="Miqaat Niyaaz Ledger Dashboard" />
+      <Title title="Tamiraat Ledger Dashboard" />
       <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
         <TextField
           select
@@ -262,7 +262,7 @@ const MiqaatNiyaazDashboard = () => {
                 Ledger Entries - {reportData.entryCount}
               </Typography>
               <List
-                resource="miqaatNiyaazReceipts"
+                resource="tamiraatReceipts"
                 filter={{
                   receiptDate_gte: fyDateRange.startDate,
                   receiptDate_lte: fyDateRange.endDate,
@@ -276,7 +276,7 @@ const MiqaatNiyaazDashboard = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => redirect("/miqaatNiyaazReceipts/create")}
+                      onClick={() => redirect("/tamiraatReceipts/create")}
                     >
                       Create
                     </Button>
@@ -332,7 +332,7 @@ const MiqaatNiyaazDashboard = () => {
                             size="small"
                             onClick={(e) => {
                               e.stopPropagation();
-                              window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                              window.open(`#/tam-rcpt/${record.id}`, "_blank");
                             }}
                             sx={{ color: "primary.main" }}
                           >
@@ -343,7 +343,7 @@ const MiqaatNiyaazDashboard = () => {
                           size="small"
                           onClick={(e) => {
                             e.stopPropagation();
-                            redirect(`/miqaatNiyaazReceipts/${record.id}`);
+                            redirect(`/tamiraatReceipts/${record.id}`);
                           }}
                           sx={{ color: "primary.main" }}
                         >
@@ -392,7 +392,7 @@ const MiqaatNiyaazDashboard = () => {
                         record.receiptType === "CREDIT" && record.receiptNo ? (
                           <IconButton
                             onClick={() => {
-                              window.open(`#/mqt-rcpt/${record.id}`, "_blank");
+                              window.open(`#/tam-rcpt/${record.id}`, "_blank");
                             }}
                             size="small"
                           >
@@ -407,7 +407,7 @@ const MiqaatNiyaazDashboard = () => {
                       label="Edit"
                       render={(record) => (
                         <IconButton
-                          onClick={() => redirect(`/miqaatNiyaazReceipts/${record.id}`)}
+                          onClick={() => redirect(`/tamiraatReceipts/${record.id}`)}
                           size="small"
                         >
                           <EditIcon />
@@ -425,4 +425,4 @@ const MiqaatNiyaazDashboard = () => {
   );
 };
 
-export default MiqaatNiyaazDashboard;
+export default TamiraatDashboard;

@@ -90,6 +90,7 @@ export type ModuleResourcesRegistry = {
   raza: ModuleRuntimeShape;
   fmb: ModuleRuntimeShape;
   miqaat: ModuleRuntimeShape;
+  tamiraat: ModuleRuntimeShape;
   ohbat: ModuleRuntimeShape;
   yearlyNiyaaz: ModuleRuntimeShape;
   accounts: ModuleRuntimeShape;

@@ -19,6 +19,7 @@ import SabilDashboard from "@/containers/sabil/dashboard";
 import RazaDashboard from "@/containers/raza/dashboard";
 import FmbDashboard from "@/containers/fmb/dashboard";
 import MiqaatDashboard from "@/containers/miqaat/dashboard";
+import TamiraatDashboard from "@/containers/tamiraat/dashboard/TamiraatDashboard";
 import AccountsDashboard from "@/containers/accounts/dashboard";
 import OhbatDashboard from "@/containers/ohbat/dashboard";
 import YearlyNiyaazDashboard from "@/containers/yearly-niyaaz/dashboard";
@@ -111,6 +112,17 @@ export const MODULE_REGISTRY: ModuleRegistryEntry[] = [
     dashboardPermission: "miqaatNiyaazReceipts.dashboard",
     fallback: FALLBACK_NAVIGATE("/miqaatNiyaazReceipts"),
     dashboard: MiqaatDashboard,
+  },
+  {
+    id: "tamiraat",
+    path: "tamiraat",
+    label: "Tamiraat",
+    description: "View and manage Tamiraat receipts and ledger",
+    icon: ReceiptIcon,
+    permission: "tamiraatReceipts.view",
+    dashboardPermission: "tamiraatReceipts.dashboard",
+    fallback: FALLBACK_NAVIGATE("/tamiraatReceipts"),
+    dashboard: TamiraatDashboard,
   },
   {
     id: "accounts",

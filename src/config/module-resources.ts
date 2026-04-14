@@ -49,6 +49,7 @@ import fmbVendor from "@/containers/fmb/fmb-vendor";
 import fmbVendorPaymentVoucher from "@/containers/fmb/fmb-vendor-payment-voucher";
 
 import miqaatNiyaazReceipts from "@/containers/miqaat/miqaat-niyaaz-receipts";
+import tamiraatReceipts from "@/containers/tamiraat/tamiraat-receipts";
 
 import yearlyNiyaaz from "@/containers/yearly-niyaaz/yearly-niyaaz";
 import yearlyNiyaazReceipts from "@/containers/yearly-niyaaz/yearly-niyaaz-receipts";
@@ -293,9 +294,6 @@ export const MODULE_RESOURCES = {
       },
     ],
   }),
-  miqaat: {
-    resources: [{ permission: "miqaatNiyaazReceipts.view", resource: miqaatNiyaazReceipts }],
-  },
   ohbat: {
     resources: [
       {
@@ -338,6 +336,24 @@ export const MODULE_RESOURCES = {
       },
     ],
     customRoutes: [{ path: "/yn-rcpt/:id", element: YearlyNiyaazReceiptPrint }],
+  },
+  miqaat: {
+    resources: [
+      {
+        permission: "miqaatNiyaazReceipts.view",
+        resource: miqaatNiyaazReceipts,
+        createPermission: "miqaatNiyaazReceipts.create",
+      },
+    ],
+  },
+  tamiraat: {
+    resources: [
+      {
+        permission: "tamiraatReceipts.view",
+        resource: tamiraatReceipts,
+        createPermission: "tamiraatReceipts.create",
+      },
+    ],
   },
   accounts: {
     resources: [
