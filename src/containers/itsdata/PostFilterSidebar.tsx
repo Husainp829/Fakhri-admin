@@ -162,8 +162,8 @@ const PostFilterSidebar = ({ inDrawer = false }: PostFilterSidebarProps) => {
         </FilterListSection>
 
         <FilterList label="Gender" icon={<PersonIcon />}>
-          <FilterListItem label="Male" value={{ Gender: "MALE" }} />
-          <FilterListItem label="Female" value={{ Gender: "FEMALE" }} />
+          <FilterListItem label="Male" value={{ Gender: "Male" }} />
+          <FilterListItem label="Female" value={{ Gender: "Female" }} />
         </FilterList>
 
         <FilterList label="Misaq" icon={<PersonIcon />}>
