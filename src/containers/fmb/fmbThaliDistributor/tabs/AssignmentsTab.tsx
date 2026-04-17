@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import debounce from "lodash.debounce";
 import type { Identifier, RaRecord } from "react-admin";
 import {
   Button,
@@ -14,8 +15,10 @@ import {
 } from "react-admin";
 import type { ListControllerResult } from "ra-core";
 import {
+  Autocomplete,
   Box,
   Checkbox,
+  Chip,
   Divider,
   Stack,
   Table,
@@ -46,6 +49,8 @@ interface FmbThaliRow {
   deliveryMohallah?: string;
   thaliType?: { id?: string; name?: string | null; code?: string | null } | null;
   fmb?: { itsNo?: string; name?: string };
+  /** Serialized from API (`fmbThaliTag` rows). */
+  tags?: string[];
 }
 
 type ThaliSearchRecord = FmbThaliRow & RaRecord;
@@ -67,6 +72,23 @@ function thaliLabel(t: FmbThaliRow): string {
 function assignmentThaliId(a: AssignmentRow): string | undefined {
   const id = a?.fmbThaliId ?? a?.fmbThali?.id;
   return id ? String(id) : undefined;
+}
+
+function tagsCell(tags: string[] | undefined) {
+  if (!tags?.length) {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        —
+      </Typography>
+    );
+  }
+  return (
+    <Stack direction="row" gap={0.5} flexWrap="wrap" useFlexGap sx={{ py: 0.25 }}>
+      {tags.map((tag) => (
+        <Chip key={tag} label={tag} size="small" variant="outlined" />
+      ))}
+    </Stack>
+  );
 }
 
 /**
@@ -179,6 +201,9 @@ export default function AssignmentsTab() {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [tagFilterInput, setTagFilterInput] = useState<string[]>([]);
+  const [debouncedTagFilter, setDebouncedTagFilter] = useState<string[]>([]);
+  const [tagSuggestOptions, setTagSuggestOptions] = useState<string[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -200,8 +225,18 @@ export default function AssignmentsTab() {
   }, [searchInput]);
 
   useEffect(() => {
+    const t = window.setTimeout(
+      () => setDebouncedTagFilter([...tagFilterInput]),
+      SEARCH_DEBOUNCE_MS
+    );
+    return () => window.clearTimeout(t);
+  }, [tagFilterInput]);
+
+  const debouncedTagsSignature = useMemo(() => debouncedTagFilter.join("\0"), [debouncedTagFilter]);
+
+  useEffect(() => {
     setSearchPage(0);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, debouncedTagsSignature]);
 
   const loadAssignments = useCallback(async () => {
     if (!distributorId) return;
@@ -234,16 +269,40 @@ export default function AssignmentsTab() {
     setTabTotalAssigned(assignments.length);
   }, [assignments.length, setTabTotalAssigned]);
 
+  const loadTagSuggestions = useCallback(async (q: string) => {
+    try {
+      const qs = q.trim() ? `?q=${encodeURIComponent(q.trim())}` : "";
+      const { json } = await httpClient(
+        `${getApiUrl()}/fmbThaliDistribution/thali-tag-suggestions${qs}`
+      );
+      const rows = (json as { rows?: string[] }).rows ?? [];
+      setTagSuggestOptions(rows);
+    } catch {
+      setTagSuggestOptions([]);
+    }
+  }, []);
+
+  const debouncedTagSuggest = useMemo(
+    () => debounce((q: string) => void loadTagSuggestions(q), 250),
+    [loadTagSuggestions]
+  );
+
+  useEffect(() => () => debouncedTagSuggest.cancel(), [debouncedTagSuggest]);
+
   const fetchThalis = useCallback(
-    async (search: string, page: number, pageSize: number) => {
+    async (opts: { search: string; tags: string[]; page: number; pageSize: number }) => {
       if (!distributorId) return;
       setSearchLoading(true);
       try {
         const params = new URLSearchParams();
-        params.set("limit", String(pageSize));
-        params.set("page", String(page));
-        const t = search.trim();
+        params.set("limit", String(opts.pageSize));
+        params.set("page", String(opts.page));
+        const t = opts.search.trim();
         if (t) params.set("search", t);
+        for (const tag of opts.tags) {
+          const trimmed = tag.trim();
+          if (trimmed) params.append("tag", trimmed);
+        }
         const res = await httpClient(
           `${getApiUrl()}/fmbThaliDistribution/thalis?${params.toString()}`,
           {
@@ -263,8 +322,20 @@ export default function AssignmentsTab() {
   );
 
   useEffect(() => {
-    void fetchThalis(debouncedSearch, searchPage, searchRowsPerPage);
-  }, [debouncedSearch, searchPage, searchRowsPerPage, fetchThalis]);
+    void fetchThalis({
+      search: debouncedSearch,
+      tags: debouncedTagFilter,
+      page: searchPage,
+      pageSize: searchRowsPerPage,
+    });
+  }, [
+    debouncedSearch,
+    debouncedTagsSignature,
+    searchPage,
+    searchRowsPerPage,
+    fetchThalis,
+    debouncedTagFilter,
+  ]);
 
   const assignedThaliIdSet = useMemo(() => {
     const next = new Set<string>();
@@ -350,7 +421,12 @@ export default function AssignmentsTab() {
       page,
       perPage,
       refetch: () => {
-        void fetchThalis(debouncedSearch, searchPage, searchRowsPerPage);
+        void fetchThalis({
+          search: debouncedSearch,
+          tags: debouncedTagFilter,
+          page: searchPage,
+          pageSize: searchRowsPerPage,
+        });
       },
       selectedIds,
       setPage: setListPage,
@@ -396,6 +472,7 @@ export default function AssignmentsTab() {
     clearPendingAssign,
     fetchThalis,
     debouncedSearch,
+    debouncedTagsSignature,
     setListPage,
     setListPerPage,
   ]);
@@ -442,8 +519,9 @@ export default function AssignmentsTab() {
         t?.thaliType?.code?.trim() ||
         ""
       ).toLowerCase();
+      const tagsHay = (t?.tags ?? []).join(" ").toLowerCase();
       const haystack = t
-        ? `${thaliLabel(t)} ${typeHay}`.toLowerCase()
+        ? `${thaliLabel(t)} ${typeHay} ${tagsHay}`.toLowerCase()
         : String(a?.fmbThaliId ?? "").toLowerCase();
       return haystack.includes(q);
     });
@@ -562,8 +640,10 @@ export default function AssignmentsTab() {
   return (
     <Box sx={{ mt: 1 }}>
       <Typography variant="body2" sx={{ mb: 1 }}>
-        Search thalis, use the datagrid checkboxes to queue rows, then assign in one go. The queue
-        is kept when you change search or page. Each thali can only be on one distributor at a time.
+        Search thalis (and optionally restrict by tags — a thali matches if it has{" "}
+        <strong>any</strong> of the selected tags), use the datagrid checkboxes to queue rows, then
+        assign in one go. The queue is kept when you change search, tag filter, or page. Each thali
+        can only be on one distributor at a time.
       </Typography>
 
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
@@ -601,12 +681,78 @@ export default function AssignmentsTab() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 disabled={busy}
               />
+              <Autocomplete<string, true, false, true>
+                multiple
+                freeSolo
+                size="small"
+                options={tagSuggestOptions}
+                value={tagFilterInput}
+                onChange={(_, raw) => {
+                  const next = (Array.isArray(raw) ? raw : [])
+                    .map((x) => String(x).trim())
+                    .filter(Boolean);
+                  const seen = new Set<string>();
+                  const deduped: string[] = [];
+                  for (const t of next) {
+                    const k = t.toLowerCase();
+                    if (seen.has(k)) continue;
+                    seen.add(k);
+                    deduped.push(t);
+                    if (deduped.length >= 20) break;
+                  }
+                  setTagFilterInput(deduped);
+                }}
+                onInputChange={(_, input, reason) => {
+                  if (reason === "reset") return;
+                  if (reason === "clear") {
+                    setTagFilterInput([]);
+                    debouncedTagSuggest.cancel();
+                    return;
+                  }
+                  if (reason === "input") debouncedTagSuggest(input);
+                }}
+                onOpen={() =>
+                  void loadTagSuggestions(tagFilterInput[tagFilterInput.length - 1] ?? "")
+                }
+                filterSelectedOptions
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={`${option}-${index}`}
+                      size="small"
+                      label={option}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <MuiTextField
+                    {...params}
+                    label="Tag filter"
+                    placeholder="Add tags; thali matches if it has any of them"
+                    helperText="Case-insensitive. Combine with text search (both apply). Up to 20 tags."
+                    disabled={busy}
+                  />
+                )}
+              />
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                 <Button label="Clear search" onClick={() => setSearchInput("")} disabled={busy} />
+                <Button
+                  label="Clear tags"
+                  onClick={() => {
+                    setTagFilterInput([]);
+                    setDebouncedTagFilter([]);
+                  }}
+                  disabled={busy || tagFilterInput.length === 0}
+                />
                 <Typography variant="caption" color="text.secondary">
                   {searchLoading
                     ? "Searching…"
-                    : `${thaliSearchTotal.toLocaleString()} match(es). Search matches any of the columns above.`}
+                    : `${thaliSearchTotal.toLocaleString()} match(es).${
+                        debouncedTagFilter.length
+                          ? ` Must have at least one of: ${debouncedTagFilter.map((x) => `“${x}”`).join(", ")}.`
+                          : " Text search matches thali no., ITS, name, mohallah, or address."
+                      }`}
                 </Typography>
               </Stack>
             </Stack>
@@ -634,6 +780,11 @@ export default function AssignmentsTab() {
                   <TextField source="fmb.name" label="Name" sortable={false} />
                   <TextField source="address" label="Address" sortable={false} />
                   <TextField source="deliveryMohallah" label="Mohallah" sortable={false} />
+                  <FunctionField
+                    label="Tags"
+                    sortable={false}
+                    render={(r: ThaliSearchRecord) => tagsCell(r.tags)}
+                  />
                   <FunctionField
                     label="Note"
                     sortable={false}
@@ -697,6 +848,7 @@ export default function AssignmentsTab() {
                   <TableCell>ITS</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Mohallah</TableCell>
+                  <TableCell>Tags</TableCell>
                   <TableCell align="right">Queue</TableCell>
                 </TableRow>
               </TableHead>
@@ -707,6 +859,7 @@ export default function AssignmentsTab() {
                     <TableCell>{row?.fmb?.itsNo ?? "—"}</TableCell>
                     <TableCell>{row?.fmb?.name ?? "—"}</TableCell>
                     <TableCell>{row?.deliveryMohallah ?? "—"}</TableCell>
+                    <TableCell>{tagsCell(row?.tags)}</TableCell>
                     <TableCell align="right">
                       <Button
                         label="Remove"
@@ -793,7 +946,7 @@ export default function AssignmentsTab() {
             size="small"
             fullWidth
             label="Filter assigned"
-            placeholder="Thali no, ITS, name, mohallah, thali type…"
+            placeholder="Thali no, ITS, name, mohallah, type, tags…"
             value={assignedFilter}
             onChange={(e) => setAssignedFilter(e.target.value)}
             disabled={busy}
@@ -837,6 +990,7 @@ export default function AssignmentsTab() {
                 <TableCell>Name</TableCell>
                 <TableCell>Mohallah</TableCell>
                 <TableCell>Type</TableCell>
+                <TableCell>Tags</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -865,6 +1019,7 @@ export default function AssignmentsTab() {
                     <TableCell>
                       {thali?.thaliType?.name?.trim() || thali?.thaliType?.code?.trim() || "—"}
                     </TableCell>
+                    <TableCell>{tagsCell(thali?.tags)}</TableCell>
                     <TableCell align="right">
                       <Button
                         label="Remove"

@@ -10,6 +10,7 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/Grid";
 import { validateThalis } from "./thali-map";
+import { ThaliTagsInput } from "./ThaliTagsInput";
 
 export { mapThaliRowForApi } from "./thali-map";
 
@@ -19,7 +20,7 @@ export function ThaliFieldsInput() {
       source="thalis"
       label="Thalis"
       validate={validateThalis}
-      defaultValue={[{ thaliNo: "", thaliTypeId: null, isActive: true }]}
+      defaultValue={[{ thaliNo: "", thaliTypeId: null, isActive: true, tags: [] }]}
     >
       <SimpleFormIterator
         disableReordering
@@ -108,6 +109,10 @@ export function ThaliFieldsInput() {
               fullWidth
               helperText="Usually prefilled from ITS directory (Jamaat); enter manually if ITS is not in directory."
             />
+          </Grid>
+
+          <Grid size={12}>
+            <ThaliTagsInput source="tags" label="Thali tags" />
           </Grid>
         </Grid>
       </SimpleFormIterator>

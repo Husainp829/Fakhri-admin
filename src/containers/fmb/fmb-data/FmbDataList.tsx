@@ -17,6 +17,7 @@ import {
   type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { FmbDataCsvImportButton } from "./csv-import/FmbDataCsvImportButton";
 
 const RegistrationFilters = [
   <TextInput
@@ -41,6 +42,7 @@ export default function FmbDataList(props: ListProps) {
       <SelectColumnsButton />
       <FilterButton />
       <CreateButton />
+      <FmbDataCsvImportButton />
       <ExportButton />
     </TopToolbar>
   );

@@ -9,6 +9,7 @@ export type ThaliRowInput = {
   deliveryMohallah?: string | null;
   startedAt?: string | Date | null;
   deactivatedAt?: string | Date | null;
+  tags?: string[] | null;
 };
 
 export type MapThaliRowOptions = { isCreate?: boolean };
@@ -24,7 +25,24 @@ export type ThaliRowForApi = {
   deliveryMohallah?: string;
   startedAt?: string | null;
   deactivatedAt?: string | null;
+  tags: string[];
 };
+
+function normalizeTagsForApi(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const x of raw) {
+    const t = typeof x === "string" ? x.trim() : String(x).trim();
+    if (!t) continue;
+    const k = t.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(t);
+    if (out.length >= 50) break;
+  }
+  return out;
+}
 
 function toYmd(v: unknown): string | null {
   if (v == null || v === "") {
@@ -56,6 +74,7 @@ export function mapThaliRowForApi(
     useDefaultItsAddress: thali?.useDefaultItsAddress === true,
     deliveryAddress: thali?.deliveryAddress ? String(thali.deliveryAddress).trim() : undefined,
     deliveryMohallah: thali?.deliveryMohallah ? String(thali.deliveryMohallah).trim() : undefined,
+    tags: normalizeTagsForApi(thali?.tags),
   };
   if (isCreate) {
     const s = toYmd(thali?.startedAt);
