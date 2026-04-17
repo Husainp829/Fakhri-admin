@@ -1,10 +1,42 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { AutocompleteInput, useGetList, type AutocompleteInputProps } from "react-admin";
+import {
+  AutocompleteInput,
+  useDataProvider,
+  useGetList,
+  type AutocompleteInputProps,
+} from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
+
+const ITS_MIN_LEN_FOR_PREFILL = 5;
 
 function normalizeString(v: unknown): string {
   if (v == null) return "";
   return String(v).trim();
+}
+
+function looksLikeCompleteItsDigits(value: unknown): boolean {
+  const its = normalizeString(value);
+  if (!its) return false;
+  if (!/^\d+$/.test(its)) return false;
+  return its.length >= ITS_MIN_LEN_FOR_PREFILL;
+}
+
+/** Prefer free-text Address; otherwise join structured ITS fields (common when Address is blank in sync). */
+function buildDeliveryAddressFromItsdata(row: {
+  Address?: string | null;
+  Building?: string | null;
+  Street?: string | null;
+  Area?: string | null;
+  City?: string | null;
+  State?: string | null;
+  Pincode?: string | null;
+}): string {
+  const main = normalizeString(row.Address);
+  if (main) return main;
+  const parts = [row.Building, row.Street, row.Area, row.City, row.State, row.Pincode]
+    .map((p) => normalizeString(p))
+    .filter(Boolean);
+  return parts.join(", ");
 }
 
 /** One autocomplete row: directory hit or synthetic “not in directory” choice. */
@@ -24,10 +56,12 @@ function choiceLabel(c: { ITS_ID?: string; Full_Name?: string }) {
 
 /**
  * Household ITS for a new FMB record: search itsdata, or commit an ITS not present in the directory.
- * When the selected ITS matches a loaded itsdata row, name / mobile / empty thali addresses are prefilled.
+ * When the selected ITS matches itsdata, name / mobile / thali delivery address (and mohallah from Jamaat)
+ * are prefilled. Address is loaded by ITS id so it still works after the search box clears.
  */
 export function FmbHouseholdItsAutocomplete(props: AutocompleteInputProps) {
   const { helperText, ...rest } = props;
+  const dataProvider = useDataProvider();
   const { setValue, getValues } = useFormContext();
   const [searchText, setSearchText] = useState("");
   const itsNo = useWatch({ name: "itsNo" });
@@ -64,27 +98,63 @@ export function FmbHouseholdItsAutocomplete(props: AutocompleteInputProps) {
       setValue("mobileNo", null);
       return;
     }
-    const row = (directoryRows || []).find((r) => String(r.ITS_ID ?? "").trim() === v) as
-      | { Full_Name?: string; Mobile?: string; Address?: string }
-      | undefined;
-    if (!row) {
+    if (!looksLikeCompleteItsDigits(v)) {
       return;
     }
-    setValue("name", row.Full_Name?.trim() || null);
-    setValue("mobileNo", row.Mobile?.trim() || null);
-    const itsAddress = normalizeString(row.Address);
-    if (itsAddress) {
-      const thalis = getValues("thalis") as unknown[] | undefined;
-      if (Array.isArray(thalis)) {
-        thalis.forEach((thali, idx) => {
-          const trow = thali as { deliveryAddress?: string };
-          if (!normalizeString(trow?.deliveryAddress)) {
-            setValue(`thalis.${idx}.deliveryAddress`, itsAddress, { shouldDirty: true });
-          }
-        });
-      }
-    }
-  }, [itsNo, directoryRows, setValue, getValues]);
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      (async () => {
+        try {
+          const { data } = await dataProvider.getMany("itsdata", { ids: [v] });
+          if (cancelled) return;
+          const row = (data ?? []).find(
+            (r) => normalizeString((r as { ITS_ID?: string }).ITS_ID) === v
+          ) as
+            | {
+                Full_Name?: string;
+                Mobile?: string;
+                Jamaat?: string;
+                Address?: string;
+                Building?: string;
+                Street?: string;
+                Area?: string;
+                City?: string;
+                State?: string;
+                Pincode?: string;
+              }
+            | undefined;
+          if (!row) return;
+
+          setValue("name", row.Full_Name?.trim() || null);
+          setValue("mobileNo", row.Mobile?.trim() || null);
+
+          const itsAddress = buildDeliveryAddressFromItsdata(row);
+          const jamaat = normalizeString(row.Jamaat);
+          if (!itsAddress && !jamaat) return;
+
+          const thalis = getValues("thalis") as unknown[] | undefined;
+          if (!Array.isArray(thalis)) return;
+          thalis.forEach((thali, idx) => {
+            const trow = thali as { deliveryAddress?: string; deliveryMohallah?: string };
+            if (itsAddress && !normalizeString(trow?.deliveryAddress)) {
+              setValue(`thalis.${idx}.deliveryAddress`, itsAddress, { shouldDirty: true });
+            }
+            if (jamaat && !normalizeString(trow?.deliveryMohallah)) {
+              setValue(`thalis.${idx}.deliveryMohallah`, jamaat, { shouldDirty: true });
+            }
+          });
+        } catch {
+          // keep form usable if lookup fails
+        }
+      })();
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [itsNo, dataProvider, setValue, getValues]);
 
   return (
     <AutocompleteInput
@@ -100,7 +170,7 @@ export function FmbHouseholdItsAutocomplete(props: AutocompleteInputProps) {
       fullWidth
       helperText={
         helperText ??
-        "Search ITS directory or use “not in directory” to enter any ITS. Name and address prefill when a directory row matches."
+        "Search ITS directory or use “not in directory” to enter any ITS. Name, delivery address, and mohallah prefill from ITS when the number exists in your directory."
       }
       onCreate={(filter) => {
         const t = typeof filter === "string" ? filter.trim() : "";
