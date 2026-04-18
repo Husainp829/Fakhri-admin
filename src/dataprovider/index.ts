@@ -147,24 +147,71 @@ const dataProvider = {
       const date = /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
         ? dateStr
         : new Date().toISOString().slice(0, 10);
+      const sort = params.sort ?? { field: "code", order: "ASC" as const };
+      const qRaw = flat.q;
+      const searchQ = typeof qRaw === "string" ? qRaw.trim().toLowerCase() : "";
       const url = `${getApiUrl()}/fmbThaliDistribution/dashboard?${stringify({ date })}`;
       return httpClient(url).then(({ json }) => {
         const body = json as {
           count?: number;
-          rows?: Array<Record<string, unknown> & { distributorId?: string }>;
+          rows?: Array<
+            Record<string, unknown> & {
+              distributorId?: string;
+              code?: string;
+              name?: string;
+              total?: number;
+              thaliTypeCounts?: Array<{ name?: string; count?: number }>;
+            }
+          >;
           isTenantHoliday?: boolean;
           holidayName?: string | null;
           date?: string;
           timezone?: string;
         };
-        const rows = body.rows ?? [];
+        let rows = body.rows ?? [];
+        if (searchQ) {
+          rows = rows.filter((row) => {
+            const code = String(row.code ?? "").toLowerCase();
+            const name = String(row.name ?? "").toLowerCase();
+            const breakdown = (row.thaliTypeCounts ?? [])
+              .map((x) => `${x.name ?? ""} ${x.count ?? ""}`)
+              .join(" ")
+              .toLowerCase();
+            return code.includes(searchQ) || name.includes(searchQ) || breakdown.includes(searchQ);
+          });
+        }
+        const sortField = typeof sort.field === "string" ? sort.field : "code";
+        const desc = String(sort.order ?? "ASC").toUpperCase() === "DESC";
+        rows = [...rows].sort((a, b) => {
+          let va: string | number;
+          let vb: string | number;
+          if (sortField === "name") {
+            va = String(a.name ?? "");
+            vb = String(b.name ?? "");
+          } else if (sortField === "total") {
+            va = Number(a.total ?? 0);
+            vb = Number(b.total ?? 0);
+          } else {
+            va = String(a.code ?? "");
+            vb = String(b.code ?? "");
+          }
+          if (typeof va === "number" && typeof vb === "number") {
+            const n = va - vb;
+            return desc ? -n : n;
+          }
+          const cmp = String(va).localeCompare(String(vb), undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+          return desc ? -cmp : cmp;
+        });
         const withIds = rows.map((row) => ({
           ...row,
           id: String(row.distributorId ?? ""),
         }));
         return {
           data: convertRows(withIds),
-          total: body.count ?? rows.length,
+          total: withIds.length,
           meta: {
             isTenantHoliday: Boolean(body.isTenantHoliday),
             holidayName: body.holidayName ?? null,

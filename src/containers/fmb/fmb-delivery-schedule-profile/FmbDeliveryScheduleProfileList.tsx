@@ -9,9 +9,14 @@ import {
   CreateButton,
   ExportButton,
   Pagination,
+  TextInput,
   type ListProps,
 } from "react-admin";
 import { formatIsoWeekdayList } from "@/containers/fmb/fmb-iso-weekday-choices";
+
+const filters = [
+  <TextInput key="q" source="q" label="Search code or name" alwaysOn sx={{ minWidth: 260 }} />,
+];
 
 const ListActions = () => (
   <TopToolbar>
@@ -26,6 +31,7 @@ export default function FmbDeliveryScheduleProfileList(props: ListProps) {
       {...props}
       sort={{ field: "code", order: "ASC" }}
       perPage={25}
+      filters={filters}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50]} />}
       actions={<ListActions />}
     >
@@ -34,6 +40,7 @@ export default function FmbDeliveryScheduleProfileList(props: ListProps) {
         <TextField source="name" />
         <FunctionField
           label="Weekdays (ISO)"
+          sortable={false}
           render={(record) => formatIsoWeekdayList(record.deliveryWeekdays)}
         />
         <NumberField source="cutoffOffsetDays" emptyText="(default)" />

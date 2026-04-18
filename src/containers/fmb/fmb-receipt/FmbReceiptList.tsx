@@ -9,6 +9,7 @@ import {
   ReferenceField,
   ReferenceInput,
   AutocompleteInput,
+  TextInput,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import { formatINR } from "@/utils";
@@ -19,6 +20,13 @@ export default function FmbReceiptList() {
   };
   const optionRenderer = (choice: { itsNo?: string }) => `${choice.itsNo}`;
   const ReceiptFilters = [
+    <TextInput
+      key="q"
+      source="q"
+      label="Search receipt no., type, mode, remarks"
+      alwaysOn
+      sx={{ minWidth: 280 }}
+    />,
     <ReferenceInput source="fmbId" reference="fmbData" key="fmbId" alwaysOn>
       <AutocompleteInput
         fullWidth
@@ -35,25 +43,34 @@ export default function FmbReceiptList() {
       <List sort={{ field: "receiptNo", order: "DESC" }} filters={ReceiptFilters}>
         <Datagrid rowClick="show">
           <TextField source="receiptNo" />
-          <ReferenceField source="fmbId" reference="fmbData" link="show">
+          <ReferenceField source="fmbId" reference="fmbData" link="show" sortable={false}>
             <TextField source="fileNo" />
           </ReferenceField>
-          <ReferenceField source="fmbId" label="HOF ITS" reference="fmbData" link="show">
+          <ReferenceField
+            source="fmbId"
+            label="HOF ITS"
+            reference="fmbData"
+            link="show"
+            sortable={false}
+          >
             <TextField source="itsNo" />
           </ReferenceField>
           <FunctionField
             label="Amount"
             textAlign="right"
+            sortBy="amount"
             render={(record) => formatINR(record?.amount, { empty: "—" })}
           />
           <FunctionField
             label="Credit used"
             textAlign="right"
+            sortBy="creditUsed"
             render={(record) => formatINR(record?.creditUsed ?? 0, { empty: "—" })}
           />
           <DateField source="receiptDate" />
           <FunctionField
             label="Target"
+            sortable={false}
             render={(record) => {
               const lines = record?.allocations;
               if (lines?.length > 1) {
@@ -69,6 +86,7 @@ export default function FmbReceiptList() {
           <FunctionField
             label="Download"
             source="formNo"
+            sortable={false}
             render={(record) => (
               <Button onClick={() => printReceipt(record.id)}>
                 <DownloadIcon />

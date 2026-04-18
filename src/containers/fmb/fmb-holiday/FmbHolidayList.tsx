@@ -4,6 +4,7 @@ import {
   Datagrid,
   DateField,
   TextField,
+  TextInput,
   TopToolbar,
   CreateButton,
   ExportButton,
@@ -12,13 +13,17 @@ import {
   type ListProps,
 } from "react-admin";
 
+import { FmbHolidayCsvImportButton } from "./FmbHolidayCsvImportButton";
+
 const filters = [
+  <TextInput key="q" source="q" label="Search holiday name" alwaysOn sx={{ minWidth: 220 }} />,
   <DateInput source="from" label="From" alwaysOn key="from" />,
   <DateInput source="to" label="To" alwaysOn key="to" />,
 ];
 
 const ListActions = () => (
   <TopToolbar>
+    <FmbHolidayCsvImportButton />
     <CreateButton />
     <ExportButton />
   </TopToolbar>

@@ -15,9 +15,12 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import { getApiUrl } from "@/constants";
@@ -34,12 +37,29 @@ type RosterRow = {
   id: string;
   fmbThali?: {
     thaliNo?: string | null;
-    deliveryMohallah?: string | null;
     deliveryAddress?: string | null;
     thaliType?: { id?: string | null; name?: string | null; code?: string | null } | null;
     fmb?: { itsNo?: string | null; name?: string | null };
   };
 };
+
+type RosterSortCol = "thali" | "its" | "name" | "address";
+
+function rosterSortKey(it: RosterRow, col: RosterSortCol): string {
+  const t = it.fmbThali;
+  switch (col) {
+    case "thali":
+      return (t?.thaliNo ?? "").toLowerCase();
+    case "its":
+      return (t?.fmb?.itsNo ?? "").toLowerCase();
+    case "name":
+      return (t?.fmb?.name ?? "").toLowerCase();
+    case "address":
+      return (t?.deliveryAddress ?? "").toLowerCase();
+    default:
+      return "";
+  }
+}
 
 function rowsFromResponse(json: unknown): unknown[] {
   if (
@@ -60,6 +80,7 @@ function todayYmdUtc(): string {
 export default function FmbDistributorPortalPage() {
   const tenantThemes = useTenantBrandedThemes();
   const theme = useMemo(() => createTheme(tenantThemes.light), [tenantThemes]);
+  const isNarrow = useMediaQuery(theme.breakpoints.down("md"));
 
   const { permissions, isLoading: permissionsLoading } = usePermissions<PermissionRecord>();
 
@@ -72,6 +93,9 @@ export default function FmbDistributorPortalPage() {
   const [loading, setLoading] = useState(true);
   const [isTenantHoliday, setIsTenantHoliday] = useState(false);
   const [holidayName, setHolidayName] = useState<string | null>(null);
+  const [rosterSearch, setRosterSearch] = useState("");
+  const [rosterSortBy, setRosterSortBy] = useState<RosterSortCol>("thali");
+  const [rosterSortDir, setRosterSortDir] = useState<"asc" | "desc">("asc");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -107,6 +131,45 @@ export default function FmbDistributorPortalPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const displayRoster = useMemo(() => {
+    const q = rosterSearch.trim().toLowerCase();
+    let rows = roster;
+    if (q) {
+      rows = rows.filter((it) => {
+        const t = it.fmbThali;
+        const hay = [
+          t?.thaliNo,
+          t?.fmb?.itsNo,
+          t?.fmb?.name,
+          t?.deliveryAddress,
+          t?.thaliType?.name,
+          t?.thaliType?.code,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return hay.includes(q);
+      });
+    }
+    const dir = rosterSortDir === "asc" ? 1 : -1;
+    return [...rows].sort((a, b) => {
+      const va = rosterSortKey(a, rosterSortBy);
+      const vb = rosterSortKey(b, rosterSortBy);
+      const cmp = va.localeCompare(vb, undefined, { numeric: true, sensitivity: "base" });
+      if (cmp !== 0) return cmp * dir;
+      return a.id.localeCompare(b.id);
+    });
+  }, [roster, rosterSearch, rosterSortBy, rosterSortDir]);
+
+  const requestRosterSort = (col: RosterSortCol) => {
+    if (rosterSortBy === col) {
+      setRosterSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setRosterSortBy(col);
+      setRosterSortDir("asc");
+    }
+  };
 
   /** Counts per tenant thali type for this roster; `other` = missing or inactive type on thali. */
   const kitchenPickupByThaliType = useMemo(() => {
@@ -201,56 +264,142 @@ export default function FmbDistributorPortalPage() {
               <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
                 Counts by thali type (active types from admin settings).
               </Typography>
-              <TableContainer
-                sx={{ border: 1, borderColor: "divider", borderRadius: 1, maxWidth: 480 }}
-              >
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Thali type</TableCell>
-                      <TableCell align="right">Thalis</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {thaliTypes.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={2}>
-                          <Typography variant="body2" color="text.secondary">
-                            No active thali types are configured for this jamaat.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      thaliTypes.map((t) => (
-                        <TableRow key={t.id}>
-                          <TableCell>{t.name}</TableCell>
-                          <TableCell align="right">
+              {isNarrow ? (
+                <Stack spacing={1} sx={{ maxWidth: 480 }}>
+                  {thaliTypes.length === 0 ? (
+                    <Paper variant="outlined" sx={{ p: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        No active thali types are configured for this jamaat.
+                      </Typography>
+                    </Paper>
+                  ) : (
+                    <>
+                      {thaliTypes.map((t) => (
+                        <Paper
+                          key={t.id}
+                          variant="outlined"
+                          sx={{
+                            px: 2,
+                            py: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 2,
+                          }}
+                        >
+                          <Typography variant="body2">{t.name}</Typography>
+                          <Typography
+                            variant="body2"
+                            sx={(th) => ({ fontWeight: th.typography.fontWeightMedium })}
+                          >
                             {kitchenPickupByThaliType.byId.get(t.id) ?? 0}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                    {kitchenPickupByThaliType.other > 0 && (
-                      <TableRow>
-                        <TableCell>Unspecified or inactive type</TableCell>
-                        <TableCell align="right">{kitchenPickupByThaliType.other}</TableCell>
-                      </TableRow>
-                    )}
-                    <TableRow
-                      sx={(t) => ({
-                        "& td": {
-                          fontWeight: t.typography.fontWeightMedium,
+                          </Typography>
+                        </Paper>
+                      ))}
+                      {kitchenPickupByThaliType.other > 0 && (
+                        <Paper
+                          variant="outlined"
+                          sx={{
+                            px: 2,
+                            py: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 2,
+                          }}
+                        >
+                          <Typography variant="body2" color="text.secondary">
+                            Unspecified or inactive type
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={(th) => ({ fontWeight: th.typography.fontWeightMedium })}
+                          >
+                            {kitchenPickupByThaliType.other}
+                          </Typography>
+                        </Paper>
+                      )}
+                      <Paper
+                        variant="outlined"
+                        sx={{
+                          px: 2,
+                          py: 1.5,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 2,
                           borderTop: 1,
                           borderColor: "divider",
-                        },
-                      })}
-                    >
-                      <TableCell>Total</TableCell>
-                      <TableCell align="right">{roster.length}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={(th) => ({ fontWeight: th.typography.fontWeightMedium })}
+                        >
+                          Total
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={(th) => ({ fontWeight: th.typography.fontWeightMedium })}
+                        >
+                          {roster.length}
+                        </Typography>
+                      </Paper>
+                    </>
+                  )}
+                </Stack>
+              ) : (
+                <TableContainer
+                  sx={{ border: 1, borderColor: "divider", borderRadius: 1, maxWidth: 480 }}
+                >
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Thali type</TableCell>
+                        <TableCell align="right">Thalis</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {thaliTypes.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={2}>
+                            <Typography variant="body2" color="text.secondary">
+                              No active thali types are configured for this jamaat.
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        thaliTypes.map((t) => (
+                          <TableRow key={t.id}>
+                            <TableCell>{t.name}</TableCell>
+                            <TableCell align="right">
+                              {kitchenPickupByThaliType.byId.get(t.id) ?? 0}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                      {kitchenPickupByThaliType.other > 0 && (
+                        <TableRow>
+                          <TableCell>Unspecified or inactive type</TableCell>
+                          <TableCell align="right">{kitchenPickupByThaliType.other}</TableCell>
+                        </TableRow>
+                      )}
+                      <TableRow
+                        sx={(t) => ({
+                          "& td": {
+                            fontWeight: t.typography.fontWeightMedium,
+                            borderTop: 1,
+                            borderColor: "divider",
+                          },
+                        })}
+                      >
+                        <TableCell>Total</TableCell>
+                        <TableCell align="right">{roster.length}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </Box>
           )}
 
@@ -260,64 +409,184 @@ export default function FmbDistributorPortalPage() {
             </Button>
           </Box>
 
-          <TableContainer sx={{ border: 1, borderColor: "divider", borderRadius: 1 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Thali</TableCell>
-                  <TableCell>ITS</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Mohallah</TableCell>
-                  <TableCell>Address</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <Typography variant="body2" color="text.secondary">
-                        Loading…
+          {!loading && !isTenantHoliday && roster.length > 0 ? (
+            <TextField
+              label="Filter roster"
+              placeholder="Thali, ITS, name, address…"
+              size="small"
+              value={rosterSearch}
+              onChange={(e) => setRosterSearch(e.target.value)}
+              sx={{ maxWidth: 400, mb: 1 }}
+              fullWidth
+            />
+          ) : null}
+
+          {isNarrow ? (
+            <Stack spacing={1.5}>
+              {loading ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Loading…
+                  </Typography>
+                </Paper>
+              ) : isTenantHoliday ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No roster on FMB holidays.
+                  </Typography>
+                </Paper>
+              ) : roster.length === 0 ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No thalis on your roster for this date. Check assignments, suspensions, and
+                    whether this is a service day for each thali.
+                  </Typography>
+                </Paper>
+              ) : displayRoster.length === 0 ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No rows match this filter.
+                  </Typography>
+                </Paper>
+              ) : (
+                displayRoster.map((it) => {
+                  const t = it.fmbThali;
+                  return (
+                    <Paper key={it.id} variant="outlined" sx={{ p: 2 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={(th) => ({ fontWeight: th.typography.fontWeightMedium })}
+                      >
+                        Thali {t?.thaliNo ?? "—"}
                       </Typography>
+                      <Stack spacing={1} sx={{ mt: 1.5 }}>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            Name
+                          </Typography>
+                          <Typography variant="body2">{t?.fmb?.name ?? "—"}</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            ITS
+                          </Typography>
+                          <Typography variant="body2">{t?.fmb?.itsNo ?? "—"}</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            Address
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                          >
+                            {t?.deliveryAddress ?? "—"}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Paper>
+                  );
+                })
+              )}
+            </Stack>
+          ) : (
+            <TableContainer sx={{ border: 1, borderColor: "divider", borderRadius: 1 }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <TableSortLabel
+                        active={rosterSortBy === "thali"}
+                        direction={rosterSortBy === "thali" ? rosterSortDir : "asc"}
+                        onClick={() => requestRosterSort("thali")}
+                      >
+                        Thali
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={rosterSortBy === "its"}
+                        direction={rosterSortBy === "its" ? rosterSortDir : "asc"}
+                        onClick={() => requestRosterSort("its")}
+                      >
+                        ITS
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={rosterSortBy === "name"}
+                        direction={rosterSortBy === "name" ? rosterSortDir : "asc"}
+                        onClick={() => requestRosterSort("name")}
+                      >
+                        Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={rosterSortBy === "address"}
+                        direction={rosterSortBy === "address" ? rosterSortDir : "asc"}
+                        onClick={() => requestRosterSort("address")}
+                      >
+                        Address
+                      </TableSortLabel>
                     </TableCell>
                   </TableRow>
-                ) : isTenantHoliday ? (
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <Typography variant="body2" color="text.secondary">
-                        No roster on FMB holidays.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : roster.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <Typography variant="body2" color="text.secondary">
-                        No thalis on your roster for this date. Check assignments, suspensions, and
-                        whether this is a service day for each thali.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  roster.map((it) => {
-                    const t = it.fmbThali;
-                    return (
-                      <TableRow key={it.id}>
-                        <TableCell>{t?.thaliNo ?? "—"}</TableCell>
-                        <TableCell>{t?.fmb?.itsNo ?? "—"}</TableCell>
-                        <TableCell>{t?.fmb?.name ?? "—"}</TableCell>
-                        <TableCell>{t?.deliveryMohallah ?? "—"}</TableCell>
-                        <TableCell
-                          sx={{ maxWidth: 280, whiteSpace: "normal", wordBreak: "break-word" }}
-                        >
-                          {t?.deliveryAddress ?? "—"}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          Loading…
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : isTenantHoliday ? (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          No roster on FMB holidays.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : roster.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          No thalis on your roster for this date. Check assignments, suspensions,
+                          and whether this is a service day for each thali.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : displayRoster.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          No rows match this filter.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    displayRoster.map((it) => {
+                      const t = it.fmbThali;
+                      return (
+                        <TableRow key={it.id}>
+                          <TableCell>{t?.thaliNo ?? "—"}</TableCell>
+                          <TableCell>{t?.fmb?.itsNo ?? "—"}</TableCell>
+                          <TableCell>{t?.fmb?.name ?? "—"}</TableCell>
+                          <TableCell
+                            sx={{ maxWidth: 280, whiteSpace: "normal", wordBreak: "break-word" }}
+                          >
+                            {t?.deliveryAddress ?? "—"}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Stack>
       </Box>
     </ThemeProvider>

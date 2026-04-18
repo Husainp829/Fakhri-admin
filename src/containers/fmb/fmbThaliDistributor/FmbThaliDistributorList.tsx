@@ -7,9 +7,20 @@ import {
   List,
   Pagination,
   TextField,
+  TextInput,
   TopToolbar,
   type ListProps,
 } from "react-admin";
+
+const filters = [
+  <TextInput
+    key="q"
+    source="q"
+    label="Search code, name, phone, or remarks"
+    alwaysOn
+    sx={{ minWidth: 280 }}
+  />,
+];
 
 const ListActions = () => (
   <TopToolbar>
@@ -25,6 +36,7 @@ export default function FmbThaliDistributorList(props: ListProps) {
       title="Thali Distributors"
       perPage={50}
       sort={{ field: "code", order: "ASC" }}
+      filters={filters}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       actions={<ListActions />}
     >

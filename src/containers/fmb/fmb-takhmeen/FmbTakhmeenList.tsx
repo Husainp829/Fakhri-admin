@@ -9,10 +9,22 @@ import {
   CreateButton,
   Pagination,
   FunctionField,
+  TextInput,
   type ListProps,
+  type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
+
+const filters = [
+  <TextInput
+    key="q"
+    source="q"
+    label="Search file no., ITS, or household name"
+    alwaysOn
+    sx={{ minWidth: 300 }}
+  />,
+];
 
 const ListActions = () => (
   <TopToolbar>
@@ -26,34 +38,45 @@ export default function FmbTakhmeenList(props: ListProps) {
       {...props}
       actions={<ListActions />}
       sort={{ field: "startDate", order: "DESC" }}
+      filters={filters}
       perPage={25}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50]} />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
-        <ReferenceField source="fmbId" reference="fmbData" link="show" label="File no.">
+        <ReferenceField
+          source="fmbId"
+          reference="fmbData"
+          link="show"
+          label="File no."
+          sortable={false}
+        >
           <TextField source="fileNo" />
         </ReferenceField>
-        <ReferenceField source="fmbId" reference="fmbData" link="show" label="ITS">
+        <ReferenceField source="fmbId" reference="fmbData" link="show" label="ITS" sortable={false}>
           <TextField source="name" />
         </ReferenceField>
         <FunctionField
           label="Amount"
           textAlign="right"
+          sortBy="takhmeenAmount"
           render={(record) => formatINR(record?.takhmeenAmount, { empty: "—" })}
         />
         <FunctionField
           label="Pending"
           textAlign="right"
+          sortBy="pendingBalance"
           render={(record) => formatINR(record?.pendingBalance, { empty: "—" })}
         />
         <FunctionField
           label="Paid"
           textAlign="right"
+          sortBy="paidBalance"
           render={(record) => formatINR(record?.paidBalance, { empty: "—" })}
         />
         <FunctionField
           label="Hijri period"
-          render={(record) =>
+          sortBy="hijriYearStart"
+          render={(record: RaRecord) =>
             formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />

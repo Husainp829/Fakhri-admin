@@ -9,6 +9,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TableSortLabel,
   TextField,
   Typography,
 } from "@mui/material";
@@ -36,11 +37,49 @@ type DailySummaryPayload = {
   count?: number;
 };
 
+type SortColumn = "thali" | "fileNo" | "name" | "address" | "schedule";
+
+function rowThaliLabel(row: DailySummaryRow): string {
+  const base = (row.thaliNo ?? "").trim();
+  const tt = (row.thaliType ?? "").trim();
+  return tt ? `${base} (${tt})` : base;
+}
+
+function rowAddress(row: DailySummaryRow): string {
+  return row.deliveryAddress || row.deliveryMohallah
+    ? [row.deliveryAddress, row.deliveryMohallah].filter(Boolean).join(" — ")
+    : "";
+}
+
+function rowSchedule(row: DailySummaryRow): string {
+  return row.profileCode && row.profileName ? `${row.profileCode} — ${row.profileName}` : "";
+}
+
+function sortKey(row: DailySummaryRow, col: SortColumn): string {
+  switch (col) {
+    case "thali":
+      return rowThaliLabel(row).toLowerCase();
+    case "fileNo":
+      return (row.fileNo ?? "").toLowerCase();
+    case "name":
+      return (row.name ?? "").toLowerCase();
+    case "address":
+      return rowAddress(row).toLowerCase();
+    case "schedule":
+      return rowSchedule(row).toLowerCase();
+    default:
+      return "";
+  }
+}
+
 export default function DailySummarySection() {
   const [date, setDate] = useState(() => dayjs().format("YYYY-MM-DD"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [payload, setPayload] = useState<DailySummaryPayload | null>(null);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<SortColumn>("thali");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const load = useCallback(() => {
     setLoading(true);
@@ -52,7 +91,7 @@ export default function DailySummarySection() {
       .finally(() => setLoading(false));
   }, [date]);
 
-  const rows = payload?.rows ?? [];
+  const rawRows = payload?.rows ?? [];
   const meta = useMemo(() => {
     if (!payload) {
       return null;
@@ -64,6 +103,38 @@ export default function DailySummarySection() {
       count: payload.count,
     };
   }, [payload]);
+
+  const filteredRows = useMemo(() => {
+    const t = search.trim().toLowerCase();
+    if (!t) return rawRows;
+    return rawRows.filter((row) => {
+      const hay = [rowThaliLabel(row), row.fileNo, row.name, rowAddress(row), rowSchedule(row)]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(t);
+    });
+  }, [rawRows, search]);
+
+  const displayRows = useMemo(() => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...filteredRows].sort((a, b) => {
+      const va = sortKey(a, sortBy);
+      const vb = sortKey(b, sortBy);
+      const cmp = va.localeCompare(vb, undefined, { numeric: true, sensitivity: "base" });
+      if (cmp !== 0) return cmp * dir;
+      return String(a.fmbThaliId ?? "").localeCompare(String(b.fmbThaliId ?? ""));
+    });
+  }, [filteredRows, sortBy, sortDir]);
+
+  const requestSort = (col: SortColumn) => {
+    if (sortBy === col) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(col);
+      setSortDir("asc");
+    }
+  };
 
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
@@ -100,45 +171,102 @@ export default function DailySummarySection() {
       ) : null}
       {!meta?.isTenantHoliday && payload && meta ? (
         <>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Deliveries expected: {meta.count ?? 0}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 2,
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 1,
+            }}
+          >
+            <Typography variant="body2">
+              Deliveries expected: {meta.count ?? 0}
+              {search.trim() ? (
+                <Box component="span" sx={{ ml: 1, color: "text.secondary" }}>
+                  (showing {displayRows.length} of {rawRows.length} loaded)
+                </Box>
+              ) : null}
+            </Typography>
+            <TextField
+              label="Filter table"
+              placeholder="Thali, file, name, address, schedule…"
+              size="small"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ minWidth: 240, maxWidth: 400 }}
+            />
+          </Box>
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Thali</TableCell>
-                <TableCell>FMB</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Address</TableCell>
-                <TableCell>Schedule</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortBy === "thali"}
+                    direction={sortBy === "thali" ? sortDir : "asc"}
+                    onClick={() => requestSort("thali")}
+                  >
+                    Thali
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortBy === "fileNo"}
+                    direction={sortBy === "fileNo" ? sortDir : "asc"}
+                    onClick={() => requestSort("fileNo")}
+                  >
+                    FMB
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortBy === "name"}
+                    direction={sortBy === "name" ? sortDir : "asc"}
+                    onClick={() => requestSort("name")}
+                  >
+                    Name
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortBy === "address"}
+                    direction={sortBy === "address" ? sortDir : "asc"}
+                    onClick={() => requestSort("address")}
+                  >
+                    Address
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={sortBy === "schedule"}
+                    direction={sortBy === "schedule" ? sortDir : "asc"}
+                    onClick={() => requestSort("schedule")}
+                  >
+                    Schedule
+                  </TableSortLabel>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row: DailySummaryRow) => (
+              {displayRows.map((row: DailySummaryRow) => (
                 <TableRow key={row.fmbThaliId}>
-                  <TableCell>
-                    {row.thaliNo}
-                    {row.thaliType ? ` (${row.thaliType})` : ""}
-                  </TableCell>
+                  <TableCell>{rowThaliLabel(row) || "—"}</TableCell>
                   <TableCell>{row.fileNo ?? "—"}</TableCell>
                   <TableCell>{row.name ?? "—"}</TableCell>
-                  <TableCell>
-                    {row.deliveryAddress || row.deliveryMohallah
-                      ? [row.deliveryAddress, row.deliveryMohallah].filter(Boolean).join(" — ")
-                      : "—"}
-                  </TableCell>
-                  <TableCell>
-                    {row.profileCode && row.profileName
-                      ? `${row.profileCode} — ${row.profileName}`
-                      : "—"}
-                  </TableCell>
+                  <TableCell>{rowAddress(row) || "—"}</TableCell>
+                  <TableCell>{rowSchedule(row) || "—"}</TableCell>
                 </TableRow>
               ))}
-              {rows.length === 0 ? (
+              {rawRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4}>
+                  <TableCell colSpan={5}>
                     No deliveries (non-service day, inactive thali, paused, or before resume date).
                   </TableCell>
+                </TableRow>
+              ) : displayRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5}>No rows match this filter.</TableCell>
                 </TableRow>
               ) : null}
             </TableBody>

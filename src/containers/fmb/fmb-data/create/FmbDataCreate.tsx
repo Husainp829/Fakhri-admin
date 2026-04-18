@@ -176,7 +176,7 @@ export default function FmbDataCreate(props: CreateProps) {
         const res = await dataProvider.getList("fmbData", {
           pagination: { page: 1, perPage: 10 },
           sort: { field: "createdAt", order: "DESC" },
-          filter: { search: its, includeClosed: true },
+          filter: { search: its, includeClosed: true, deletedAt: null },
         });
 
         const rows = Array.isArray(res?.data) ? res.data : [];

@@ -3,11 +3,14 @@ import {
   CreateButton,
   Datagrid,
   DateField,
+  DateInput,
   FunctionField,
   List,
   Pagination,
   TextField,
+  TextInput,
   TopToolbar,
+  FilterButton,
   useRecordContext,
   type ListProps,
 } from "react-admin";
@@ -68,8 +71,15 @@ function FmbDailyMenuDishesExpandPanel() {
   );
 }
 
+const filters = [
+  <TextInput key="q" source="q" label="Search notes" alwaysOn sx={{ minWidth: 220 }} />,
+  <DateInput key="from" source="from" label="From" />,
+  <DateInput key="to" source="to" label="To" />,
+];
+
 const ListActions = () => (
   <TopToolbar>
+    <FilterButton />
     <CreateButton />
   </TopToolbar>
 );
@@ -81,6 +91,7 @@ export default function FmbDailyMenuList(props: ListProps) {
       title="Daily menus"
       perPage={50}
       sort={{ field: "serviceDate", order: "DESC" }}
+      filters={filters}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       actions={<ListActions />}
     >
@@ -92,6 +103,7 @@ export default function FmbDailyMenuList(props: ListProps) {
         <DateField source="serviceDate" />
         <FunctionField
           label="Dishes"
+          sortable={false}
           render={(record: { dishIds?: string[] }) => record.dishIds?.length ?? 0}
         />
         <TextField source="notes" emptyText="—" />

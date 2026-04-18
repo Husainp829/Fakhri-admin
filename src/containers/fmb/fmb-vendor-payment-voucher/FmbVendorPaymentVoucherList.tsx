@@ -11,6 +11,7 @@ import {
   ReferenceInput,
   SelectInput,
   TextField,
+  TextInput,
   TopToolbar,
   type ListProps,
   type RaRecord,
@@ -25,6 +26,13 @@ const ListActions = () => (
 );
 
 const filters = [
+  <TextInput
+    key="q"
+    source="q"
+    label="Search voucher, reference, mode, remarks"
+    alwaysOn
+    sx={{ minWidth: 280 }}
+  />,
   <ReferenceInput
     source="fmbVendorId"
     reference="fmbVendor"
@@ -54,9 +62,16 @@ export default function FmbVendorPaymentVoucherList(props: ListProps) {
         <DateField source="voucherDate" label="Date" />
         <FunctionField
           label="Amount"
+          sortBy="amount"
           render={(record: RaRecord) => formatINR(record?.amount, { empty: "—" })}
         />
-        <ReferenceField source="fmbVendorId" reference="fmbVendor" label="Vendor" link="show">
+        <ReferenceField
+          source="fmbVendorId"
+          reference="fmbVendor"
+          label="Vendor"
+          link="show"
+          sortable={false}
+        >
           <TextField source="name" />
         </ReferenceField>
         <TextField source="paymentMode" label="Mode" emptyText="—" />

@@ -5,9 +5,20 @@ import {
   List,
   Pagination,
   TextField,
+  TextInput,
   TopToolbar,
   type ListProps,
 } from "react-admin";
+
+const filters = [
+  <TextInput
+    key="q"
+    source="q"
+    label="Search name or description"
+    alwaysOn
+    sx={{ minWidth: 280 }}
+  />,
+];
 
 const ListActions = () => (
   <TopToolbar>
@@ -22,6 +33,7 @@ export default function FmbDishList(props: ListProps) {
       title="Dishes"
       perPage={50}
       sort={{ field: "sortOrder", order: "ASC" }}
+      filters={filters}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       actions={<ListActions />}
     >

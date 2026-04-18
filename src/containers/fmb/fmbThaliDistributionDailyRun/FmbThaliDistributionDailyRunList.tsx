@@ -12,9 +12,12 @@ import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import {
   Datagrid,
+  FilterButton,
   FunctionField,
   List,
   TextField,
+  TextInput,
+  TopToolbar,
   useInput,
   useListContext,
   type InputProps,
@@ -125,7 +128,22 @@ function ServiceDateFilter(props: InputProps) {
   );
 }
 
-const filters = [<ServiceDateFilter key="date" source="date" label="Service date" alwaysOn />];
+const filters = [
+  <ServiceDateFilter key="date" source="date" label="Service date" alwaysOn />,
+  <TextInput
+    key="q"
+    source="q"
+    label="Search distributor or roster"
+    alwaysOn
+    sx={{ minWidth: 260 }}
+  />,
+];
+
+const ListActions = () => (
+  <TopToolbar>
+    <FilterButton />
+  </TopToolbar>
+);
 
 type DashboardRow = {
   total?: number;
@@ -136,6 +154,7 @@ function RosterBreakdownField() {
   return (
     <FunctionField<DashboardRow>
       label="Roster (thalis)"
+      sortable={false}
       render={(record) => {
         const total = typeof record.total === "number" ? record.total : 0;
         const raw = record.thaliTypeCounts;
@@ -176,6 +195,7 @@ export default function FmbThaliDistributionDailyRunList(props: ListProps) {
       perPage={50}
       filterDefaultValues={filterDefaultValues}
       filters={filters}
+      actions={<ListActions />}
       sort={{ field: "code", order: "ASC" }}
       exporter={false}
       pagination={false}
