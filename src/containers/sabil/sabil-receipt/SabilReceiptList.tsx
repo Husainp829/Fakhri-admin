@@ -64,7 +64,7 @@ const PaymentSummary = () => {
         queryParams.append("paymentMode", String(filterValues.paymentMode));
       if (filterValues.sabilId) queryParams.append("sabilId", String(filterValues.sabilId));
       if (filterValues.sabilType) queryParams.append("sabilType", String(filterValues.sabilType));
-      if (filterValues.itsNo) queryParams.append("itsNo", String(filterValues.itsNo));
+      if (filterValues.q) queryParams.append("q", String(filterValues.q));
 
       const url = `${getApiUrl("sabilReceipt")}/sabilReceipt/summary/payment-mode?${queryParams.toString()}`;
 
@@ -86,7 +86,7 @@ const PaymentSummary = () => {
     filterValues?.paymentMode,
     filterValues?.sabilId,
     filterValues?.sabilType,
-    filterValues?.itsNo,
+    filterValues?.q,
   ]);
 
   if (!summary || loading) {
@@ -277,6 +277,13 @@ const getFilterFromURL = () => {
 };
 
 const ReceiptFilters = [
+  <TextInput
+    source="q"
+    label="Search name / surname / ITS"
+    key="q"
+    alwaysOn
+    sx={{ minWidth: 260 }}
+  />,
   <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
   <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
   <SelectInput
@@ -290,7 +297,6 @@ const ReceiptFilters = [
     key="paymentMode"
     alwaysOn
   />,
-  <TextInput source="itsNo" label="ITS No" key="itsNo" alwaysOn />,
 ];
 
 const SabilReceiptList = () => {

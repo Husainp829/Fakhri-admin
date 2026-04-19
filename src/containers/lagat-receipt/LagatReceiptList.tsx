@@ -9,6 +9,7 @@ import {
   FunctionField,
   Button,
   DateInput,
+  TextInput,
   useListContext,
   usePermissions,
   Pagination,
@@ -61,6 +62,7 @@ const PaymentSummary = () => {
       if (filterValues.startDate) queryParams.append("startDate", filterValues.startDate);
       if (filterValues.endDate) queryParams.append("endDate", filterValues.endDate);
       if (filterValues.paymentMode) queryParams.append("paymentMode", filterValues.paymentMode);
+      if (filterValues.q) queryParams.append("q", String(filterValues.q));
 
       const url = `${getApiUrl(
         "lagatReceipts"
@@ -78,7 +80,7 @@ const PaymentSummary = () => {
     } else {
       setSummary(null);
     }
-  }, [filterValues?.startDate, filterValues?.endDate, filterValues?.paymentMode]);
+  }, [filterValues?.startDate, filterValues?.endDate, filterValues?.paymentMode, filterValues?.q]);
 
   if (!summary || loading) {
     return null;
@@ -360,6 +362,7 @@ const LagatReceiptList = () => {
   };
 
   const LagatFilters = [
+    <TextInput source="q" label="Search name / ITS" key="q" alwaysOn sx={{ minWidth: 260 }} />,
     <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
     <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
   ];

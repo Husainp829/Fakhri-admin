@@ -69,8 +69,7 @@ const PaymentSummary = () => {
       if (filterValues.end) queryParams.append("end", String(filterValues.end));
       if (filterValues.type) queryParams.append("type", String(filterValues.type));
       if (filterValues.mode) queryParams.append("mode", String(filterValues.mode));
-      if (filterValues.organiserIts)
-        queryParams.append("organiserIts", String(filterValues.organiserIts));
+      if (filterValues.q) queryParams.append("q", String(filterValues.q));
       if (filterValues.receiptNo) queryParams.append("receiptNo", String(filterValues.receiptNo));
 
       const url = `${getApiUrl("contRcpt")}/contRcpt/summary/payment-mode?${queryParams.toString()}`;
@@ -92,7 +91,7 @@ const PaymentSummary = () => {
     filterValues?.end,
     filterValues?.type,
     filterValues?.mode,
-    filterValues?.organiserIts,
+    filterValues?.q,
     filterValues?.receiptNo,
   ]);
 
@@ -421,16 +420,10 @@ export const RentBookingReceiptList = () => {
   };
 
   const ReceiptFilters = [
-    <TextInput
-      label="Search By Organiser ITS"
-      source="organiserIts"
-      alwaysOn
-      key={0}
-      sx={{ minWidth: 300 }}
-    />,
-    <DateInput source="start" label="from" alwaysOn key={1} />,
-    <DateInput source="end" label="to" alwaysOn key={2} />,
-    <TextInput label="Search By Receipt No" source="receiptNo" key={3} sx={{ minWidth: 300 }} />,
+    <TextInput label="Search organiser / ITS" source="q" alwaysOn key="q" sx={{ minWidth: 260 }} />,
+    <DateInput source="start" label="from" alwaysOn key="start" />,
+    <DateInput source="end" label="to" alwaysOn key="end" />,
+    <TextInput label="Receipt No" source="receiptNo" key="receiptNo" sx={{ minWidth: 200 }} />,
   ];
 
   return (
