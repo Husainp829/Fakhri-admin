@@ -18,8 +18,10 @@ export default function Login(): ReactElement {
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
     setLoading(true);
-    login({ username, password })
+    login({ username: trimmedUsername, password: trimmedPassword })
       .then(() => {
         setLoading(false);
       })

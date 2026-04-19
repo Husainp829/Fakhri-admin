@@ -20,8 +20,9 @@ export default function ForgotPassword(): ReactElement {
   const notify = useNotify();
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
+    const trimmedEmail = email.trim();
     setLoading(true);
-    sendPasswordResetEmail(authObj, email, {
+    sendPasswordResetEmail(authObj, trimmedEmail, {
       url: buildPasswordResetContinueUrl(),
       handleCodeInApp: false,
     })

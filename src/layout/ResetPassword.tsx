@@ -32,17 +32,19 @@ export default function ResetPassword(): ReactElement {
     if (linkInvalid || !oobCode) {
       return;
     }
-    if (password.length < MIN_LENGTH) {
+    const trimmedPassword = password.trim();
+    const trimmedConfirm = confirmPassword.trim();
+    if (trimmedPassword.length < MIN_LENGTH) {
       notify(`Password must be at least ${MIN_LENGTH} characters`);
       return;
     }
-    if (password !== confirmPassword) {
+    if (trimmedPassword !== trimmedConfirm) {
       notify("Passwords do not match");
       return;
     }
 
     setLoading(true);
-    confirmPasswordReset(authObj, oobCode, password)
+    confirmPasswordReset(authObj, oobCode, trimmedPassword)
       .then(() => {
         setLoading(false);
         notify("Your password has been updated. You can sign in now.", { type: "success" });
