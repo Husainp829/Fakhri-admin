@@ -43,15 +43,6 @@ export default function FmbTakhmeenList(props: ListProps) {
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50]} />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
-        <ReferenceField
-          source="fmbId"
-          reference="fmbData"
-          link="show"
-          label="File no."
-          sortable={false}
-        >
-          <TextField source="fileNo" />
-        </ReferenceField>
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="ITS" sortable={false}>
           <TextField source="name" />
         </ReferenceField>

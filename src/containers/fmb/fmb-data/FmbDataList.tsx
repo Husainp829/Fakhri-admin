@@ -27,6 +27,12 @@ const RegistrationFilters = [
     key={0}
     sx={{ minWidth: 300 }}
   />,
+  <TextInput
+    label="Thali tag"
+    source="thaliTag"
+    key="thaliTag"
+    helperText="Case-insensitive; matches if any thali has this tag"
+  />,
 ];
 
 export default function FmbDataList(props: ListProps) {
@@ -75,21 +81,8 @@ export default function FmbDataList(props: ListProps) {
           bulkActionButtons={<PostBulkActionButtons />}
           rowClick="show"
         >
-          <TextField source="fileNo" label="File No." key="fileNo" />
-          <TextField
-            source="deliveryScheduleProfile.name"
-            label="Schedule"
-            emptyText="—"
-            key="schedule"
-          />
           <TextField source="itsNo" label="ITS" key="itsNo" />
-          <FunctionField
-            label="Name"
-            render={(record: RaRecord) =>
-              (record.itsdata as { Full_Name?: string } | undefined)?.Full_Name || record.name
-            }
-            key="name"
-          />
+          <TextField source="name" label="Name" key="name" sortable />
           <FunctionField
             label="Thalis"
             key="thalis"
@@ -100,6 +93,34 @@ export default function FmbDataList(props: ListProps) {
                 (thali: { isActive?: boolean }) => thali?.isActive
               ).length;
               return `${activeCount}/${thalis.length} active`;
+            }}
+          />
+          <TextField
+            source="deliveryScheduleProfile.name"
+            label="Schedule"
+            emptyText="—"
+            key="schedule"
+          />
+          <FunctionField
+            label="Tags"
+            key="tags"
+            render={(record: RaRecord) => {
+              const thalis = Array.isArray(record.thalis) ? record.thalis : [];
+              const tagSet = new Set<string>();
+              for (const thali of thalis) {
+                const tags = Array.isArray((thali as { tags?: unknown }).tags)
+                  ? (thali as { tags: unknown[] }).tags
+                  : [];
+                for (const tag of tags) {
+                  if (typeof tag === "string" && tag.trim()) {
+                    tagSet.add(tag.trim());
+                  }
+                }
+              }
+              const list = [...tagSet].sort((a, b) =>
+                a.localeCompare(b, undefined, { sensitivity: "base" })
+              );
+              return list.length ? list.join(", ") : "—";
             }}
           />
           <FunctionField

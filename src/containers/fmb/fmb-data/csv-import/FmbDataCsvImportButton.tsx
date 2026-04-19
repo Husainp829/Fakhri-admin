@@ -80,10 +80,62 @@ async function fetchAllThaliTypes(dataProvider: DataProvider): Promise<FmbThaliT
   return out;
 }
 
+/** `itsdata` getMany uses a server limit of 100 ITS ids per request. */
+const ITSDATA_GET_MANY_CHUNK = 100;
+
+type ItsdataNameRow = { ITS_ID?: string; Full_Name?: string };
+
+async function fetchDirectoryFullNamesByIts(
+  dataProvider: DataProvider,
+  itsNos: string[]
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  const unique = [...new Set(itsNos.map((s) => s.trim()).filter(Boolean))];
+  for (let i = 0; i < unique.length; i += ITSDATA_GET_MANY_CHUNK) {
+    const chunk = unique.slice(i, i + ITSDATA_GET_MANY_CHUNK);
+    try {
+      const { data } = await dataProvider.getMany("itsdata", { ids: chunk });
+      for (const row of (data ?? []) as ItsdataNameRow[]) {
+        const id = String(row.ITS_ID ?? "").trim();
+        const fullName = String(row.Full_Name ?? "").trim();
+        if (id && fullName) out.set(id, fullName);
+      }
+    } catch {
+      /* fall back to CSV name for ITS rows in this chunk */
+    }
+  }
+  return out;
+}
+
+function previewResolvedName(
+  row: FmbDataCsvPreviewRow,
+  directoryFullNameByIts: ReadonlyMap<string, string>
+): string {
+  const its = row.itsNo.trim();
+  if (its) {
+    const fromDirectory = directoryFullNameByIts.get(its);
+    if (fromDirectory?.trim()) return fromDirectory.trim();
+  }
+  return row.name.trim();
+}
+
+function resolveImportedHouseholdName(
+  bundle: FmbDataCsvHouseholdBundle,
+  directoryFullNameByIts: ReadonlyMap<string, string>
+): string {
+  const its = bundle.itsNo?.trim() ?? "";
+  if (its) {
+    const fromDirectory = directoryFullNameByIts.get(its);
+    if (fromDirectory?.trim()) return fromDirectory.trim();
+  }
+  return bundle.name.trim();
+}
+
 function buildCreatePayload(
   bundle: FmbDataCsvHouseholdBundle,
   thaliTypes: FmbThaliTypeForCsv[],
-  hijriYearStart: number
+  hijriYearStart: number,
+  directoryFullNameByIts: ReadonlyMap<string, string>
 ): { payload: Record<string, unknown>; errors: string[] } {
   const errors: string[] = [];
   const thalis = bundle.thalis.map((th) => {
@@ -108,7 +160,7 @@ function buildCreatePayload(
   return {
     payload: {
       itsNo: bundle.itsNo?.trim() || undefined,
-      name: bundle.name.trim() || undefined,
+      name: resolveImportedHouseholdName(bundle, directoryFullNameByIts) || undefined,
       mobileNo: bundle.mobile.trim() || undefined,
       takhmeenAmount: bundle.takhmeenAmount,
       hijriYearStart,
@@ -172,6 +224,10 @@ export function FmbDataCsvImportButton() {
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState({ done: 0, total: 0 });
   const [lastLog, setLastLog] = useState<string[]>([]);
+  const [previewDirectoryNames, setPreviewDirectoryNames] = useState(
+    () => new Map<string, string>()
+  );
+  const [previewDirectoryNamesLoading, setPreviewDirectoryNamesLoading] = useState(false);
 
   const hijriYearStart = React.useMemo(() => getFmbTakhmeenYearFromGregorian(new Date()), []);
 
@@ -195,6 +251,32 @@ export function FmbDataCsvImportButton() {
       alive = false;
     };
   }, [open, canImport, dataProvider]);
+
+  useEffect(() => {
+    if (!open || !previewPayload?.rows?.length) {
+      setPreviewDirectoryNames(new Map());
+      setPreviewDirectoryNamesLoading(false);
+      return;
+    }
+    let alive = true;
+    setPreviewDirectoryNamesLoading(true);
+    const itsNos = [...new Set(previewPayload.rows.map((r) => r.itsNo.trim()).filter(Boolean))];
+    fetchDirectoryFullNamesByIts(dataProvider, itsNos)
+      .then((map) => {
+        if (!alive) return;
+        setPreviewDirectoryNames(map);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setPreviewDirectoryNames(new Map());
+      })
+      .finally(() => {
+        if (alive) setPreviewDirectoryNamesLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [open, previewPayload, dataProvider]);
 
   const validatedRows = useMemo(() => {
     if (!previewPayload?.rows) return null;
@@ -256,10 +338,17 @@ export function FmbDataCsvImportButton() {
     let ok = 0;
     let fail = 0;
     try {
+      const itsList = bundles.map((b) => b.itsNo).filter((x): x is string => Boolean(x?.trim()));
+      const directoryFullNameByIts = await fetchDirectoryFullNamesByIts(dataProvider, itsList);
       setImportProgress({ done: 0, total: bundles.length });
       for (let i = 0; i < bundles.length; i += 1) {
         const bundle = bundles[i]!;
-        const { payload, errors } = buildCreatePayload(bundle, thaliTypes, hijriYearStart);
+        const { payload, errors } = buildCreatePayload(
+          bundle,
+          thaliTypes,
+          hijriYearStart,
+          directoryFullNameByIts
+        );
         if (errors.length) {
           fail += 1;
           log.push(`Skipped (ITS ${bundle.itsNo ?? "—"}): ${errors.join(" ")}`);
@@ -328,17 +417,11 @@ export function FmbDataCsvImportButton() {
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogTitle>Import FMB data from CSV</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ mb: 1.5 }}>
-            Required columns: <strong>Thaali No, ITS, Name, Address, Thali Type, Mobile</strong>{" "}
-            (header <strong>Delivery Address</strong> is also accepted). Optional:{" "}
-            <strong>Takhmeen Amount</strong> (defaults to <strong>0</strong> per household when
-            empty), <strong>Tags</strong> (comma or semicolon separated; max 50 tags, 100 characters
-            each).
-          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            <strong>Thali Type</strong> must match an existing type (id, code, name, or{" "}
-            <code>CODE — Name</code>). Rows with the same ITS become one FMB record with multiple
-            thalis. Review the preview and fix highlighted cells before importing.
+            Need Thaali No, ITS, Name, Address (or <strong>Delivery Address</strong>), Thali Type,
+            Mobile. Optional: Takhmeen (0 if empty), Tags. Same ITS → one household; types must
+            match your list. If the ITS is already on file, we use the directory name. Fix red
+            cells, then import.
           </Typography>
           <Button variant="outlined" component="label" size="small" disabled={importing}>
             Choose CSV file
@@ -379,6 +462,7 @@ export function FmbDataCsvImportButton() {
                   : ""}
                 .
                 {thaliTypes === null ? <strong> Loading thali types for validation…</strong> : null}
+                {previewDirectoryNamesLoading ? <strong> Loading directory names…</strong> : null}
               </Typography>
               {thaliTypes === null ? (
                 <Alert severity="info" sx={{ mb: 1 }}>
@@ -415,6 +499,12 @@ export function FmbDataCsvImportButton() {
                   <TableBody>
                     {validatedRows.map((row) => {
                       const dirty = rowHasAnyIssue(row);
+                      const resolvedName = previewResolvedName(row, previewDirectoryNames);
+                      const csvName = row.name.trim();
+                      const nameDiffers =
+                        !previewDirectoryNamesLoading &&
+                        Boolean(csvName) &&
+                        resolvedName !== csvName;
                       return (
                         <TableRow
                           key={row.rowNumber}
@@ -423,7 +513,19 @@ export function FmbDataCsvImportButton() {
                           <TableCell>{row.rowNumber}</TableCell>
                           <TableCell sx={cellSx(row, "thaliNo")}>{row.thaliNo || "—"}</TableCell>
                           <TableCell sx={cellSx(row, "itsNo")}>{row.itsNo || "—"}</TableCell>
-                          <TableCell sx={cellSx(row, "name")}>{row.name || "—"}</TableCell>
+                          <TableCell sx={cellSx(row, "name")}>
+                            {resolvedName || "—"}
+                            {nameDiffers ? (
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                color="text.secondary"
+                                display="block"
+                              >
+                                CSV: {csvName}
+                              </Typography>
+                            ) : null}
+                          </TableCell>
                           <TableCell sx={cellSx(row, "deliveryAddress")}>
                             {row.deliveryAddress || "—"}
                           </TableCell>
