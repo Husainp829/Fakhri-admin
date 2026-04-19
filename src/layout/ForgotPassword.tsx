@@ -1,13 +1,17 @@
 import { useState, type FormEvent, type ReactElement } from "react";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { Link as RouterLink } from "react-router-dom";
+import { sendPasswordResetEmail } from "firebase/auth";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
 import { useNotify } from "react-admin";
+
+import { AuthBrandedShell } from "@/layout/AuthBrandedShell";
+import { authObj } from "@/firebase-config";
+import { buildPasswordResetContinueUrl } from "@/utils/firebase-email-action-params";
 
 export default function ForgotPassword(): ReactElement {
   const [email, setEmail] = useState("");
@@ -16,9 +20,11 @@ export default function ForgotPassword(): ReactElement {
   const notify = useNotify();
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    const auth = getAuth();
     setLoading(true);
-    sendPasswordResetEmail(auth, email)
+    sendPasswordResetEmail(authObj, email, {
+      url: buildPasswordResetContinueUrl(),
+      handleCodeInApp: false,
+    })
       .then(() => {
         setLoading(false);
         notify("Password Reset Link has been mailed to you on the above account.");
@@ -30,61 +36,55 @@ export default function ForgotPassword(): ReactElement {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <AuthBrandedShell>
+      <Typography
+        component="h1"
+        variant="h5"
+        sx={{ mb: 1, alignSelf: "stretch", textAlign: "center" }}
       >
-        <Typography component="h1" variant="h5">
-          Forgot Password
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            variant="standard"
-            autoComplete="email"
-            autoFocus
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
+        Forgot password
+      </Typography>
+      <Box
+        component="form"
+        noValidate
+        onSubmit={handleSubmit}
+        sx={{ mt: 0, width: "100%", maxWidth: 360 }}
+      >
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          variant="outlined"
+          autoComplete="email"
+          autoFocus
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Box sx={{ textAlign: "center", mt: 3 }}>
           <Button
             type="submit"
             variant="contained"
             disabled={loading}
             sx={{
-              mt: 5,
-              mb: 1,
-              mr: "auto",
+              mb: 2,
+              mx: "auto",
+              width: "220px",
               height: "40px",
               borderRadius: 3,
             }}
-            fullWidth
           >
             Request Reset Link
             {loading && <CircularProgress color="inherit" size={20} sx={{ ml: 1 }} />}
           </Button>
         </Box>
-        <Button
-          type="submit"
-          sx={{
-            ml: 1,
-            borderRadius: 3,
-          }}
-          href="#/login"
-        >
-          Back to login
-        </Button>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Link component={RouterLink} to="/login" variant="body2">
+            Back to login
+          </Link>
+        </Box>
       </Box>
-    </Container>
+    </AuthBrandedShell>
   );
 }

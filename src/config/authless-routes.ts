@@ -7,6 +7,7 @@ import LagatReceiptPrint from "@/containers/lagat-receipt/LagatReceiptPrint";
 import MiqaatNiyaazReceiptPrint from "@/containers/miqaat/miqaat-niyaaz-receipts/MiqaatNiyaazReceiptPrintA5";
 import TamiraatReceiptPrint from "@/containers/tamiraat/tamiraat-receipts/TamiraatReceiptPrintA5";
 import ForgotPassword from "@/layout/ForgotPassword";
+import ResetPassword from "@/layout/ResetPassword";
 import SabilReceipt from "@/containers/sabil/sabil-receipt/SabilReceiptPrint";
 import FmbReceipt from "@/containers/fmb/fmb-receipt/FmbReceiptPrint";
 import YearlyNiyaazReceiptPrint from "@/containers/yearly-niyaaz/yearly-niyaaz-receipts/YearlyNiyaazReceiptPrint";
@@ -20,6 +21,7 @@ export const AUTHLESS_ROUTES: AuthlessRouteConfig[] = [
   { path: "/mqt-rcpt/:id", element: MiqaatNiyaazReceiptPrint },
   { path: "/tam-rcpt/:id", element: TamiraatReceiptPrint },
   { path: "/forgot-password", element: ForgotPassword },
+  { path: "/reset-password", element: ResetPassword },
   { path: "/sabil-receipt", element: SabilReceipt },
   { path: "/fmb-receipt", element: FmbReceipt },
   { path: "/yn-rcpt/:id", element: YearlyNiyaazReceiptPrint },
