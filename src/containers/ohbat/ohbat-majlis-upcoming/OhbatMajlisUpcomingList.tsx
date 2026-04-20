@@ -9,7 +9,8 @@ import {
   useCreatePath,
 } from "react-admin";
 import type { RaRecord } from "react-admin";
-import { Box, Button, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Tab, Tabs, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import { fromGregorian } from "@/utils/hijri-date-utils";
@@ -24,8 +25,17 @@ const formatMajlisDayOfWeekUtc = (date: unknown) =>
 const formatMajlisHijriUtc = (date: unknown) =>
   date ? fromGregorian(dayjs.utc(String(date)).toDate(), "code") : "—";
 
+function pastAttendanceCount(record: RaRecord): number {
+  const raw = record.attendanceCount;
+  if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+  if (typeof raw === "string" && raw.trim() !== "" && Number.isFinite(Number(raw)))
+    return Number(raw);
+  return 0;
+}
+
 export default function OhbatMajlisUpcomingList() {
   const [attendanceTab, setAttendanceTab] = useState<"upcoming" | "past">("upcoming");
+  const theme = useTheme();
   const isNarrow = useMediaQuery((t) => t.breakpoints.down("md"), { noSsr: true });
   const createPath = useCreatePath();
   const attendanceBase = createPath({ resource: "ohbatMajlisAttendance", type: "create" });
@@ -33,9 +43,34 @@ export default function OhbatMajlisUpcomingList() {
   const toAttendance = (majlisId: string | number) =>
     `${attendanceBase}?ohbatMajalisId=${encodeURIComponent(String(majlisId))}`;
 
-  const listRowSx = () => ({ borderBottom: 1, borderBottomColor: "divider" });
-
   const isPast = attendanceTab === "past";
+
+  /** SimpleList rows — no global table zebra. */
+  const missingAttendanceRowSx = {
+    bgcolor: alpha(theme.palette.warning.main, 0.14),
+    borderLeft: `4px solid ${theme.palette.warning.main}`,
+  };
+
+  /**
+   * Datagrid rows: theme zebra uses `.MuiTableBody-root .MuiTableRow-root:nth-of-type(even)` (0,2,1).
+   * `&&&` repeats the row's generated class so highlight background wins over striping and hover tint.
+   */
+  const datagridMissingAttendanceRowSx = {
+    "&&&": {
+      bgcolor: alpha(theme.palette.warning.main, 0.14),
+      borderLeft: `4px solid ${theme.palette.warning.main}`,
+    },
+    "&&&:hover": {
+      bgcolor: alpha(theme.palette.warning.main, 0.2),
+    },
+  };
+
+  const listRowSx = (record: RaRecord) => ({
+    borderBottom: 1,
+    borderBottomColor: "divider",
+    ...(isPast && pastAttendanceCount(record) === 0 ? missingAttendanceRowSx : {}),
+  });
+
   const title = isPast ? "Past ohbat majlis" : "Upcoming ohbat majlis";
 
   /** Full path + query; works as react-admin rowClick when passed through createPath default branch. */
@@ -117,6 +152,19 @@ export default function OhbatMajlisUpcomingList() {
                 .filter(Boolean)
                 .join(" · ") || "—"
             }
+            tertiaryText={
+              isPast
+                ? (r: RaRecord) => (
+                    <Typography
+                      variant="caption"
+                      color={pastAttendanceCount(r) === 0 ? "warning.dark" : "text.secondary"}
+                      fontWeight={pastAttendanceCount(r) === 0 ? 600 : 400}
+                    >
+                      Attendance records: {pastAttendanceCount(r)}
+                    </Typography>
+                  )
+                : undefined
+            }
             rowSx={listRowSx}
           />
         ) : (
@@ -126,6 +174,11 @@ export default function OhbatMajlisUpcomingList() {
               rowClick={
                 isPast ? (_id, _resource, record) => attendancePathForRecord(record) : false
               }
+              rowSx={(record) => ({
+                ...(isPast && pastAttendanceCount(record) === 0
+                  ? datagridMissingAttendanceRowSx
+                  : {}),
+              })}
               sx={{ minWidth: isPast ? 920 : 1040 }}
             >
               <TextField source="type" />
@@ -136,6 +189,9 @@ export default function OhbatMajlisUpcomingList() {
               <FunctionField label="Date (UTC)" render={(r) => formatMajlisDateUtc(r.date)} />
               <FunctionField label="Day" render={(r) => formatMajlisDayOfWeekUtc(r.date)} />
               <FunctionField label="Hijri" render={(r) => formatMajlisHijriUtc(r.date)} />
+              {isPast && (
+                <FunctionField label="Attendance" render={(r) => pastAttendanceCount(r)} />
+              )}
               <FunctionField
                 label="Sadarat"
                 render={(r) => (r.sadarat as { name?: string })?.name || "—"}

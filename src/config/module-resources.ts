@@ -309,6 +309,7 @@ export const MODULE_RESOURCES = {
         permission: "ohbatMajlisAttendance.view",
         resource: ohbatMajlisAttendance,
         createPermission: "ohbatMajlisAttendance.create",
+        hideFromMenu: true,
       },
       { permission: "sadarats.view", resource: sadarats, createPermission: "sadarats.create" },
       {

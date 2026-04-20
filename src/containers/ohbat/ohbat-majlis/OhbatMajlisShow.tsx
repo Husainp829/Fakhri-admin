@@ -21,6 +21,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { hasPermission } from "@/utils/permission-utils";
 import { MakhsoosHostSectorTab } from "./MakhsoosHostSectorTab";
 import { OhbatItsdataItsPickerInput } from "./OhbatItsdataItsPickerInput";
+import { OhbatMajlisAttendanceTab } from "./OhbatMajlisAttendanceTab";
 import { OhbatMajlisDetailsTab } from "./OhbatMajlisDetailsTab";
 import {
   registerOhbatMajlisShowDialogOpeners,
@@ -234,6 +235,9 @@ const OhbatMajlisShow = () => (
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Makhsoos (host sector / sub-sector)" path="makhsoos">
           <MakhsoosHostSectorTab />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Attendance" path="attendance">
+          <OhbatMajlisAttendanceTab />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Show>
