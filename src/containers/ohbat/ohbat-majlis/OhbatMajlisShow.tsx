@@ -8,6 +8,7 @@ import {
   Show,
   SimpleForm,
   TabbedShowLayout,
+  TabbedShowLayoutTabs,
   Toolbar,
   TopToolbar,
   useRecordContext,
@@ -229,7 +230,19 @@ function OhbatMajlisShowActions() {
 const OhbatMajlisShow = () => (
   <>
     <Show actions={<OhbatMajlisShowActions />}>
-      <TabbedShowLayout>
+      <TabbedShowLayout
+        tabs={
+          <TabbedShowLayoutTabs
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{
+              minHeight: 48,
+              "& .MuiTabs-scrollButtons.Mui-disabled": { opacity: 0.3 },
+            }}
+          />
+        }
+      >
         <TabbedShowLayout.Tab label="Details">
           <OhbatMajlisDetailsTab />
         </TabbedShowLayout.Tab>

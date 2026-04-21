@@ -6,7 +6,6 @@ const stripReadOnlyFields = (data: Record<string, unknown>) => {
   if (!data || typeof data !== "object") return data;
   const rest = { ...data };
   delete rest.itsNo;
-  delete rest.hostName;
   return rest;
 };
 

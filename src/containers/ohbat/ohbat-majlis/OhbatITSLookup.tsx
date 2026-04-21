@@ -1,11 +1,44 @@
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TextInput, useDataProvider, useNotify } from "react-admin";
+import { TextInput, useDataProvider } from "react-admin";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import debounce from "lodash.debounce";
 import { useFormContext, useWatch } from "react-hook-form";
 
 const ITS_AUTO_LEN = 8;
+
+/** Stable default — avoid `filter = {}` in params (new object every render → runSearch churn → effect loop). */
+const NO_EXTRA_FILTER: Record<string, unknown> = {};
+
+const defaultHelperText = `Enter ${ITS_AUTO_LEN}-digit ITS; lookup runs automatically`;
+
+type LookupHint =
+  | { variant: "default" }
+  | { variant: "notInDirectory"; its: string }
+  | { variant: "lookupError"; message: string };
+
+function setDefaultHintIfNeeded(setter: Dispatch<SetStateAction<LookupHint>>) {
+  setter((prev) => (prev.variant === "default" ? prev : { variant: "default" }));
+}
+
+function hintToHelperNode(hint: LookupHint): ReactNode {
+  if (hint.variant === "default") {
+    return defaultHelperText;
+  }
+  if (hint.variant === "notInDirectory") {
+    return (
+      <Box component="span" sx={{ typography: "caption", color: "text.secondary" }}>
+        ITS {hint.its} is not in the directory — enter the host name manually in the field below
+      </Box>
+    );
+  }
+  return (
+    <Box component="span" sx={{ typography: "caption", color: "error.main" }}>
+      {hint.message}
+    </Box>
+  );
+}
 
 type OhbatITSLookupProps = {
   source: string;
@@ -21,16 +54,18 @@ export default function OhbatITSLookup({
   source,
   label,
   optional = false,
-  filter = {},
+  filter = NO_EXTRA_FILTER,
 }: OhbatITSLookupProps) {
   const { setValue, control } = useFormContext();
   const dataProvider = useDataProvider();
-  const notify = useNotify();
   const [loading, setLoading] = useState(false);
+  const [lookupHint, setLookupHint] = useState<LookupHint>({ variant: "default" });
   const lastQueryRef = useRef("");
   const prevHostItsRef = useRef<string | undefined>(undefined);
+  const watchedValRef = useRef("");
 
   const currentVal = useWatch({ control, name: source });
+  watchedValRef.current = String(currentVal ?? "").trim();
 
   const clearHostDetails = useCallback(() => {
     setValue("hostName", "");
@@ -47,6 +82,7 @@ export default function OhbatITSLookup({
       if (lastQueryRef.current === t) {
         return;
       }
+      setDefaultHintIfNeeded(setLookupHint);
       setLoading(true);
       dataProvider
         .getList("itsdata", {
@@ -59,6 +95,9 @@ export default function OhbatITSLookup({
           },
         })
         .then(({ data }) => {
+          if (watchedValRef.current !== t) {
+            return;
+          }
           if (data.length > 0) {
             const row = data[0] as {
               ITS_ID?: string;
@@ -73,17 +112,25 @@ export default function OhbatITSLookup({
               setValue("address", row.Address);
               setValue("mobileNo", row.Mobile);
             }
+            setDefaultHintIfNeeded(setLookupHint);
           } else {
-            notify(`ITS ${t} was not found in ITS data`, { type: "error" });
+            lastQueryRef.current = t;
+            setLookupHint({ variant: "notInDirectory", its: t });
           }
         })
         .catch((e: unknown) => {
           console.error(e);
-          notify(e instanceof Error ? e.message : "ITS lookup failed", { type: "error" });
+          if (watchedValRef.current !== t) {
+            return;
+          }
+          setLookupHint({
+            variant: "lookupError",
+            message: e instanceof Error ? e.message : "ITS lookup failed",
+          });
         })
         .finally(() => setLoading(false));
     },
-    [dataProvider, filter, notify, setValue, source]
+    [dataProvider, filter, setValue, source]
   );
 
   const debouncedSearch = useMemo(() => debounce((q: unknown) => runSearch(q), 400), [runSearch]);
@@ -96,6 +143,7 @@ export default function OhbatITSLookup({
       if (prev !== undefined && prev !== t) {
         clearHostDetails();
         lastQueryRef.current = "";
+        setDefaultHintIfNeeded(setLookupHint);
       }
       prevHostItsRef.current = t;
 
@@ -103,6 +151,7 @@ export default function OhbatITSLookup({
         lastQueryRef.current = "";
         debouncedSearch.cancel();
         clearHostDetails();
+        setDefaultHintIfNeeded(setLookupHint);
         return undefined;
       }
 
@@ -114,11 +163,15 @@ export default function OhbatITSLookup({
 
     if (/^\d{8}$/.test(t)) {
       debouncedSearch(t);
+    } else {
+      setDefaultHintIfNeeded(setLookupHint);
     }
     return () => {
       debouncedSearch.cancel();
     };
   }, [clearHostDetails, currentVal, debouncedSearch, source]);
+
+  const helperText = useMemo(() => hintToHelperNode(lookupHint), [lookupHint]);
 
   return (
     <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, width: "100%" }}>
@@ -127,7 +180,7 @@ export default function OhbatITSLookup({
           source={source}
           label={label}
           fullWidth
-          helperText={`Enter ${ITS_AUTO_LEN}-digit ITS; lookup runs automatically`}
+          helperText={helperText}
           isRequired={!optional}
         />
       </Box>

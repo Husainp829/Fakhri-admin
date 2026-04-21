@@ -33,8 +33,7 @@ export function OhbatMajlisFormFields() {
           source="hostName"
           label="Host name"
           fullWidth
-          disabled
-          helperText="Filled from ITS data when you search"
+          helperText="Auto-filled when the host ITS is in the directory; otherwise enter the name manually"
         />
         <SelectInput source="type" choices={typeChoices} fullWidth />
         <ReferenceInput source="sadaratId" reference="sadarats" perPage={100} allowEmpty>
