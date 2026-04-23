@@ -1,1 +1,23 @@
-npx lint-staged
+#!/usr/bin/env sh
+set -e
+
+# GUI Git / Cursor / Xcode often run hooks with a minimal PATH (no Homebrew/nvm).
+if ! command -v node >/dev/null 2>&1; then
+  export PATH="$HOME/.volta/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+fi
+if ! command -v node >/dev/null 2>&1 && command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env)"
+fi
+if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+fi
+if ! command -v node >/dev/null 2>&1; then
+  echo "node not found. Add it to PATH (e.g. ~/.config/husky/init.sh) or install Node." >&2
+  exit 1
+fi
+
+if [ ! -x "./node_modules/.bin/lint-staged" ]; then
+  echo "lint-staged not found. Run npm install in the repo root." >&2
+  exit 1
+fi
+./node_modules/.bin/lint-staged
