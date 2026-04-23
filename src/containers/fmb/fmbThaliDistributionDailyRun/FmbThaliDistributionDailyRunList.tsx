@@ -2,15 +2,14 @@ import { useMemo } from "react";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AppDatePickerLocalization } from "@/components/AppDatePickerLocalization";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
-import { DatePattern, formatIsoDate } from "@/utils/date-format";
+import { formatIsoDate } from "@/utils/date-format";
 import {
   Datagrid,
   FilterButton,
@@ -81,7 +80,7 @@ function ServiceDateFilter(props: InputProps) {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <AppDatePickerLocalization>
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "nowrap" }}>
         <IconButton
           type="button"
@@ -95,7 +94,6 @@ function ServiceDateFilter(props: InputProps) {
         <Box sx={{ flex: 1, minWidth: 0, maxWidth: 280 }}>
           <DatePicker
             label={props.label ?? "Service date"}
-            format={DatePattern.DISPLAY_DOW_DD_MMM_YY}
             value={value}
             onChange={handleChange}
             slotProps={{
@@ -122,7 +120,7 @@ function ServiceDateFilter(props: InputProps) {
           <ChevronRight fontSize="small" />
         </IconButton>
       </Box>
-    </LocalizationProvider>
+    </AppDatePickerLocalization>
   );
 }
 

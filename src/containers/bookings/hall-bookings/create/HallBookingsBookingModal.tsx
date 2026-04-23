@@ -28,6 +28,7 @@ type NewHallDraft = {
   slot: string;
   thaals: number;
   withAC: boolean;
+  remarks: string;
   perThaal?: number;
   acCharges?: number;
   kitchenCleaning?: number;
@@ -43,6 +44,7 @@ const init: NewHallDraft = {
   slot: "",
   thaals: 0,
   withAC: true,
+  remarks: "",
 };
 
 type BookingPurposeRow = RaRecord & {
@@ -235,6 +237,17 @@ export function HallBookingsBookingModal({
           }
           label="With AC"
           sx={{ mt: 2 }}
+        />
+
+        <TextField
+          label="Remarks"
+          value={newHall.remarks}
+          onChange={(e) => handleFieldChange("remarks", e.target.value)}
+          fullWidth
+          multiline
+          minRows={2}
+          sx={{ mt: 2 }}
+          placeholder="Optional notes for this hall booking"
         />
 
         {!isDateValid() && newHall.date && (

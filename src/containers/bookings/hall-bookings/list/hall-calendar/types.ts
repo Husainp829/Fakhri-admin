@@ -15,6 +15,7 @@ export type HallBookingResource = {
   date?: string;
   slot?: string;
   purpose?: string;
+  remarks?: string | null;
   hall?: { id?: string; name?: string; shortCode?: string; color?: string | null };
   booking?: {
     organiser?: string;

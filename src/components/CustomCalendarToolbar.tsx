@@ -2,8 +2,7 @@ import React from "react";
 import { Box, IconButton, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AppDatePickerLocalization } from "@/components/AppDatePickerLocalization";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import type { Dayjs } from "dayjs";
@@ -35,7 +34,7 @@ const CustomCalendarToolbar = ({
   showListToggle = true,
   listToggleComponent: ListToggleComponent,
 }: CustomCalendarToolbarProps) => (
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <AppDatePickerLocalization>
     <Box p={1}>
       <Grid container alignItems="center" spacing={2} justifyContent="space-between">
         <Grid container alignItems="center" justifyContent="start">
@@ -54,7 +53,7 @@ const CustomCalendarToolbar = ({
                 inputProps: { readOnly: true },
               },
             }}
-            sx={{ maxWidth: 160 }}
+            sx={{ maxWidth: 220 }}
           />
           <IconButton onClick={() => onNavigate("PREV")} size="small">
             <ArrowBackIcon />
@@ -93,7 +92,7 @@ const CustomCalendarToolbar = ({
         </Grid>
       </Grid>
     </Box>
-  </LocalizationProvider>
+  </AppDatePickerLocalization>
 );
 
 export default CustomCalendarToolbar;

@@ -1,11 +1,10 @@
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Box from "@mui/material/Box";
 import { useInput, type InputProps } from "react-admin";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
-import { formatIsoDate } from "@/utils/date-format";
+import { AppDatePickerLocalization } from "@/components/AppDatePickerLocalization";
+import { formatIsoDate, MUI_MONTH_YEAR_PICKER_FORMAT } from "@/utils/date-format";
 
 function MonthInput(props: InputProps<string | null>) {
   const { field, fieldState, isRequired } = useInput(props);
@@ -37,9 +36,10 @@ function MonthInput(props: InputProps<string | null>) {
 
   return (
     <Box sx={{ mb: 2 }}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <AppDatePickerLocalization>
         <DatePicker
-          label={props.label ? `${props.label} (mm/yyyy)` : "Month (mm/yyyy)"}
+          label={props.label ? `${props.label} (month & year)` : "Month & year"}
+          format={MUI_MONTH_YEAR_PICKER_FORMAT}
           value={value}
           onChange={handleChange}
           views={["month", "year"]}
@@ -57,7 +57,7 @@ function MonthInput(props: InputProps<string | null>) {
             },
           }}
         />
-      </LocalizationProvider>
+      </AppDatePickerLocalization>
     </Box>
   );
 }
