@@ -4,16 +4,20 @@ import {
   Datagrid,
   TextField,
   NumberField,
-  DateField,
   ReferenceField,
   FunctionField,
   Button,
+  EditButton,
+  usePermissions,
   type RaRecord,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import { hasPermission } from "@/utils/permission-utils";
+import { formatListDate } from "@/utils/date-format";
 
 export const ReceiptsTab = () => {
   const record = useRecordContext();
+  const { permissions } = usePermissions();
   if (!record) return null;
 
   return (
@@ -29,7 +33,13 @@ export const ReceiptsTab = () => {
         <TextField source="receiptNo" label="Receipt No" />
         <TextField source="organiserIts" label="Organiser ITS" />
         <TextField source="organiser" />
-        <DateField source="date" />
+        <FunctionField
+          label="Date"
+          source="date"
+          render={(r: RaRecord) =>
+            r?.date ? <span>{formatListDate(r.date as string)}</span> : <span>—</span>
+          }
+        />
         <NumberField source="amount" />
         <TextField source="mode" />
         <ReferenceField source="createdBy" reference="admins" link={false}>
@@ -49,6 +59,14 @@ export const ReceiptsTab = () => {
             </Button>
           )}
           key="name"
+        />
+        <FunctionField
+          label="Edit date"
+          render={(r: RaRecord) =>
+            hasPermission(permissions, "bookingReceipts.edit") ? (
+              <EditButton resource="contRcpt" record={r} label="Edit date" />
+            ) : null
+          }
         />
       </Datagrid>
     </ReferenceManyField>
