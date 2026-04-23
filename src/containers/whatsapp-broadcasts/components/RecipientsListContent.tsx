@@ -1,12 +1,6 @@
-import {
-  Datagrid,
-  TextField,
-  DateField,
-  FunctionField,
-  useListContext,
-  type RaRecord,
-} from "react-admin";
+import { Datagrid, TextField, FunctionField, useListContext, type RaRecord } from "react-admin";
 import { Typography } from "@mui/material";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { RecipientStatusChip } from "./StatusChips";
 
 const RecipientsListContent = () => {
@@ -29,9 +23,23 @@ const RecipientsListContent = () => {
           <RecipientStatusChip status={recipient.status as string} />
         )}
       />
-      <DateField source="sentAt" label="Sent" showTime />
-      <DateField source="deliveredAt" label="Delivered" showTime />
-      <DateField source="readAt" label="Read" showTime />
+      <FunctionField
+        label="Sent"
+        sortBy="sentAt"
+        render={(recipient: RaRecord) => formatDisplayDateTime(recipient?.sentAt, { empty: "—" })}
+      />
+      <FunctionField
+        label="Delivered"
+        sortBy="deliveredAt"
+        render={(recipient: RaRecord) =>
+          formatDisplayDateTime(recipient?.deliveredAt, { empty: "—" })
+        }
+      />
+      <FunctionField
+        label="Read"
+        sortBy="readAt"
+        render={(recipient: RaRecord) => formatDisplayDateTime(recipient?.readAt, { empty: "—" })}
+      />
       <TextField source="errorMessage" label="Error" />
     </Datagrid>
   );

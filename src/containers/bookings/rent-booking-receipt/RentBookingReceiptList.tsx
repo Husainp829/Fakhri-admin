@@ -4,7 +4,6 @@ import {
   List,
   NumberField,
   TextField,
-  DateField,
   FunctionField,
   Button,
   usePermissions,
@@ -15,7 +14,7 @@ import {
 } from "react-admin";
 import type { RaRecord } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import {
   Box,
   Divider,
@@ -252,7 +251,13 @@ const ReceiptDatagrid = () => {
       />
       <TextField source="organiserIts" label="ITS No." />
       <TextField source="organiser" label="Organiser" />
-      <DateField source="date" />
+      <FunctionField
+        label="Date"
+        source="date"
+        render={(rec: RaRecord) =>
+          rec?.date ? <span>{formatListDate(rec.date as string)}</span> : <span>-</span>
+        }
+      />
       <NumberField source="amount" />
       {isDeposit && (
         <FunctionField
@@ -368,8 +373,7 @@ export const RentBookingReceiptList = () => {
         header: "Date",
         field: "date",
         width: 15,
-        formatter: (_rec: RaRecord, v: unknown) =>
-          v ? dayjs(v as string).format("DD-MMM-YYYY") : "",
+        formatter: (_rec: RaRecord, v: unknown) => (v ? formatListDate(v as string) : ""),
       },
       {
         header: "Amount",

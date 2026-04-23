@@ -5,7 +5,6 @@ import {
   useShowController,
   Datagrid,
   ReferenceManyField,
-  DateField,
   TextField,
   NumberField,
   Button,
@@ -18,6 +17,7 @@ import { Box, Typography, Card, CardContent, Chip, LinearProgress } from "@mui/m
 import Grid from "@mui/material/Grid";
 import DownloadIcon from "@mui/icons-material/Download";
 import AddIcon from "@mui/icons-material/Add";
+import { formatListDate } from "@/utils/date-format";
 
 const fmt = (amount: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -193,7 +193,11 @@ const ReceiptsTab = () => {
       >
         <Datagrid rowClick={false} bulkActionButtons={false}>
           <TextField source="receiptNo" label="Receipt No" />
-          <DateField source="receiptDate" label="Date" />
+          <FunctionField
+            label="Date"
+            sortBy="receiptDate"
+            render={(rec: RaRecord) => formatListDate(rec?.receiptDate, { empty: "—" })}
+          />
           <NumberField source="amount" label="Amount" />
           <TextField source="paymentMode" label="Mode" />
           <TextField source="paymentRef" label="Ref" />

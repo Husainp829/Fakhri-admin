@@ -4,7 +4,6 @@ import {
   Datagrid,
   TextField,
   NumberField,
-  DateField,
   FunctionField,
   ReferenceField,
   ReferenceInput,
@@ -13,7 +12,9 @@ import {
   TextInput,
   type ListProps,
 } from "react-admin";
+import type { RaRecord } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const contributionTypeChoices = [
@@ -91,7 +92,11 @@ export default function FmbContributionsList(_props: ListProps) {
           sortBy="amount"
           render={(record) => formatINR(record?.amount, { empty: "—" })}
         />
-        <DateField source="createdAt" showTime />
+        <FunctionField
+          label="Created"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
       </Datagrid>
     </List>
   );

@@ -3,7 +3,6 @@ import {
   List,
   Datagrid,
   TextField,
-  DateField,
   ReferenceField,
   TopToolbar,
   CreateButton,
@@ -14,6 +13,7 @@ import {
   type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatDisplayDateTime, formatListDate } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const filters = [
@@ -71,8 +71,16 @@ export default function FmbTakhmeenList(props: ListProps) {
             formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
-        <DateField source="startDate" label="Effective" emptyText="—" />
-        <DateField source="createdAt" label="Created" emptyText="—" />
+        <FunctionField
+          label="Effective"
+          sortBy="startDate"
+          render={(record: RaRecord) => formatListDate(record?.startDate, { empty: "—" })}
+        />
+        <FunctionField
+          label="Created"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
       </Datagrid>
     </List>
   );

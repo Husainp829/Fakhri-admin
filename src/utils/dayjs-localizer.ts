@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { APP_DISPLAY_DATE, DatePattern } from "./date-format";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -14,28 +15,28 @@ type LocalFormat = (value: Date, format: string) => string;
 const dayjsLocalizer = new DateLocalizer({
   formats: {
     dateFormat: "DD",
-    dayFormat: "ddd DD/MM",
+    dayFormat: `ddd, ${APP_DISPLAY_DATE}`,
     weekdayFormat: "dddd",
     timeGutterFormat: "HH:mm",
-    monthHeaderFormat: "MMMM YYYY",
-    dayHeaderFormat: "dddd DD MMM",
+    monthHeaderFormat: APP_DISPLAY_DATE,
+    dayHeaderFormat: `dddd, ${APP_DISPLAY_DATE}`,
     dayRangeHeaderFormat: (
       { start, end }: RangeArgs,
       _culture: string,
       local: { format: LocalFormat }
-    ) => `${local.format(start, "DD MMM")} – ${local.format(end, "DD MMM")}`,
+    ) => `${local.format(start, APP_DISPLAY_DATE)} – ${local.format(end, APP_DISPLAY_DATE)}`,
     agendaHeaderFormat: (
       { start, end }: RangeArgs,
       _culture: string,
       local: { format: LocalFormat }
-    ) => `${local.format(start, "DD MMM")} – ${local.format(end, "DD MMM")}`,
-    agendaDateFormat: "ddd DD MMM",
+    ) => `${local.format(start, APP_DISPLAY_DATE)} – ${local.format(end, APP_DISPLAY_DATE)}`,
+    agendaDateFormat: `ddd, ${APP_DISPLAY_DATE}`,
     agendaTimeFormat: "HH:mm",
     agendaTimeRangeFormat: (
       { start, end }: RangeArgs,
       _culture: string,
       local: { format: LocalFormat }
-    ) => `${local.format(start, "HH:mm")} – ${local.format(end, "HH:mm")}`,
+    ) => `${local.format(start, DatePattern.TIME_24)} – ${local.format(end, DatePattern.TIME_24)}`,
   },
 
   firstOfWeek() {

@@ -14,10 +14,10 @@ import {
   SelectColumnsButton,
   Pagination,
   FunctionField,
-  DateField,
   SelectInput,
   NumberInput,
 } from "react-admin";
+import { formatListDate } from "@/utils/date-format";
 import Divider from "@mui/material/Divider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -106,7 +106,12 @@ function TabbedDatagrid() {
       key="currentTakhmeenGrade"
     />,
     <TextField source="mohallah" label="Mohallah" key="itsdata" />,
-    <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />,
+    <FunctionField
+      key="lastPaidDate"
+      label="Last Paid Date"
+      sortBy="lastPaidDate"
+      render={(record: RaRecord) => formatListDate(record?.lastPaidDate, { empty: "—" })}
+    />,
   ];
 
   const PostBulkActionButtons = () => <div style={{ marginLeft: "25px" }} />;

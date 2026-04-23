@@ -2,7 +2,6 @@ import React from "react";
 import {
   CreateButton,
   Datagrid,
-  DateField,
   DateInput,
   FunctionField,
   List,
@@ -13,7 +12,9 @@ import {
   FilterButton,
   useRecordContext,
   type ListProps,
+  type RaRecord,
 } from "react-admin";
+import { formatListDate } from "@/utils/date-format";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -100,7 +101,11 @@ export default function FmbDailyMenuList(props: ListProps) {
         rowClick="edit"
         expand={<FmbDailyMenuDishesExpandPanel />}
       >
-        <DateField source="serviceDate" />
+        <FunctionField
+          label="Service date"
+          sortBy="serviceDate"
+          render={(record: RaRecord) => formatListDate(record?.serviceDate, { empty: "—" })}
+        />
         <FunctionField
           label="Dishes"
           sortable={false}

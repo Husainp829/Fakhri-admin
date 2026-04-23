@@ -5,7 +5,6 @@ import {
   Datagrid,
   List,
   TextField,
-  DateField,
   FunctionField,
   Button,
   DateInput,
@@ -16,7 +15,7 @@ import {
   Pagination,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { Box, Card, CardContent, Divider, Link, Tab, Tabs, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
@@ -242,7 +241,17 @@ const ReceiptDatagrid = () => {
         }
       />
       <TextField source="amount" />
-      <DateField source="receiptDate" />
+      <FunctionField
+        label="Receipt date"
+        source="receiptDate"
+        render={(record: ReceiptRow) =>
+          record.receiptDate ? (
+            <span>{formatListDate(record.receiptDate as string)}</span>
+          ) : (
+            <span>—</span>
+          )
+        }
+      />
       <TextField source="remarks" />
       <TextField source="paymentMode" />
       <FunctionField
@@ -348,7 +357,7 @@ const SabilReceiptList = () => {
         header: "Receipt Date",
         field: "receiptDate",
         width: 15,
-        formatter: (_rec, v) => (v ? dayjs(String(v)).format("DD-MMM-YYYY") : ""),
+        formatter: (_rec, v) => (v ? formatListDate(String(v)) : ""),
       },
       {
         header: "Payment Mode",

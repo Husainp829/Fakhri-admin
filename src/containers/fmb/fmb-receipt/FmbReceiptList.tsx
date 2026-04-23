@@ -3,7 +3,6 @@ import {
   Datagrid,
   List,
   TextField,
-  DateField,
   FunctionField,
   Button,
   ReferenceField,
@@ -11,8 +10,10 @@ import {
   AutocompleteInput,
   TextInput,
 } from "react-admin";
+import type { RaRecord } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 
 export default function FmbReceiptList() {
   const printReceipt = (id: string | number) => {
@@ -67,7 +68,11 @@ export default function FmbReceiptList() {
             sortBy="creditUsed"
             render={(record) => formatINR(record?.creditUsed ?? 0, { empty: "—" })}
           />
-          <DateField source="receiptDate" />
+          <FunctionField
+            label="Receipt date"
+            sortBy="receiptDate"
+            render={(record: RaRecord) => formatListDate(record?.receiptDate, { empty: "—" })}
+          />
           <FunctionField
             label="Target"
             sortable={false}

@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import type { RaRecord } from "react-admin";
 import {
   Datagrid,
-  DateField,
   FunctionField,
   ReferenceManyField,
   TextField,
@@ -32,6 +31,7 @@ import UpdateIcon from "@mui/icons-material/Update";
 import WriteoffDialog from "@/containers/sabil/sabil-ledger/WriteoffDialog";
 import BalanceSummary, { type BalanceSummaryHandle } from "./BalanceSummary";
 import { callApi } from "@/dataprovider/misc-apis";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 type LedgerRow = RaRecord & {
   month?: number;
@@ -378,7 +378,14 @@ const Ledger = () => {
                 );
               }}
             />
-            <DateField source="createdAt" label="Created" showDate sx={{ fontSize: "0.875rem" }} />
+            <FunctionField
+              label="Created"
+              sortBy="createdAt"
+              sx={{ fontSize: "0.875rem" }}
+              render={(record: LedgerRow) =>
+                formatDisplayDateTime(record?.createdAt, { empty: "—" })
+              }
+            />
           </Datagrid>
         </ReferenceManyField>
       </Paper>

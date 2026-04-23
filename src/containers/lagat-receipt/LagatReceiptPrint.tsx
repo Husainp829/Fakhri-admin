@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { ToWords } from "to-words/en-IN";
 import { useParams } from "react-router";
 import CommonReceiptA5 from "@/components/common-receipt/CommonReceiptA5";
+import { APP_DISPLAY_DATE } from "@/utils/date-format";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
 const LagatReceiptPrint = () => {
@@ -69,7 +70,7 @@ const LagatReceiptPrint = () => {
       subTitle="Trust Reg No E/7038(P)"
       receiptNo={data.receiptNo != null ? String(data.receiptNo) : undefined}
       date={data.receiptDate as string | Date | undefined}
-      dateFormat="DD/MM/YYYY"
+      dateFormat={APP_DISPLAY_DATE}
       receiptLines={receiptLines}
       amount={Number(data.amount)}
       currency="₹"

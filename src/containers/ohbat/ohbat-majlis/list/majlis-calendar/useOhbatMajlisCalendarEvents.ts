@@ -4,6 +4,7 @@ import type { RaRecord } from "react-admin";
 import { Views } from "react-big-calendar";
 import dayjs, { type Dayjs } from "dayjs";
 import "@/utils/dayjs-localizer";
+import { DatePattern, formatIsoDate } from "@/utils/date-format";
 import startCase from "lodash/startCase";
 import { formatMajlisStartTimeLabel } from "../../OhbatMajlisTime";
 import type { OhbatMajlisCalendarEvent } from "./types";
@@ -19,8 +20,8 @@ export function useOhbatMajlisCalendarEvents(view: string, date: Dayjs) {
         pagination: { page: 1, perPage: 1000 },
         sort: { field: "date", order: "ASC" },
         filter: {
-          start: dayjs(start).format("YYYY-MM-DD"),
-          end: dayjs(end).format("YYYY-MM-DD"),
+          start: formatIsoDate(dayjs(start)),
+          end: formatIsoDate(dayjs(end)),
         },
       });
       return data as RaRecord[];
@@ -47,12 +48,12 @@ export function useOhbatMajlisCalendarEvents(view: string, date: Dayjs) {
       const rows = await fetchMajlis(rangeStart.toDate(), rangeEnd.toDate());
 
       const formatted: OhbatMajlisCalendarEvent[] = rows.map((row) => {
-        const d = dayjs(row.date as string).format("YYYY-MM-DD");
+        const d = formatIsoDate(row.date as string);
         const raw = (row.startTime as string) || "09:00";
         const [hStr, mStr] = raw.split(":");
         const startH = Number(hStr);
         const startM = Number(mStr);
-        const start = dayjs(d, "YYYY-MM-DD")
+        const start = dayjs(d, DatePattern.ISO_DATE)
           .hour(Number.isFinite(startH) ? startH : 9)
           .minute(Number.isFinite(startM) ? startM : 0)
           .second(0)

@@ -1,14 +1,7 @@
-import {
-  Datagrid,
-  List,
-  TextField,
-  ReferenceField,
-  ChipField,
-  FunctionField,
-  DateField,
-} from "react-admin";
+import { Datagrid, List, TextField, ReferenceField, ChipField, FunctionField } from "react-admin";
 import type { RaRecord } from "react-admin";
 import { getColor } from "./utils";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 const SabilChangeRequestList = () => (
   <List sort={{ field: "createdAt", order: "DESC" }}>
@@ -28,7 +21,11 @@ const SabilChangeRequestList = () => (
         )}
       />
       <TextField source="remarks" />
-      <DateField source="createdAt" />
+      <FunctionField
+        label="Created"
+        sortBy="createdAt"
+        render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+      />
     </Datagrid>
   </List>
 );

@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { ToWords } from "to-words/en-IN";
 import { useParams } from "react-router";
 import CommonReceiptA5 from "@/components/common-receipt/CommonReceiptA5";
+import { APP_DISPLAY_DATE } from "@/utils/date-format";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 import type { RaRecord } from "react-admin";
 
@@ -71,7 +72,7 @@ const YearlyNiyaazReceiptPrint = () => {
       subTitle="Yearly Niyaaz Receipt"
       receiptNo={data?.receiptNo as string | undefined}
       date={data.receiptDate as string}
-      dateFormat="DD/MM/YYYY"
+      dateFormat={APP_DISPLAY_DATE}
       receiptLines={receiptLines}
       amount={Number(data.amount)}
       currency="₹"

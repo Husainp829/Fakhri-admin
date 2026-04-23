@@ -1,6 +1,5 @@
 import {
   Datagrid,
-  DateField,
   NumberField,
   ReferenceManyField,
   TextField,
@@ -8,7 +7,9 @@ import {
   Button,
   useRedirect,
 } from "react-admin";
+import type { RaRecord } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 export default function ContributionsTab() {
@@ -46,7 +47,11 @@ export default function ContributionsTab() {
           textAlign="right"
           render={(record) => formatINR(record?.contributionPendingAmount, { empty: "—" })}
         />
-        <DateField source="createdAt" showTime />
+        <FunctionField
+          label="Created"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
         <FunctionField
           label="Add payment"
           render={(record) => {

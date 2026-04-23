@@ -12,11 +12,11 @@ import {
   SelectColumnsButton,
   Pagination,
   FunctionField,
-  DateField,
   type ListProps,
   type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 // import { FmbDataCsvImportButton } from "./csv-import/FmbDataCsvImportButton";
 
 const RegistrationFilters = [
@@ -173,7 +173,12 @@ export default function FmbDataList(props: ListProps) {
             }}
           />
           <TextField source="remarks" label="Remarks" key="remarks" />
-          <DateField source="lastPaidDate" key="lastPaidDate" label="Last Paid Date" />
+          <FunctionField
+            key="lastPaidDate"
+            label="Last Paid Date"
+            sortBy="lastPaidDate"
+            render={(record: RaRecord) => formatListDate(record?.lastPaidDate, { empty: "—" })}
+          />
         </DatagridConfigurable>
       </List>
     </>

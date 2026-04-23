@@ -1,12 +1,12 @@
 import React from "react";
 import { Create, type CreateProps } from "react-admin";
-import dayjs from "dayjs";
+import { formatIsoDate } from "@/utils/date-format";
 import { HolidayForm } from "./common/HolidayForm";
 
 const transform = (data: Record<string, unknown>) => ({
   ...data,
   holidayDate: data.holidayDate
-    ? dayjs(data.holidayDate as string | Date).format("YYYY-MM-DD")
+    ? formatIsoDate(data.holidayDate as string | Date)
     : data.holidayDate,
 });
 

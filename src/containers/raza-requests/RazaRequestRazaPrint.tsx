@@ -1,5 +1,5 @@
 import { useGetOne, type RaRecord } from "react-admin";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { Box, Typography } from "@mui/material";
 import { useParams } from "react-router";
 
@@ -38,7 +38,7 @@ const RazaRequestRazaPrint = () => {
             {row.itsNo}
           </Box>
           <Box flex={3} sx={{ borderBottom: solid1Soft, textAlign: "right", mr: 1 }}>
-            {reqDate && !Number.isNaN(reqDate.getTime()) ? dayjs(reqDate).format("DD/MM/YYYY") : ""}
+            {reqDate && !Number.isNaN(reqDate.getTime()) ? formatListDate(reqDate) : ""}
           </Box>
           : تاريخ
         </Box>
@@ -74,7 +74,7 @@ const RazaRequestRazaPrint = () => {
         <Typography variant="body2" sx={{ mt: 3 }}>
           Date:{" "}
           {reqDate && !Number.isNaN(reqDate.getTime())
-            ? `${dayjs(reqDate).format("DD MMM YYYY")} (${fromGregorian(reqDate)})`
+            ? `${formatListDate(reqDate)} (${fromGregorian(reqDate)})`
             : "—"}
         </Typography>
 

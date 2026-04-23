@@ -8,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import timezonePlugin from "dayjs/plugin/timezone";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
+import { formatIsoDate } from "@/utils/date-format";
 
 dayjs.extend(utc);
 dayjs.extend(timezonePlugin);
@@ -67,7 +68,7 @@ function computeCutoffPreview(tzRaw, offsetDaysRaw, cutoffMinutesRaw) {
   }
 
   const serviceDay = nextIsoWeekdayInTz(nowInTz, 3);
-  const serviceDayYmd = serviceDay.format("YYYY-MM-DD");
+  const serviceDayYmd = formatIsoDate(serviceDay);
 
   const cutoff = dayjs
     .tz(serviceDayYmd, tz)

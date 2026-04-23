@@ -3,6 +3,7 @@ import { useDataProvider, useNotify } from "react-admin";
 import { Views, type View } from "react-big-calendar";
 import dayjs, { type Dayjs } from "dayjs";
 import "@/utils/dayjs-localizer";
+import { formatIsoDate } from "@/utils/date-format";
 import { slotTimeRanges } from "@/constants";
 import type { HallBookingCalendarEvent, HallBookingResource } from "./types";
 import { slotLabel } from "./hallCalendarFormat";
@@ -18,8 +19,8 @@ export function useHallBookingsCalendarEvents(view: View, date: Dayjs) {
         pagination: { page: 1, perPage: 1000 },
         sort: { field: "date", order: "ASC" },
         filter: {
-          start: dayjs(start).format("YYYY-MM-DD"),
-          end: dayjs(end).format("YYYY-MM-DD"),
+          start: formatIsoDate(dayjs(start)),
+          end: formatIsoDate(dayjs(end)),
           includeBlockedDates: true,
         },
       });

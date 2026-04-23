@@ -16,6 +16,7 @@ import { RAZA_DASHBOARD_CARDS } from "@/config/raza-dashboard-cards";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import DateRangeFilter from "@/components/DateRangeFilter";
+import { formatIsoDate, formatListDate } from "@/utils/date-format";
 import { callApi } from "@/dataprovider/misc-apis";
 import { useTheme } from "@mui/material/styles";
 import { getChartColorSequence } from "@/theme/chartPalette";
@@ -93,8 +94,8 @@ export default function RazaDashboard() {
   const theme = useTheme();
   const colors = useMemo(() => getChartColorSequence(theme), [theme]);
   const now = dayjs.utc();
-  const defaultStartDate = now.startOf("month").format("YYYY-MM-DD");
-  const defaultEndDate = now.endOf("month").format("YYYY-MM-DD");
+  const defaultStartDate = formatIsoDate(now.startOf("month"));
+  const defaultEndDate = formatIsoDate(now.endOf("month"));
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [loading, setLoading] = useState(true);
@@ -135,7 +136,7 @@ export default function RazaDashboard() {
   }));
   const monthBars = (stats?.requestsByMonth ?? []).map((m) => ({
     ...m,
-    monthLabel: dayjs(`${m.month}-01`).format("MMM YY"),
+    monthLabel: formatListDate(dayjs(`${m.month}-01`)),
   }));
 
   return (

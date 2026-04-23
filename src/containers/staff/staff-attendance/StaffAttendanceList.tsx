@@ -19,6 +19,7 @@ import {
 import dayjs from "dayjs";
 
 import { EMPLOYEE_TYPE } from "@/constants";
+import { formatIsoMonth, formatTime24Utc, formatWeekdayShort } from "@/utils/date-format";
 import { callApi } from "@/dataprovider/misc-apis";
 
 type DayCell = string | { checkIn?: string; checkOut?: string };
@@ -30,7 +31,7 @@ type AttendanceEmployee = {
 };
 
 const StaffAttendanceList = () => {
-  const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
+  const [month, setMonth] = useState(formatIsoMonth(dayjs()));
   const [type, setType] = useState<string>("FM_STAFF");
   const [attendance, setAttendance] = useState<AttendanceEmployee[]>([]);
   const [daysInMonth, setDaysInMonth] = useState<number[]>([]);
@@ -72,11 +73,11 @@ const StaffAttendanceList = () => {
     if (!dayData) return "X";
 
     if (typeof dayData === "string") {
-      return dayjs.utc(dayData).format("HH:mm");
+      return formatTime24Utc(dayData);
     }
 
-    const checkIn = dayData.checkIn ? dayjs.utc(dayData.checkIn).format("HH:mm") : "-";
-    const checkOut = dayData.checkOut ? dayjs.utc(dayData.checkOut).format("HH:mm") : "-";
+    const checkIn = dayData.checkIn ? formatTime24Utc(dayData.checkIn) : "-";
+    const checkOut = dayData.checkOut ? formatTime24Utc(dayData.checkOut) : "-";
     let cellContent;
     if (checkIn === checkOut) {
       cellContent = `${checkIn} - X`;
@@ -141,7 +142,7 @@ const StaffAttendanceList = () => {
             <TableCell>Name</TableCell>
             {daysInMonth.map((d) => {
               const date = dayjs(`${month}-${String(d).padStart(2, "0")}`);
-              const dayLabel = date.format("ddd");
+              const dayLabel = formatWeekdayShort(date);
               return (
                 <TableCell key={d} sx={{ textAlign: "center", minWidth: 40 }}>
                   {dayLabel} <br /> {d}

@@ -1,17 +1,17 @@
 import {
   Button,
   Datagrid,
-  DateField,
   FunctionField,
   NumberField,
   ReferenceManyField,
   SimpleList,
   TextField,
+  type RaRecord,
 } from "react-admin";
 import Box from "@mui/material/Box";
 import { useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 
 export const NiyaazShowReceipts = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
@@ -24,7 +24,7 @@ export const NiyaazShowReceipts = () => {
             <>
               {String(record.HOFName)} · ₹{Number(record.amount || 0).toLocaleString("en-IN")}
               <br />
-              {dayjs(record.date).format("DD/MM/YYYY")} · {String(record.mode)}
+              {formatListDate(record.date)} · {String(record.mode)}
             </>
           )}
           tertiaryText={(record) => String(record.markaz || "—")}
@@ -38,7 +38,13 @@ export const NiyaazShowReceipts = () => {
             <TextField source="formNo" />
             <TextField source="HOFId" label="HOF ID" />
             <TextField source="HOFName" label="HOF NAME" />
-            <DateField source="date" />
+            <FunctionField
+              label="Date"
+              source="date"
+              render={(record: RaRecord) =>
+                record?.date ? <span>{formatListDate(record.date as string)}</span> : <span>—</span>
+              }
+            />
             <NumberField source="amount" />
             <TextField source="mode" />
             <TextField source="markaz" />

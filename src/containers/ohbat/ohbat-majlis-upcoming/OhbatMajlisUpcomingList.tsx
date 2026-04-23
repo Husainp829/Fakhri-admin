@@ -12,18 +12,18 @@ import type { RaRecord } from "react-admin";
 import { Box, Button, Tab, Tabs, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { Link } from "react-router-dom";
-import dayjs from "dayjs";
 import { fromGregorian } from "@/utils/hijri-date-utils";
+import { formatListDate, formatWeekdayFullUtc, parseDayjs } from "@/utils/date-format";
 import { formatMajlisStartTimeLabel } from "../ohbat-majlis/OhbatMajlisTime";
 
 const formatMajlisDateUtc = (date: unknown) =>
-  date ? dayjs.utc(String(date)).format("DD - MMM - YYYY") : "—";
+  date ? formatListDate(String(date), { utc: true }) : "—";
 
 const formatMajlisDayOfWeekUtc = (date: unknown) =>
-  date ? dayjs.utc(String(date)).format("dddd") : "—";
+  date ? formatWeekdayFullUtc(String(date)) : "—";
 
 const formatMajlisHijriUtc = (date: unknown) =>
-  date ? fromGregorian(dayjs.utc(String(date)).toDate(), "code") : "—";
+  date ? fromGregorian(parseDayjs(String(date), true).toDate(), "code") : "—";
 
 function pastAttendanceCount(record: RaRecord): number {
   const raw = record.attendanceCount;

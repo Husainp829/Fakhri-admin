@@ -4,11 +4,11 @@ import {
   SimpleShowLayout,
   TextField,
   NumberField,
-  DateField,
   FunctionField,
   ReferenceField,
   useShowContext,
 } from "react-admin";
+import { formatDisplayDateTime, formatListDate } from "@/utils/date-format";
 
 const WriteoffInfo = () => {
   const { record } = useShowContext<RaRecord>();
@@ -24,7 +24,10 @@ const WriteoffInfo = () => {
         options={{ style: "currency", currency: "INR" }}
       />
       <TextField source="writeoffAuthorizedBy" label="Authorized By" />
-      <DateField source="writeoffDate" label="Writeoff Date" />
+      <FunctionField
+        label="Writeoff Date"
+        render={(rec: RaRecord) => formatListDate(rec?.writeoffDate, { empty: "—" })}
+      />
     </>
   );
 };
@@ -69,8 +72,14 @@ const SabilLedgerShow = (props: ShowProps) => (
       <ReferenceField source="receiptId" reference="sabilReceipt" label="Receipt">
         <TextField source="receiptNo" />
       </ReferenceField>
-      <DateField source="createdAt" label="Created At" />
-      <DateField source="updatedAt" label="Updated At" />
+      <FunctionField
+        label="Created At"
+        render={(rec: RaRecord) => formatDisplayDateTime(rec?.createdAt, { empty: "—" })}
+      />
+      <FunctionField
+        label="Updated At"
+        render={(rec: RaRecord) => formatDisplayDateTime(rec?.updatedAt, { empty: "—" })}
+      />
     </SimpleShowLayout>
   </Show>
 );

@@ -8,7 +8,7 @@ import CardActions from "@mui/material/CardActions";
 import { useStore } from "react-admin";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import dayjs from "dayjs";
+import { formatEventCardDateRange } from "@/utils/date-format";
 import { navigateToBaseRoute } from "@/utils/route-utility";
 import type { CurrentEvent, EventsListRecord } from "@/containers/events/types";
 
@@ -95,9 +95,7 @@ const CardGridList = ({ data }: CardGridListProps) => {
         </CardActionArea>
         <CardContent sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}>
           <Typography component="div">{data.name}</Typography>
-          <Typography>{`${dayjs(data.fromDate).format("D")} - ${dayjs(data.toDate).format(
-            "D MMMM YYYY"
-          )}`}</Typography>
+          <Typography>{formatEventCardDateRange(data.fromDate, data.toDate)}</Typography>
         </CardContent>
         <CardActions>
           <Button size="small" color="primary" onClick={handleClick}>

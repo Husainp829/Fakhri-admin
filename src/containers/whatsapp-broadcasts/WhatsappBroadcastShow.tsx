@@ -7,10 +7,11 @@ import {
   FunctionField,
   TabbedShowLayout,
   Tab,
-  DateField,
   ReferenceField,
+  type RaRecord,
 } from "react-admin";
 import { Typography, Divider } from "@mui/material";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { RecipientsList, StatusChip } from "./components";
 
 export default function WhatsappBroadcastShow() {
@@ -51,9 +52,18 @@ export default function WhatsappBroadcastShow() {
             <Typography variant="h6" gutterBottom>
               Timing
             </Typography>
-            <DateField source="createdAt" label="Created" showTime />
-            <DateField source="startedAt" label="Started" showTime />
-            <DateField source="completedAt" label="Completed" showTime />
+            <FunctionField
+              label="Created"
+              render={(r: RaRecord) => formatDisplayDateTime(r?.createdAt, { empty: "—" })}
+            />
+            <FunctionField
+              label="Started"
+              render={(r: RaRecord) => formatDisplayDateTime(r?.startedAt, { empty: "—" })}
+            />
+            <FunctionField
+              label="Completed"
+              render={(r: RaRecord) => formatDisplayDateTime(r?.completedAt, { empty: "—" })}
+            />
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6" gutterBottom>
               Filter Criteria

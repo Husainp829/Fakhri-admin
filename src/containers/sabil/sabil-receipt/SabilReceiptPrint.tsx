@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 import ReceiptPrint from "@/components/receipt-layout";
 import { useHardcopyBorders } from "@/theme/useHardcopyBorders";
 import { formatDate } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 
 dayjs.extend(utc);
@@ -14,14 +15,10 @@ dayjs.extend(utc);
 const formatMonthlyPeriod = (
   periodStart: string | null | undefined,
   periodEnd: string | null | undefined
-) => {
-  const formatMonthYear = (value: string | null | undefined) =>
-    value ? dayjs.utc(value).format("MMM-YYYY") : null;
-  return {
-    periodStart: formatMonthYear(periodStart),
-    periodEnd: formatMonthYear(periodEnd),
-  };
-};
+) => ({
+  periodStart: periodStart ? formatListDate(periodStart, { utc: true }) : null,
+  periodEnd: periodEnd ? formatListDate(periodEnd, { utc: true }) : null,
+});
 
 const formatYearlyPeriod = (
   periodStart: string | null | undefined,
@@ -46,11 +43,9 @@ const formatYearlyPeriod = (
     };
   }
 
-  const formatMonthYear = (value: string | null | undefined) =>
-    value ? dayjs.utc(value).format("MMM-YYYY") : null;
   return {
-    periodStart: formatMonthYear(periodStart),
-    periodEnd: formatMonthYear(periodEnd),
+    periodStart: periodStart ? formatListDate(periodStart, { utc: true }) : null,
+    periodEnd: periodEnd ? formatListDate(periodEnd, { utc: true }) : null,
   };
 };
 

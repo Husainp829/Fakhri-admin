@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import dayjs from "dayjs";
+import { formatReceiptStoredDateTime, formatReceiptStoredDdMmYyyy } from "./date-format";
 
 export const getCurrentEvent = (): Record<string, unknown> => {
   const jsonString = localStorage.getItem("currEvent");
@@ -20,17 +20,9 @@ export const parseDateTime = (value: string | number | Date): Date => {
   return utcFromLocal;
 };
 
-export const formatDateTime = (value: string | number | Date): string => {
-  const dateTime = new Date(value);
-  const utcFromLocal = new Date(dateTime.getTime() + getTimezoneOffset(dateTime));
-  return dayjs(utcFromLocal).format("YYYY-MM-DDTHH:mm");
-};
+export const formatDateTime = formatReceiptStoredDateTime;
 
-export const formatDate = (value: string | number | Date): string => {
-  const dateTime = new Date(value);
-  const utcFromLocal = new Date(dateTime.getTime() + getTimezoneOffset(dateTime));
-  return dayjs(utcFromLocal).format("DD-MM-YYYY");
-};
+export const formatDate = formatReceiptStoredDdMmYyyy;
 
 export const formatINR = (
   amount: unknown,

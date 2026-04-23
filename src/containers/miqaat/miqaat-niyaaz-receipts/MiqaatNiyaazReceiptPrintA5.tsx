@@ -4,6 +4,7 @@ import { ToWords } from "to-words/en-IN";
 import { Box } from "@mui/material";
 import { callApiWithoutAuth } from "@/dataprovider/misc-apis";
 import CommonReceiptA5 from "@/components/common-receipt/CommonReceiptA5";
+import { APP_DISPLAY_DATE } from "@/utils/date-format";
 
 const MiqaatNiyaazReceiptA5 = () => {
   const { id } = useParams();
@@ -72,7 +73,7 @@ const MiqaatNiyaazReceiptA5 = () => {
       logoUrl="/logo512.png"
       receiptNo={data.receiptNo != null ? String(data.receiptNo) : undefined}
       date={data.receiptDate as string | Date | undefined}
-      dateFormat="DD/MM/YYYY"
+      dateFormat={APP_DISPLAY_DATE}
       receiptLines={receiptLines}
       amount={Number(data.amount)}
       currency="₹"

@@ -1,7 +1,7 @@
 import { Box, Typography, Divider, Stack, Paper, useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import QRCode from "react-qr-code";
-import dayjs from "dayjs";
+import { APP_DISPLAY_DATE, formatWithPattern } from "@/utils/date-format";
 
 export type ReceiptLineItem = {
   left: string;
@@ -60,7 +60,7 @@ const CommonReceiptA5 = ({
   logoUrl = "/logo512.png",
   receiptNo,
   date,
-  dateFormat = "DD/MM/YYYY",
+  dateFormat = APP_DISPLAY_DATE,
   receiptLines = [],
   amount,
   currency = "₹",
@@ -72,7 +72,7 @@ const CommonReceiptA5 = ({
   receiptHeaderText = "RECEIPT",
 }: CommonReceiptA5Props) => {
   const theme = useTheme();
-  const formattedDate = date ? dayjs(date).format(dateFormat) : date || "-";
+  const formattedDate = date ? formatWithPattern(date, dateFormat) : date || "-";
   const frameBorder = `1px solid ${theme.palette.text.primary}`;
   const totalBandBg = alpha(theme.palette.text.primary, 0.06);
   const totalAccent = `5px solid ${theme.palette.text.primary}`;

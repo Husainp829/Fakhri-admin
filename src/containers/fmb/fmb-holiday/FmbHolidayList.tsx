@@ -2,7 +2,7 @@ import React from "react";
 import {
   List,
   Datagrid,
-  DateField,
+  FunctionField,
   TextField,
   TextInput,
   TopToolbar,
@@ -11,9 +11,11 @@ import {
   Pagination,
   DateInput,
   type ListProps,
+  type RaRecord,
 } from "react-admin";
 
 import { FmbHolidayCsvImportButton } from "./FmbHolidayCsvImportButton";
+import { formatListDate } from "@/utils/date-format";
 
 const filters = [
   <TextInput key="q" source="q" label="Search holiday name" alwaysOn sx={{ minWidth: 220 }} />,
@@ -41,7 +43,11 @@ export default function FmbHolidayList(props: ListProps) {
       actions={<ListActions />}
     >
       <Datagrid rowClick="edit" bulkActionButtons={false}>
-        <DateField source="holidayDate" />
+        <FunctionField
+          label="Holiday date"
+          sortBy="holidayDate"
+          render={(record: RaRecord) => formatListDate(record?.holidayDate, { empty: "—" })}
+        />
         <TextField source="name" emptyText="—" />
       </Datagrid>
     </List>

@@ -3,6 +3,7 @@ import { useShowContext } from "react-admin";
 import { Box, Button, Chip, Collapse, Divider, Paper, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const ISO_WEEKDAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -10,15 +11,6 @@ const ISO_WEEKDAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const formatWeekdays = (days: unknown) => {
   if (!Array.isArray(days) || days.length === 0) return "—";
   return days.map((d) => ISO_WEEKDAY_SHORT[(Number(d) - 1 + 7) % 7]).join(", ");
-};
-
-const formatDate = (value: unknown, empty = "—") => {
-  if (!value) return empty;
-  return new Date(value as string | number).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
 };
 
 const formatMoney = (n: unknown) => formatINR(n, { empty: "—" });
@@ -190,7 +182,9 @@ export default function BasicInfo() {
             <InfoField label="Delivery schedule">
               {profile ? `${profile.code} — ${profile.name}` : "—"}
             </InfoField>
-            {Array.isArray(profile?.deliveryWeekdays) && profile.deliveryWeekdays.length > 0 ? (
+            {profile &&
+            Array.isArray(profile.deliveryWeekdays) &&
+            profile.deliveryWeekdays.length > 0 ? (
               <>
                 <Divider sx={{ my: 0.75 }} />
                 <InfoField label="Delivery weekdays">
@@ -205,9 +199,13 @@ export default function BasicInfo() {
               </>
             )}
             <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Record created">{formatDate(record.createdAt)}</InfoField>
+            <InfoField label="Record created">
+              {formatListDate(record.createdAt as string | number | Date, { empty: "—" })}
+            </InfoField>
             <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Last updated">{formatDate(record.updatedAt)}</InfoField>
+            <InfoField label="Last updated">
+              {formatListDate(record.updatedAt as string | number | Date, { empty: "—" })}
+            </InfoField>
           </InfoSection>
         </Grid>
 
@@ -247,9 +245,13 @@ export default function BasicInfo() {
           }}
         >
           <InfoSection title="Status">
-            <InfoField label="Last paid date">{formatDate(record.lastPaidDate, "-")}</InfoField>
+            <InfoField label="Last paid date">
+              {formatListDate(record.lastPaidDate as string | number | Date, { empty: "-" })}
+            </InfoField>
             <Divider sx={{ my: 0.75 }} />
-            <InfoField label="Closed at">{formatDate(record.closedAt, "Open")}</InfoField>
+            <InfoField label="Closed at">
+              {formatListDate(record.closedAt as string | number | Date, { empty: "Open" })}
+            </InfoField>
             <Divider sx={{ my: 0.75 }} />
             <InfoField label="Remarks">{record.remarks as React.ReactNode}</InfoField>
             <Divider sx={{ my: 0.75 }} />
@@ -335,7 +337,9 @@ export default function BasicInfo() {
                     md: 3,
                   }}
                 >
-                  <InfoField label="Period start">{formatDate(t.startDate)}</InfoField>
+                  <InfoField label="Period start">
+                    {formatListDate(t.startDate as string | number | Date, { empty: "—" })}
+                  </InfoField>
                 </Grid>
                 <Grid
                   size={{
@@ -344,7 +348,9 @@ export default function BasicInfo() {
                     md: 3,
                   }}
                 >
-                  <InfoField label="Takhmeen record created">{formatDate(t.createdAt)}</InfoField>
+                  <InfoField label="Takhmeen record created">
+                    {formatListDate(t.createdAt as string | number | Date, { empty: "—" })}
+                  </InfoField>
                 </Grid>
               </Grid>
             )}

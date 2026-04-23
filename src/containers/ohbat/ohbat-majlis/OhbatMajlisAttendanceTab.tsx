@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Datagrid,
-  DateField,
   FunctionField,
   Pagination,
   ReferenceManyField,
@@ -14,6 +13,7 @@ import {
 import type { RaRecord } from "react-admin";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 
 const normalizeIts = (s: unknown) => String(s ?? "").trim();
@@ -83,7 +83,11 @@ function OhbatAttendanceDatagridWithNames() {
             );
           }}
         />
-        <DateField source="createdAt" label="Recorded" showTime />
+        <FunctionField
+          label="Recorded"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
       </Datagrid>
       <Pagination />
     </>

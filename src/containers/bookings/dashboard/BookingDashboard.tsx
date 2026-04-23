@@ -24,10 +24,10 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { format, parseISO } from "date-fns";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { callApi } from "@/dataprovider/misc-apis";
+import { formatIsoDate, formatListDate } from "@/utils/date-format";
 import DateRangeFilter from "@/components/DateRangeFilter";
 import { getChartColorSequence } from "@/theme/chartPalette";
 
@@ -95,8 +95,8 @@ export default function BookingDashboard() {
   const theme = useTheme();
   const chartColors = useMemo(() => getChartColorSequence(theme), [theme]);
   const now = dayjs.utc();
-  const defaultStartDate = now.startOf("month").format("YYYY-MM-DD");
-  const defaultEndDate = now.endOf("month").format("YYYY-MM-DD");
+  const defaultStartDate = formatIsoDate(now.startOf("month"));
+  const defaultEndDate = formatIsoDate(now.endOf("month"));
 
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
@@ -174,7 +174,7 @@ export default function BookingDashboard() {
   };
 
   const selectedDateRange = useMemo(
-    () => `${format(parseISO(startDate), "MMM d")} - ${format(parseISO(endDate), "MMM d")}`,
+    () => `${formatListDate(startDate)} - ${formatListDate(endDate)}`,
     [startDate, endDate]
   );
 

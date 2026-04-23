@@ -3,7 +3,6 @@ import {
   List,
   Datagrid,
   TextField,
-  DateField,
   FunctionField,
   BooleanInput,
   Button,
@@ -12,6 +11,7 @@ import {
   useRefresh,
 } from "react-admin";
 import Box from "@mui/material/Box";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 const MultilineCell = ({ value }: { value?: string | null }) => (
   <Box sx={{ whiteSpace: "pre-wrap", maxWidth: 380, fontSize: "0.8125rem", lineHeight: 1.45 }}>
@@ -92,8 +92,16 @@ export default function ItsdataAddressChangeQueueList() {
           render={(r: QueueRecord) => <MultilineCell value={r.newAddress} />}
         />
         <TextField source="syncVersion" label="Sync" />
-        <DateField source="createdAt" label="Detected" showTime />
-        <DateField source="doneAt" label="Handled at" showTime emptyText="—" />
+        <FunctionField
+          label="Detected"
+          sortBy="createdAt"
+          render={(r: QueueRecord) => formatDisplayDateTime(r?.createdAt, { empty: "—" })}
+        />
+        <FunctionField
+          label="Handled at"
+          sortBy="doneAt"
+          render={(r: QueueRecord) => formatDisplayDateTime(r?.doneAt, { empty: "—" })}
+        />
         <FunctionField label="" render={(r: QueueRecord) => <MarkDoneCell record={r} />} />
       </Datagrid>
     </List>

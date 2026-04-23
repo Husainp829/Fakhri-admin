@@ -3,11 +3,13 @@ import {
   Datagrid,
   TextField,
   NumberField,
-  DateField,
+  FunctionField,
   SimpleList,
   type ListProps,
+  type RaRecord,
 } from "react-admin";
 import { useMediaQuery } from "@mui/material";
+import { formatListDate } from "@/utils/date-format";
 
 export const VendorLedgerList = (props: ListProps) => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
@@ -21,11 +23,9 @@ export const VendorLedgerList = (props: ListProps) => {
           }
           secondaryText={(record) => (
             <>
-              Bill: {record.billNo} |{" "}
-              {record.billDate ? new Date(record.billDate).toLocaleDateString() : ""}
+              Bill: {record.billNo} | {record.billDate ? formatListDate(record.billDate) : ""}
               <br />
-              Paid: {record.paidDate ? new Date(record.paidDate).toLocaleDateString() : ""} |{" "}
-              {record.mode}
+              Paid: {record.paidDate ? formatListDate(record.paidDate) : ""} | {record.mode}
             </>
           )}
           linkType="edit"
@@ -37,9 +37,21 @@ export const VendorLedgerList = (props: ListProps) => {
           <TextField source="billNo" />
           <TextField source="vendor.name" />
           <TextField source="type" />
-          <DateField source="billDate" label="Bill Date" />
+          <FunctionField
+            label="Bill Date"
+            source="billDate"
+            render={(r: RaRecord) =>
+              r.billDate ? <span>{formatListDate(r.billDate as string)}</span> : <span>—</span>
+            }
+          />
           <NumberField source="paid" label="Payment (Rs)" />
-          <DateField source="paidDate" label="Payment Date" />
+          <FunctionField
+            label="Payment Date"
+            source="paidDate"
+            render={(r: RaRecord) =>
+              r.paidDate ? <span>{formatListDate(r.paidDate as string)}</span> : <span>—</span>
+            }
+          />
           <TextField source="mode" label="Payment Mode" />
           <TextField source="remarks" label="Remarks" />
         </Datagrid>

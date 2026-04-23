@@ -6,8 +6,9 @@ import {
   SelectColumnsButton,
   TextField,
   TopToolbar,
-  DateField,
+  FunctionField,
   SimpleList,
+  type RaRecord,
 } from "react-admin";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -20,6 +21,7 @@ import Button from "@mui/material/Button";
 import ITSSyncUploadButton from "@/components/upload-helpers/its-sync-upload";
 import CustomEmpty from "@/components/custom-empty";
 import PostFilterSidebar from "./PostFilterSidebar";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 const ListActions = () => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"), { noSsr: true });
@@ -144,7 +146,13 @@ const ItsdataList = () => {
             <TextField source="Type_of_House" />
             <TextField source="Data_Verifcation_Status" />
             <TextField source="Photo_Verifcation_Status" />
-            <DateField source="updatedAt" />
+            <FunctionField
+              label="Updated"
+              sortBy="updatedAt"
+              render={(record: RaRecord) =>
+                formatDisplayDateTime(record?.updatedAt, { empty: "—" })
+              }
+            />
           </DatagridConfigurable>
         </Box>
       )}

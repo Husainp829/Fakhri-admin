@@ -5,7 +5,6 @@ import {
   List,
   Datagrid,
   TextField,
-  DateField,
   FunctionField,
   usePermissions,
   useNotify,
@@ -25,6 +24,7 @@ import {
 } from "@mui/material";
 import MuiButton from "@mui/material/Button";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 import CustomEmpty from "@/components/custom-empty";
 import { callApi } from "@/dataprovider/misc-apis";
@@ -204,8 +204,20 @@ const CronStatusList = () => {
             />
           )}
         />
-        <DateField source="startedAt" label="Started At" showTime />
-        <DateField source="completedAt" label="Completed At" showTime />
+        <FunctionField
+          label="Started At"
+          sortBy="startedAt"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.startedAt, { empty: "—" })
+          }
+        />
+        <FunctionField
+          label="Completed At"
+          sortBy="completedAt"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.completedAt, { empty: "—" })
+          }
+        />
         <FunctionField
           label="Duration"
           render={(record: CronStatusRecord) => durationLabel(record)}

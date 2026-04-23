@@ -3,7 +3,6 @@ import {
   Show,
   SimpleShowLayout,
   TextField,
-  DateField,
   FunctionField,
   ReferenceField,
   TopToolbar,
@@ -20,6 +19,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 
 function printReceipt(id: string | number | undefined) {
   if (!id) return;
@@ -99,7 +99,10 @@ export default function FmbReceiptShow(props: ShowProps) {
     <Show {...props} actions={<ShowActions />}>
       <SimpleShowLayout sx={{ maxWidth: 760 }}>
         <TextField source="receiptNo" label="Receipt no" />
-        <DateField source="receiptDate" label="Receipt date" />
+        <FunctionField
+          label="Receipt date"
+          render={(record) => formatListDate(record?.receiptDate, { empty: "—" })}
+        />
         <ReferenceField source="fmbId" reference="fmbData" link="show" label="FMB">
           <TextField source="fileNo" />
         </ReferenceField>

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import CloseIcon from "@mui/icons-material/Close";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { buildOhbatMajlisEventDetailsText } from "../../OhbatMajlisEventDetailsClipboard";
 import { formatMajlisStartTimeLabel } from "../../OhbatMajlisTime";
 
@@ -62,10 +62,7 @@ export function OhbatMajlisDetailsDialog({
                 label="Time"
                 value={formatMajlisStartTimeLabel(selectedEvent?.startTime as string | undefined)}
               />
-              <LabelValue
-                label="Date"
-                value={dayjs(selectedEvent.date as string).format("YYYY-MM-DD")}
-              />
+              <LabelValue label="Date" value={formatListDate(selectedEvent.date as string)} />
               <LabelValue
                 label="Venue address"
                 value={String(selectedEvent?.address ?? "—")}

@@ -12,6 +12,7 @@ import {
 } from "react-admin";
 import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
+import { formatIsoDate } from "@/utils/date-format";
 import NoArrowKeyNumberInput from "@/components/NoArrowKeyNumberInput";
 import { ITSInput } from "./common/FmbTakhmeenItsInput";
 import { TakhmeenYearSelect } from "./common/TakhmeenYearSelect";
@@ -23,7 +24,7 @@ export default function FmbTakhmeenCreate(props: CreateProps) {
   const prefFmbId = searchParams.get("fmbId") || "";
 
   const defaultValues = useMemo(() => {
-    const startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+    const startDate = formatIsoDate(dayjs().startOf("month"));
     const hijriYearStart = getHijriYear(new Date());
     return prefFmbId
       ? { fmbId: prefFmbId, startDate, hijriYearStart }

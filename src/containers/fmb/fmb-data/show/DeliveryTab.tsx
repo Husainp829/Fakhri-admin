@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { Alert, Box, Button, Paper, Typography } from "@mui/material";
 import {
   Datagrid,
-  DateField,
   FunctionField,
   Pagination,
   ReferenceManyField,
@@ -17,6 +16,7 @@ import type { Identifier } from "ra-core";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 import type { PermissionRecord } from "@/types/permissions";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 
 type ThaliRow = {
@@ -184,7 +184,11 @@ export default function DeliveryTab() {
               />
               <TextField source="effectiveServiceDay" label="Effective day" />
               <TextField source="source" label="Source" />
-              <DateField source="createdAt" label="Logged at" showTime />
+              <FunctionField
+                label="Logged at"
+                sortBy="createdAt"
+                render={(row: RaRecord) => formatDisplayDateTime(row?.createdAt, { empty: "—" })}
+              />
             </Datagrid>
           </ReferenceManyField>
         </Paper>

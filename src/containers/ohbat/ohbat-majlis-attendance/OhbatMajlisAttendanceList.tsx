@@ -1,4 +1,5 @@
-import { Datagrid, DateField, List, TextField } from "react-admin";
+import { Datagrid, FunctionField, List, TextField, type RaRecord } from "react-admin";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 export default function OhbatMajlisAttendanceList() {
   return (
@@ -6,7 +7,11 @@ export default function OhbatMajlisAttendanceList() {
       <Datagrid rowClick={false} bulkActionButtons={false}>
         <TextField source="ohbatMajalisId" label="Majlis id" />
         <TextField source="attendeeIts" label="Attendee ITS" />
-        <DateField source="createdAt" showTime />
+        <FunctionField
+          label="Recorded"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
       </Datagrid>
     </List>
   );

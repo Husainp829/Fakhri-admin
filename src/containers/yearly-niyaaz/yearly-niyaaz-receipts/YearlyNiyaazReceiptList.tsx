@@ -3,7 +3,6 @@ import {
   List,
   NumberField,
   TextField,
-  DateField,
   FunctionField,
   Button,
   Pagination,
@@ -11,6 +10,7 @@ import {
   DateInput,
 } from "react-admin";
 import type { RaRecord } from "react-admin";
+import { formatListDate } from "@/utils/date-format";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
@@ -58,7 +58,11 @@ export const YearlyNiyaazReceiptList = () => (
           (rec?.yearlyNiyaaz as { itsNo?: string } | undefined)?.itsNo || "-"
         }
       />
-      <DateField source="receiptDate" label="Date" />
+      <FunctionField
+        label="Date"
+        sortBy="receiptDate"
+        render={(rec: RaRecord) => formatListDate(rec?.receiptDate, { empty: "—" })}
+      />
       <NumberField source="amount" label="Amount" />
       <TextField source="paymentMode" label="Mode" />
       <TextField source="paymentRef" label="Payment Ref" />

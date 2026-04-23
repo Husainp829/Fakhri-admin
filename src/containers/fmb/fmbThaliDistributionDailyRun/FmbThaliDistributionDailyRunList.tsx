@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
+import { DatePattern, formatIsoDate } from "@/utils/date-format";
 import {
   Datagrid,
   FilterButton,
@@ -50,9 +51,6 @@ function FmbHolidayDayBanner() {
   );
 }
 
-/** e.g. Mon, 09 Apr 26 */
-const SERVICE_DATE_DISPLAY_FORMAT = "ddd, DD MMM YY";
-
 function ServiceDateFilter(props: InputProps) {
   const { field, fieldState, isRequired } = useInput(props);
   const { value: rawValue, onChange, onBlur, name, ref } = field;
@@ -70,7 +68,7 @@ function ServiceDateFilter(props: InputProps) {
       onChange("");
       return;
     }
-    onChange(newValue.format("YYYY-MM-DD"));
+    onChange(formatIsoDate(newValue));
   };
 
   const baseDay = value ?? dayjs().startOf("day");
@@ -78,7 +76,7 @@ function ServiceDateFilter(props: InputProps) {
   const shiftByDays = (delta: number) => {
     const next = baseDay.add(delta, "day");
     if (next.isValid()) {
-      onChange(next.format("YYYY-MM-DD"));
+      onChange(formatIsoDate(next));
     }
   };
 
@@ -97,7 +95,7 @@ function ServiceDateFilter(props: InputProps) {
         <Box sx={{ flex: 1, minWidth: 0, maxWidth: 280 }}>
           <DatePicker
             label={props.label ?? "Service date"}
-            format={SERVICE_DATE_DISPLAY_FORMAT}
+            format={DatePattern.DISPLAY_DOW_DD_MMM_YY}
             value={value}
             onChange={handleChange}
             slotProps={{

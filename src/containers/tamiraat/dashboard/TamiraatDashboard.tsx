@@ -21,13 +21,14 @@ import {
   Datagrid,
   SimpleList,
   TextField as RATextField,
-  DateField,
   FunctionField,
+  type RaRecord,
   useRedirect,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { callApi } from "@/dataprovider/misc-apis";
 
 type LedgerReport = {
@@ -289,7 +290,7 @@ const TamiraatDashboard = () => {
                     secondaryText={(record) => (
                       <Box component="span" sx={{ display: "block" }}>
                         <Typography component="span" sx={{ display: "block" }} variant="body2">
-                          {dayjs(record.receiptDate).format("DD/MM/YYYY")} ·{" "}
+                          {formatListDate(record.receiptDate)} ·{" "}
                           <span
                             style={{
                               color: record.receiptType === "CREDIT" ? "green" : "red",
@@ -354,7 +355,17 @@ const TamiraatDashboard = () => {
                   />
                 ) : (
                   <Datagrid bulkActionButtons={false}>
-                    <DateField source="receiptDate" label="Date" />
+                    <FunctionField
+                      label="Date"
+                      source="receiptDate"
+                      render={(record: RaRecord) =>
+                        record.receiptDate ? (
+                          <span>{formatListDate(record.receiptDate as string)}</span>
+                        ) : (
+                          <span>—</span>
+                        )
+                      }
+                    />
                     <FunctionField
                       label="Type"
                       render={(record) => (

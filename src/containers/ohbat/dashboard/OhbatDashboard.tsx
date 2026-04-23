@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
-import dayjs from "dayjs";
 import { fromGregorian } from "@/utils/hijri-date-utils";
+import { formatListDate, formatWeekdayFullUtc, parseDayjs } from "@/utils/date-format";
 import { formatMajlisStartTimeLabel } from "@/containers/ohbat/ohbat-majlis/OhbatMajlisTime";
 import {
   BarChart,
@@ -40,13 +40,13 @@ function fmt(n: unknown): string {
 }
 
 const formatMajlisDateUtc = (date: unknown) =>
-  date ? dayjs.utc(String(date)).format("DD - MMM - YYYY") : "—";
+  date ? formatListDate(String(date), { utc: true }) : "—";
 
 const formatMajlisDayOfWeekUtc = (date: unknown) =>
-  date ? dayjs.utc(String(date)).format("dddd") : "—";
+  date ? formatWeekdayFullUtc(String(date)) : "—";
 
 const formatMajlisHijriUtc = (date: unknown) =>
-  date ? fromGregorian(dayjs.utc(String(date)).toDate(), "code") : "—";
+  date ? fromGregorian(parseDayjs(String(date), true).toDate(), "code") : "—";
 
 type StatCardProps = {
   title: string;
@@ -316,7 +316,7 @@ export default function OhbatDashboard() {
 
   const asOfLabel =
     stats?.asOf != null && stats.asOf !== ""
-      ? `Figures as of start of day (UTC): ${dayjs.utc(String(stats.asOf)).format("DD MMM YYYY")}`
+      ? `Figures as of start of day (UTC): ${formatListDate(String(stats.asOf), { utc: true })}`
       : null;
 
   return (

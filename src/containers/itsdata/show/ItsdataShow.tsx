@@ -1,5 +1,13 @@
 import type { ComponentProps, ReactNode } from "react";
-import { Show, SimpleShowLayout, TabbedShowLayout, TextField, DateField } from "react-admin";
+import {
+  Show,
+  SimpleShowLayout,
+  TabbedShowLayout,
+  TextField,
+  FunctionField,
+  type RaRecord,
+} from "react-admin";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useMediaQuery } from "@mui/material";
@@ -182,8 +190,14 @@ const HousingMetaSection = () => (
     <TextField source="Photo_Verification_Date" label="Photo Verification Date" emptyText="-" />
     <TextField source="Last_Scanned_Event" label="Last Scanned Event" emptyText="-" />
     <TextField source="Last_Scanned_Place" label="Last Scanned Place" emptyText="-" />
-    <DateField source="createdAt" label="Created" showTime emptyText="-" />
-    <DateField source="updatedAt" label="Last Updated" showTime emptyText="-" />
+    <FunctionField
+      label="Created"
+      render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "-" })}
+    />
+    <FunctionField
+      label="Last Updated"
+      render={(record: RaRecord) => formatDisplayDateTime(record?.updatedAt, { empty: "-" })}
+    />
   </SimpleShowLayout>
 );
 

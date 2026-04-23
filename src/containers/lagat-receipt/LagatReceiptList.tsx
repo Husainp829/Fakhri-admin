@@ -5,7 +5,6 @@ import {
   Datagrid,
   List,
   TextField,
-  DateField,
   FunctionField,
   Button,
   DateInput,
@@ -15,7 +14,7 @@ import {
   Pagination,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import {
   Box,
   Divider,
@@ -242,7 +241,17 @@ const ReceiptDatagrid = () => {
       <TextField source="itsNo" label="ITS No." />
       <TextField source="amount" />
       <TextField source="purpose" emptyText="-" />
-      <DateField source="receiptDate" />
+      <FunctionField
+        label="Receipt date"
+        source="receiptDate"
+        render={(record: RaRecord) =>
+          record.receiptDate ? (
+            <span>{formatListDate(record.receiptDate as string)}</span>
+          ) : (
+            <span>—</span>
+          )
+        }
+      />
       <FunctionField
         label="Download"
         source="formNo"
@@ -339,8 +348,7 @@ const LagatReceiptList = () => {
         header: "Receipt Date",
         field: "receiptDate",
         width: 15,
-        formatter: (_rec: RaRecord, v: unknown) =>
-          v ? dayjs(String(v)).format("DD-MMM-YYYY") : "",
+        formatter: (_rec: RaRecord, v: unknown) => (v ? formatListDate(String(v)) : ""),
       },
     ];
 

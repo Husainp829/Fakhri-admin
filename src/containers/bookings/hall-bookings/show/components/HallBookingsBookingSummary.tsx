@@ -2,7 +2,7 @@ import { usePermissions, useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useShowTotals } from "../BookingShowContext";
-import { formatLongDate } from "@/utils/date-format";
+import { formatListDate } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 
 type AmountRow = { label: string; value: string | number; type?: string };
@@ -62,7 +62,7 @@ export const HallBookingsBookingSummary = () => {
           { label: "Refund Returned", value: record.refundReturnAmount as number },
           {
             label: "Refund Returned On",
-            value: formatLongDate(record.refundReturnedOn as string),
+            value: formatListDate(record.refundReturnedOn as string),
             type: "date",
           },
         ]
@@ -86,7 +86,7 @@ export const HallBookingsBookingSummary = () => {
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },
     {
       label: "Booked On",
-      value: formatLongDate(record.createdAt as string),
+      value: formatListDate(record.createdAt as string),
     },
   ];
 

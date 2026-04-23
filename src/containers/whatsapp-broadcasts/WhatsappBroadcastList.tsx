@@ -7,12 +7,12 @@ import {
   TopToolbar,
   SelectInput,
   FunctionField,
-  DateField,
   NumberField,
   CreateButton,
   type RaRecord,
 } from "react-admin";
 import { Chip } from "@mui/material";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 const ListActions = () => (
   <TopToolbar>
@@ -61,9 +61,21 @@ export default function WhatsappBroadcastList() {
         <NumberField source="totalRecipients" label="Total" />
         <NumberField source="successCount" label="Success" />
         <NumberField source="failureCount" label="Failed" />
-        <DateField source="createdAt" label="Created" showTime />
-        <DateField source="startedAt" label="Started" showTime />
-        <DateField source="completedAt" label="Completed" showTime />
+        <FunctionField
+          label="Created"
+          sortBy="createdAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
+        <FunctionField
+          label="Started"
+          sortBy="startedAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.startedAt, { empty: "—" })}
+        />
+        <FunctionField
+          label="Completed"
+          sortBy="completedAt"
+          render={(record: RaRecord) => formatDisplayDateTime(record?.completedAt, { empty: "—" })}
+        />
       </DatagridConfigurable>
     </List>
   );

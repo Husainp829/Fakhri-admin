@@ -3,7 +3,6 @@ import { Create, useDataProvider, useNotify } from "react-admin";
 import type { RaRecord } from "react-admin";
 import { useSearchParams } from "react-router-dom";
 import startCase from "lodash/startCase";
-import dayjs from "dayjs";
 import {
   Box,
   Button,
@@ -21,6 +20,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { fromGregorian } from "@/utils/hijri-date-utils";
+import { formatListDate, formatWeekdayFullUtc, parseDayjs } from "@/utils/date-format";
 import { formatMajlisStartTimeLabel } from "../ohbat-majlis/OhbatMajlisTime";
 
 const normalizeIts = (s: unknown) => String(s ?? "").trim();
@@ -221,10 +221,10 @@ export default function OhbatMajlisAttendanceCreate() {
                       <Typography variant="body2">
                         <strong>Date:</strong>{" "}
                         {majlis.date
-                          ? `${dayjs.utc(String(majlis.date)).format("DD/MMM/YYYY")} · ${dayjs
-                              .utc(String(majlis.date))
-                              .format("dddd")} · ${fromGregorian(
-                              dayjs.utc(String(majlis.date)).toDate(),
+                          ? `${formatListDate(String(majlis.date), {
+                              utc: true,
+                            })} · ${formatWeekdayFullUtc(String(majlis.date))} · ${fromGregorian(
+                              parseDayjs(String(majlis.date), true).toDate(),
                               "code"
                             )}`
                           : "—"}
@@ -361,18 +361,16 @@ export default function OhbatMajlisAttendanceCreate() {
                       </Typography>
                       <Typography variant="body2">
                         <strong>Date:</strong>{" "}
-                        {majlis.date
-                          ? dayjs.utc(String(majlis.date)).format("DD - MMM - YYYY")
-                          : "—"}
+                        {majlis.date ? formatListDate(String(majlis.date), { utc: true }) : "—"}
                       </Typography>
                       <Typography variant="body2">
                         <strong>Day:</strong>{" "}
-                        {majlis.date ? dayjs.utc(String(majlis.date)).format("dddd") : "—"}
+                        {majlis.date ? formatWeekdayFullUtc(String(majlis.date)) : "—"}
                       </Typography>
                       <Typography variant="body2">
                         <strong>Hijri:</strong>{" "}
                         {majlis.date
-                          ? fromGregorian(dayjs.utc(String(majlis.date)).toDate(), "code")
+                          ? fromGregorian(parseDayjs(String(majlis.date), true).toDate(), "code")
                           : "—"}
                       </Typography>
                       <Typography variant="body2">

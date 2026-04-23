@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import { useInput, type InputProps } from "react-admin";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
+import { formatIsoDate } from "@/utils/date-format";
 
 function MonthInput(props: InputProps<string | null>) {
   const { field, fieldState, isRequired } = useInput(props);
@@ -26,7 +27,7 @@ function MonthInput(props: InputProps<string | null>) {
     }
     const d = dayjs(newValue);
     if (d.isValid()) {
-      onChange(d.startOf("month").format("YYYY-MM-DD"));
+      onChange(formatIsoDate(d.startOf("month")));
     } else {
       onChange(null);
     }

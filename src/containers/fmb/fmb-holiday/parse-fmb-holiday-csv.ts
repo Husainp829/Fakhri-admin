@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { DatePattern, formatIsoDate } from "@/utils/date-format";
 
 dayjs.extend(utc);
 
@@ -48,7 +49,7 @@ function isValidYmdUtc(s: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s.trim())) {
     return false;
   }
-  return dayjs.utc(s.trim(), "YYYY-MM-DD", true).isValid();
+  return dayjs.utc(s.trim(), DatePattern.ISO_DATE, true).isValid();
 }
 
 function normalizeHeader(cell: string): string {
@@ -105,13 +106,13 @@ export function parseHolidayDateCell(raw: string): string | null {
   for (const fmt of SLASH_FORMATS_DD) {
     const d = dayjs.utc(t, fmt, true);
     if (d.isValid()) {
-      return d.format("YYYY-MM-DD");
+      return formatIsoDate(d);
     }
   }
   for (const fmt of SLASH_FORMATS_US) {
     const d = dayjs.utc(t, fmt, true);
     if (d.isValid()) {
-      return d.format("YYYY-MM-DD");
+      return formatIsoDate(d);
     }
   }
   return null;

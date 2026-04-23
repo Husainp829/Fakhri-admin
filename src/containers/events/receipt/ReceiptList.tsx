@@ -3,7 +3,6 @@ import {
   List,
   NumberField,
   TextField,
-  DateField,
   FunctionField,
   Button,
   downloadCSV,
@@ -16,11 +15,12 @@ import {
   FilterButton,
   ExportButton,
   type Exporter,
+  type RaRecord,
 } from "react-admin";
 import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { MARKAZ_LIST } from "@/constants";
 import { hasPermission } from "@/utils/permission-utils";
 
@@ -54,7 +54,7 @@ export const ReceiptList = () => {
         namaazVenue,
         details,
         createdBy: (admin as { name?: string } | undefined)?.name || createdBy,
-        date: dayjs(date as string).format("DD/MM/YYYY"),
+        date: formatListDate(date as string),
       };
     });
     jsonExport(
@@ -121,7 +121,7 @@ export const ReceiptList = () => {
             <>
               {String(record.HOFName)} · {String(record.HOFId)}
               <br />
-              {dayjs(record.date as string).format("DD/MM/YYYY")} · ₹
+              {formatListDate(record.date as string)} · ₹
               {Number(record.amount).toLocaleString("en-IN")} · {String(record.mode)}
             </>
           )}
@@ -136,7 +136,13 @@ export const ReceiptList = () => {
             <TextField source="formNo" />
             <TextField source="HOFId" label="HOF ID" />
             <TextField source="HOFName" label="HOF NAME" />
-            <DateField source="date" />
+            <FunctionField
+              label="Date"
+              source="date"
+              render={(record: RaRecord) =>
+                record?.date ? <span>{formatListDate(record.date as string)}</span> : <span>—</span>
+              }
+            />
             <NumberField source="amount" />
             <TextField source="mode" />
             <TextField source="markaz" />

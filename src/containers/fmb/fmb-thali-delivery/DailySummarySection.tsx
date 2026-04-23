@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { formatIsoDate } from "@/utils/date-format";
 import httpClient from "@/dataprovider/http-client";
 import { getApiUrl } from "@/constants";
 
@@ -73,7 +74,7 @@ function sortKey(row: DailySummaryRow, col: SortColumn): string {
 }
 
 export default function DailySummarySection() {
-  const [date, setDate] = useState(() => dayjs().format("YYYY-MM-DD"));
+  const [date, setDate] = useState(() => formatIsoDate(dayjs()));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [payload, setPayload] = useState<DailySummaryPayload | null>(null);

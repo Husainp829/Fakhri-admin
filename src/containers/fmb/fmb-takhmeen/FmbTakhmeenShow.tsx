@@ -4,7 +4,6 @@ import {
   SimpleShowLayout,
   TextField,
   NumberField,
-  DateField,
   ReferenceField,
   ReferenceManyField,
   Datagrid,
@@ -13,7 +12,9 @@ import {
   EditButton,
   FunctionField,
   type ShowProps,
+  type RaRecord,
 } from "react-admin";
+import { formatDisplayDateTime, formatListDate } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 const FmbTakhmeenShowActions = () => (
@@ -39,9 +40,18 @@ export default function FmbTakhmeenShow(props: ShowProps) {
             formatFmbHijriPeriod(record?.hijriYearStart, record?.hijriYearEnd) ?? "—"
           }
         />
-        <DateField source="startDate" label="Effective from" emptyText="—" />
-        <DateField source="createdAt" label="Created" showTime />
-        <DateField source="updatedAt" label="Updated" showTime />
+        <FunctionField
+          label="Effective from"
+          render={(record) => formatListDate(record?.startDate, { empty: "—" })}
+        />
+        <FunctionField
+          label="Created"
+          render={(record) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+        />
+        <FunctionField
+          label="Updated"
+          render={(record) => formatDisplayDateTime(record?.updatedAt, { empty: "—" })}
+        />
         <ReferenceField
           source="updatedBy"
           reference="admins"
@@ -62,7 +72,11 @@ export default function FmbTakhmeenShow(props: ShowProps) {
           <Datagrid bulkActionButtons={false} rowClick="show">
             <TextField source="receiptNo" label="Receipt no." emptyText="—" />
             <NumberField source="amount" />
-            <DateField source="receiptDate" emptyText="—" />
+            <FunctionField
+              label="Receipt date"
+              sortBy="receiptDate"
+              render={(record: RaRecord) => formatListDate(record?.receiptDate, { empty: "—" })}
+            />
             <TextField source="paymentMode" emptyText="—" />
           </Datagrid>
         </ReferenceManyField>

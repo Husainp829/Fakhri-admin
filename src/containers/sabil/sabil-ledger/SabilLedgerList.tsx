@@ -11,7 +11,6 @@ import {
   SelectColumnsButton,
   Pagination,
   FunctionField,
-  DateField,
   NumberField,
   SelectInput,
   ReferenceInput,
@@ -20,6 +19,7 @@ import {
 } from "react-admin";
 import CancelIcon from "@mui/icons-material/Cancel";
 import WriteoffDialog from "./WriteoffDialog";
+import { formatDisplayDateTime } from "@/utils/date-format";
 
 const RegistrationFilters = [
   <TextInput label="Search..." source="search" alwaysOn key={0} sx={{ minWidth: 300 }} />,
@@ -161,7 +161,12 @@ function SabilLedgerDatagrid() {
       }}
       key="outstanding"
     />,
-    <DateField source="createdAt" label="Created At" key="createdAt" />,
+    <FunctionField
+      label="Created At"
+      key="createdAt"
+      sortBy="createdAt"
+      render={(record: LedgerListRow) => formatDisplayDateTime(record?.createdAt, { empty: "—" })}
+    />,
   ];
 
   return (

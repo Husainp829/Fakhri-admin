@@ -1,7 +1,6 @@
 import {
   CreateButton,
   Datagrid,
-  DateField,
   ExportButton,
   FunctionField,
   List,
@@ -17,6 +16,7 @@ import {
   type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 
 const ListActions = () => (
   <TopToolbar>
@@ -59,7 +59,17 @@ export default function FmbVendorPaymentVoucherList(props: ListProps) {
       <Datagrid bulkActionButtons={false} rowClick="edit">
         <TextField source="voucherNo" label="Voucher no." />
         <TextField source="hijriYearStart" label="Hijri start" />
-        <DateField source="voucherDate" label="Date" />
+        <FunctionField
+          label="Date"
+          source="voucherDate"
+          render={(record: RaRecord) =>
+            record.voucherDate ? (
+              <span>{formatListDate(record.voucherDate as string)}</span>
+            ) : (
+              <span>—</span>
+            )
+          }
+        />
         <FunctionField
           label="Amount"
           sortBy="amount"

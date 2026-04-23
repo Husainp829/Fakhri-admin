@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import * as XLSX from "xlsx";
-import dayjs from "dayjs";
+import { formatExportFilenameTimestamp } from "./date-format";
 
 import type { ExcelColumn, ExportToExcelOptions } from "@/types/excel";
 
@@ -69,7 +69,7 @@ export function exportToExcel<T extends Record<string, unknown> = Record<string,
   const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
 
   const blob = new Blob([wbout], { type: "application/octet-stream" });
-  const filename = `${filenamePrefix}_${dayjs().format("YYYY-MM-DD_HH-mm-ss")}.xlsx`;
+  const filename = `${filenamePrefix}_${formatExportFilenameTimestamp()}.xlsx`;
 
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");

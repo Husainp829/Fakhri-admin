@@ -1,12 +1,13 @@
 import {
   Button,
   Datagrid,
-  DateField,
   FunctionField,
   ReferenceManyField,
   TextField,
+  type RaRecord,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import { formatListDate } from "@/utils/date-format";
 import { formatINR } from "@/utils";
 
 export default function ReceiptsTab() {
@@ -23,7 +24,11 @@ export default function ReceiptsTab() {
           textAlign="right"
           render={(record) => formatINR(record?.amount, { empty: "—" })}
         />
-        <DateField source="receiptDate" />
+        <FunctionField
+          label="Receipt date"
+          sortBy="receiptDate"
+          render={(record: RaRecord) => formatListDate(record?.receiptDate, { empty: "—" })}
+        />
         <FunctionField
           label="Target"
           render={(record) => {

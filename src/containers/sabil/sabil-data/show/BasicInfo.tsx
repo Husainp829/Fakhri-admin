@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import BalanceSummary from "./BalanceSummary";
+import { formatListDate } from "@/utils/date-format";
 
 const InfoSection = ({ title, children }: { title: string; children: ReactNode }) => (
   <Paper
@@ -185,10 +186,8 @@ const TakhmeenHistoryTable = () => {
               <TableCell>
                 <Typography variant="body2">
                   {takhmeen.startDate
-                    ? new Date(takhmeen.startDate).toLocaleDateString("en-IN", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
+                    ? formatListDate(takhmeen.startDate as string | number | Date, {
+                        empty: "-",
                       })
                     : "-"}
                 </Typography>

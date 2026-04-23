@@ -1,12 +1,6 @@
 import type { RaRecord } from "react-admin";
-import {
-  Show,
-  SimpleShowLayout,
-  TextField,
-  DateField,
-  FunctionField,
-  usePermissions,
-} from "react-admin";
+import { Show, SimpleShowLayout, TextField, FunctionField, usePermissions } from "react-admin";
+import { formatDisplayDateTime } from "@/utils/date-format";
 import { Chip, Box, Typography, Paper } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { hasPermission } from "@/utils/permission-utils";
@@ -54,8 +48,18 @@ const CronStatusShow = () => {
             />
           )}
         />
-        <DateField source="startedAt" label="Started At" showTime />
-        <DateField source="completedAt" label="Completed At" showTime />
+        <FunctionField
+          label="Started At"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.startedAt, { empty: "—" })
+          }
+        />
+        <FunctionField
+          label="Completed At"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.completedAt, { empty: "—" })
+          }
+        />
         <FunctionField
           label="Duration"
           render={(record: CronStatusRecord) => durationLabel(record)}
@@ -89,8 +93,18 @@ const CronStatusShow = () => {
             </Box>
           )}
         />
-        <DateField source="createdAt" label="Created At" showTime />
-        <DateField source="updatedAt" label="Updated At" showTime />
+        <FunctionField
+          label="Created At"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.createdAt, { empty: "—" })
+          }
+        />
+        <FunctionField
+          label="Updated At"
+          render={(record: CronStatusRecord) =>
+            formatDisplayDateTime(record?.updatedAt, { empty: "—" })
+          }
+        />
       </SimpleShowLayout>
     </Show>
   );

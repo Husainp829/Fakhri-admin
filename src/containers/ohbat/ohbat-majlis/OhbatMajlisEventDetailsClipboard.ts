@@ -1,10 +1,7 @@
-import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat";
 import startCase from "lodash/startCase";
 import type { RaRecord } from "react-admin";
+import { formatListDate } from "@/utils/date-format";
 import { formatMajlisStartTimeLabel } from "./OhbatMajlisTime";
-
-dayjs.extend(advancedFormat);
 
 function clip(v: unknown): string {
   if (v == null || String(v).trim() === "") return "";
@@ -31,8 +28,7 @@ function formatMobileForMessage(mobile: unknown): string {
 
 function formatDateForMessage(isoDate: unknown): string {
   if (!isoDate) return "";
-  const d = dayjs(String(isoDate));
-  return d.isValid() ? d.format("dddd, Do MMMM YYYY") : "";
+  return formatListDate(String(isoDate), { empty: "" });
 }
 
 function formatTimeForMessage(hhmm: unknown): string {

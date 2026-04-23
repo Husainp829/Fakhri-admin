@@ -1,6 +1,5 @@
 import {
   Datagrid,
-  DateField,
   FunctionField,
   ReferenceManyField,
   Show,
@@ -10,6 +9,7 @@ import {
   type ShowProps,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 
 export default function FmbVendorShow(props: ShowProps) {
   return (
@@ -28,7 +28,11 @@ export default function FmbVendorShow(props: ShowProps) {
           <Datagrid bulkActionButtons={false} rowClick="edit">
             <TextField source="voucherNo" label="Voucher no." />
             <TextField source="hijriYearStart" label="Hijri start" />
-            <DateField source="voucherDate" label="Date" />
+            <FunctionField
+              label="Date"
+              sortBy="voucherDate"
+              render={(record: RaRecord) => formatListDate(record?.voucherDate, { empty: "—" })}
+            />
             <FunctionField
               label="Amount"
               render={(record: RaRecord) => formatINR(record?.amount, { empty: "—" })}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDataProvider, useNotify } from "react-admin";
 import type { RaRecord } from "react-admin";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import {
   Box,
   Button,
@@ -225,7 +225,7 @@ export default function QuickAttendanceEntry({ ohbatMajalisId }: QuickAttendance
                 </Typography>
                 <Typography variant="body2">
                   <strong>Date:</strong>{" "}
-                  {majlis.date ? dayjs.utc(String(majlis.date)).format("DD - MMM - YYYY") : "—"}
+                  {majlis.date ? formatListDate(String(majlis.date), { utc: true }) : "—"}
                 </Typography>
                 <Typography variant="body2">
                   <strong>Time:</strong> {formatMajlisStartTimeLabel(majlis.startTime as string)}

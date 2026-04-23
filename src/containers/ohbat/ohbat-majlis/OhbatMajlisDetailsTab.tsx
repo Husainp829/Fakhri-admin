@@ -12,7 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 import {
   openOhbatMajlisKhidmatDialog,
@@ -93,7 +93,7 @@ export function OhbatMajlisDetailsTab() {
   }
 
   const timeLabel = formatMajlisStartTimeLabel(record.startTime as string | undefined);
-  const dateLabel = record.date ? dayjs(String(record.date)).format("DD MMM YYYY") : "—";
+  const dateLabel = record.date ? formatListDate(String(record.date)) : "—";
 
   const khidmatguzar = record.khidmatguzar as { ITS_ID?: string } | undefined;
   const khidmatIts = khidmatguzar?.ITS_ID ?? (record.khidmatguzarItsNo as string | undefined);

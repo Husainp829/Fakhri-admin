@@ -1,7 +1,6 @@
 import {
   CreateButton,
   DatagridConfigurable as Datagrid,
-  DateField,
   DateInput,
   ExportButton,
   FilterButton,
@@ -18,7 +17,7 @@ import {
 } from "react-admin";
 import type { SxProps } from "@mui/material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { formatMajlisStartTimeLabel } from "../OhbatMajlisTime";
 import { exportToExcel } from "@/utils/export-to-excel";
 import { OhbatMajlisViewToggle } from "./OhbatMajlisViewToggle";
@@ -29,7 +28,7 @@ const columns = [
     header: "Date",
     field: "date",
     width: 14,
-    formatter: (rec: RaRecord, v: unknown) => (v ? dayjs(String(v)).format("DD-MMM-YYYY") : ""),
+    formatter: (rec: RaRecord, v: unknown) => (v ? formatListDate(String(v)) : ""),
   },
   { header: "Type", field: "type", width: 14 },
   {
@@ -126,8 +125,8 @@ export default function OhbatMajlisListView() {
                   {(r.hostName as string) || (r.hostItsNo as string) || "—"}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" display="block">
-                  {r.date ? dayjs(String(r.date)).format("DD MMM YYYY") : "—"} ·{" "}
-                  {(r.type as string) || "—"} · {formatMajlisStartTimeLabel(r.startTime as string)}
+                  {r.date ? formatListDate(String(r.date)) : "—"} · {(r.type as string) || "—"} ·{" "}
+                  {formatMajlisStartTimeLabel(r.startTime as string)}
                 </Typography>
               </Box>
             )}
@@ -161,14 +160,12 @@ export default function OhbatMajlisListView() {
                 !majlisHasSadarat(record) ? { borderLeft: sadaratMissingBorder } : {}
               }
             >
-              <DateField
+              <FunctionField
+                label="Date"
                 source="date"
-                locales="en-IN"
-                options={{
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                }}
+                render={(record: RaRecord) =>
+                  record?.date ? <span>{formatListDate(String(record.date))}</span> : <span>—</span>
+                }
               />
               <TextField source="type" />
               <FunctionField

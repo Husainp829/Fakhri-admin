@@ -1,13 +1,20 @@
-import { NumberField, TextField, DateField, FunctionField, Button, Datagrid } from "react-admin";
+import { NumberField, TextField, FunctionField, Button, Datagrid } from "react-admin";
 import type { RaRecord } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import { formatListDate } from "@/utils/date-format";
 
 export const RentBookingReceiptDataGrid = () => (
   <Datagrid rowClick={false} bulkActionButtons={false}>
     <TextField source="receiptNo" />
     <TextField source="organiserIts" label="ITS No." />
     <TextField source="organiser" label="Organiser" />
-    <DateField source="date" />
+    <FunctionField
+      label="Date"
+      source="date"
+      render={(record: RaRecord) =>
+        record?.date ? <span>{formatListDate(record.date as string)}</span> : <span>-</span>
+      }
+    />
     <NumberField source="amount" />
     <TextField source="mode" />
     <FunctionField

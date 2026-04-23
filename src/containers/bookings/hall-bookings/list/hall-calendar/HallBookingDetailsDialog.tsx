@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import CloseIcon from "@mui/icons-material/Close";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import type { HallBookingResource } from "./types";
 import { slotLabel } from "./hallCalendarFormat";
 
@@ -66,9 +66,12 @@ export function HallBookingDetailsDialog({
               <LabelValue label="Hall" value={selectedEvent?.hall?.name || "N/A"} grid={12} />
               <LabelValue
                 label="Date"
-                value={selectedEvent.date ? dayjs(selectedEvent.date).format("YYYY-MM-DD") : ""}
+                value={selectedEvent.date ? formatListDate(selectedEvent.date) : ""}
               />
               <LabelValue label="Slot" value={slotLabel(String(selectedEvent?.slot ?? ""))} />
+              {selectedEvent.remarks ? (
+                <LabelValue label="Remarks" value={String(selectedEvent.remarks)} grid={12} />
+              ) : null}
             </Grid>
           </Box>
         )}

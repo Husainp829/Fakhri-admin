@@ -1,14 +1,15 @@
 import {
   Button,
   Datagrid,
-  DateField,
   FunctionField,
   ReferenceField,
   ReferenceManyField,
   TextField,
   useRedirect,
+  type RaRecord,
 } from "react-admin";
 import { formatINR } from "@/utils";
+import { formatListDate } from "@/utils/date-format";
 import { formatFmbHijriPeriod } from "@/utils/hijri-date-utils";
 
 export default function TakhmeenHistory() {
@@ -41,7 +42,11 @@ export default function TakhmeenHistory() {
         <ReferenceField source="updatedBy" reference="admins">
           <TextField source="name" />
         </ReferenceField>
-        <DateField source="startDate" />
+        <FunctionField
+          label="Effective"
+          sortBy="startDate"
+          render={(record: RaRecord) => formatListDate(record?.startDate, { empty: "—" })}
+        />
         <FunctionField
           label="Add Payment"
           source="fmbId"

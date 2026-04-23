@@ -1,12 +1,13 @@
 import {
   Button,
   Datagrid,
-  DateField,
   FunctionField,
   ReferenceManyField,
   TextField,
+  type RaRecord,
 } from "react-admin";
 import DownloadIcon from "@mui/icons-material/Download";
+import { formatListDate } from "@/utils/date-format";
 
 const Receipts = () => {
   const printReceipt = (id: string | number) => {
@@ -17,7 +18,11 @@ const Receipts = () => {
       <Datagrid>
         <TextField source="receiptNo" label="Receipt No" />
         <TextField source="amount" />
-        <DateField source="receiptDate" />
+        <FunctionField
+          label="Receipt date"
+          sortBy="receiptDate"
+          render={(record: RaRecord) => formatListDate(record?.receiptDate, { empty: "—" })}
+        />
         <TextField source="receiptType" />
         <FunctionField
           label="Download"
