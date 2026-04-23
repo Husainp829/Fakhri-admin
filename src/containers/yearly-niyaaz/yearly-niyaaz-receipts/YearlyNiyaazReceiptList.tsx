@@ -16,10 +16,15 @@ import { Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const ReceiptFilters = [
-  <TextInput label="Search By ITS" source="itsNo" alwaysOn key="itsNo" sx={{ minWidth: 250 }} />,
+  <TextInput
+    source="q"
+    label="Search (receipt no., form no., name, ITS, amount, mode, ref, remarks, creator…)"
+    alwaysOn
+    key="q"
+    sx={{ minWidth: 300 }}
+  />,
   <DateInput source="start" label="From" alwaysOn key="start" />,
   <DateInput source="end" label="To" alwaysOn key="end" />,
-  <TextInput label="Receipt No" source="receiptNo" key="receiptNo" sx={{ minWidth: 200 }} />,
 ];
 
 export const YearlyNiyaazReceiptList = () => (

@@ -288,10 +288,10 @@ const getFilterFromURL = () => {
 const ReceiptFilters = [
   <TextInput
     source="q"
-    label="Search name / surname / ITS"
+    label="Search (receipt no., sabil no., ITS, name, amount, date, remarks, mode…)"
     key="q"
     alwaysOn
-    sx={{ minWidth: 260 }}
+    sx={{ minWidth: 300 }}
   />,
   <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
   <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
@@ -363,6 +363,11 @@ const SabilReceiptList = () => {
         header: "Payment Mode",
         field: "paymentMode",
         width: 15,
+      },
+      {
+        header: "Remarks",
+        field: "remarks",
+        width: 28,
       },
     ];
 

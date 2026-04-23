@@ -241,6 +241,7 @@ const ReceiptDatagrid = () => {
       <TextField source="itsNo" label="ITS No." />
       <TextField source="amount" />
       <TextField source="purpose" emptyText="-" />
+      <TextField source="remarks" label="Remarks" emptyText="—" />
       <FunctionField
         label="Receipt date"
         source="receiptDate"
@@ -350,6 +351,11 @@ const LagatReceiptList = () => {
         width: 15,
         formatter: (_rec: RaRecord, v: unknown) => (v ? formatListDate(String(v)) : ""),
       },
+      {
+        header: "Remarks",
+        field: "remarks",
+        width: 28,
+      },
     ];
 
     exportToExcel(receiptColumns, records, {
@@ -370,7 +376,13 @@ const LagatReceiptList = () => {
   };
 
   const LagatFilters = [
-    <TextInput source="q" label="Search name / ITS" key="q" alwaysOn sx={{ minWidth: 260 }} />,
+    <TextInput
+      source="q"
+      label="Search (receipt no., name, ITS, amount, purpose, ref, mode, remarks, date…)"
+      key="q"
+      alwaysOn
+      sx={{ minWidth: 280 }}
+    />,
     <DateInput source="startDate" label="Start Date" key="startDate" alwaysOn />,
     <DateInput source="endDate" label="End Date" key="endDate" alwaysOn />,
   ];

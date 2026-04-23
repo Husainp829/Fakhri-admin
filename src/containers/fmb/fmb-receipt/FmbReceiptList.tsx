@@ -24,9 +24,9 @@ export default function FmbReceiptList() {
     <TextInput
       key="q"
       source="q"
-      label="Search receipt no., type, mode, remarks"
+      label="Search (receipt no., FMB file/ITS, amounts, date, type, mode, remarks…)"
       alwaysOn
-      sx={{ minWidth: 280 }}
+      sx={{ minWidth: 300 }}
     />,
     <ReferenceInput source="fmbId" reference="fmbData" key="fmbId" alwaysOn>
       <AutocompleteInput
@@ -88,6 +88,7 @@ export default function FmbReceiptList() {
             }}
           />
           <TextField source="receiptType" />
+          <TextField source="remarks" label="Remarks" emptyText="—" />
           <FunctionField
             label="Download"
             source="formNo"

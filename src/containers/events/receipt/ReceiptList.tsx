@@ -8,7 +8,6 @@ import {
   downloadCSV,
   usePermissions,
   Pagination,
-  SelectInput,
   TextInput,
   SimpleList,
   TopToolbar,
@@ -21,7 +20,6 @@ import { Box, useMediaQuery } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import jsonExport from "jsonexport/dist";
 import { formatListDate } from "@/utils/date-format";
-import { MARKAZ_LIST } from "@/constants";
 import { hasPermission } from "@/utils/permission-utils";
 
 export const ReceiptList = () => {
@@ -52,7 +50,7 @@ export const ReceiptList = () => {
         mode,
         markaz,
         namaazVenue,
-        details,
+        Remarks: details,
         createdBy: (admin as { name?: string } | undefined)?.name || createdBy,
         date: formatListDate(date as string),
       };
@@ -69,7 +67,7 @@ export const ReceiptList = () => {
           "mode",
           "markaz",
           "namaazVenue",
-          "details",
+          "Remarks",
           "createdBy",
           "date",
         ],
@@ -81,21 +79,12 @@ export const ReceiptList = () => {
   };
 
   const ReceiptFilters = [
-    <TextInput label="Search By HOF ITS" source="HOFId" alwaysOn key={0} sx={{ minWidth: 300 }} />,
-    <TextInput label="Search By Receipt No" source="receiptNo" key={1} sx={{ minWidth: 300 }} />,
-    <SelectInput
-      label="Jaman Venue"
-      source="markaz"
-      key={2}
-      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
-      sx={{ marginBottom: 0 }}
-    />,
-    <SelectInput
-      label="Namaaz Venue"
-      source="namaazVenue"
-      key={3}
-      choices={Object.entries(MARKAZ_LIST).map(([id, name]) => ({ id, name }))}
-      sx={{ marginBottom: 0 }}
+    <TextInput
+      source="q"
+      label="Search (receipt, form, HOF, amount, mode, venues, remarks, creator…)"
+      alwaysOn
+      key="q"
+      sx={{ minWidth: 320 }}
     />,
   ];
 
@@ -125,13 +114,15 @@ export const ReceiptList = () => {
               {Number(record.amount).toLocaleString("en-IN")} · {String(record.mode)}
             </>
           )}
-          tertiaryText={(record) => String(record.markaz || "—")}
+          tertiaryText={(record) =>
+            [record.markaz, record.details].filter(Boolean).join(" · ") || "—"
+          }
           linkType="edit"
           rowSx={() => ({ borderBottom: 1, borderBottomColor: "divider" })}
         />
       ) : (
         <Box sx={{ overflowX: "auto", width: "100%" }}>
-          <Datagrid rowClick="edit" bulkActionButtons={false} sx={{ minWidth: 960 }}>
+          <Datagrid rowClick="edit" bulkActionButtons={false} sx={{ minWidth: 1080 }}>
             <TextField source="receiptNo" />
             <TextField source="formNo" />
             <TextField source="HOFId" label="HOF ID" />
@@ -147,6 +138,7 @@ export const ReceiptList = () => {
             <TextField source="mode" />
             <TextField source="markaz" />
             <TextField source="namaazVenue" />
+            <TextField source="details" label="Remarks" emptyText="—" />
             <FunctionField
               label="Created By"
               source="createdBy"

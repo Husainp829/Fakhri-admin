@@ -275,6 +275,7 @@ const ReceiptDatagrid = () => {
           }}
         />
       )}
+      <TextField source="details" label="Remarks" emptyText="—" />
       <FunctionField
         label="Created By"
         source="createdBy"
@@ -395,6 +396,11 @@ export const RentBookingReceiptList = () => {
         width: 15,
       },
       {
+        header: "Remarks",
+        field: "details",
+        width: 28,
+      },
+      {
         header: "Type",
         field: (rec: RaRecord) => (rec?.type === "RENT" ? "CONT" : rec?.type || ""),
         width: 15,
@@ -424,7 +430,13 @@ export const RentBookingReceiptList = () => {
   };
 
   const ReceiptFilters = [
-    <TextInput label="Search organiser / ITS" source="q" alwaysOn key="q" sx={{ minWidth: 260 }} />,
+    <TextInput
+      label="Search (receipt no., booking, organiser, ITS, amount, date, mode, ref, remarks, creator…)"
+      source="q"
+      alwaysOn
+      key="q"
+      sx={{ minWidth: 300 }}
+    />,
     <DateInput source="start" label="from" alwaysOn key="start" />,
     <DateInput source="end" label="to" alwaysOn key="end" />,
     <TextInput label="Receipt No" source="receiptNo" key="receiptNo" sx={{ minWidth: 200 }} />,
