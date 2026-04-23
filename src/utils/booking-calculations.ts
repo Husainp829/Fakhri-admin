@@ -7,6 +7,7 @@ const calculateThaalAmount = (thaals = 0, perThaalCost = 0): number =>
   (Number(thaals) || 0) * perThaalCost;
 
 const calculateTotalAmountPending = ({
+  agreedTotalPayable,
   rentAmount = 0,
   kitchenCleaningAmount = 0,
   thaalAmount = 0,
@@ -14,6 +15,7 @@ const calculateTotalAmountPending = ({
   writeOffAmount = 0,
   extraExpenses = 0,
 }: {
+  agreedTotalPayable?: number | null;
   rentAmount?: number;
   kitchenCleaningAmount?: number;
   thaalAmount?: number;
@@ -21,11 +23,13 @@ const calculateTotalAmountPending = ({
   writeOffAmount?: number;
   extraExpenses?: number;
 }): number => {
-  const total =
-    Number(rentAmount) +
-    Number(kitchenCleaningAmount) +
-    Number(thaalAmount) +
-    Number(extraExpenses);
+  const fromHalls = Number(rentAmount) + Number(kitchenCleaningAmount) + Number(thaalAmount);
+  const lineBase =
+    agreedTotalPayable != null && agreedTotalPayable !== undefined
+      ? Number(agreedTotalPayable)
+      : fromHalls;
+
+  const total = lineBase + Number(extraExpenses);
 
   const deductions = Number(paidAmount) + Number(writeOffAmount);
 
@@ -35,6 +39,7 @@ const calculateTotalAmountPending = ({
 export const calcBookingTotals = ({
   halls = [],
   depositPaidAmount = 0,
+  agreedTotalPayable = null,
   extraExpenses = 0,
   writeOffAmount = 0,
   paidAmount = 0,
@@ -89,6 +94,7 @@ export const calcBookingTotals = ({
   }, initial);
 
   const totalAmountPending = calculateTotalAmountPending({
+    agreedTotalPayable,
     rentAmount,
     kitchenCleaningAmount,
     thaalAmount,

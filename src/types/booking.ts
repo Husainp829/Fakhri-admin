@@ -13,6 +13,7 @@ export type BookingHallLine = {
 export type CalcBookingTotalsInput = {
   halls?: BookingHallLine[];
   depositPaidAmount?: number;
+  agreedTotalPayable?: number | null;
   extraExpenses?: number;
   writeOffAmount?: number;
   paidAmount?: number;

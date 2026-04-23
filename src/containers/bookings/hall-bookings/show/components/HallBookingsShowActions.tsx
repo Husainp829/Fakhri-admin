@@ -110,7 +110,7 @@ export const HallBookingsShowActions = () => {
   const onCloseEvent = async (data: {
     actualThaals: Record<string, number>;
     extraExpenses: number;
-    comments: string;
+    remarks: string;
   }) => {
     if (!record?.id) return;
     await callApi({
@@ -118,7 +118,7 @@ export const HallBookingsShowActions = () => {
       data: {
         actualThaals: data.actualThaals,
         extraExpenses: data.extraExpenses,
-        comments: data.comments,
+        remarks: data.remarks,
       },
       method: "PUT",
     })

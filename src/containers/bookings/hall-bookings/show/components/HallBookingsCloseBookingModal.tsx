@@ -15,14 +15,14 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useGetList } from "react-admin";
-import dayjs from "dayjs";
+import { formatLongDate } from "@/utils/date-format";
 import { slotNameMap } from "@/constants";
 import { useShowTotals } from "../BookingShowContext";
 import type { RaRecord } from "react-admin";
 
 type ClosePayload = {
   extraExpenses: number;
-  comments: string;
+  remarks: string;
   actualThaals: Record<string, number>;
 };
 
@@ -39,7 +39,7 @@ export const HallBookingsCloseBookingModal = ({
 }) => {
   const [actualThaals, setActualThaals] = useState<Record<string, number>>({});
   const [extraExpenses, setExtraExpenses] = useState<string | number>(0);
-  const [comments, setComments] = useState("");
+  const [remarks, setRemarks] = useState("");
   const { data: hallBookings = [] } = useGetList(
     "hallBookings",
     { filter: { bookingId: record.id } },
@@ -88,7 +88,7 @@ export const HallBookingsCloseBookingModal = ({
   const handleSubmit = () => {
     onSubmit({
       extraExpenses: Number(extraExpenses) || 0,
-      comments,
+      remarks,
       actualThaals,
     });
     onClose();
@@ -154,8 +154,7 @@ export const HallBookingsCloseBookingModal = ({
                 <Typography>
                   {(hall.hall as { name?: string } | undefined)?.name}
                   <br />
-                  {dayjs(hall.date as string).format("DD MMM YYYY")} -{" "}
-                  {slotNameMap[String(hall.slot)]}
+                  {formatLongDate(hall.date as string)} - {slotNameMap[String(hall.slot)]}
                 </Typography>
               </Grid>
               <Grid size={2}>
@@ -189,9 +188,9 @@ export const HallBookingsCloseBookingModal = ({
         />
 
         <TextField
-          label="Comments"
-          value={comments}
-          onChange={(e) => setComments(e.target.value)}
+          label="Remarks"
+          value={remarks}
+          onChange={(e) => setRemarks(e.target.value)}
           size="small"
           fullWidth
           multiline

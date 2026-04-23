@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { TextInput, RadioButtonGroupInput } from "react-admin";
+import { useEffect, useRef, useState } from "react";
+import { TextInput, RadioButtonGroupInput, BooleanInput } from "react-admin";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { Button, Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import { Button, Typography, Table, TableBody, TableCell, TableRow, Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import HallBookingsItsLookup from "../common/HallBookingsItsLookup";
 import { HallBookingsBookingTable } from "./HallBookingsBookingTable";
@@ -36,6 +36,34 @@ const LabelValue = ({
   </TableRow>
 );
 
+function SeedTotalOverrideFromCalculated({ calculatedBase }: { calculatedBase: number }) {
+  const { control, setValue, getValues } = useFormContext();
+  const overrideOn = useWatch({ control, name: "overrideTotalPayable" });
+  const prevOverride = useRef<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    const nowOn = overrideOn === true || overrideOn === "true";
+    if (prevOverride.current === undefined) {
+      prevOverride.current = nowOn;
+      return;
+    }
+    const wasOff = prevOverride.current === false;
+    prevOverride.current = nowOn;
+
+    if (!wasOff || !nowOn) return;
+
+    const current = getValues("overriddenTotalPayable");
+    if (current === undefined || current === null || current === "" || Number(current) === 0) {
+      setValue("overriddenTotalPayable", calculatedBase, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    }
+  }, [overrideOn, calculatedBase, getValues, setValue]);
+
+  return null;
+}
+
 export function HallBookingsBookingForm() {
   const { control, setValue } = useFormContext();
 
@@ -55,6 +83,14 @@ export function HallBookingsBookingForm() {
 
   const mode = useWatch({ name: "mode" }) as string | undefined;
   const jamaatLagatMode = useWatch({ name: "jamaatLagatMode" }) as string | undefined;
+  const overrideTotalPayable = useWatch({ name: "overrideTotalPayable" }) as
+    | boolean
+    | string
+    | undefined;
+  const overriddenTotalPayable = useWatch({ name: "overriddenTotalPayable" }) as
+    | number
+    | string
+    | undefined;
 
   const {
     rentAmount: rent,
@@ -66,6 +102,11 @@ export function HallBookingsBookingForm() {
   } = calcBookingTotals({
     halls: hallBookings ?? [],
   });
+
+  const overrideOn = overrideTotalPayable === true || overrideTotalPayable === "true";
+  const displayTotalPayable = overrideOn
+    ? Math.round(Number(overriddenTotalPayable) || 0)
+    : totalPayable;
 
   useEffect(() => {
     if (rentAmount !== rent) {
@@ -137,9 +178,48 @@ export function HallBookingsBookingForm() {
 
             {(jamaatLagat ?? 0) > 0 && <LabelValue label="Jamaat Lagat" value={jamaatLagat || 0} />}
 
-            <LabelValue label="Total Payable" value={totalPayable} />
+            <LabelValue label="Total Payable" value={displayTotalPayable} />
           </TableBody>
         </Table>
+
+        <Box sx={{ mt: 2, textAlign: "left" }}>
+          <BooleanInput
+            source="overrideTotalPayable"
+            label="Agreed total differs from calculated"
+          />
+          <SeedTotalOverrideFromCalculated calculatedBase={totalPayable} />
+          {overrideOn && (
+            <>
+              <NoArrowKeyNumberInput
+                label="Agreed total payable"
+                source="overriddenTotalPayable"
+                fullWidth
+                sx={{ mt: 1 }}
+              />
+              {(() => {
+                const tariff = rent + kc + thaals;
+                const agreed = Math.round(Number(overriddenTotalPayable) || 0);
+                const waived = tariff - agreed;
+                if (waived <= 0) return null;
+                return (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Taking ₹{waived} less than calculated hall tariff (₹{tariff}).
+                  </Typography>
+                );
+              })()}
+            </>
+          )}
+        </Box>
+
+        <TextInput
+          source="remarks"
+          label="Booking remarks"
+          fullWidth
+          multiline
+          minRows={2}
+          sx={{ mt: 2, textAlign: "left" }}
+          helperText="Optional notes for this booking. Required if you use an agreed total that differs from calculated."
+        />
 
         <NoArrowKeyNumberInput
           label="Deposit Amount Paid"

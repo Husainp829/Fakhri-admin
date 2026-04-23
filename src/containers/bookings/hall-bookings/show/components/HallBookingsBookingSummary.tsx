@@ -1,9 +1,8 @@
 import { usePermissions, useRecordContext } from "react-admin";
 import { Typography, Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import dayjs from "dayjs";
-
 import { useShowTotals } from "../BookingShowContext";
+import { formatLongDate } from "@/utils/date-format";
 import { hasPermission } from "@/utils/permission-utils";
 
 type AmountRow = { label: string; value: string | number; type?: string };
@@ -23,6 +22,12 @@ export const HallBookingsBookingSummary = () => {
 
   if (!record) return null;
 
+  const extraExpenses = Number(record.extraExpenses) || 0;
+  const agreedRaw = record.agreedTotalPayable;
+  const agreedTotal =
+    agreedRaw !== null && agreedRaw !== undefined && agreedRaw !== "" ? Number(agreedRaw) : null;
+  const calculatedTariff = rentAmount + kitchenCleaningAmount + thaalAmount;
+
   const amountsLeft: AmountRow[] = [
     { label: "Deposit", value: depositAmount },
     { label: "Contribution", value: rentAmount },
@@ -37,8 +42,9 @@ export const HallBookingsBookingSummary = () => {
           },
         ]
       : []),
-    ...((record.extraExpenses as number) > 0
-      ? [{ label: "Extra Expenses", value: record.extraExpenses as number }]
+    ...(extraExpenses > 0 ? [{ label: "Extra expenses", value: extraExpenses }] : []),
+    ...(agreedTotal == null && extraExpenses < 0
+      ? [{ label: "Discount / reduced rate (legacy)", value: Math.abs(extraExpenses) }]
       : []),
     ...((record.writeOffAmount as number) > 0
       ? [{ label: "Write Off", value: record.writeOffAmount as number }]
@@ -56,7 +62,7 @@ export const HallBookingsBookingSummary = () => {
           { label: "Refund Returned", value: record.refundReturnAmount as number },
           {
             label: "Refund Returned On",
-            value: dayjs(record.refundReturnedOn as string).format("DD MMM YYYY"),
+            value: formatLongDate(record.refundReturnedOn as string),
             type: "date",
           },
         ]
@@ -80,7 +86,7 @@ export const HallBookingsBookingSummary = () => {
     { label: "Raza Granted", value: record.razaGranted ? "Yes" : "No" },
     {
       label: "Booked On",
-      value: dayjs(record.createdAt as string).format("DD MMM YYYY"),
+      value: formatLongDate(record.createdAt as string),
     },
   ];
 
@@ -156,6 +162,14 @@ export const HallBookingsBookingSummary = () => {
                 ))}
             </TableBody>
           </Table>
+          {agreedTotal != null &&
+            Number.isFinite(agreedTotal) &&
+            calculatedTariff > agreedTotal && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Agreed contribution ₹{agreedTotal} vs calculated hall tariff ₹{calculatedTariff} — ₹
+                {calculatedTariff - agreedTotal} less than tariff.
+              </Typography>
+            )}
         </Grid>
       )}
     </Grid>
