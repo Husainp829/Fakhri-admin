@@ -38,6 +38,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { slotNameMap } from "@/constants";
 import { hasPermission } from "@/utils/permission-utils";
+import { formatListDate } from "@/utils/date-format";
 import NoArrowKeyNumberInput from "@/components/NoArrowKeyNumberInput";
 
 const CustomToolbar = ({
@@ -121,6 +122,7 @@ const HallBookingEditModal = ({
               fullWidth
             />
             <BooleanInput source="withAC" label="With AC" fullWidth />
+            <TextInput source="remarks" label="Remarks" fullWidth multiline minRows={2} />
           </SimpleForm>
         </Edit>
       </DialogContent>
@@ -186,6 +188,7 @@ const HallBookingCreateModal = ({
               fullWidth
             />
             <BooleanInput source="withAC" label="With AC" fullWidth />
+            <TextInput source="remarks" label="Remarks" fullWidth multiline minRows={2} />
           </SimpleForm>
         </Create>
       </DialogContent>
@@ -201,6 +204,7 @@ type HallBookingRow = {
   thaals?: number;
   date?: string;
   slot?: string;
+  remarks?: string | null;
 };
 
 export const HallBookingsShowTable = () => {
@@ -219,6 +223,8 @@ export const HallBookingsShowTable = () => {
   if (!record) return null;
 
   const hallBookings = (record.hallBookings as HallBookingRow[] | undefined) || [];
+  const showActions = hasPermission(permissions, "bookings.edit") && !record.checkedOutOn;
+  const tableColSpan = showActions ? 8 : 7;
 
   const handleEdit = (id: string) => {
     setEditId(id);
@@ -254,7 +260,7 @@ export const HallBookingsShowTable = () => {
     <Box mb={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Hall Bookings</Typography>
-        {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
+        {showActions && (
           <Button variant="outlined" color="primary" onClick={() => setOpenCreate(true)}>
             Add Hall
           </Button>
@@ -270,9 +276,8 @@ export const HallBookingsShowTable = () => {
             <TableCell>Thaals</TableCell>
             <TableCell>Date</TableCell>
             <TableCell>Slot</TableCell>
-            {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
-              <TableCell align="right">Actions</TableCell>
-            )}
+            <TableCell>Remarks</TableCell>
+            {showActions && <TableCell align="right">Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -286,9 +291,18 @@ export const HallBookingsShowTable = () => {
                   <TableCell>{hb.purpose}</TableCell>
                   <TableCell>{hb.withAC ? "With AC" : "W/O AC"}</TableCell>
                   <TableCell>{hb.thaals}</TableCell>
-                  <TableCell>{hb.date ? new Date(hb.date).toLocaleDateString() : ""}</TableCell>
+                  <TableCell>{hb.date ? formatListDate(hb.date) : ""}</TableCell>
                   <TableCell>{slotNameMap[hb.slot ?? ""] ?? hb.slot}</TableCell>
-                  {hasPermission(permissions, "bookings.edit") && !record.checkedOutOn && (
+                  <TableCell sx={{ maxWidth: 220 }}>
+                    {hb.remarks ? (
+                      <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                        {hb.remarks}
+                      </Typography>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  {showActions && (
                     <TableCell align="right">
                       <IconButton onClick={() => handleEdit(hb.id)}>
                         <EditIcon fontSize="small" />
@@ -309,7 +323,7 @@ export const HallBookingsShowTable = () => {
               ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} align="center">
+              <TableCell colSpan={tableColSpan} align="center">
                 No hall bookings found.
               </TableCell>
             </TableRow>

@@ -1,5 +1,5 @@
 import { useGetOne, type RaRecord } from "react-admin";
-import dayjs from "dayjs";
+import { formatHour12TightToday, formatListDate } from "@/utils/date-format";
 import {
   Box,
   Table,
@@ -99,9 +99,9 @@ const ConfirmationVoucher = () => {
                         {hall.hall?.name}
                         <br />
                         {hall.date && range
-                          ? `${dayjs(hall.date).format("DD/MMM/YYYY")} - ${dayjs()
-                              .hour(range[0])
-                              .format("ha")} - ${dayjs().hour(range[1]).format("ha")}`
+                          ? `${formatListDate(hall.date)} - ${formatHour12TightToday(
+                              range[0]
+                            )} - ${formatHour12TightToday(range[1])}`
                           : ""}
                         <br />
                         <b>{hall.withAC ? "With AC" : "W/O AC"}</b>

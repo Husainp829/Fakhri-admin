@@ -1,5 +1,6 @@
 import { List, Datagrid, TextField, FunctionField, type ListProps } from "react-admin";
 import { slotNameMap } from "@/constants";
+import { formatListDate } from "@/utils/date-format";
 
 export const BlockedHallDatesList = (props: ListProps) => (
   <List {...props}>
@@ -12,6 +13,13 @@ export const BlockedHallDatesList = (props: ListProps) => (
       />
       <TextField source="type" label="Type" />
       <FunctionField label="Date Info" source="hijriMonth" render={(record) => record.dateInfo} />
+      <FunctionField
+        label="Gregorian"
+        source="gregorianDate"
+        render={(record) =>
+          record.gregorianDate ? formatListDate(record.gregorianDate as string) : "—"
+        }
+      />
       <TextField source="event" label="Event/Reason" />
     </Datagrid>
   </List>

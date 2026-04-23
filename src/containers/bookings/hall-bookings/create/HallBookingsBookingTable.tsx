@@ -1,6 +1,14 @@
-import { Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+  Typography,
+} from "@mui/material";
 import { ReferenceField, TextField, type RaRecord } from "react-admin";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 
 type HallBookingRow = RaRecord & {
   hallId?: string;
@@ -30,6 +38,7 @@ export function HallBookingsBookingTable({
           <TableCell>Date</TableCell>
           <TableCell>Slot</TableCell>
           <TableCell>Thaals</TableCell>
+          <TableCell>Remarks</TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>
@@ -49,9 +58,18 @@ export function HallBookingsBookingTable({
               <br />({hb.withAC ? "With AC" : "W/O AC"})
             </TableCell>
             <TableCell>{hb.purpose}</TableCell>
-            <TableCell>{hb.date ? dayjs(hb.date).format("DD-MM-YYYY") : ""}</TableCell>
+            <TableCell>{hb.date ? formatListDate(hb.date) : ""}</TableCell>
             <TableCell sx={{ textTransform: "capitalize" }}>{hb.slot}</TableCell>
             <TableCell>{hb.thaals}</TableCell>
+            <TableCell sx={{ maxWidth: 200 }}>
+              {hb.remarks ? (
+                <Typography variant="body2" noWrap title={String(hb.remarks)}>
+                  {String(hb.remarks)}
+                </Typography>
+              ) : (
+                "—"
+              )}
+            </TableCell>
             <TableCell>
               <Button size="small" color="error" onClick={() => remove(index)}>
                 Remove

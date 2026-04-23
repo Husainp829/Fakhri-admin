@@ -1,7 +1,6 @@
 import {
   CreateButton,
   DatagridConfigurable as Datagrid,
-  DateField,
   DateInput,
   ExportButton,
   FilterButton,
@@ -15,7 +14,7 @@ import {
   TopToolbar,
   type RaRecord,
 } from "react-admin";
-import dayjs from "dayjs";
+import { formatListDate } from "@/utils/date-format";
 import { useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { slotNameMap } from "@/constants";
@@ -32,7 +31,7 @@ const columns = [
     header: "Date",
     field: "date",
     width: 14,
-    formatter: (_rec: RaRecord, v: unknown) => (v ? dayjs(v as string).format("DD-MMM-YYYY") : ""),
+    formatter: (_rec: RaRecord, v: unknown) => (v ? formatListDate(v as string) : ""),
   },
   {
     header: "Slot",
@@ -107,14 +106,12 @@ export const HallBookingsListView = () => {
           <TextField source="booking.itsNo" label="ITS No." />
           <TextField source="booking.phone" label="Phone" />
 
-          <DateField
+          <FunctionField
+            label="Date"
             source="date"
-            locales="en-IN"
-            options={{
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }}
+            render={(record: RaRecord) =>
+              record?.date ? <span>{formatListDate(record.date as string)}</span> : <span>—</span>
+            }
           />
           <TextField source="hall.name" label="Hall" />
           <FunctionField

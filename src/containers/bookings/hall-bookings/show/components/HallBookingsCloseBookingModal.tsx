@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useGetList } from "react-admin";
-import { formatLongDate } from "@/utils/date-format";
+import { formatListDate } from "@/utils/date-format";
 import { slotNameMap } from "@/constants";
 import { useShowTotals } from "../BookingShowContext";
 import type { RaRecord } from "react-admin";
@@ -154,7 +154,7 @@ export const HallBookingsCloseBookingModal = ({
                 <Typography>
                   {(hall.hall as { name?: string } | undefined)?.name}
                   <br />
-                  {formatLongDate(hall.date as string)} - {slotNameMap[String(hall.slot)]}
+                  {formatListDate(hall.date as string)} - {slotNameMap[String(hall.slot)]}
                 </Typography>
               </Grid>
               <Grid size={2}>

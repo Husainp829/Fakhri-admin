@@ -1,5 +1,5 @@
 import { useGetOne } from "react-admin";
-import dayjs from "dayjs";
+import { formatListDate, formatWeekdayFull } from "@/utils/date-format";
 import { Box, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@mui/material";
 import { useParams } from "react-router";
 
@@ -49,7 +49,7 @@ const RazaPrint = () => {
             {booking?.itsNo}
           </Box>
           <Box flex={3} sx={{ borderBottom: solid1Soft, textAlign: "right", mr: 1 }}>
-            {booking.createdAt ? dayjs(booking.createdAt).format("DD/MM/YYYY") : ""}
+            {booking.createdAt ? formatListDate(booking.createdAt) : ""}
           </Box>
           : تاريخ
         </Box>
@@ -92,12 +92,10 @@ const RazaPrint = () => {
                   <TableRow key={hall.id}>
                     <TableCellComp>{hall.hall?.name}</TableCellComp>
                     <TableCellComp>
-                      {hall.date ? dayjs(hall.date).format("DD MMM YYYY") : ""} <br />
+                      {hall.date ? formatListDate(hall.date) : ""} <br />
                       {hall.date ? fromGregorian(new Date(hall.date)) : ""}
                     </TableCellComp>
-                    <TableCellComp>
-                      {hall.date ? dayjs(hall.date).format("dddd") : ""}
-                    </TableCellComp>
+                    <TableCellComp>{hall.date ? formatWeekdayFull(hall.date) : ""}</TableCellComp>
                     <TableCellComp>{hall.thaals === 0 ? "تقسیم" : hall.thaals}</TableCellComp>
                     <TableCellComp>{hall.slot}</TableCellComp>
                   </TableRow>
