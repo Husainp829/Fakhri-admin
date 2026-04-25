@@ -203,7 +203,7 @@ function OhbatMajlisShowActions() {
 
   return (
     <>
-      <TopToolbar>{canEditMajlis && <EditButton />}</TopToolbar>
+      <TopToolbar>{canEditMajlis ? <EditButton /> : null}</TopToolbar>
       {id != null && (
         <>
           <ChangeSadaratDialog

@@ -3,6 +3,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { OhbatItsdataItsPickerInput } from "./OhbatItsdataItsPickerInput";
 import OhbatITSLookup from "./OhbatITSLookup";
+import { GoogleCalendarBusyPreview } from "./GoogleCalendarBusyPreview";
 import { MAJLIS_START_TIME_CHOICES } from "./OhbatMajlisTime";
 
 const typeChoices = [
@@ -91,6 +92,9 @@ export function OhbatMajlisFormFields() {
         <TextInput source="address" label="Address" fullWidth multiline minRows={2} />
         <TextInput source="mobileNo" label="Contact mobile" fullWidth />
         <TextInput source="notes" label="Notes" fullWidth multiline minRows={4} />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <GoogleCalendarBusyPreview />
       </Grid>
     </Grid>
   );

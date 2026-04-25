@@ -6,12 +6,13 @@ const stripReadOnlyFields = (data: Record<string, unknown>) => {
   if (!data || typeof data !== "object") return data;
   const rest = { ...data };
   delete rest.itsNo;
+  delete rest.googleCalendarEventId;
   return rest;
 };
 
 const OhbatMajlisEdit = () => (
   <Edit redirect="show" transform={stripReadOnlyFields}>
-    <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 960 }}>
+    <SimpleForm warnWhenUnsavedChanges sx={{ maxWidth: 1120 }}>
       <OhbatMajlisFormFields />
     </SimpleForm>
   </Edit>

@@ -5,7 +5,7 @@ const OhbatMajlisCreate = () => (
   <Create redirect="list">
     <SimpleForm
       warnWhenUnsavedChanges
-      sx={{ maxWidth: 960 }}
+      sx={{ maxWidth: 1120 }}
       defaultValues={{ startTime: "09:00" }}
     >
       <OhbatMajlisFormFields />
